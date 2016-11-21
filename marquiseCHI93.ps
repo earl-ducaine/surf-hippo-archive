@@ -1,0 +1,5537 @@
+%!PS-Adobe-2.0
+%%Title: marquiseCHI.mss
+%%DocumentFonts: (atend)
+%%Creator: Brad Myers and Scribe 7(1700)
+%%CreationDate: 12 January 1993 11:25
+%%Pages: (atend)
+%%EndComments
+% PostScript Prelude for Scribe.
+/BS {/SV save def 0.0 792.0 translate .01 -.01 scale} bind def
+/ES {showpage SV restore} bind def
+/SC {setrgbcolor} bind def
+/FMTX matrix def
+/RDF {WFT SLT 0.0 eq 
+  {SSZ 0.0 0.0 SSZ neg 0.0 0.0 FMTX astore}
+  {SSZ 0.0 SLT neg sin SLT cos div SSZ mul SSZ neg 0.0 0.0 FMTX astore}
+  ifelse makefont setfont} bind def
+/SLT 0.0 def
+/SI { /SLT exch cvr def RDF} bind def
+/WFT /Courier findfont def
+/SF { /WFT exch findfont def RDF} bind def
+/SSZ 1000.0 def
+/SS { /SSZ exch 100.0 mul def RDF} bind def
+/AF { /WFT exch findfont def /SSZ exch 100.0 mul def RDF} bind def
+/MT /moveto load def
+/XM {currentpoint exch pop moveto} bind def
+/UL {gsave newpath moveto dup 2.0 div 0.0 exch rmoveto
+   setlinewidth 0.0 rlineto stroke grestore} bind def
+/LH {gsave newpath moveto setlinewidth
+   0.0 rlineto
+   gsave stroke grestore} bind def
+/LV {gsave newpath moveto setlinewidth
+   0.0 exch rlineto
+   gsave stroke grestore} bind def
+/BX {gsave newpath moveto setlinewidth
+   exch
+   dup 0.0 rlineto
+   exch 0.0 exch neg rlineto
+   neg 0.0 rlineto
+   closepath
+   gsave stroke grestore} bind def
+/BX1 {grestore} bind def
+/BX2 {setlinewidth 1 setgray stroke grestore} bind def
+/PB {/PV save def newpath translate
+    100.0 -100.0 scale pop /showpage {} def} bind def
+/PE {PV restore} bind def
+/GB {/PV save def newpath translate rotate
+    div dup scale 100.0 -100.0 scale /showpage {} def} bind def
+/GE {PV restore} bind def
+/FB {dict dup /FontMapDict exch def begin} bind def
+/FM {cvn exch cvn exch def} bind def
+/FE {end /original-findfont /findfont load def  /findfont
+   {dup FontMapDict exch known{FontMapDict exch get} if
+   original-findfont} def} bind def
+/BC {gsave moveto dup 0 exch rlineto exch 0 rlineto neg 0 exch rlineto closepath clip} bind def
+/EC /grestore load def
+/SH /show load def
+/MX {exch show 0.0 rmoveto} bind def
+/W {0 32 4 -1 roll widthshow} bind def
+/WX {0 32 5 -1 roll widthshow 0.0 rmoveto} bind def
+/RC {100.0 -100.0 scale
+612.0 0.0 translate
+-90.0 rotate
+.01 -.01 scale} bind def
+/URC {100.0 -100.0 scale
+90.0 rotate
+-612.0 0.0 translate
+.01 -.01 scale} bind def
+/RCC {100.0 -100.0 scale
+0.0 -792.0 translate 90.0 rotate
+.01 -.01 scale} bind def
+/URCC {100.0 -100.0 scale
+-90.0 rotate 0.0 792.0 translate
+.01 -.01 scale} bind def
+%%EndProlog
+%%Page: 1 1
+BS
+0 SI
+18 /Helvetica-Bold AF
+11346 9421 MT
+(Marquise: Creating Complete User Interfaces)SH
+22949 11417 MT
+(by Demonstration)SH
+12 /Times-Italic AF
+10283 14211 MT
+(Brad A. Myers)SH
+25383 XM
+(Richard G. McDaniel)SH
+43516 XM
+(David S. Kosbie)SH
+/Times-Roman SF
+23716 16508 MT
+(School of Computer Science)SH
+23865 17905 MT
+(Carnegie Mellon University)SH
+25600 19302 MT
+(5000 Forbes Avenue)SH
+25265 20699 MT
+(Pittsburgh, PA  15213)SH
+22871 22096 MT
+({bam, richm, koz}@cs.cmu.edu)SH
+9 /Helvetica-Bold AF
+5400 24756 MT
+(ABSTRACT)SH
+10 /Times-Roman AF
+31788 24786 MT
+(Unlike many previous tools which)
+68 W( concentrate on widgets,)69 W
+31788 25884 MT
+(Marquise is aimed)
+94 W( mostly at the main drawing window of)93 W
+5400 26052 MT
+(Marquise is a new interactive)
+100 W( tool that allows virtually all)99 W
+31788 26982 MT
+(graphical editors)
+199 W( where the user creates and manipulates)200 W
+5400 27150 MT
+(of the user interfaces of graphical editors to)
+98 W( be created by)99 W
+31788 28080 MT
+(graphical objects with a mouse.  For example,)
+143 W( with Mar-)142 W
+5400 28248 MT
+(demonstration without programming.  A ``graphical)629 W
+31788 29178 MT
+(quise you can demonstrate)
+219 W( how the rubber banding will)220 W
+5400 29346 MT
+(editor'' allows the user to create and manipulate graphical)88 W
+31788 30276 MT
+(appear as you move the mouse, rather than)
+39 W( having this as a)38 W
+5400 30444 MT
+(objects with a mouse.  This is a)
+352 W( very large class of)351 W
+31788 31374 MT
+(hard-wired, unchangeable component.  Another)
+146 W( important)147 W
+5400 31542 MT
+(programs and includes)
+186 W( drawing programs like MacDraw,)187 W
+31788 32472 MT
+(capability in Marquise is demonstrating the modes of the)150 W
+5400 32640 MT
+(graph layout editors)
+437 W( like MacProject, visual language)436 W
+31788 33570 MT
+(interface. Although)
+1032 W( ``mode-free'' interfaces are often)391 W
+5400 33738 MT
+(editors, and many CAD/CAM programs.)
+101 W( The)
+454 W( primary in-)102 W
+31788 34668 MT
+(touted, all modern graphical interfaces are)
+189 W( in fact highly)188 W
+5400 34836 MT
+(novation in Marquise)
+609 W( is to allow the designer to)608 W
+31788 35766 MT
+(moded. For)
+942 W( example, in most drawing tools)
+346 W( such as)347 W
+5400 35934 MT
+(demonstrate the overall behavior of the interface.)
+115 W( To)
+481 W( im-)116 W
+31788 36864 MT
+(Macintosh MacDraw, a palette controls whether the)
+180 W( next)179 W
+5400 37032 MT
+(plement this, the)
+76 W( Marquise framework contains knowledge)75 W
+31788 37962 MT
+(mouse click will select an object, insert a)
+192 W( text string, or)193 W
+5400 38130 MT
+(about palettes for creating and specifying properties of)
+67 W( ob-)68 W
+31788 39060 MT
+(draw a rectangle, circle, polygon,)
+14 W( etc.  Other modes include)13 W
+5400 39228 MT
+(jects, and about operations such as selecting, moving, and)105 W
+31788 40158 MT
+(the current)
+68 W( colors, line styles, and arrowhead styles for the)69 W
+5400 40326 MT
+(deleting objects.  The interactive tool uses the framework)126 W
+31788 41256 MT
+(objects that will be created.  Marquise provides)
+1 W( an intuitive,)SH
+5400 41424 MT
+(to allow the designer to demonstrate most of the)
+37 W( end user's)36 W
+31788 42354 MT
+(demonstrational method for specifying)
+48 W( the modes that con-)49 W
+5400 42522 MT
+(actions without)
+102 W( programming, which means that Marquise)103 W
+31788 43452 MT
+(trol and are affected by an operation.)SH
+5400 43620 MT
+(can be used by non-programmers.)SH
+31788 45565 MT
+(With Marquise, we have concentrated on providing com-)156 W
+9 /Helvetica-Bold AF
+5400 45733 MT
+(KEYWORDS:)SH
+10 /Times-Roman AF
+11727 XM
+(User Interface Software, User)
+477 W( Interface)476 W
+31788 46663 MT
+(plete control of)
+102 W( when and how the behaviors are initiated.)103 W
+5400 46831 MT
+(Management Systems, Interface Builders,)
+78 W( Demonstrational)79 W
+31788 47761 MT
+(The primary innovations)
+193 W( in Marquise are: \0501\051 the use of)192 W
+5400 47929 MT
+(Interfaces, Garnet.)SH
+31788 48859 MT
+(special icons to represent the mouse positions)
+461 W( while)462 W
+31788 49957 MT
+(demonstrating the behavior, so the designer)
+418 W( can then)417 W
+9 /Helvetica-Bold AF
+5400 50042 MT
+(INTRODUCTION)SH
+10 /Times-Roman AF
+31788 51055 MT
+(demonstrate what happens at those)
+195 W( locations, \0502\051 sophis-)196 W
+5400 51338 MT
+(One important goal of the)
+202 W( Garnet project)
+201 W( [6])
+SH( is to allow)201 W
+31788 52153 MT
+(ticated control over the)
+12 W( locations where those events should)11 W
+5400 52436 MT
+(user interface designers who)
+11 W( are not programmers to design)12 W
+31788 53251 MT
+(take place to begin and end behaviors, \0503\051)
+134 W( a ``mode win-)135 W
+5400 53534 MT
+(and implement the)168 W
+/Times-Italic SF
+13598 XM
+(look and feel)168 W
+/Times-Roman SF
+19517 XM
+(of user interfaces.  The)167 W
+31788 54349 MT
+(dow'' to)
+49 W( make explicit the modes of the interface that con-)48 W
+5400 54632 MT
+(Marquise tool is)
+37 W( the newest addition to the Garnet environ-)38 W
+31788 55447 MT
+(trol the behaviors and values, \0504\051)
+327 W( the formalization of)328 W
+5400 55730 MT
+(ment, and it ties together all)
+76 W( the previous tools, while sup-)75 W
+31788 56545 MT
+(``palettes'' to control modes and)
+78 W( object properties, and \0505\051)77 W
+5400 56828 MT
+(porting, for the first time, interactive specification of the)178 W
+31788 57643 MT
+(the ability to)
+59 W( interactively specify the attributes for built-in)60 W
+5400 57926 MT
+(entire user interface.)SH
+31788 58741 MT
+(layout operations and objects.)SH
+5400 60039 MT
+(In particular,)
+276 W( Marquise allows the overall graphical ap-)275 W
+31788 60854 MT
+(Marquise stands for Mostly Automated, Remarkably)
+29 W( Quick)28 W
+889 50 40068 61054 UL
+722 50 43181 61054 UL
+667 50 48154 61054 UL
+722 50 53320 61054 UL
+5400 61137 MT
+(pearance of)
+17 W( the interface to be drawn, and the behaviors for)18 W
+31788 61952 MT
+(User Interface Software Environment.  \050A ``marquise'' is)
+36 W( a)37 W
+722 50 31788 62152 UL
+333 50 33962 62152 UL
+556 50 37801 62152 UL
+611 50 41697 62152 UL
+5400 62235 MT
+(object creation, selection)
+761 W( and manipulation to be)760 W
+31788 63050 MT
+(gem having the shape of)
+129 W( a short, pointed oval with many)128 W
+5400 63333 MT
+(demonstrated.)SH
+31788 64148 MT
+(facets.\051 Marquise)
+422 W( is part)
+86 W( of the Garnet system, which is a)87 W
+31788 65246 MT
+(comprehensive user)
+385 W( interface development environment)384 W
+8 SS 
+48287 66014 MT
+(1)SH
+10 SS 
+31788 66359 MT
+(written in Lisp for the X window system.)SH
+10800 50 31788 68030 UL
+6 SS 
+32588 69369 MT
+(1)SH
+8 SS 
+32888 69678 MT
+(The Garnet system is available by)
+116 W( anonymous FTP.  Although Mar-)117 W
+31788 70602 MT
+(quise is not yet)
+95 W( ready for distribution as this paper is being written, you)94 W
+31788 71526 MT
+(can get the toolkit, the Gilt interface builder, and Lapidary.)
+53 W( Send)
+308 W( mail to)54 W
+10 /Courier AF
+31788 72450 MT
+(Garnet@cs.cmu.edu)SH
+8 /Times-Roman AF
+42188 XM
+(for information.)SH
+ES
+%%Page: 2 2
+BS
+0 SI
+9 /Helvetica-Bold AF
+5400 6281 MT
+(RELATED WORK)SH
+10 /Times-Roman AF
+5400 7577 MT
+(Previous design)
+104 W( tools have shown that it is possible to in-)103 W
+5400 8675 MT
+(teractively specify the graphical appearance and behavior)164 W
+5400 9773 MT
+(of limited parts)
+85 W( of an application's user interface.  For ex-)84 W
+5400 10871 MT
+(ample, many interface)
+18 W( builders, such as the NeXT Interface)19 W
+5400 11969 MT
+(Builder, UIMX)
+33 W( for Motif, Druid)
+32 W( [8],)
+SH( and Gilt)
+32 W( [7],)
+SH( allow the)32 W
+5400 13067 MT
+(designer to interactively specify the)
+92 W( placement of widgets.)93 W
+5400 14165 MT
+(Peridot [3])
+SH( allows)
+133 W( new widgets to be created interactively)132 W
+5400 15263 MT
+(without programming, and)
+23 W( Lapidary)
+24 W( [4])
+SH( allows application-)24 W
+5400 16361 MT
+(specific graphical objects to be)
+204 W( demonstrated.  Marquise)203 W
+5400 17459 MT
+(goes beyond these tools since)
+87 W( it supports creating, editing,)88 W
+5400 18557 MT
+(and deleting of objects at run time, and)
+101 W( allows the overall)100 W
+5 10 0 28494 32175 GB 
+%%BeginDocument: marquiseallwin.PS
+%!PS-Adobe-2.0
+%%Title: 
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 14, 1992, 10:26 AM
+%%For: 
+%%This file uses real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 72 261 540 531
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/EllipseDict 23 dict def
+EllipseDict /mtrx matrix put
+/DrawEllipse
+   {    EllipseDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /endangle exch def
+        /startangle exch def  /yrad exch def  /xrad exch def  /y exch def
+        /x exch def  /savematrix mtrx currentmatrix def
+        /thickness-by-2 thickness 2 div def
+        % Draw the filling
+        newpath
+          x y translate
+          gsave
+            xrad thickness-by-2 sub  yrad thickness-by-2 sub scale
+            0 0 1 startangle endangle arc
+            savematrix setmatrix
+            fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+          grestore
+        % Draw the border
+        newpath
+          xrad yrad scale
+          0 0 1 startangle endangle arc
+          savematrix setmatrix
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ArcDict 23 dict def
+ArcDict /mtrx matrix put
+/DrawArc
+   {
+        ArcDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /endangle exch def
+        /startangle exch def  /yrad exch def  /xrad exch def  /y exch def
+        /x exch def  /savematrix mtrx currentmatrix def
+        /thickness-by-2 thickness 2 div def
+        newpath
+          x y translate
+          % Fill the arc
+          gsave
+            xrad thickness-by-2 sub  yrad thickness-by-2 sub scale
+            newpath
+            0 0 moveto  0 0 1 startangle endangle arc  closepath
+            fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+          grestore
+          % Draw the border
+          xrad yrad scale
+          newpath
+            0 0 1 startangle endangle arc
+            savematrix setmatrix
+            line-halftone line-red line-green line-blue line-color-p
+            line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/PolylineDict 15 dict def
+/DrawPolyline
+   {    % stack: x1, y1, ..., xn, yn, n, line-halftone, line-red, line-blue,
+        %        line-green, line-join, line-cap, dash-pattern,
+        %        line-thickness, fill-halftone
+        PolylineDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /num-points exch 4 sub def
+        newpath
+          moveto
+          num-points -2 0 {pop lineto} for
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/RoundtanglePath
+   {    % stack: left, top, width, height, radius
+        /r exch def  /h exch def  /w exch def  /t exch def  /l exch def
+        /right l w add def  /bottom t h sub def
+          l r add t moveto                         % origin
+          right t right t r sub r arcto            % top side
+          right bottom right r sub bottom r arcto  % right side
+          l bottom l bottom r add r arcto          % bottom side
+          l t l r add t r arcto                    % left side
+          16 {pop} repeat  % each arcto accumulates 4 stack parameters
+   } def
+
+/RoundtangleDict 27 dict def
+/DrawRoundtangle
+   {    % stack: left, top, width, height, radius, line-halftone,
+        %        line-red, line-green, line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        
+        RoundtangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /radius exch def
+        /height exch def  /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          radius thickness sub RoundtanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height radius thickness-by-2 sub RoundtanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-4
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+def
+
+/image-3
+<ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+def
+
+/image-2
+<ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+def
+
+/image-1
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01ff 03ff 07ff 0fff 1fff 3fff
+7fff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+0.8 0.8 scale
+
+%
+% Begin new window
+%
+0 -236 translate
+gsave
+0 810 585 338 ClipToRectangle
+0 0 translate
+gsave
+0 810 585 338 0 0 0 0 false 0 0 [] -1 0 0.00 0.00 1.00 true DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 0 translate
+gsave
+0 810 88 151 ClipToRectangle
+0 0 translate
+gsave
+0 810 30 31 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+0 780 30 31 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+0 750 30 31 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+0 720 30 31 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+0 690 30 31 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+5 803 20 15 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+5 771 20 12 2 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+0 0 0 0 false 0 0 [] 1 24 726 5 745 DrawLine
+0 0 0 0 false 0 0 [] 1 17 703 5 715 DrawLine
+21 707 24 696 13 699 21 707 8 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawPolyline
+11 682 671 7 14 0 false 0 0 0 false 0 0 0 false (T) 12 /Courier DrawText
+2 808 26 27 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 810 88 151 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 -230 translate
+gsave
+0 810 585 108 ClipToRectangle
+0 0 translate
+gsave
+5 805 30 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+40 805 30 30 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+75 805 30 30 0 0 0 0 false 0 0 [] 1 0.75 0 0 0 false DrawRectangle
+110 805 30 30 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+145 805 30 30 0 0 0 0 false 0 0 [] 1 0.25 0 0 0 false DrawRectangle
+180 805 30 30 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+215 805 30 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+2 808 36 36 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRectangle
+218 796 786 25 13 0 false 0 0 0 false 0 0 0 false (Other) 10 /Times-Bold DrawText
+8 796 786 24 13 0 false 0 0 0 false 0 0 0 false (None) 10 /Times-Bold DrawText
+0 0 0 0 false 0 0 [] 1 347 778 347 802 DrawLine
+0 0 0 0 false 0 0 [] 2 367 778 367 802 DrawLine
+0 0 0 0 false 0 0 [] 4 387 778 387 802 DrawLine
+0 0 0 0 false 0 0 [] 8 407 778 407 802 DrawLine
+0 0 0 0 false 0 0 [1 1] 1 427 778 427 802 DrawLine
+0 0 0 0 false 0 0 [4 4] 1 447 778 447 802 DrawLine
+305 805 30 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+340 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+360 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+380 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+400 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+420 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+440 805 15 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+460 805 30 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+377 808 21 36 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRectangle
+463 796 786 25 13 0 false 0 0 0 false 0 0 0 false (Other) 10 /Times-Bold DrawText
+308 796 786 24 13 0 false 0 0 0 false 0 0 0 false (None) 10 /Times-Bold DrawText
+0 0 0 0 false 0 0 [] 2 291 785 274 765 DrawLine
+287 788 298 793 295 782 287 788 8 0 0 0 0 false 0 0 [] 2 0 0 0 0 false DrawPolyline
+273.5 768.0 23.5 25.0 0 180 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawArc
+0 0 0 0 false 0 0 [] 1 297 768 250 768 DrawLine
+5 760 30 30 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+40 760 30 30 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+75 760 30 30 0 0 0 0 false 0 0 [] 1 0 1.00 0.00 0.00 true DrawRectangle
+110 760 30 30 0 0 0 0 false 0 0 [] 1 0 1.00 0.65 0.00 true DrawRectangle
+145 760 30 30 0 0 0 0 false 0 0 [] 1 0 1.00 1.00 0.00 true DrawRectangle
+180 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.00 1.00 0.00 true DrawRectangle
+215 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.00 1.00 1.00 true DrawRectangle
+250 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.00 0.00 1.00 true DrawRectangle
+285 760 30 30 0 0 0 0 false 0 0 [] 1 0 1.00 0.00 1.00 true DrawRectangle
+320 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.83 0.83 0.83 true DrawRectangle
+355 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.37 0.62 0.63 true DrawRectangle
+390 760 30 30 0 0 0 0 false 0 0 [] 1 0 0.45 0.62 1 true DrawRectangle
+425 760 30 30 0 0 0 0 false 0 0 [] 1 0 1 0.60 0.40 true DrawRectangle
+460 760 30 30 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+37 763 36 36 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRectangle
+463 751 741 25 13 0 false 0 0 0 false 0 0 0 false (Other) 10 /Times-Bold DrawText
+8 728 718 23 13 0 false 0 0 0 false 0 0 0 false (white) 10 /Times-Roman DrawText
+44 728 718 22 13 0 false 0 0 0 false 0 0 0 false (black) 10 /Times-Roman DrawText
+83 728 718 13 13 0 false 0 0 0 false 0 0 0 false (red) 10 /Times-Roman DrawText
+112 728 718 26 13 0 false 0 0 0 false 0 0 0 false (orange) 10 /Times-Roman DrawText
+144 728 718 31 13 0 false 0 0 0 false 0 0 0 false (yellow) 10 /Times-Roman DrawText
+184 728 718 22 13 0 false 0 0 0 false 0 0 0 false (green) 10 /Times-Roman DrawText
+221 728 718 18 13 0 false 0 0 0 false 0 0 0 false (cyan) 10 /Times-Roman DrawText
+256 728 718 17 13 0 false 0 0 0 false 0 0 0 false (blue) 10 /Times-Roman DrawText
+287 728 718 26 13 0 false 0 0 0 false 0 0 0 false (purple) 10 /Times-Roman DrawText
+323 728 718 24 13 0 false 0 0 0 false 0 0 0 false (motif) 10 /Times-Roman DrawText
+326 715 705 18 13 0 false 0 0 0 false 0 0 0 false (gray) 10 /Times-Roman DrawText
+358 728 718 24 13 0 false 0 0 0 false 0 0 0 false (motif) 10 /Times-Roman DrawText
+359 715 705 22 13 0 false 0 0 0 false 0 0 0 false (green) 10 /Times-Roman DrawText
+393 728 718 24 13 0 false 0 0 0 false 0 0 0 false (motif) 10 /Times-Roman DrawText
+396 715 705 17 13 0 false 0 0 0 false 0 0 0 false (blue) 10 /Times-Roman DrawText
+428 728 718 24 13 0 false 0 0 0 false 0 0 0 false (motif) 10 /Times-Roman DrawText
+427 715 705 26 13 0 false 0 0 0 false 0 0 0 false (orange) 10 /Times-Roman DrawText
+501 804 79 98 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+532 794 784 15 13 0 false 0 0 0 false 0 0 0 false (Fill) 10 /Times-Bold DrawText
+0 0 0 0 false 0 0 [] 4 530 746 505 771 DrawLine
+533 764 754 20 13 0 false 0 0 0 false 0 0 0 false (Line) 10 /Times-Bold DrawText
+507 739 21 21 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRectangle
+532 735 725 46 13 0 false 0 0 0 false 0 0 0 false (Combined) 10 /Times-Bold DrawText
+grestore
+
+grestore
+
+0 810 585 108 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+31 0 translate
+gsave
+0 810 306 222 ClipToRectangle
+0 0 translate
+gsave
+0 810 306 222 0 0 0 0 false 0 0 [] -1 0 0.00 0.00 0.00 true DrawRectangle
+0 810 28 15 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+5 810 798 18 15 1 false 0 0 0 false 0 0 0 false (File) 12 /Helvetica-Bold DrawText
+28 810 32 15 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+33 810 798 22 15 1 false 0 0 0 false 0 0 0 false (Edit) 12 /Helvetica-Bold DrawText
+60 810 55 15 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+65 810 798 45 15 1 false 0 0 0 false 0 0 0 false (Arrange) 12 /Helvetica-Bold DrawText
+115 810 76 15 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+120 810 798 66 15 1 false 0 0 0 false 0 0 0 false (Constraints) 12 /Helvetica-Bold DrawText
+191 810 68 15 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+196 810 798 58 15 1 false 0 0 0 false 0 0 0 false (Behaviors) 12 /Helvetica-Bold DrawText
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 -17 translate
+gsave
+0 810 306 205 ClipToRectangle
+0 0 translate
+gsave
+0 0 0 0 false 0 0 [] 2 208 762 171 789 DrawLine
+25 791 58 39 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+38 788 777 34 14 0 false 0 0 0 false 0 0 0 false (label) 12 /Courier DrawText
+104 789 56 37 7 0 0 0 0 false 0 0 [] 2 0 0 0 0 false DrawRoundtangle
+99 793 56 37 7 0 0 0 0 false 0 0 [] 2 1 0 0 0 false DrawRoundtangle
+111 791 780 34 14 0 false 0 0 0 false 0 0 0 false (label) 12 /Courier-Bold DrawText
+0 0 0 0 false 0 0 [] 1 243 767 211 791 DrawLine
+246 771 251 761 240 763 246 771 8 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawPolyline
+0 0 0 0 false 0 0 [] 1 337 740 -5 740 DrawLine
+19 696 58 54 10 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+35 693 682 28 14 0 false 0 0 0 false 0 0 0 false (Brad) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 2 157 688 49 665 DrawLine
+207 654 58 39 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+220 651 640 34 14 0 false 0 0 0 false 0 0 0 false (label) 12 /Courier DrawText
+204 657 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+223 657 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+242 657 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+261 657 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+261 644 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+261 631 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+261 619 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+242 619 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+223 619 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+204 619 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+204 631 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+204 644 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+50 664 16 16 image-1 false 0 0 0 false DrawBitmap
+157 687 16 16 image-3 false 0 0 0 false DrawBitmap
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+0 810 306 222 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 810 585 338 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: /Courier-Bold /Helvetica-Bold /Times-Roman /Times-Bold /Courier 
+%%BoundingBox: 72 261 540 531
+
+%%EndDocument
+ GE 5400 19655 MT
+(behavior to be)
+315 W( defined.  DEMO)
+316 W( [10])
+SH( used the idea of)316 W
+/Times-Bold SF
+41586 20719 MT
+(Figure 1:)SH
+/Times-Roman SF
+5400 20753 MT
+(demonstrating the end-user's actions that start a)
+160 W( behavior)159 W
+9 SS 
+33588 21733 MT
+(The main Marquise)
+4 W( windows: the basic object palette on)3 W
+10 SS 
+5400 21851 MT
+(\050called the ``stimulus''\051 and then)
+561 W( demonstrating the)562 W
+9 SS 
+33588 22747 MT
+(the left, the main work)
+17 W( area, and the palette for controll-)18 W
+10 SS 
+5400 22949 MT
+(response to that stimulus.  DEMO II)
+282 W( [1])
+SH( added sophis-)282 W
+9 SS 
+33588 23761 MT
+(ing the color and halftones for filling-styles)
+166 W( and line-)165 W
+10 SS 
+5400 24047 MT
+(ticated techniques for inferring constraints to control how)136 W
+9 SS 
+33588 24775 MT
+(styles at the bottom.  The designer is creating an)
+80 W( inter-)81 W
+10 SS 
+5400 25145 MT
+(objects are placed or)
+91 W( moved.  Marquise uses the stimulus-)90 W
+9 SS 
+33588 25789 MT
+(face with a ``create palette'' at the top)
+117 W( containing two)116 W
+10 SS 
+5400 26243 MT
+(response idea,)
+136 W( here called ``train'' and ``show,'' but con-)137 W
+9 SS 
+33588 26803 MT
+(types of nodes and two types)
+62 W( of links.  The node at the)63 W
+10 SS 
+5400 27341 MT
+(centrates on)
+161 W( which high-level actions are appropriate and)160 W
+9 SS 
+33588 27817 MT
+(lower right)
+86 W( of the work window is selected.  The Mar-)85 W
+10 SS 
+5400 28439 MT
+(the context of the stimulus.)SH
+9 SS 
+33588 28831 MT
+(quise commands are in the menubar at the top.)
+175 W( The)576 W
+33588 29845 MT
+(``Constraints'' menu allows graphical constraints to be)96 W
+10 SS 
+5400 30552 MT
+(Some previous systems have provided frameworks)
+88 W( to help)89 W
+9 SS 
+33588 30859 MT
+(specified. The)
+325 W( ``Behaviors'' menu allows objects to)
+50 W( be)51 W
+10 SS 
+5400 31650 MT
+(code graphical)
+399 W( editors.  Unidraw)
+398 W( [9])
+SH( and many graph)398 W
+9 SS 
+33588 31873 MT
+(declared as palettes, and displays the)
+163 W( mode and feed-)162 W
+10 SS 
+5400 32748 MT
+(editors \050e.g.,)
+143 W( [2]\051)
+SH( provide a standard)
+143 W( set of built-in opera-)144 W
+9 SS 
+33588 32887 MT
+(back windows.)SH
+10 SS 
+5400 33846 MT
+(tions as methods, and)
+91 W( the designer writes code to override)90 W
+24012 50 31788 34192 UL
+5400 34944 MT
+(these methods for the specific application.  However,)
+60 W( none)61 W
+5400 36042 MT
+(of these other systems)
+125 W( allow new behaviors to be defined)124 W
+5400 37140 MT
+(by demonstration.)SH
+8 10 0 19354 67897 GB 
+%%BeginDocument: marquiseicons.PS
+%!PS-Adobe-2.0 EPSF 2.0
+%%Title: Gilt Work Window
+%%Creator: Make-PS-File -- Garnet Version 2.2
+%%CreationDate: Jan 6, 1993, 11:44 AM
+%%For: 
+%%This file uses real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 200 382 411 410
+%%%Pages: 1
+%%EndComments
+
+
+/AdjustLineDict 20 dict def
+/AdjustLine { % x1 y1 x2 y2 width => x1 y1 x2 y2
+  AdjustLineDict begin
+    /width exch cvi def
+    /hw width 2 div def
+    /oddwidth? width 1 and 1 eq def
+    /y2 exch def /x2 exch def /y1 exch def /x1 exch def
+    /dx x2 x1 sub def /dy y2 y1 sub def
+    dy 0 eq {
+      dx 0 eq {
+        % point
+        oddwidth? {
+          /x1 x1 .5 add def /y1 y1 .5 sub def
+          /x2 x2 .5 add def /y2 y2 .5 sub def
+        } if
+      } {
+        % horizontal
+        oddwidth? {
+          /y1 y1 .5 sub def
+          /y2 y2 .5 sub def
+        } if
+      } ifelse
+    } {
+      dx 0 eq {
+        % vertical
+        oddwidth? {
+          /x1 x1 .5 add def
+          /x2 x2 .5 add def
+        } if
+      } {
+        % diagonal
+        oddwidth? {
+          /x1 x1 .5 add def /y1 y1 .5 sub def
+          /x2 x2 .5 add def /y2 y2 .5 sub def
+        } if
+      } ifelse
+    } ifelse
+    x1 y1 x2 y2
+  end
+} def
+
+/DrawLineDict 20 dict def
+/DrawLine { % line-color cap join dash thickness x2 y2 x1 y1 => -
+    gsave DrawLineDict begin
+        4 index AdjustLine
+        moveto lineto
+        StrokeShape
+    end grestore
+} def
+
+/TextDict 19 dict def
+/DrawText { % left top base-y opal-width height fill-p
+            % fore-color back-color string size font-name => -
+    TextDict begin
+        gsave
+            findfont exch scalefont setfont
+            /s exch def
+            /back-color exch def /fore-color exch def /fill-p exch def
+            /height exch def  /opal-width exch def
+            /base-y exch def  /top exch def
+            /left exch 1 sub def % XXX: I don't know why!
+
+            % Calculate distance to add between each character, based on the 
+            % width expected by Opal, the width expected by postscript, and 
+            % the number of characters to distribute the change over.
+            /x-dist opal-width s stringwidth pop sub s length div def
+
+            % Draw background of text if appropriate
+            fill-p {
+                gsave
+                    newpath
+                    left top opal-width height RectanglePath
+                    back-color FillShape
+                grestore
+            } if
+
+            % Draw text in the appropriate color
+            newpath
+            left base-y moveto
+            fore-color length 3 ne {
+                0 setgray
+            } {
+                fore-color aload pop setrgbcolor
+            } ifelse
+            x-dist 0 s ashow
+        grestore
+    end
+} def
+
+/DefImage { % image-name font-name w h string => -
+  20 dict begin
+    /ImageString exch def /ImageHeight exch def /ImageWidth exch def
+    /FontName exch def
+    /ImageName exch def
+    /FontType 3 def
+    /FontMatrix [1 0 0 1 0 0] def
+    /FontBBox [0 0 1 1] def
+    /Encoding [
+      /image 255 { /.notdef } repeat
+    ] def
+    /BuildChar { % font char => -
+      pop begin
+        1 0
+        0 0 1 1 setcachedevice
+        gsave
+          ImageWidth ImageHeight false
+          [ ImageWidth 0 0 ImageHeight 0 0 ]
+          {ImageString} imagemask
+        grestore
+      end
+    } def
+    ImageName currentdict definefont
+    FontName exch
+    ImageName ImageString
+  end
+  def def
+} def
+
+
+/BitmapDict 20 dict def
+/DrawBitmap { % left top width height pattern transparent-p color => -
+    BitmapDict begin
+        /color exch def /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+            translate
+            width height scale
+            color length 3 eq {
+                color aload pop setrgbcolor
+            } {
+                .5 setgray % fudge pattern fills
+            } ifelse
+            transparent-p {
+                % The case where the background is not drawn
+                width height false
+                [ width 0 0 height 0 height ]
+                {pattern} imagemask
+            } {
+                % The case where the background is drawn
+                width height 1
+                [ width 0 0 height 0 height ]
+                {pattern} image
+            } ifelse
+        grestore
+    end
+} def
+
+/RectanglePath { % left top width height => -
+    /h exch def  /w exch def
+    moveto                      % Go to the left,top corner
+    w 0 rlineto                 % top side
+    0 h neg rlineto             % right side
+    w neg 0 rlineto             % bottom side
+    closepath                   % left side
+} def
+
+/RectangleDict 21 dict def
+/DrawRectangle { % left top width height line-color
+                 % cap join dash thickness fill-color => -
+    RectangleDict begin
+        /fill-color exch def  /thickness exch def /dash-pattern exch def
+        /line-join exch def  /line-cap exch def /line-color exch def
+        /height exch def /width exch def  /top exch def  /left exch def
+        % Draw filling
+        newpath
+        left thickness add top thickness sub
+        width thickness 2 mul sub height thickness 2 mul sub
+        RectanglePath
+        fill-color FillShape
+        % Draw border
+        newpath
+        left thickness 2 div add  top thickness 2 div sub
+        width thickness sub  height thickness sub
+        RectanglePath
+        line-color line-cap line-join dash-pattern thickness StrokeShape
+    end
+} def
+
+/ClipDict 2 dict def
+/ClipToRectangle { % left top width height => -
+    ClipDict begin
+        /height exch def  /width exch def
+        newpath
+            moveto                      % Go to the left,top corner
+            width 0 rlineto             % top side
+            0 height neg rlineto        % right side
+            width neg 0 rlineto         % bottom side
+            closepath                   % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+    end
+} def
+
+/FillShape { % [halftone] | [r g b] | null => -
+    gsave
+        dup null eq { pop } {
+          aload length 3 eq { setrgbcolor fill } {
+              FillPattern
+          } ifelse
+        } ifelse
+    grestore
+    newpath
+} def
+
+/StrokeShape { % line-color cap join dash thickness => -
+    % If no line is desired, pass -1 for line-thickness
+    dup 0 ge 5 index null ne and {
+        % if line-thickness >= 0, then draw the outline
+        gsave
+            setlinewidth 0 setdash setlinejoin setlinecap
+            aload length 3 eq { setrgbcolor stroke } {
+                strokepath FillPattern
+            } ifelse
+        grestore
+    } {
+        pop pop pop pop pop
+    } ifelse
+    newpath
+} def
+
+/image-6 /image-6-font 16 16 <
+ffff ffe7 f9c3 f981 f3e7 73e7 27c3 0781 00e7 01e7 03e7 07ff 0fff 1fff 3fff
+7fff>
+DefImage
+
+/image-5 /image-5-font 16 16 <
+ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+DefImage
+
+/image-4 /image-4-font 16 16 <
+ffff ffe7 f9c3 f981 f3e7 73e7 27c3 0781 00e7 01e7 03e7 07e7 0f81 1fc3 3fe7
+7fff>
+DefImage
+
+/image-3 /image-3-font 16 16 <
+ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+DefImage
+
+/image-2 /image-2-font 16 16 <
+ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+DefImage
+
+/image-1 /image-1-font 16 16 <
+ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01e7 03e7 07ff 0fff 1fff 3fff
+7fff>
+DefImage
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+0 648 translate
+
+%
+% Begin new window
+%
+128 -310 translate
+gsave
+0 0 211 28 ClipToRectangle
+0 0 translate
+gsave
+0 0 211 28 [0 0 0] 0 0 [] -1 [1.00 1.00 1.00] DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 0 translate
+gsave
+0 0 211 28 ClipToRectangle
+gsave
+4 -7 16 16 image-1 false [0.00 0.00 0.00] DrawBitmap
+41 -7 16 16 image-2 false [0.00 0.00 0.00] DrawBitmap
+78 -7 16 16 image-3 false [0.00 0.00 0.00] DrawBitmap
+189 -7 16 16 image-4 false [0.00 0.00 0.00] DrawBitmap
+115 -7 16 16 image-5 false [0.00 0.00 0.00] DrawBitmap
+152 -7 16 16 image-6 false [0.00 0.00 0.00] DrawBitmap
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: 
+%%BoundingBox: 200 382 411 410
+
+%%EndDocument
+ GE 43239 38442 MT
+(\050a\051)SH
+9 /Helvetica-Bold AF
+5400 39253 MT
+(USER INTERFACE)SH
+10 /Times-Roman AF
+5400 40549 MT
+(The basic windows)
+176 W( for Marquise are shown in Figure 1.)177 W
+5400 41647 MT
+(There is a palette of objects that can be drawn,)
+301 W( some)300 W
+5400 42745 MT
+(palettes for controlling the properties of those)
+84 W( objects, and)85 W
+5400 43843 MT
+(a set of commands in a menubar.)
+34 W( In)
+316 W( all conventional inter-)33 W
+5400 44941 MT
+(face builders there are)
+28 W( two modes:)29 W
+/Times-Italic SF
+19567 XM
+(Build)SH
+/Times-Roman SF
+22013 XM
+(and)SH
+/Times-Italic SF
+23736 XM
+(Run)SH
+/Times-Roman SF
+(, where in)29 W
+5400 46039 MT
+(Build mode the)
+210 W( designer constructs the interface, and in)209 W
+8 10 0 13294 74501 GB 
+%%BeginDocument: pressicon.PS
+%!PS-Adobe-2.0
+%%Title: Opal 3
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 14, 1992, 10:34 AM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 262 343 350 448
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-4
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+def
+
+/image-3
+<ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+def
+
+/image-2
+<ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+def
+
+/image-1
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01ff 03ff 07ff 0fff 1fff 3fff
+7fff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+190 -272 translate
+gsave
+0 648 88 105 ClipToRectangle
+0 0 translate
+gsave
+0 0 0 0 false 0 0 [4 4] 1 69 644 2 564 DrawLine
+3 563 16 16 image-1 false 0 0 0 false DrawBitmap
+71 644 16 16 image-2 false 0 0 0 false DrawBitmap
+grestore
+
+grestore
+
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: 
+%%BoundingBox: 262 343 350 448
+
+%%EndDocument
+ GE 8 10 0 24294 75781 GB 
+%%BeginDocument: releaseicon.PS
+%!PS-Adobe-2.0
+%%Title: Opal 3
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 14, 1992, 10:36 AM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 250 359 363 433
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-4
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+def
+
+/image-3
+<ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+def
+
+/image-2
+<ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+def
+
+/image-1
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01ff 03ff 07ff 0fff 1fff 3fff
+7fff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+178 -287 translate
+gsave
+0 648 113 74 ClipToRectangle
+0 0 translate
+gsave
+0 0 0 0 false 0 0 [] 2 95 645 2 595 DrawLine
+2 594 16 16 image-1 false 0 0 0 false DrawBitmap
+96 644 16 16 image-3 false 0 0 0 false DrawBitmap
+grestore
+
+grestore
+
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: 
+%%BoundingBox: 250 359 363 433
+
+%%EndDocument
+ GE 5400 47137 MT
+(Run mode it is tested.  Marquise adds two additional modes)6 W
+5400 48235 MT
+(to demonstrate behaviors:)51 W
+/Times-Italic SF
+16436 XM
+(Train)SH
+/Times-Roman SF
+18960 XM
+(and)SH
+/Times-Italic SF
+20704 XM
+(Show)SH
+/Times-Roman SF
+(. Train)
+350 W( mode is)50 W
+38088 48671 MT
+(\050b\051)SH
+48888 XM
+(\050c\051)SH
+5400 49333 MT
+(used to demonstrate what the end user will)
+117 W( do, and Show)118 W
+/Times-Bold SF
+41586 50265 MT
+(Figure 2:)SH
+/Times-Roman SF
+5400 50431 MT
+(mode is used)
+94 W( to demonstrate the system's response to that)93 W
+9 SS 
+33588 51279 MT
+(\050a\051 The icons)
+91 W( that show where the mouse was pressed,)92 W
+10 SS 
+5400 51529 MT
+(action. A)
+628 W( different mouse cursor for)
+189 W( each mode insures)190 W
+9 SS 
+33588 52293 MT
+(moved to, released, clicked \050pressed and released in the)47 W
+10 SS 
+5400 52627 MT
+(that the designer always knows what the current mode is.)SH
+9 SS 
+33588 53307 MT
+(same place\051, double-clicked, and double)
+254 W( clicked and)255 W
+33588 54321 MT
+(released. \050b\051)
+503 W( In Train mode, the designer pressed the)139 W
+10 SS 
+5400 54740 MT
+(In Build mode, the static parts of the interface)
+115 W( are drawn.)114 W
+9 SS 
+33588 55335 MT
+(mouse down and moved, and)
+44 W( then in Show mode, drew)45 W
+10 SS 
+5400 55838 MT
+(For example, the designer)
+108 W( might add to the window some)109 W
+9 SS 
+33588 56349 MT
+(a dotted line as the interim feedback.)
+30 W( \050c\051)
+284 W( Going back to)29 W
+10 SS 
+5400 56936 MT
+(widgets that)
+270 W( should always be visible.  Lines could be)269 W
+9 SS 
+33588 57363 MT
+(Train mode, the designer released the mouse)
+3 W( button, and)4 W
+10 SS 
+5400 58034 MT
+(added as decorations.  Many applications contain palettes)140 W
+9 SS 
+33588 58377 MT
+(in Show)
+61 W( mode, deleted the dotted line and drew a solid)60 W
+10 SS 
+5400 59132 MT
+(that show which objects can be created, or that show)325 W
+9 SS 
+33588 59391 MT
+(line.)SH
+10 SS 
+5400 60230 MT
+(various values for a property \050like color,)
+171 W( line-style, etc.\051.)172 W
+24012 50 31788 60696 UL
+5400 61328 MT
+(These palettes are)
+46 W( drawn with Marquise in Build mode.  In)45 W
+5400 62426 MT
+(Run mode, the interface can)
+33 W( be exercised to see how it will)34 W
+31788 62506 MT
+(Build mode, except that)
+85 W( the operations are remembered so)84 W
+5400 63524 MT
+(operate for the end user.)SH
+31788 63604 MT
+(they can be attached to the)
+161 W( events demonstrated in Train)162 W
+31788 64702 MT
+(mode.)SH
+5400 65637 MT
+(In Train mode,)
+410 W( the designer operates the mouse and)411 W
+5400 66735 MT
+(keyboard in the same way the end)
+179 W( user would, and then)178 W
+31788 66815 MT
+(As an example, here is how the designer)
+633 W( would)632 W
+5400 67833 MT
+(goes into Show mode to demonstrate)
+219 W( what the system's)220 W
+31788 67913 MT
+(demonstrate that when the mouse)
+285 W( button goes down, a)286 W
+5400 68931 MT
+(response should be.  While in)
+205 W( Train mode, the end-user)204 W
+31788 69011 MT
+(feedback dotted line should be drawn which follows)
+199 W( the)198 W
+5400 70029 MT
+(behaviors are operational, but)
+183 W( in addition, the keystrokes)184 W
+31788 70109 MT
+(mouse, and then when the button is released, the dotted line)9 W
+5400 71127 MT
+(and mouse movements are saved.)
+279 W( In)
+807 W( Show mode, the)278 W
+31788 71207 MT
+(should be erased and a real)
+67 W( line drawn.  First, the designer)66 W
+5400 72225 MT
+(designer can create and edit objects exactly the same as in)76 W
+31788 72305 MT
+(would go into Train mode, press down the mouse button,)124 W
+ES
+%%Page: 3 3
+BS
+0 SI
+10 /Times-Roman AF
+31788 6311 MT
+(concepts or commands)
+219 W( are necessary, since the designer)220 W
+31788 7409 MT
+(already knows how to draw and delete objects in the editor.)SH
+31788 9522 MT
+(If the)
+188 W( mouse had been pressed and released in the same)187 W
+31788 10620 MT
+(place, then)
+111 W( a click icon would be displayed instead of the)112 W
+31788 11718 MT
+(down, move and)
+262 W( up icons.  Double-clicking or double-)261 W
+31788 12816 MT
+(clicking followed by a move are also)
+67 W( supported.  To allow)68 W
+31788 13914 MT
+(modes to be)
+125 W( changed while mouse buttons are being held)124 W
+31788 15012 MT
+(down and)
+SH( while the mouse is at a particular place, keyboard)1 W
+31788 16110 MT
+(accelerator keys are used to change modes.)SH
+31788 18223 MT
+(Marquise generalizes from)
+118 W( the designer's example actions)117 W
+31788 19321 MT
+(to create the user interface.)
+317 W( Any)
+885 W( system that tries to)318 W
+31788 20419 MT
+(generalize will sometimes)
+724 W( guess wrong.  Various)723 W
+31788 21517 MT
+(mechanisms have been explored in)
+108 W( other systems to show)109 W
+31788 22615 MT
+(the user what has been guessed,)
+9 W( so that users can verify and)8 W
+31788 23713 MT
+(correct the inferences.  Older systems, such)
+296 W( as Peridot)297 W
+32038 24811 MT
+([3] and Druid)
+196 W( [8],)
+SH( required the user)
+196 W( to confirm each in-)195 W
+31788 25909 MT
+(ference, which can be disrupting)
+161 W( and annoying.  In Mar-)162 W
+31788 27007 MT
+(quise, a feedback window \050Figure)
+210 W( 3\051 shows the inferred)209 W
+31788 28105 MT
+(operation. The)
+600 W( labels and buttons can be read as a)
+175 W( sen-)176 W
+31788 29203 MT
+(tence, and the buttons can be pressed to pop up a list of)158 W
+31788 30301 MT
+(other alternatives and change the values.  Since)
+126 W( Marquise)127 W
+31788 31399 MT
+(appears to)
+116 W( guess correctly most of the time, Marquise ap-)115 W
+31788 32497 MT
+(plies the inferred)
+290 W( property immediately, and allows the)291 W
+31788 33595 MT
+(designer to verify or change it afterwards)
+125 W( in the feedback)124 W
+31788 34693 MT
+(window.)SH
+9 /Helvetica-Bold AF
+31788 36806 MT
+(ENVIRONMENT)SH
+10 /Times-Roman AF
+31788 38102 MT
+(Marquise makes heavy use of many)
+237 W( features of Garnet.)238 W
+31788 39200 MT
+(Garnet uses a retained object model and)
+359 W( a prototype-)358 W
+31788 40298 MT
+(instance object system.  This means that there is an object)84 W
+55 100 0 576 45225 GB 
+%%BeginDocument: feedbackwin.PS
+%!PS-Adobe-2.0 EPSF 2.0
+%%Title: Marquise Behavior Window
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Dec 16, 1992, 4:33 PM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 93 72 519 720
+%%%Pages: 1
+%%EndComments
+
+
+/PolylineDict 15 dict def
+/DrawPolyline
+   {    % stack: x1, y1, ..., xn, yn, n, line-halftone, line-red, line-blue,
+        %        line-green, line-join, line-cap, dash-pattern,
+        %        line-thickness, fill-halftone
+        PolylineDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /num-points exch 4 sub def
+        newpath
+          moveto
+          num-points -2 0 {pop lineto} for
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+0.8864569 0.8864569 scale
+
+%
+% Begin new window
+%
+24 0 translate
+gsave
+0 731 480 731 ClipToRectangle
+0 0 translate
+gsave
+0 731 51 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+5 731 720 41 14 1 false 0 0 0 false 0 0 0 false (Select) 12 /Courier-Bold DrawText
+51 731 38 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+56 731 720 28 14 1 false 0 0 0 false 0 0 0 false (Edit) 12 /Courier-Bold DrawText
+89 731 391 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+5 710 699 96 14 0 false 0 0 0 false 0 0 0 false (Behavior Name:) 12 /Courier-Bold DrawText
+106 712 369 18 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+115 710 699 103 14 0 false 0 0 0 false 0 0 0 false (Creating-A-Line) 12 /Courier DrawText
+5 689 678 53 14 0 false 0 0 0 false 0 0 0 false (Objects:) 12 /Courier-Bold DrawText
+5 445 434 130 14 0 false 0 0 0 false 0 0 0 false (Events and Actions:) 12 /Courier-Bold DrawText
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+5 -303 translate
+gsave
+0 731 465 418 ClipToRectangle
+0 0 translate
+gsave
+0 691 20 338 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+0 731 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 728 3 721 7 721 7 714 13 714 13 721 17 721 10 728 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 333 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 316 3 323 7 323 7 330 13 330 13 323 17 323 10 316 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 711 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 707 3 700 17 700 10 707 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+10 703 3 696 17 696 10 703 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 353 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 337 3 344 17 344 10 337 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+10 341 3 348 17 348 10 341 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+20 0 translate
+gsave
+0 731 445 418 ClipToRectangle
+0 0 translate
+gsave
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 0 translate
+gsave
+0 731 445 299 ClipToRectangle
+0 0 translate
+gsave
+0 0 0 0 false 0 0 [] 2 445 676 0 676 DrawLine
+5 702 691 111 14 0 false 0 0 0 false 0 0 0 false (Create-Palette-1) 12 /Courier-Bold DrawText
+116 702 691 35 14 0 false 0 0 0 false 0 0 0 false ( has ) 12 /Courier DrawText
+151 702 691 42 14 0 false 0 0 0 false 0 0 0 false (value ) 12 /Courier DrawText
+195 706 41 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+193 708 41 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+195 706 37 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+198 703 692 31 14 0 false 0 0 0 false 0 0 0 false (:Line) 12 /Courier DrawText
+5 728 717 28 14 0 false 0 0 0 false 0 0 0 false (The ) 12 /Courier DrawText
+33 728 717 63 14 0 false 0 0 0 false 0 0 0 false (relevant ) 12 /Courier DrawText
+96 728 717 56 14 0 false 0 0 0 false 0 0 0 false (mode\050s\051 ) 12 /Courier DrawText
+152 728 717 24 14 0 false 0 0 0 false 0 0 0 false (are:) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 2 445 618 0 618 DrawLine
+5 667 656 35 14 0 false 0 0 0 false 0 0 0 false (When ) 12 /Courier DrawText
+40 667 656 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+70 671 37 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+68 673 37 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+70 671 33 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+73 668 657 27 14 0 false 0 0 0 false 0 0 0 false (left) 12 /Courier DrawText
+107 667 656 49 14 0 false 0 0 0 false 0 0 0 false ( mouse ) 12 /Courier DrawText
+156 667 656 49 14 0 false 0 0 0 false 0 0 0 false (button ) 12 /Courier DrawText
+205 667 656 21 14 0 false 0 0 0 false 0 0 0 false (is ) 12 /Courier DrawText
+228 671 59 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+226 673 59 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+228 671 55 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+231 668 657 49 14 0 false 0 0 0 false 0 0 0 false (pressed) 12 /Courier DrawText
+287 667 656 42 14 0 false 0 0 0 false 0 0 0 false ( with ) 12 /Courier DrawText
+331 671 86 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+329 673 86 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+331 671 82 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+334 668 657 76 14 0 false 0 0 0 false 0 0 0 false (no modifier) 12 /Courier DrawText
+5 641 630 42 14 0 false 0 0 0 false 0 0 0 false ( over ) 12 /Courier DrawText
+47 641 630 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+141 641 630 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+77 645 64 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+75 647 64 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+77 645 60 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+80 642 631 54 14 0 false 0 0 0 false 0 0 0 false (specific) 12 /Courier DrawText
+201 641 630 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+210 645 115 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+208 647 115 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+210 645 111 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+213 642 631 105 14 0 false 0 0 0 false 0 0 0 false (The Work Window) 12 /Courier DrawText
+150 645 51 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+148 647 51 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+150 645 47 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+153 642 631 41 14 0 false 0 0 0 false 0 0 0 false (object) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 1 445 560 0 560 DrawLine
+0 0 0 0 false 0 0 [] 2 445 525 0 525 DrawLine
+5 551 540 35 14 0 false 0 0 0 false 0 0 0 false (Show ) 12 /Courier DrawText
+42 555 65 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+40 557 65 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+42 555 61 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+45 552 541 55 14 0 false 0 0 0 false 0 0 0 false (internal) 12 /Courier DrawText
+107 551 540 56 14 0 false 0 0 0 false 0 0 0 false ( object ) 12 /Courier DrawText
+165 555 86 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+163 557 86 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+165 555 82 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+168 552 541 76 14 0 false 0 0 0 false 0 0 0 false (Dashed Line) 12 /Courier DrawText
+5 609 598 21 14 0 false 0 0 0 false 0 0 0 false (As ) 12 /Courier DrawText
+26 609 598 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+54 609 598 49 14 0 false 0 0 0 false 0 0 0 false (mouse ) 12 /Courier DrawText
+103 609 598 21 14 0 false 0 0 0 false 0 0 0 false (is ) 12 /Courier DrawText
+124 609 598 42 14 0 false 0 0 0 false 0 0 0 false (moved ) 12 /Courier DrawText
+166 609 598 35 14 0 false 0 0 0 false 0 0 0 false (over ) 12 /Courier DrawText
+201 609 598 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+295 609 598 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+231 613 64 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+229 615 64 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+231 613 60 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+234 610 599 54 14 0 false 0 0 0 false 0 0 0 false (specific) 12 /Courier DrawText
+355 609 598 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+7 587 115 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+5 589 115 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+7 587 111 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+10 584 573 105 14 0 false 0 0 0 false 0 0 0 false (The Work Window) 12 /Courier DrawText
+304 613 51 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+302 615 51 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+304 613 47 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+307 610 599 41 14 0 false 0 0 0 false 0 0 0 false (object) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 1 445 467 0 467 DrawLine
+5 458 447 49 14 0 false 0 0 0 false 0 0 0 false (Create ) 12 /Courier DrawText
+56 462 65 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+54 464 65 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+56 462 61 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+59 459 448 55 14 0 false 0 0 0 false 0 0 0 false (internal) 12 /Courier DrawText
+121 458 447 56 14 0 false 0 0 0 false 0 0 0 false ( object ) 12 /Courier DrawText
+179 462 37 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+177 464 37 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+179 462 33 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+182 459 448 27 14 0 false 0 0 0 false 0 0 0 false (Line) 12 /Courier DrawText
+5 516 505 35 14 0 false 0 0 0 false 0 0 0 false (When ) 12 /Courier DrawText
+40 516 505 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+68 516 505 49 14 0 false 0 0 0 false 0 0 0 false (button ) 12 /Courier DrawText
+117 516 505 21 14 0 false 0 0 0 false 0 0 0 false (is ) 12 /Courier DrawText
+138 516 505 49 14 0 false 0 0 0 false 0 0 0 false (lifted ) 12 /Courier DrawText
+187 516 505 35 14 0 false 0 0 0 false 0 0 0 false (over ) 12 /Courier DrawText
+222 516 505 28 14 0 false 0 0 0 false 0 0 0 false (the ) 12 /Courier DrawText
+316 516 505 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+252 520 64 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+250 522 64 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+252 520 60 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+255 517 506 54 14 0 false 0 0 0 false 0 0 0 false (specific) 12 /Courier DrawText
+376 516 505 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+7 494 115 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+5 496 115 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+7 494 111 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+10 491 480 105 14 0 false 0 0 0 false 0 0 0 false (The Work Window) 12 /Courier DrawText
+325 520 51 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+323 522 51 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+325 520 47 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+328 517 506 41 14 0 false 0 0 0 false 0 0 0 false (object) 12 /Courier DrawText
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+0 731 465 418 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+5 -59 translate
+gsave
+0 731 465 220 ClipToRectangle
+0 0 translate
+gsave
+0 691 20 140 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+0 731 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 728 3 721 7 721 7 714 13 714 13 721 17 721 10 728 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 531 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 514 3 521 7 521 7 528 13 528 13 521 17 521 10 514 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 711 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 707 3 700 17 700 10 707 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+10 703 3 696 17 696 10 703 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+0 551 20 20 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 535 3 542 17 542 10 535 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+10 539 3 546 17 546 10 539 8 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawPolyline
+1 691 18 18 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+20 0 translate
+gsave
+0 731 445 220 ClipToRectangle
+0 0 translate
+gsave
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+0 0 translate
+gsave
+0 731 445 222 ClipToRectangle
+0 0 translate
+gsave
+0 0 0 0 false 0 0 [] 2 445 596 0 596 DrawLine
+5 684 673 35 14 0 false 0 0 0 false 0 0 0 false (Slot ) 12 /Courier DrawText
+40 684 673 74 14 0 false 0 0 0 false 0 0 0 false (:Line-Style) 12 /Courier-Bold DrawText
+114 684 673 28 14 0 false 0 0 0 false 0 0 0 false ( is ) 12 /Courier DrawText
+144 688 65 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+142 690 65 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+144 688 61 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+147 685 674 55 14 0 false 0 0 0 false 0 0 0 false (Constant) 12 /Courier DrawText
+209 684 673 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+225 684 673 42 14 0 false 0 0 0 false 0 0 0 false (Dashed) 12 /Courier DrawText
+219 686 54 18 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+5 648 637 70 14 0 false 0 0 0 false 0 0 0 false (Placement ) 12 /Courier DrawText
+75 648 637 21 14 0 false 0 0 0 false 0 0 0 false (is ) 12 /Courier DrawText
+98 652 65 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+96 654 65 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+98 652 61 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+101 649 638 55 14 0 false 0 0 0 false 0 0 0 false (constant) 12 /Courier DrawText
+163 648 637 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+170 648 637 160 14 0 false 0 0 0 false 0 0 0 false (End1 = Mouse Down Point) 12 /Courier-Bold DrawText
+330 648 637 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+5 622 611 160 14 0 false 0 0 0 false 0 0 0 false (End2 = Mouse Move Point) 12 /Courier-Bold DrawText
+165 622 611 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+174 626 108 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+172 628 108 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+174 626 104 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+177 623 612 98 14 0 false 0 0 0 false 0 0 0 false (Edit Placement) 12 /Courier DrawText
+5 726 715 28 14 0 false 0 0 0 false 0 0 0 false (The ) 12 /Courier DrawText
+33 726 715 49 14 0 false 0 0 0 false 0 0 0 false (object ) 12 /Courier DrawText
+91 726 715 76 14 0 false 0 0 0 false 0 0 0 false (Dashed Line) 12 /Courier DrawText
+85 728 88 18 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+173 726 715 28 14 0 false 0 0 0 false 0 0 0 false ( is ) 12 /Courier DrawText
+201 726 715 21 14 0 false 0 0 0 false 0 0 0 false (an ) 12 /Courier DrawText
+222 726 715 63 14 0 false 0 0 0 false 0 0 0 false (instance ) 12 /Courier DrawText
+285 726 715 21 14 0 false 0 0 0 false 0 0 0 false (of ) 12 /Courier DrawText
+306 726 715 63 14 0 false 0 0 0 false 0 0 0 false (LINE-2212) 12 /Courier-Bold DrawText
+369 726 715 42 14 0 false 0 0 0 false 0 0 0 false ( with ) 12 /Courier DrawText
+5 710 699 74 14 0 false 0 0 0 false 0 0 0 false (properties:) 12 /Courier DrawText
+5 561 550 70 14 0 false 0 0 0 false 0 0 0 false (Placement ) 12 /Courier DrawText
+75 561 550 21 14 0 false 0 0 0 false 0 0 0 false (is ) 12 /Courier DrawText
+98 565 65 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+96 567 65 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+98 565 61 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+101 562 551 55 14 0 false 0 0 0 false 0 0 0 false (constant) 12 /Courier DrawText
+163 561 550 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+170 561 550 160 14 0 false 0 0 0 false 0 0 0 false (End1 = Mouse Down Point) 12 /Courier-Bold DrawText
+330 561 550 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+5 535 524 146 14 0 false 0 0 0 false 0 0 0 false (End2 = Mouse Up Point) 12 /Courier-Bold DrawText
+151 535 524 7 14 0 false 0 0 0 false 0 0 0 false ( ) 12 /Courier DrawText
+160 539 108 24 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+158 541 108 24 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+160 539 104 20 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+163 536 525 98 14 0 false 0 0 0 false 0 0 0 false (Edit Placement) 12 /Courier DrawText
+5 591 580 28 14 0 false 0 0 0 false 0 0 0 false (The ) 12 /Courier DrawText
+33 591 580 49 14 0 false 0 0 0 false 0 0 0 false (object ) 12 /Courier DrawText
+91 591 580 27 14 0 false 0 0 0 false 0 0 0 false (Line) 12 /Courier DrawText
+85 593 39 18 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+124 591 580 28 14 0 false 0 0 0 false 0 0 0 false ( is ) 12 /Courier DrawText
+152 591 580 21 14 0 false 0 0 0 false 0 0 0 false (an ) 12 /Courier DrawText
+173 591 580 63 14 0 false 0 0 0 false 0 0 0 false (instance ) 12 /Courier DrawText
+236 591 580 21 14 0 false 0 0 0 false 0 0 0 false (of ) 12 /Courier DrawText
+257 591 580 63 14 0 false 0 0 0 false 0 0 0 false (LINE-2212) 12 /Courier-Bold DrawText
+320 591 580 42 14 0 false 0 0 0 false 0 0 0 false ( with ) 12 /Courier DrawText
+362 591 580 74 14 0 false 0 0 0 false 0 0 0 false (properties:) 12 /Courier DrawText
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+grestore
+
+0 731 465 220 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 731 480 731 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: /Courier-Bold /Courier 
+%%BoundingBox: 93 72 519 720
+
+%%EndDocument
+ GE 31788 41396 MT
+(in memory for every object on the screen, and that any)212 W
+31788 42494 MT
+(object can be used as the prototype to make a copy)
+233 W( or)234 W
+/Times-Bold SF
+15198 42859 MT
+(Figure 3:)SH
+/Times-Roman SF
+31788 43592 MT
+(instance. Since)
+321 W( all Garnet objects are represented the same)35 W
+9 SS 
+7200 43873 MT
+(The feedback)
+166 W( window for behaviors.  At the top is a)165 W
+10 SS 
+31788 44690 MT
+(way, there is a single mechanism for copying and)
+78 W( creating)79 W
+9 SS 
+7200 44887 MT
+(pull-down menu)
+193 W( of commands, then the name of the)194 W
+10 SS 
+31788 45788 MT
+(objects, whether)
+165 W( they are simple rectangles or aggregates)164 W
+9 SS 
+7200 45901 MT
+(behavior, then the objects that participate)
+238 W( in the be-)237 W
+10 SS 
+31788 46886 MT
+(containing many components.  Therefore, Marquise can al-)41 W
+9 SS 
+7200 46915 MT
+(havior, and finally the events and actions.  Pushing)
+100 W( on)101 W
+7200 47929 MT
+(the buttons displays a popup window)
+95 W( of the other pos-)94 W
+10 SS 
+31788 47984 MT
+(ways generate appropriate code to create)
+283 W( items for run)282 W
+9 SS 
+7200 48943 MT
+(sible choices.  Changing the option at the beginning of)
+10 W( a)11 W
+10 SS 
+31788 49082 MT
+(time, without having to)
+122 W( know the types of the objects the)123 W
+9 SS 
+7200 49957 MT
+(``sentence'' will)
+201 W( change the options available for the)200 W
+10 SS 
+31788 50180 MT
+(designer has drawn.)SH
+9 SS 
+7200 50971 MT
+(rest of the sentence.  An entire section of the)
+120 W( window)121 W
+7200 51985 MT
+(can be selected and cut, copied, etc.)SH
+10 SS 
+31788 52293 MT
+(Implementing the)
+105 W( behaviors that are demonstrated is quite)104 W
+24012 50 5400 53290 UL
+31788 53391 MT
+(straightforward once they have been determined)
+210 W( because)211 W
+31788 54489 MT
+(Marquise can create instances of)
+405 W( ``interactor'' objects)404 W
+5400 54881 MT
+(and move away from the initial press.)
+140 W( Without)
+528 W( releasing)139 W
+32038 55587 MT
+([5] and fill in the appropriate attributes.  Each)
+149 W( interactor)150 W
+5400 55979 MT
+(the mouse button, the designer would)
+292 W( change to Show)293 W
+31788 56685 MT
+(implements a particular)
+26 W( kind of behavior, such as selection,)25 W
+5400 57077 MT
+(mode. The)
+740 W( window will)
+245 W( now contain two icons which)244 W
+31788 57783 MT
+(creation, moving, etc., and contains attributes to)
+215 W( support)216 W
+5400 58175 MT
+(show where)
+175 W( the mouse was pressed and to where it was)176 W
+31788 58881 MT
+(most of the popular interaction styles.)SH
+5400 59273 MT
+(moved. Now)
+468 W( in Show mode, the designer draws a dotted)109 W
+5400 60371 MT
+(line between the icons \050Figure 2-b\051.  Marquise)
+45 W( infers that a)46 W
+31788 60994 MT
+(The object system supports)45 W
+/Times-Italic SF
+43134 XM
+(constraints)SH
+/Times-Roman SF
+(, which are relation-)44 W
+5400 61469 MT
+(dotted line)
+160 W( should be created on the down press and one)159 W
+31788 62092 MT
+(ships that are declared once)
+59 W( and maintained by the system.)60 W
+5400 62567 MT
+(end should follow the mouse)
+63 W( as it moves.  Then the desig-)64 W
+31788 63190 MT
+(Constraints are used)
+184 W( to maintain the relationships among)183 W
+5400 63665 MT
+(ner presses)
+304 W( the mouse button somewhere on the back-)303 W
+31788 64288 MT
+(the graphical objects)
+71 W( in Marquise.  Constraints can also be)72 W
+5400 64763 MT
+(ground and switches to)
+74 W( Train mode with the mouse button)75 W
+31788 65386 MT
+(used to connect application data to)
+73 W( Marquise-generated in-)72 W
+5400 65861 MT
+(still down, so the mouse)48 W
+/Times-Italic SF
+15585 XM
+(release)SH
+/Times-Roman SF
+18771 XM
+(can be demonstrated.)
+48 W( Be-)345 W
+31788 66484 MT
+(terfaces, or else application-specific call-back procedures)208 W
+5400 66959 MT
+(cause this second demonstration)
+94 W( does not include a down-)95 W
+31788 67582 MT
+(can be invoked when a behavior is completed.)SH
+5400 68057 MT
+(press, the original down-press icon is retained.  Next,)
+183 W( in)182 W
+5400 69155 MT
+(Show mode, the designer deletes the)
+59 W( dotted line and draws)60 W
+31788 69695 MT
+(Garnet contains a number of)
+216 W( other high-level interactive)215 W
+5400 70253 MT
+(a solid line from)
+183 W( the initial down press icon to the final)182 W
+31788 70793 MT
+(tools, such as the Lapidary)
+285 W( tool for creating individual)286 W
+5400 71351 MT
+(button release icon)
+28 W( \050Figure 2-c\051.  This entire behavior takes)29 W
+31788 71891 MT
+(widgets or objects, the Gilt tool for)
+149 W( editing dialog boxes,)148 W
+5400 72449 MT
+(less than 30)
+227 W( seconds to demonstrate, and very few new)226 W
+ES
+%%Page: 4 4
+BS
+0 SI
+10 /Times-Roman AF
+5400 6311 MT
+(the Jade)
+132 W( tool for automatically creating dialog boxes, and)133 W
+31788 XM
+(situations the operations should occur, which we feel)
+119 W( will)118 W
+5400 7409 MT
+(the C32 spreadsheet system for)
+192 W( specifying complex con-)191 W
+31788 XM
+(be more prone to errors.)SH
+5400 8507 MT
+(straints. Because)
+384 W( all the tools use)
+67 W( the same data structures)68 W
+9 /Helvetica-Bold AF
+31788 9522 MT
+(Palettes)SH
+10 /Times-Roman AF
+5400 9605 MT
+(and file format for describing objects, Marquise)
+154 W( does not)153 W
+5400 10703 MT
+(have to re-implement)
+48 W( the functionality already provided by)49 W
+31788 10818 MT
+(One of the important innovations in the Marquise)596 W
+5400 11801 MT
+(those tools\320it)
+11 W( can concentrate on the global behavior.  The)10 W
+31788 11916 MT
+(framework is the formalization of a)79 W
+/Times-Italic SF
+46702 XM
+(palette)SH
+/Times-Roman SF
+(, which is a list)78 W
+5400 12899 MT
+(designer can)
+25 W( have more than one tool operating at the same)26 W
+31788 13014 MT
+(of options, usually presented graphically.)
+4 W( Each)
+260 W( palette con-)5 W
+5400 13997 MT
+(time, and use whichever is)
+85 W( appropriate for the current part)84 W
+31788 14112 MT
+(trols a single value or mode.)
+168 W( Since)
+584 W( palettes are conven-)167 W
+5400 15095 MT
+(of the task.)SH
+31788 15210 MT
+(tional interaction techniques internally)
+510 W( \050i.e., they are)511 W
+31788 16308 MT
+(usually a list)
+128 W( of buttons\051, their internal behavior \050how the)127 W
+9 /Helvetica-Bold AF
+5400 17208 MT
+(FRAMEWORK)SH
+10 /Times-Roman AF
+31788 17406 MT
+(user changes the current selection)
+390 W( and what feedback)391 W
+5400 18504 MT
+(Marquise is able to construct the interface from the)442 W
+31788 XM
+(shows the)
+179 W( selected objects\051 can be easily specified using)178 W
+5400 19602 MT
+(demonstrations because it has built-in knowledge of the)239 W
+31788 XM
+(Lapidary or)
+507 W( Marquise.  The innovation here is the)508 W
+5400 20700 MT
+(kinds of operations)
+139 W( that are common in graphical editors.)140 W
+31788 XM
+(automatic connection of the palette to the rest of)
+76 W( the inter-)75 W
+5400 21798 MT
+(This knowledge is part of the)
+525 W( underlying Marquise)524 W
+31788 XM
+(face.)SH
+5400 22896 MT
+(framework that supports the interactive front end.  The)258 W
+31788 23911 MT
+(Marquise identifies two main classes of palettes:)255 W
+/Times-Italic SF
+53265 XM
+(create)SH
+/Times-Roman SF
+5400 23994 MT
+(operations include: creating an)
+304 W( object of the type in a)303 W
+31788 25009 MT
+(palettes and)17 W
+/Times-Italic SF
+36821 XM
+(property)SH
+/Times-Roman SF
+40532 XM
+(palettes. A)
+283 W( create palette contains the)16 W
+5400 25092 MT
+(palette, selecting)
+16 W( objects, directly manipulating the size and)17 W
+31788 26107 MT
+(different kinds of objects that can be)
+20 W( created.  For example,)21 W
+5400 26190 MT
+(shape with the mouse,)
+323 W( specifying properties of objects)322 W
+31788 27205 MT
+(the create palette for MacDraw II contains a selection ar-)131 W
+5400 27288 MT
+(\050color, font, etc.\051 with a palette)
+124 W( or property sheet, miscel-)125 W
+31788 28303 MT
+(row, strings, lines, rectangles, rounded-rectangles,)
+257 W( ovals,)258 W
+5400 28386 MT
+(laneous editing operations \050deleting, duplicating, etc.\051,)
+80 W( and)79 W
+31788 29401 MT
+(arcs, curves, polygons,)
+49 W( and text fields.  A create palette for)48 W
+5400 29484 MT
+(application-specific commands.)SH
+31788 30499 MT
+(a CAD/CAM program for circuit boards might have a long)44 W
+9 /Helvetica-Bold AF
+5400 31597 MT
+(Modes)SH
+10 /Times-Roman AF
+31788 XM
+(list of different IC types, plus wires, pads, etc.)SH
+5400 32893 MT
+(It is very common in user interfaces for different)
+38 W( behaviors)39 W
+24012 50 31788 33588 UL
+5400 33991 MT
+(to result from the same)
+202 W( action, determined either by the)201 W
+5400 35089 MT
+(location of the initiating event)
+106 W( or by the value of a global)107 W
+5400 36187 MT
+(mode variable.  As an example)
+393 W( of the first case, in)392 W
+5400 37285 MT
+(MacProject II for)
+14 W( the Macintosh, pressing the mouse button)15 W
+5400 38383 MT
+(down will start text editing \050if)
+15 W( inside a box\051, select a box \050if)14 W
+5400 39481 MT
+(at its edge\051, create a new box)
+12 W( \050if in the background\051, draw a)13 W
+5400 40579 MT
+(link between two boxes \050if pressed in one box and released)37 W
+5400 41677 MT
+(in another\051, grow a box)
+92 W( \050if pressed on a selection handle\051,)93 W
+5400 42775 MT
+(or draw a link and create a box \050if pressed)
+78 W( in one box and)77 W
+5400 43873 MT
+(released outside\051.  Designers specify these differences in)188 W
+5400 44971 MT
+(Marquise by demonstrating the)
+93 W( different operations.  Mar-)92 W
+5400 46069 MT
+(quise notices what objects are underneath the demonstrated)33 W
+5400 47167 MT
+(events \050including the mouse release\051, so it can)
+112 W( distinguish)111 W
+5400 48265 MT
+(the correct times)
+39 W( to use the different behaviors.  The object)40 W
+65 100 0 23904 67462 GB 
+%%BeginDocument: modewin.PS
+%!PS-Adobe-2.0 EPSF 2.0
+%%Title: Marquise Mode Window
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Dec 16, 1992, 4:33 PM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 131 282 481 510
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-1
+<f7ff ebff ddff beff 1c7f ddff ddff ddff ddff c1ff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+59 -210 translate
+gsave
+0 648 350 228 ClipToRectangle
+0 0 translate
+gsave
+0 648 31 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+5 648 637 21 14 1 false 0 0 0 false 0 0 0 false (Add) 12 /Courier-Bold DrawText
+31 648 38 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+36 648 637 28 14 1 false 0 0 0 false 0 0 0 false (Edit) 12 /Courier-Bold DrawText
+69 648 59 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+74 648 637 49 14 1 false 0 0 0 false 0 0 0 false (Display) 12 /Courier-Bold DrawText
+128 648 222 14 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+5 629 614 137 20 0 false 0 0 0 false 0 0 0 false (System Modes:) 18 /Courier-Bold DrawText
+5 604 340 49 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+5 545 530 116 20 0 false 0 0 0 false 0 0 0 false (User Modes:) 18 /Courier-Bold DrawText
+5 520 340 95 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+10 600 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 602 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 599 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+31 598 587 144 14 0 false 0 0 0 false 0 0 0 false ( The Created Object) 12 /Courier-Bold DrawText
+176 598 587 167 14 0 false 0 0 0 false 0 0 0 false ( DASHED-LINE-4102) 12 /Courier DrawText
+10 577 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 579 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 576 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+31 575 564 144 14 0 false 0 0 0 false 0 0 0 false ( The Selected Object) 12 /Courier-Bold DrawText
+176 575 564 30 14 0 false 0 0 0 false 0 0 0 false ( NIL) 12 /Courier DrawText
+324 516 19 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+322 518 19 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+324 516 15 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+327 513 9 10 image-1 false 0 0 0 false DrawBitmap
+10 516 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 518 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 515 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+0 0 0 0 false 0 0 [] 2 25 502 11 515 DrawLine
+0 0 0 0 false 0 0 [] 2 25 515 11 502 DrawLine
+38 514 503 111 14 0 false 0 0 0 false 0 0 0 false (Create Palette 1) 12 /Courier-Bold DrawText
+183 514 503 31 14 0 false 0 0 0 false 0 0 0 false (:LINE) 12 /Courier DrawText
+31 518 144 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+176 518 145 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+324 493 19 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+322 495 19 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+324 493 15 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+327 490 9 10 image-1 false 0 0 0 false DrawBitmap
+10 493 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 495 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 492 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+38 491 480 126 14 0 false 0 0 0 false 0 0 0 false (Line Style Palette) 12 /Courier-Bold DrawText
+183 491 480 34 14 0 false 0 0 0 false 0 0 0 false (Solid) 12 /Courier DrawText
+31 495 144 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+176 495 145 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+324 470 19 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+322 472 19 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+324 470 15 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+327 467 9 10 image-1 false 0 0 0 false DrawBitmap
+10 470 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 472 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 469 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+38 468 457 90 14 0 false 0 0 0 false 0 0 0 false (Color Palette) 12 /Courier-Bold DrawText
+183 468 457 27 14 0 false 0 0 0 false 0 0 0 false (Blue) 12 /Courier DrawText
+31 472 144 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+176 472 145 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+324 447 19 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+322 449 19 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+324 447 15 16 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+327 444 9 10 image-1 false 0 0 0 false DrawBitmap
+10 447 20 20 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+8 449 20 20 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+11 446 14 14 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+38 445 434 63 14 0 false 0 0 0 false 0 0 0 false (User Mode) 12 /Courier-Bold DrawText
+183 445 434 60 14 0 false 0 0 0 false 0 0 0 false (:FRIENDLY) 12 /Courier DrawText
+31 449 144 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+176 449 145 22 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 648 350 228 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: /Courier-Bold /Courier 
+%%BoundingBox: 131 282 481 510
+
+%%EndDocument
+ GE 5400 49363 MT
+(being used is shown in the)
+79 W( feedback window, and the but-)78 W
+5400 50461 MT
+(tons there can be used to edit the choice.)SH
+/Times-Bold SF
+41586 50726 MT
+(Figure 4:)SH
+9 /Times-Roman AF
+33588 51740 MT
+(The mode window showing the defined modes)
+16 W( and their)15 W
+10 SS 
+5400 52574 MT
+(In other cases, the selection of the behavior is determined)109 W
+9 SS 
+33588 52754 MT
+(current values.  The designer can click on the check)
+15 W( box)16 W
+10 SS 
+5400 53672 MT
+(by the value of a global mode variable, which is set by a)121 W
+9 SS 
+33588 53768 MT
+(at the left of a row to indicate that the next action)241 W
+10 SS 
+5400 54770 MT
+(palette or an external application program.  To make these)72 W
+9 SS 
+33588 54782 MT
+(depends on)
+410 W( the mode having the specified value.)411 W
+33588 55796 MT
+(Modes based on)
+379 W( palettes change as the palette is)378 W
+10 SS 
+5400 55868 MT
+(modes explicit)
+347 W( and visible, Marquise provides a)346 W
+/Times-Italic SF
+27210 XM
+(mode)SH
+9 /Times-Roman AF
+33588 56810 MT
+(operated. Applications)
+235 W( can)
+5 W( also directly set a mode, and)6 W
+10 /Times-Italic AF
+5400 56966 MT
+(window)SH
+/Times-Roman SF
+(, shown in Figure 4, which)
+31 W( lists each mode variable)32 W
+9 SS 
+33588 57824 MT
+(one of the actions resulting from a)
+63 W( behavior might be a)62 W
+10 SS 
+5400 58064 MT
+(and its current value.  The)
+68 W( values displayed will change as)67 W
+9 SS 
+33588 58838 MT
+(mode change.)SH
+10 SS 
+5400 59162 MT
+(the interface is operated, and the designer can directly)
+72 W( edit)73 W
+24012 50 31788 60143 UL
+5400 60260 MT
+(the values for user)
+57 W( modes.  When the value has a fixed list)56 W
+5400 61358 MT
+(of choices, these are available in a pull-down menu.)
+159 W( To)570 W
+31788 62056 MT
+(A property palette contains the different values for)
+44 W( a single)45 W
+5400 62456 MT
+(make an interaction dependent on)
+88 W( whether a mode has the)87 W
+31788 63154 MT
+(property. MacDraw)
+352 W( II has a property palette for the filling)51 W
+5400 63554 MT
+(current value, it is only necessary)
+28 W( to click on the check box)29 W
+31788 64252 MT
+(style at the top of the window,)
+28 W( and property palettes for the)29 W
+5400 64652 MT
+(next to the mode)
+78 W( name before demonstrating the behavior.)77 W
+31788 65350 MT
+(line style, font size, font style, etc. in pull-down menus.)195 W
+5400 65750 MT
+(When a user action causes)
+124 W( a mode to change, this can be)125 W
+31788 66448 MT
+(Marquise supports palettes which are)
+195 W( not always visible,)196 W
+5400 66848 MT
+(demonstrated by simply editing the value in the)
+44 W( mode win-)43 W
+31788 67546 MT
+(and a palette can even)
+10 W( be a subset of the items in a different)9 W
+5400 67946 MT
+(dow while in Show mode.)SH
+31788 68644 MT
+(widget \050e.g., a section of)
+89 W( a pull-down menu\051.  In addition,)90 W
+31788 69742 MT
+(the list of choices can be)
+202 W( dynamically changing, for ex-)201 W
+5400 70059 MT
+(The combination of the icons and mode window make the)81 W
+31788 70840 MT
+(ample, if the)
+396 W( application has commands to read new)397 W
+5400 71157 MT
+(control of the)
+193 W( behaviors explicit and direct.  In contrast,)192 W
+31788 71938 MT
+(libraries or to edit the palette itself.)SH
+5400 72255 MT
+(DEMO II)
+14 W( [1])
+SH( uses)
+14 W( multiple examples to determine in which)15 W
+ES
+%%Page: 5 5
+BS
+0 SI
+10 /Times-Roman AF
+5400 6311 MT
+(There are)
+33 W( two important distinctions between the two types)32 W
+31788 XM
+(for newly-created objects, and for changing the property of)43 W
+5400 7409 MT
+(of palettes.)
+210 W( First,)
+671 W( the create palette usually enables dif-)211 W
+31788 XM
+(selected objects.  The same)
+139 W( palette might also be used to)140 W
+5400 8507 MT
+(ferent interaction techniques.  For example,)
+184 W( the selection)183 W
+/Times-Italic SF
+31788 XM
+(show)SH
+/Times-Roman SF
+34094 XM
+(the value for the selected object.)SH
+5400 9605 MT
+(arrow enables selection, the rectangle enables dragging out)53 W
+31788 10620 MT
+(To create a property)
+227 W( palette, the designer only needs to)226 W
+5400 10703 MT
+(new rectangles, and the text string enables)
+66 W( clicking to start)65 W
+31788 11718 MT
+(draw a set)
+93 W( of objects representing the different values \050for)94 W
+5400 11801 MT
+(entering text.  A property palette)
+189 W( is assumed to only set)190 W
+31788 12816 MT
+(example, the line-style)
+14 W( items of Figure 5\051, and declare them)13 W
+5400 12899 MT
+(values of properties and not to control)
+604 W( interaction)605 W
+8 SS 
+9927 13667 MT
+(2)SH
+10 SS 
+31788 13914 MT
+(to be a property palette.  Marquise then checks whether)
+112 W( a)113 W
+5400 14012 MT
+(techniques.)SH
+11031 XM
+(Note that a create palette can)
+102 W( enable various)101 W
+31788 15012 MT
+(single property seems to change)
+32 W( in each element \050as it does)31 W
+5400 15110 MT
+(kinds of behaviors, such as selecting and deleting, and not)81 W
+31788 16110 MT
+(in Figure 5)
+61 W( and in most graphical property palettes\051, and if)62 W
+5400 16208 MT
+(just creating.  The second difference between the two)
+29 W( types)28 W
+31788 17208 MT
+(so, proposes this as the)
+79 W( property to use.  Alternatively, the)78 W
+5400 17306 MT
+(of palettes is that Marquise)
+226 W( assumes that objects cannot)227 W
+31788 18306 MT
+(user can specify the name of the property)
+41 W( and the value for)42 W
+5400 18404 MT
+(change type, so that selections in the)
+97 W( create palette cannot)96 W
+31788 19404 MT
+(each item of the palette.)SH
+5400 19502 MT
+(affect the)
+108 W( selected objects.  However, clicking in property)109 W
+5400 20600 MT
+(palettes usually changes)
+119 W( the value of that property for the)118 W
+24012 50 31788 21395 UL
+5400 21698 MT
+(selected objects.)SH
+9 /Helvetica-Oblique AF
+5400 23811 MT
+(Create Palettes.)210 W
+10 /Times-Roman AF
+12980 XM
+(To make a create palette,)
+210 W( the designer)211 W
+5400 24909 MT
+(only needs to draw the set of objects using)
+187 W( Marquise or)186 W
+5400 26007 MT
+(Lapidary, select them,)
+272 W( and declare them to be a create)273 W
+10 10 0 13194 63719 GB 
+%%BeginDocument: linestylepalette.PS
+%!PS-Adobe-2.0
+%%Title: Opal 3
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 14, 1992, 11:15 AM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 202 376 410 416
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-4
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+def
+
+/image-3
+<ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+def
+
+/image-2
+<ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+def
+
+/image-1
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01ff 03ff 07ff 0fff 1fff 3fff
+7fff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+130 -304 translate
+gsave
+0 648 208 40 ClipToRectangle
+0 0 translate
+gsave
+172 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+138 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+104 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+70 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+36 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+2 645 35 35 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+0 0 0 0 false 0 0 [1 1] 1 34 642 6 614 DrawLine
+0 0 0 0 false 0 0 [4 4] 1 68 642 40 614 DrawLine
+0 0 0 0 false 0 0 [] 1 102 642 74 614 DrawLine
+0 0 0 0 false 0 0 [] 2 136 642 108 614 DrawLine
+0 0 0 0 false 0 0 [] 4 170 642 142 614 DrawLine
+0 0 0 0 false 0 0 [] 8 204 642 176 614 DrawLine
+grestore
+
+grestore
+
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: 
+%%BoundingBox: 202 376 410 416
+
+%%EndDocument
+ GE 5400 27105 MT
+(palette using a menu command.  Marquise will then add a)84 W
+/Times-Bold SF
+41586 27713 MT
+(Figure 5:)SH
+/Times-Roman SF
+5400 28203 MT
+(row to)
+185 W( the mode window \050Figure 4\051 showing the palette)186 W
+9 SS 
+33588 28727 MT
+(After drawing this picture, the designer would select)
+19 W( the)18 W
+10 SS 
+5400 29301 MT
+(and its)
+124 W( current value.  The designer would select the new)123 W
+9 SS 
+33588 29741 MT
+(lines, and declare them to)
+107 W( be a property palette.  Mar-)108 W
+10 SS 
+5400 30399 MT
+(row in the)
+68 W( mode window, click on each item in the palette)69 W
+9 SS 
+33588 30755 MT
+(quise would notice that the line-style changes, and)318 W
+10 SS 
+5400 31497 MT
+(to put the system into the appropriate mode, and)584 W
+9 SS 
+33588 31769 MT
+(would create an appropriate palette description.)SH
+10 SS 
+5400 32595 MT
+(demonstrate the desired behavior.)SH
+24012 50 31788 33074 UL
+5400 34708 MT
+(The create)
+286 W( palette has some additional attributes which)287 W
+31788 34987 MT
+(Each primitive Garnet object describes)
+1 W( which properties are)2 W
+5400 35806 MT
+(control common features found in)
+50 W( graphical editors.  Some)49 W
+31788 36085 MT
+(relevant to it, and the designer can add additional properties)4 W
+5400 36904 MT
+(of these)
+89 W( can be demonstrated, and the rest are specified in)90 W
+31788 37183 MT
+(for application-specific)
+163 W( objects.  Therefore, Marquise can)164 W
+5400 38002 MT
+(dialog boxes.)SH
+31788 38281 MT
+(automatically guess which properties are)
+62 W( probably relevant)61 W
+31788 39379 MT
+(to each)
+149 W( type of object that is created.  These guesses are)150 W
+/Symbol SF
+5590 39455 MT
+(\267)SH
+/Times-Roman SF
+6300 XM
+(In some palettes, when the)
+151 W( user clicks on an item, that)150 W
+31788 40477 MT
+(reflected in the)
+8 W( feedback and mode windows \050Figures 3 and)7 W
+6300 40560 MT
+(sets up a mode)
+83 W( so that the next operation will create the)84 W
+31788 41575 MT
+(4\051, and if)
+136 W( Marquise guesses wrong, then the designer can)137 W
+6300 41665 MT
+(kind of object represented by that item.)
+48 W( This)
+344 W( was shown)47 W
+31788 42673 MT
+(adjust the values.)SH
+6300 42770 MT
+(in the)
+259 W( example above, and is the way that MacDraw)260 W
+6300 43875 MT
+(works. In)
+440 W( other cases, clicking in the palette causes the)95 W
+31788 44786 MT
+(Some attributes for property palettes provided)
+41 W( by Marquise)40 W
+6300 44980 MT
+(object to be created immediately \050e.g., at the current)282 W
+31788 45884 MT
+(are:)SH
+6300 46085 MT
+(mouse position for a popup menu)
+237 W( of choices, or at a)236 W
+6300 47190 MT
+(computed place if the)
+118 W( objects are laid out automatically)119 W
+/Symbol SF
+31978 47337 MT
+(\267)SH
+/Times-Roman SF
+32688 XM
+(Whether setting the property of a particular)
+235 W( \050selected\051)236 W
+6300 48295 MT
+(by the system\051.)
+68 W( Other)
+384 W( times, objects are dragged off the)67 W
+32688 48442 MT
+(object also changes the global default used)
+109 W( when a new)108 W
+6300 49400 MT
+(palette.)SH
+32688 49547 MT
+(object is created.)SH
+/Symbol SF
+5590 50505 MT
+(\267)SH
+/Times-Roman SF
+6300 XM
+(After an)
+170 W( object is created, some applications select the)171 W
+/Symbol SF
+31978 50652 MT
+(\267)SH
+/Times-Roman SF
+32688 XM
+(If an object is selected that does not have the)
+156 W( property)157 W
+6300 51610 MT
+(newly-created object,)
+488 W( some leave the selection un-)487 W
+32688 51757 MT
+(represented by the palette \050e.g.,)
+154 W( if the palette is for the)153 W
+6300 52715 MT
+(changed, others add the new object to the selection set \050if)20 W
+32688 52862 MT
+(font property and a line is)
+99 W( selected\051, whether the palette)100 W
+6300 53820 MT
+(objects were selected before)
+158 W( the create\051, and yet others)157 W
+32688 53967 MT
+(goes inactive \050greyed out\051 or not.  When there are mul-)109 W
+6300 54925 MT
+(clear the selection.)SH
+32688 55072 MT
+(tiple objects selected, whether)
+185 W( the palette is valid if at)186 W
+/Symbol SF
+5590 56030 MT
+(\267)SH
+/Times-Roman SF
+6300 XM
+(Sometimes, after the)
+151 W( object is created, the mode of the)152 W
+32688 56177 MT
+(least one of the objects)
+1 W( has this property, or only when all)SH
+6300 57135 MT
+(create palette will)
+51 W( change.  For example, in MacDraw II,)50 W
+32688 57282 MT
+(of the objects have this property.)SH
+6300 58240 MT
+(after creating a rectangle, the mode changes back)
+296 W( to)297 W
+/Symbol SF
+31978 58387 MT
+(\267)SH
+/Times-Roman SF
+32688 XM
+(When an object is selected, whether the palette shows the)13 W
+6300 59345 MT
+(selection \050the arrow\051.  However, if you)
+133 W( double-click on)132 W
+32688 59492 MT
+(value of that object.  If more than)
+64 W( one object is selected,)63 W
+6300 60450 MT
+(the palette, the mode does not change after creation.)
+95 W( In)441 W
+32688 60597 MT
+(then the palette might)
+94 W( show the value only if all objects)95 W
+6300 61555 MT
+(the original MacDraw, all object creation)
+25 W( modes changed)24 W
+32688 61702 MT
+(have the same value, pick the value of one of the objects)46 W
+6300 62660 MT
+(back to selection except for text strings.)SH
+32688 62807 MT
+(to show, show)
+33 W( the global default value, or just be cleared)34 W
+32688 63912 MT
+(to show no value.)SH
+9 /Helvetica-Oblique AF
+5400 64773 MT
+(Property Palettes.)73 W
+10 /Times-Roman AF
+13269 XM
+(Property palettes)
+73 W( allow the user to con-)74 W
+/Symbol SF
+31978 65017 MT
+(\267)SH
+/Times-Roman SF
+32688 XM
+(If the palette does not echo the value of)
+223 W( the property)222 W
+5400 65871 MT
+(trol the)
+60 W( value of properties of objects.  Typically, the same)59 W
+32688 66122 MT
+(when the selection changes, then)
+94 W( the newly selected ob-)95 W
+5400 66969 MT
+(palette is used for specifying the global default value)
+81 W( used)82 W
+32688 67227 MT
+(ject might get the current value of the property \050as op-)145 W
+32688 68332 MT
+(posed to requiring)
+361 W( another click in the palette after)362 W
+32688 69437 MT
+(changing the selection\051.)SH
+10800 50 5400 69878 UL
+6 SS 
+6200 71217 MT
+(2)SH
+8 SS 
+6500 71526 MT
+(This restriction could)
+54 W( be lifted in the future if it becomes onerous, but)53 W
+9 /Helvetica-Bold AF
+31788 71550 MT
+(Positions of new objects)SH
+8 /Times-Roman AF
+5400 72450 MT
+(it is consistent with the behavior of all editors we have studied.)SH
+10 SS 
+31788 72846 MT
+(Once Marquise knows which object to create,)
+60 W( there is then)59 W
+ES
+%%Page: 6 6
+BS
+0 SI
+10 /Times-Roman AF
+5400 6311 MT
+(the question)
+74 W( of where and how to create it.  There are two)75 W
+31788 XM
+(example of Figure 2)
+101 W( shows how the simple case of a new)102 W
+5400 7409 MT
+(possibilities: the position)
+132 W( is computed automatically, or is)131 W
+31788 XM
+(line can be demonstrated in Marquise.)SH
+5400 8507 MT
+(specified by the user with the mouse.)SH
+31788 9522 MT
+(It is)
+47 W( very common for the objects to be constrained in their)46 W
+9 /Helvetica-Oblique AF
+5400 10620 MT
+(Automatic Layout.)270 W
+10 /Times-Roman AF
+13911 XM
+(Garnet has built-in routines for list,)271 W
+31788 XM
+(placement. Marquise)
+608 W( has)
+179 W( built-in knowledge about grid-)180 W
+5400 11718 MT
+(table, tree, and graph layout.)
+17 W( These)
+282 W( automatically place the)16 W
+31788 XM
+(ding, so this can be easily used in an application.  A)
+77 W( more)76 W
+5400 12816 MT
+(nodes, rather)
+105 W( than requiring the user to specify a location.)106 W
+31788 XM
+(interesting problem is attachment.)
+101 W( For)
+454 W( example, an arrow)102 W
+5400 13914 MT
+(Each type of layout has a set of methods for creating)
+112 W( and)111 W
+31788 XM
+(connecting the boxes in)
+57 W( Figure 6 might always be attached)56 W
+5400 15012 MT
+(deleting nodes, and Marquise allows the)
+457 W( designer to)458 W
+31788 XM
+(to the centers of the boxes.  In)
+190 W( an earlier article)
+191 W( [4],)
+SH( we)191 W
+5400 16110 MT
+(demonstrate how these methods are invoked and how their)60 W
+31788 XM
+(discussed how Lapidary allows)
+137 W( the arrow prototype to be)136 W
+5400 17208 MT
+(attributes are specified.)
+160 W( Many)
+572 W( previous systems have al-)161 W
+31788 XM
+(defined interactively with parameters)
+136 W( that refer to the ob-)137 W
+5400 18306 MT
+(lowed a designer to build custom graph layout)
+46 W( applications)45 W
+31788 XM
+(jects to which it should be attached.  Lapidary creates)
+51 W( con-)50 W
+5400 19404 MT
+(by writing code, but Marquise is)
+58 W( the first to allow the look)59 W
+31788 XM
+(straints that keep the arrows attached)
+90 W( as the objects move.)91 W
+5400 20502 MT
+(of the nodes to be drawn and)
+93 W( the editing behaviors \050creat-)92 W
+31788 XM
+(Marquise allows)
+232 W( the designer to interactively show how)231 W
+5400 21600 MT
+(ing, deleting, editing)
+73 W( labels, etc.\051 to be demonstrated inter-)74 W
+31788 XM
+(those parameters are filled in based on the designer's)
+143 W( ac-)144 W
+5400 22698 MT
+(actively.)SH
+31788 XM
+(tions. For)
+323 W( example, look back at Figure 1 where a creation)36 W
+31788 23796 MT
+(palette is being drawn.  To demonstrate the arrow creation)72 W
+5400 24811 MT
+(First, the)
+446 W( designer specifies which kind of layout is)445 W
+31788 24894 MT
+(mode, the designer would select the arrow in the create)214 W
+8 SS 
+8538 25579 MT
+(3)SH
+10 SS 
+5400 25924 MT
+(desired.)SH
+9820 XM
+(Next, the designer draws pictures to show the)191 W
+31788 25992 MT
+(palette while in Run)
+211 W( mode.  This will change the value)212 W
+5400 27022 MT
+(graphics for the nodes \050and the graphics)
+182 W( for the arcs for)181 W
+31788 27090 MT
+(shown in)
+224 W( the mode window for the create palette mode)223 W
+5400 28120 MT
+(trees and graphs\051.  If these have complex internal structure,)32 W
+31788 28188 MT
+(\050Figure 4\051.  The designer would then click on)
+3 W( the check box)4 W
+5400 29218 MT
+(then the Lapidary tool will be useful for drawing)
+220 W( them.)219 W
+31788 29286 MT
+(next to this mode, which tells Marquise that the mode is)156 W
+5400 30316 MT
+(The built-in)
+230 W( layout algorithms have many attributes that)231 W
+31788 30384 MT
+(significant for the next operation.)SH
+5400 31414 MT
+(control the display, and some of these can be demonstrated)41 W
+31788 32497 MT
+(Assume that)
+47 W( the arrow was defined so that setting the)48 W
+/Times-Italic SF
+53875 XM
+(from)SH
+/Times-Roman SF
+5400 32512 MT
+(\050e.g., the spacing and direction\051.  The rest are specified)
+26 W( in a)27 W
+31788 33595 MT
+(and)SH
+/Times-Italic SF
+33592 XM
+(to)SH
+/Times-Roman SF
+34729 XM
+(parameters with objects would cause the line to be)109 W
+5400 33610 MT
+(dialog box.)SH
+31788 34693 MT
+(attached to those objects.  In Train mode, the)
+260 W( designer)261 W
+5400 35723 MT
+(Next, the)
+368 W( designer demonstrates the creation behavior.)367 W
+31788 35791 MT
+(would press)
+2 W( down inside a rounded-rectangle, and drag out-)1 W
+5400 36821 MT
+(Using knowledge of the type of layout in use, Marquise)189 W
+31788 36889 MT
+(side. Then,)
+518 W( in Show mode, the designer would create)
+134 W( an)135 W
+5400 37919 MT
+(tries to determine if the new)
+204 W( object should be placed in)203 W
+31788 37987 MT
+(instance of the arrow)
+21 W( with the shaft end inside the rounded-)20 W
+5400 39017 MT
+(some relation to a selected object, or globally with respect)78 W
+31788 39166 MT
+(rectangle and)
+246 W( the arrow end at the)247 W
+6 10 0 29437 62446 GB 
+%%BeginDocument: moveicononly.PS
+%!PS-Adobe-2.0
+%%Title: Opal 3
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 14, 1992, 11:24 AM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 298 388 314 404
+%%%Pages: 1
+%%EndComments
+
+
+/BitmapDict 9 dict def
+/DrawBitmap
+   {    % stack: left top width height pattern transparent-p
+        %        red green blue color-p
+        BitmapDict begin
+        /picstr 256 string def
+        /color-p exch def  /blue exch def  /green exch def /red exch def
+        /transparent-p exch def
+        /pattern exch def  /height exch def  /width exch def
+        gsave
+          translate
+          width height scale
+          color-p {red green blue setrgbcolor} if
+          transparent-p
+          % The case where the background is not drawn
+          { width height false
+            [ width 0 0 height 0 height ]
+            {pattern} imagemask }
+          % The case where the background is drawn
+          { width height 1
+            [ width 0 0 height 0 height ]
+            {pattern} image } ifelse
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+/image-4
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 0081 01c3 03e7 07ff 0fff 1fff 3fff
+7fff>
+def
+
+/image-3
+<ffef ffff fbef fdff fbef 7755 afab 57d7 aaef 55ff abff 57ff afff 5fff bfff
+7fff>
+def
+
+/image-2
+<ffef ffcf fb83 fdcb fbeb 77fb afe7 57df aabf 55c7 abfb 57fd affb 5fe7 bfdf
+7fbf>
+def
+
+/image-1
+<ffff ffe7 f9c3 f981 f3e7 73e7 27e7 07e7 00e7 01ff 03ff 07ff 0fff 1fff 3fff
+7fff>
+def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+226 -316 translate
+gsave
+0 648 16 16 ClipToRectangle
+0 0 translate
+gsave
+170 612 16 16 image-1 false 0 0 0 false DrawBitmap
+0 648 16 16 image-2 false 0 0 0 false DrawBitmap
+grestore
+
+grestore
+
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: 
+%%BoundingBox: 298 388 314 404
+
+%%EndDocument
+ GE 48774 XM
+(icon. Then,)
+744 W( the)247 W
+5400 40115 MT
+(to all objects.  For example, in)
+245 W( a directed-graph editor,)244 W
+31788 40264 MT
+(designer specifies that the rounded-rectangle corresponds)202 W
+5400 41213 MT
+(there might be commands for ``Add new child'')
+44 W( and ``Add)45 W
+31788 41362 MT
+(to the)152 W
+/Times-Italic SF
+34592 XM
+(from)SH
+/Times-Roman SF
+36883 XM
+(parameter, and Marquise infers that it should)152 W
+5400 42311 MT
+(new parent.''  Marquise does not try to understand)
+251 W( the)250 W
+31788 42460 MT
+(determine the parameter value based)
+14 W( on where the mouse is)13 W
+5400 43409 MT
+(words in the command)
+31 W( names.  Instead, the designer would)32 W
+31788 43558 MT
+(first depressed, and that the other end should)
+195 W( follow the)196 W
+5400 44507 MT
+(go into Run)
+211 W( mode and select a node, and then in Train)210 W
+31788 44656 MT
+(mouse. Next,)
+328 W( the designer demonstrates the mouse button-)39 W
+5400 45605 MT
+(mode the designer would select the command. Finally,)
+136 W( in)137 W
+31788 45754 MT
+(up response)
+173 W( by deleting the feedback line and creating a)174 W
+5400 46703 MT
+(Show mode, the new)
+46 W( object would be created with the cor-)45 W
+31788 46852 MT
+(new arrow between the two nodes.  These nodes)
+350 W( are)349 W
+5400 47801 MT
+(rect relationship to the selected node.)SH
+31788 47950 MT
+(declared as the)107 W
+/Times-Italic SF
+38301 XM
+(from)SH
+/Times-Roman SF
+40547 XM
+(and)SH
+/Times-Italic SF
+42348 XM
+(to)SH
+/Times-Roman SF
+43483 XM
+(parameters. In)
+464 W( the future, we)107 W
+31788 49048 MT
+(will provide)
+276 W( facilities for)275 W
+/Times-Italic SF
+43110 XM
+(gravity)SH
+/Times-Roman SF
+46468 XM
+(so the designer could)275 W
+5400 49914 MT
+(In some cases, the new object's position will)
+17 W( not depend on)18 W
+31788 50146 MT
+(specify that while the mouse is moving, the)
+341 W( feedback)342 W
+5400 51012 MT
+(the selection, but rather on global properties.)
+35 W( For)
+319 W( example,)34 W
+31788 51244 MT
+(should jump to the attachment points of objects if they are)70 W
+5400 52110 MT
+(the new object might always go at the end of a list.  In)
+44 W( this)45 W
+31788 52342 MT
+(close enough.)SH
+5400 53208 MT
+(case, the designer would make sure that no objects are)251 W
+5400 54306 MT
+(selected before demonstrating the position)
+122 W( of the new ob-)123 W
+9 /Helvetica-Bold AF
+31788 54455 MT
+(Selection)SH
+10 /Times-Roman AF
+5400 55404 MT
+(ject, and)
+113 W( Marquise would try to determine the appropriate)112 W
+31788 55751 MT
+(One of the most important operations in a graphical editor)81 W
+5400 56502 MT
+(place for the)
+309 W( object.  Alternatively, the position might)310 W
+31788 56849 MT
+(is selecting objects.)
+105 W( Typically,)
+461 W( the selected object will be)106 W
+5400 57600 MT
+(depend on some global mode, so the appropriate row of the)23 W
+31788 57947 MT
+(shown by changing)
+127 W( its appearance \050e.g., to reverse video\051)126 W
+5400 58698 MT
+(mode window would)
+52 W( be selected before the demonstration.)53 W
+31788 59045 MT
+(or by showing ``selection handles'')
+181 W( around it \050Figure 6\051.)182 W
+5400 59796 MT
+(Usually, the position)
+29 W( will be obvious \050e.g., first or last\051, but)28 W
+31788 60143 MT
+(Marquise supports virtually any graphical response to)
+17 W( show)16 W
+5400 60894 MT
+(if Marquise cannot guess it, then currently the)
+16 W( designer will)17 W
+31788 61241 MT
+(the selection.)
+SH( The)
+251 W( designer simply draws an example of the)1 W
+5400 61992 MT
+(have to)
+57 W( write a Lisp function to compute the position, pos-)56 W
+31788 62339 MT
+(selection graphics \050or if the object)
+23 W( itself changes, the desig-)22 W
+5400 63090 MT
+(sibly based on values in the mode window.)SH
+31788 63437 MT
+(ner draws the object first in its normal and then in)
+258 W( its)259 W
+31788 64535 MT
+(selected state\051.  If the standard)
+128 W( Garnet selection widget is)127 W
+9 /Helvetica-Oblique AF
+5400 65203 MT
+(User Layout.)78 W
+10 /Times-Roman AF
+11235 XM
+(Most graphical editors, however, require the)79 W
+31788 65633 MT
+(desired, then it is only necessary to go into Show)
+18 W( mode and)19 W
+5400 66301 MT
+(user to explicitly specify the)
+79 W( position of new objects.  The)78 W
+31788 66731 MT
+(select an object.  A special)
+29 W( line of the mode window shows)28 W
+31788 67829 MT
+(which objects are)
+89 W( selected, and this value can be edited to)90 W
+31788 68927 MT
+(show whether the interaction being demonstrated)
+168 W( adds to)167 W
+10800 50 5400 68954 UL
+31788 70025 MT
+(the selection set,)
+286 W( removes from it, clears it, etc.  This)287 W
+6 SS 
+6200 70293 MT
+(3)SH
+8 SS 
+6500 70602 MT
+(Marquise cannot infer a new layout algorithm.  For example, if a)
+55 W( new)54 W
+10 SS 
+31788 71123 MT
+(provides a uniform,)
+85 W( intuitive mechanism for specifying al-)84 W
+8 SS 
+5400 71526 MT
+(kind of graph layout is required, the designer has to program it in)
+8 W( Lisp, but)9 W
+10 SS 
+31788 72221 MT
+(most any selection behavior.)
+22 W( The)
+295 W( designer can also specify)23 W
+8 SS 
+5400 72450 MT
+(it can then be used by Marquise-generated programs.)SH
+ES
+%%Page: 7 7
+BS
+0 SI
+9 /Helvetica-Bold AF
+31788 6281 MT
+(Miscellaneous Editing Commands)SH
+10 /Times-Roman AF
+31788 7577 MT
+(Because Garnet uses a retained object model, there)
+220 W( is a)221 W
+31788 8675 MT
+(standard format for all Garnet)
+33 W( objects.  Therefore, common)32 W
+31788 9773 MT
+(editing commands such as bringing objects to the top \050un-)87 W
+31788 10871 MT
+(covered\051, sending to the bottom, cutting, copying, pasting,)92 W
+31788 11969 MT
+(deleting \050clear\051, duplicating, and printing)
+60 W( in PostScript, are)61 W
+31788 13067 MT
+(all provided.  The designer simply demonstrates what)
+133 W( ac-)132 W
+31788 14165 MT
+(tion causes it to occur, and then which)
+31 W( operation is desired.)32 W
+31788 15263 MT
+(Note that unlike other frameworks that provide)
+160 W( messages)159 W
+31788 16361 MT
+(that must be overridden by each)
+327 W( application, the code)328 W
+31788 17459 MT
+(provided by Marquise for these operations can)
+234 W( often be)233 W
+31788 18557 MT
+(used without change.)SH
+9 /Helvetica-Bold AF
+31788 20670 MT
+(Semantic Actions)SH
+10 /Times-Roman AF
+31788 21966 MT
+(Naturally, many of the commands)
+28 W( in a graphical editor will)29 W
+31788 23064 MT
+(invoke application-specific functions)
+412 W( \050sometimes called)411 W
+31788 24162 MT
+(``semantic actions''\051.  Since)
+211 W( these may involve arbitrary)212 W
+31788 25260 MT
+(computation, it)
+189 W( is impossible for Marquise to infer these)188 W
+6 10 0 -954 39585 GB 
+%%BeginDocument: challenge.PS
+%!PS-Adobe-2.0
+%%Title: Challenge: GARNET
+%%Creator: Make-PS-File -- Garnet Version 2.1
+%%CreationDate: Sep 8, 1992, 4:59 PM
+%%For: 
+%%This file does not use real color
+%%DocumentFonts: (atend)
+%%BoundingBox: 129 226 483 566
+%%%Pages: 1
+%%EndComments
+
+
+/PolylineDict 15 dict def
+/DrawPolyline
+   {    % stack: x1, y1, ..., xn, yn, n, line-halftone, line-red, line-blue,
+        %        line-green, line-join, line-cap, dash-pattern,
+        %        line-thickness, fill-halftone
+        PolylineDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /num-points exch 4 sub def
+        newpath
+          moveto
+          num-points -2 0 {pop lineto} for
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/RoundtanglePath
+   {    % stack: left, top, width, height, radius
+        /r exch def  /h exch def  /w exch def  /t exch def  /l exch def
+        /right l w add def  /bottom t h sub def
+          l r add t moveto                         % origin
+          right t right t r sub r arcto            % top side
+          right bottom right r sub bottom r arcto  % right side
+          l bottom l bottom r add r arcto          % bottom side
+          l t l r add t r arcto                    % left side
+          16 {pop} repeat  % each arcto accumulates 4 stack parameters
+   } def
+
+/RoundtangleDict 27 dict def
+/DrawRoundtangle
+   {    % stack: left, top, width, height, radius, line-halftone,
+        %        line-red, line-green, line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        
+        RoundtangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def  /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /radius exch def
+        /height exch def  /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          radius thickness sub RoundtanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height radius thickness-by-2 sub RoundtanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/TextDict 19 dict def
+/DrawText
+   {    % stack: left top base-y opal-width height line-halftone fill-p
+        %        fore-red fore-green fore-blue fore-color-p
+        %        back-red back-green back-blue back-color-p
+        %        string size font-name
+        TextDict begin
+        gsave
+        findfont exch scalefont setfont
+        /s exch def
+        /back-color-p exch def  /back-blue exch def  /back-green exch def
+        /back-red exch def  /fore-color-p exch def  /fore-blue exch def
+        /fore-green exch def  /fore-red exch def  /fill-p exch def
+        /line-halftone exch def /height exch def  /opal-width exch def
+        /base-y exch def  /top exch def  /left exch def
+
+        % Calculate distance to add between each character, based on the width
+        % expected by Opal, the width expected by postscript, and the number
+        % of characters to distribute the change over
+        /x-dist opal-width s stringwidth pop sub s length div def
+
+        % Draw background of text if appropriate
+        fill-p
+        { gsave
+            newpath
+            left top opal-width height RectanglePath
+            1 back-red back-green back-blue back-color-p
+            FillShape
+          grestore } if
+
+        % Draw text in the appropriate color
+        newpath
+          fore-color-p
+          { fore-red fore-green fore-blue setrgbcolor }
+          { line-halftone setgray } ifelse
+          left base-y moveto
+          x-dist 0 s ashow
+        grestore
+        end
+   } def
+
+/DrawLine
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        %        x2, y2, x1, y1
+        newpath
+          moveto
+          lineto
+          StrokeShape
+   } def
+
+/RectanglePath
+   {    % stack: left, top, width, height
+        /h exch def  /w exch def
+        moveto                  % Go to the left,top corner
+        w 0 rlineto             % top side
+        0 h neg rlineto         % right side
+        w neg 0 rlineto         % bottom side
+        closepath               % left side
+   } def
+
+/RectangleDict 21 dict def
+/DrawRectangle
+   {    % stack: left, top, width, height, line-halftone, line-red, line-green,
+        %        line-blue, line-color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness,
+        %        fill-halftone, fill-red, fill-green, fill-blue, fill-color-p
+        RectangleDict begin
+        /fill-color-p exch def  /fill-blue exch def  /fill-green exch def
+        /fill-red exch def /fill-halftone exch def  /thickness exch def
+        /dash-pattern exch def  /line-join exch def  /line-cap exch def
+        /line-color-p exch def  /line-blue exch def  /line-green exch def
+        /line-red exch def  /line-halftone exch def  /height exch def
+        /width exch def  /top exch def  /left exch def
+        /thickness-by-2 thickness 2 div def
+        % Draw filling
+        newpath
+          left thickness-by-2 add  top thickness-by-2 sub
+          width thickness sub  height thickness sub
+          RectanglePath
+          fill-halftone fill-red fill-green fill-blue fill-color-p FillShape
+        % Draw border
+        newpath
+          left top width height RectanglePath
+          line-halftone line-red line-green line-blue line-color-p
+          line-cap line-join dash-pattern thickness StrokeShape
+        end
+   } def
+
+/ClipDict 2 dict def
+/ClipToRectangle
+   {    % stack: left, top, width, height
+        ClipDict begin
+        /height exch def  /width exch def
+        newpath
+          moveto                % Go to the left,top corner
+          width 0 rlineto       % top side
+          0 height neg rlineto  % right side
+          width neg 0 rlineto   % bottom side
+          closepath             % left side
+        gsave 1 setgray fill grestore
+        clip newpath
+        end
+   } def
+
+/FillShape
+   {    % stack: fill-halftone, red, green, blue, color-p
+        %   Color-p should be true or false - false means ignore the three vals
+        %   Use -1 for fill-halftone to mean NIL, 0 = black, 1 = white
+        %   Use -2 for fill-halftone to indicate there is an arbitrary filling
+        % style on the stack
+        gsave
+        { setrgbcolor fill pop }
+        { pop pop pop 
+          dup 0 ge
+            % if fill-halftone >= 0, then fill the shape with a halftone
+            { setgray fill}
+            % else, if there is an arbitrary filling style, then fill
+            { -2 eq
+              {SetPattern fill} if
+            } ifelse } ifelse
+        grestore
+   } def
+
+/StrokeShape
+   {    % stack: line-halftone, red, green, blue, color-p,
+        %        line-cap, line-join, dash-pattern, line-thickness
+        % If no line is desired, pass -1 for line-thickness
+        % Halftones: 0 = black, 1 = white
+        dup 0 ge
+          % if line-thickness >= 0, then draw the outline
+          {gsave
+           setlinewidth 0 setdash setlinejoin setlinecap
+             { setrgbcolor pop }
+             { pop pop pop setgray } ifelse
+           stroke
+           grestore}
+          {pop pop pop pop pop pop pop pop pop newpath} ifelse
+   } def
+
+
+%%EndProlog
+%%%Page: 1 1
+
+gsave
+72 72 translate
+1 1 scale
+
+%
+% Begin new window
+%
+57 -154 translate
+gsave
+0 648 354 340 ClipToRectangle
+0 0 translate
+gsave
+22 596 56 16 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRectangle
+0 0 0 0 false 0 0 [] 1 72 618 28 618 DrawLine
+0 0 0 0 false 0 0 [] 2 72 588 28 588 DrawLine
+0 0 0 0 false 0 0 [] 4 72 558 28 558 DrawLine
+0 0 0 0 false 0 0 [4 4] 1 72 528 28 528 DrawLine
+25 443 61 34 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+20 448 61 34 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+25 443 51 24 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+30 438 427 41 14 0 false 0 0 0 false 0 0 0 false (Delete) 12 /Courier DrawText
+25 399 61 34 0 0 0 0 false 0 0 [] 1 0 0 0 0 false DrawRectangle
+20 404 61 34 0 0 0 0 false 0 0 [] 1 0.50 0 0 0 false DrawRectangle
+25 399 51 24 0 0 0 0 false 0 0 [] 1 1 0 0 0 false DrawRectangle
+37 394 383 27 14 0 false 0 0 0 false 0 0 0 false (Quit) 12 /Courier DrawText
+grestore
+
+gsave
+
+%
+% Begin new window
+%
+100 2 translate
+gsave
+0 648 254 340 ClipToRectangle
+0 0 translate
+gsave
+34 631 50 52 15 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+42 626 615 34 14 0 false 0 0 0 false 0 0 0 false (Box 1) 12 /Courier DrawText
+113 563 96 62 15 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+144 558 547 34 14 0 false 0 0 0 false 0 0 0 false (Box 2) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 1 153 538 59 605 DrawLine
+156 542 161 532 150 534 156 542 8 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawPolyline
+33 486 117 81 15 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRoundtangle
+74 482 471 34 14 0 false 0 0 0 false 0 0 0 false (Box 3) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 2 97 454 161 532 DrawLine
+101 451 91 446 93 457 101 451 8 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawPolyline
+169 413 71 46 15 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawRoundtangle
+187 410 399 34 14 0 false 0 0 0 false 0 0 0 false (Box 4) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 4 195 394 91 446 DrawLine
+197 398 204 390 193 390 197 398 8 0 0 0 0 false 0 0 [] 4 -1 0 0 0 false DrawPolyline
+28 377 130 53 15 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRoundtangle
+76 372 361 34 14 0 false 0 0 0 false 0 0 0 false (Box 5) 12 /Courier DrawText
+0 0 0 0 false 0 0 [] 1 102 354 204 390 DrawLine
+104 349 93 351 100 359 104 349 8 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawPolyline
+29 463 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+29 433 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+29 407 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+68 407 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+110 407 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+148 407 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+148 433 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+148 463 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+148 490 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+110 490 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+68 490 7 7 0 0 0 0 false 0 0 [] 1 -1 0 0 0 false DrawRectangle
+29 490 7 7 0 0 0 0 false 0 0 [] -1 0 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 648 254 340 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+grestore
+
+0 648 354 340 0 0 0 0 false 0 0 [] 2 -1 0 0 0 false DrawRectangle
+grestore
+
+
+showpage
+%%Trailer
+%%DocumentFonts: /Courier 
+%%BoundingBox: 129 226 483 566
+
+%%EndDocument
+ GE 31788 26358 MT
+(from a demonstration.)
+294 W( However,)
+840 W( techniques like those)295 W
+31788 27456 MT
+(previously reported for Gilt)
+165 W( [7])
+SH( are used)
+165 W( to allow the ap-)164 W
+/Times-Bold SF
+15198 27619 MT
+(Figure 6:)SH
+/Times-Roman SF
+31788 28554 MT
+(plication procedures to)
+62 W( be independent of the way they are)63 W
+9 SS 
+7200 28633 MT
+(The arrows are constrained to)
+127 W( be in the centers of the)128 W
+7200 29647 MT
+(boxes. Box)
+293 W( 3 has)
+34 W( ``selection handles'' around it, which)33 W
+10 SS 
+31788 29652 MT
+(invoked \050from)
+367 W( a button, menu, double-click, etc.\051 and)366 W
+9 SS 
+7200 30661 MT
+(show that)
+56 W( it is selected, and the user can click on white)57 W
+10 SS 
+31788 30750 MT
+(somewhat independent of the graphics.  However,)
+247 W( most)248 W
+9 SS 
+7200 31675 MT
+(handles to move it or black handles to grow it.  The)166 W
+10 SS 
+31788 31848 MT
+(functions will)
+144 W( want to walk through the graphical objects)143 W
+9 SS 
+7200 32689 MT
+(formula that computes the labels was)
+57 W( hand-coded using)58 W
+10 SS 
+31788 32946 MT
+(computing values, so they)
+111 W( will clearly have to look at the)112 W
+9 SS 
+7200 33703 MT
+(C32.)SH
+10 SS 
+31788 34044 MT
+(graphical objects in the window.)SH
+24012 50 5400 35008 UL
+31788 36157 MT
+(If the result of the function is a change to the graphic)
+105 W( ap-)104 W
+5400 36599 MT
+(whether a different form of feedback is)
+10 W( used when there are)9 W
+31788 37255 MT
+(pearance of)
+174 W( nodes, then this can be specified demonstra-)175 W
+5400 37697 MT
+(multiple selections)
+486 W( \050as in Macintosh PowerPoint and)487 W
+31788 38353 MT
+(tionally. For)
+718 W( example, a ``critical-path'')
+234 W( command in a)233 W
+5400 38795 MT
+(MacProject II\051.)SH
+31788 39451 MT
+(graph editor might)
+25 W( want all the nodes on the critical path to)26 W
+31788 40549 MT
+(turn red.  The designer can bring up a property sheet on)
+24 W( the)23 W
+9 /Helvetica-Bold AF
+5400 40908 MT
+(Moving and Growing Objects)SH
+8 /Times-Roman AF
+53136 41317 MT
+(4)SH
+10 SS 
+31788 41662 MT
+(nodes, add an)535 W
+/Courier SF
+39114 XM
+(on-critical-path)SH
+/Times-Roman SF
+49498 XM
+(property,)SH
+54320 XM
+(and)SH
+5400 42204 MT
+(Demonstrating what commands cause)
+73 W( objects to be moved)72 W
+31788 42760 MT
+(demonstrate that)
+10 W( the nodes are black when it is NIL and red)11 W
+5400 43302 MT
+(and grown works similarly to)
+101 W( demonstrating how they are)102 W
+31788 43858 MT
+(when it is)
+32 W( T. Then, the critical-path function would only be)31 W
+5400 44400 MT
+(created: first, the designer demonstrates in)
+307 W( Train mode)306 W
+31788 44956 MT
+(responsible for setting)
+53 W( the)54 W
+/Courier SF
+42612 XM
+(on-critical-path)SH
+/Times-Roman SF
+52516 XM
+(value in)54 W
+5400 45498 MT
+(what user)
+61 W( action causes the interaction to start, and then in)62 W
+31788 46054 MT
+(each node.  This makes the application)
+29 W( function more inde-)28 W
+5400 46596 MT
+(Show mode, moves or grows the appropriate object.  Since)44 W
+31788 47152 MT
+(pendent of the graphical response to its actions.)SH
+5400 47694 MT
+(the standard editing actions work in)
+28 W( Show mode, the desig-)29 W
+5400 48792 MT
+(ner would)
+359 W( just use the Marquise move-grow selection)358 W
+31788 49265 MT
+(Semantic feedback can often be)
+53 W( provided in the same way.)54 W
+5400 49890 MT
+(handles to demonstrate the behavior.)
+161 W( Of)
+573 W( course, if other)162 W
+31788 50363 MT
+(For example,)
+61 W( Marquise supports highlighting of only those)60 W
+5400 50988 MT
+(objects are attached to the moved object with)
+133 W( constraints,)132 W
+31788 51461 MT
+(objects that an object)
+315 W( is being dragged can legally be)316 W
+5400 52086 MT
+(they will also move.)SH
+31788 52559 MT
+(dropped into, as in the Macintosh Finder.)
+51 W( Here,)
+351 W( a function)50 W
+31788 53657 MT
+(could be called to set a particular property of each object)
+21 W( to)22 W
+5400 54199 MT
+(One complication is that often the object that the mouse is)70 W
+31788 54755 MT
+(T or NIL.  Then,)
+132 W( the designer would demonstrate the ap-)131 W
+5400 55297 MT
+(over is not the object that should be modified.  For ex-)200 W
+31788 55853 MT
+(propriate color change when the node)
+229 W( is over an object)230 W
+5400 56395 MT
+(ample, with selection handles, the user clicks)
+90 W( on a handle,)91 W
+31788 56951 MT
+(which has the value T for that property.)SH
+5400 57493 MT
+(but wants to grow the object)47 W
+/Times-Italic SF
+17292 XM
+(underneath)SH
+/Times-Roman SF
+(. Marquise)
+344 W( knows)47 W
+5400 58591 MT
+(about this)
+11 W( special case, and if the object the designer moves)12 W
+31788 59064 MT
+(Similarly, if)
+23 W( the application wants to control which mode is)22 W
+5400 59689 MT
+(is attached by)
+9 W( a constraint to the object clicked on, then this)8 W
+31788 60162 MT
+(in effect, it can simply change the value of one)
+19 W( of the mode)20 W
+5400 60787 MT
+(is reflected in the generated behavior.)SH
+31788 61260 MT
+(variables, and the designer)
+215 W( can demonstrate interactively)214 W
+31788 62358 MT
+(what this controls.)SH
+9 /Helvetica-Bold AF
+5400 62900 MT
+(Other Properties of Objects)SH
+10 /Times-Roman AF
+5400 64196 MT
+(Many properties)
+139 W( of objects are controlled by palettes, but)140 W
+9 /Helvetica-Bold AF
+31788 64471 MT
+(EDITING)SH
+10 /Times-Roman AF
+5400 65294 MT
+(some are not.  In some graphical editors, a menu)
+37 W( command)36 W
+31788 65767 MT
+(An important aspect)
+36 W( of an interactive builder is how to edit)37 W
+5400 66392 MT
+(or double-clicking on an object)
+130 W( opens a property sheet or)131 W
+31788 66865 MT
+(the interfaces after they have been created.)
+6 W( It)
+261 W( is easy to edit)5 W
+5400 67490 MT
+(dialog box with other properties.)
+36 W( Marquise)
+320 W( provides hooks)35 W
+5400 68588 MT
+(to pop up)
+5 W( a property sheet or a dialog box created automati-)6 W
+5400 69686 MT
+(cally by Jade or)
+182 W( interactively using Gilt.  Of course, the)181 W
+10800 50 31788 69878 UL
+5400 70784 MT
+(designer can specify which fields are presented.)SH
+6 SS 
+32588 71217 MT
+(4)SH
+8 SS 
+32888 71526 MT
+(The Garnet object system allows properties to be added)
+98 W( to objects at)99 W
+31788 72450 MT
+(any time.)SH
+ES
+%%Page: 8 8
+BS
+0 SI
+10 /Times-Roman AF
+5400 6311 MT
+(the graphics, since)
+278 W( they can be directly manipulated in)279 W
+31788 XM
+(The views and)
+80 W( conclusions contained in this document are)81 W
+5400 7409 MT
+(Build mode.)
+156 W( For)
+560 W( the behaviors, the feedback window of)155 W
+31788 XM
+(those of the authors and)
+347 W( should not be interpreted as)346 W
+5400 8507 MT
+(Figure 3 shows)
+136 W( the properties.  When in Train mode, the)137 W
+31788 XM
+(representing the official)
+195 W( policies, either expressed or im-)196 W
+5400 9605 MT
+(feedback window continually shows)
+636 W( the name and)635 W
+31788 XM
+(plied, of the U.S. Government.)SH
+5400 10703 MT
+(properties of the behaviors)
+63 W( being executed, so the designer)64 W
+9 /Helvetica-Bold AF
+31788 11718 MT
+(REFERENCES)SH
+10 /Times-Roman AF
+5400 11801 MT
+(can determine which)
+137 W( behaviors are associated with which)136 W
+5400 12899 MT
+(events. There)
+412 W( are also commands to list)
+81 W( all the behaviors,)82 W
+/Times-Bold SF
+31788 13707 MT
+(1.)SH
+/Times-Roman SF
+33038 XM
+(Gene L. Fisher, Dale E. Busse, and David A. Wolber.)SH
+5400 13997 MT
+(or all those affecting a particular object.)SH
+31788 14812 MT
+(Adding Rule-Based Reasoning to a Demonstrational Inter-)SH
+31788 15917 MT
+(face Builder.  ACM SIGGRAPH Symposium on User In-)SH
+9 /Helvetica-Bold AF
+5400 16110 MT
+(CONCLUSION)SH
+10 /Times-Roman AF
+31788 17022 MT
+(terface Software and Technology, Proceedings UIST'92,)SH
+5400 17406 MT
+(One of the)
+199 W( important questions for an interactive tool is)198 W
+31788 18127 MT
+(Monterey, CA, Nov., 1992, pp. 89-97.)SH
+5400 18504 MT
+(what is the range of interfaces that it can create.  Unfor-)150 W
+5400 19602 MT
+(tunately, this is very difficult to)
+211 W( quantify, except by ex-)210 W
+/Times-Bold SF
+31788 19918 MT
+(2.)SH
+/Times-Roman SF
+33038 XM
+(Anthony Karrer and Walt Scacchi.  Requirements for an)SH
+5400 20700 MT
+(ample. Using)
+708 W( the Lapidary, Gilt and Marquise tools in)229 W
+31788 21023 MT
+(Extensible Object-Oriented Tree/Graph Editor.  ACM SIG-)SH
+5400 21798 MT
+(Garnet, it is possible without programming to create com-)98 W
+31788 22128 MT
+(GRAPH Symposium on User Interface Software and Tech-)SH
+5400 22896 MT
+(plete user interfaces like those in Macintosh)
+267 W( MacDraw,)268 W
+31788 23233 MT
+(nology, Proceedings UIST'90, Snowbird, Utah, Oct., 1990,)SH
+5400 23994 MT
+(MacDraw II, PowerPoint, and MacProject)
+240 W( II \050which are)239 W
+31788 24338 MT
+(pp. 84-91.)SH
+5400 25092 MT
+(surprisingly different\051, as well as)
+68 W( applications with various)69 W
+/Times-Bold SF
+31788 26129 MT
+(3.)SH
+/Times-Roman SF
+33038 XM
+(Brad A. Myers.)SH
+/Times-Italic SF
+39759 XM
+(Creating User Interfaces by)SH
+/Times-Roman SF
+5400 26190 MT
+(kinds of automatic layout for nodes.)
+204 W( Later,)
+656 W( we hope to)203 W
+/Times-Italic SF
+31788 27234 MT
+(Demonstration.)SH
+/Times-Roman SF
+38538 XM
+(Academic Press, Boston, 1988.)SH
+5400 27288 MT
+(expand the range of Marquise to handle)
+67 W( gestural interfaces)68 W
+5400 28386 MT
+(\050the Garnet toolkit already supports gesture recognition\051,)205 W
+/Times-Bold SF
+31788 29025 MT
+(4.)SH
+/Times-Roman SF
+33038 XM
+(Brad A. Myers, Brad Vander Zanden, and Roger)SH
+5400 29484 MT
+(and those with)
+68 W( 3-D graphics.  We also plan to add support)69 W
+31788 30130 MT
+(B. Dannenberg.  Creating Graphical Interactive Application)SH
+5400 30582 MT
+(for animations, which)
+315 W( will probably make possible the)314 W
+31788 31235 MT
+(Objects by Demonstration.  ACM SIGGRAPH Symposium)SH
+5400 31680 MT
+(demonstration of various)
+167 W( visualizations and video games.)168 W
+31788 32340 MT
+(on User Interface Software and Technology, Proceedings)SH
+5400 32778 MT
+(Another addition will be to support)
+247 W( defining constraints)246 W
+31788 33445 MT
+(UIST'89, Williamsburg, VA, Nov., 1989, pp. 95-104.)SH
+5400 33876 MT
+(among objects directly in)
+556 W( Marquise, probably using)557 W
+5400 34974 MT
+(demonstrational techniques similar)
+122 W( to Peridot)
+121 W( [3])
+SH( or Druid)121 W
+/Times-Bold SF
+31788 35236 MT
+(5.)SH
+/Times-Roman SF
+33038 XM
+(Brad A. Myers.  Encapsulating Interactive Behaviors.)SH
+5650 36072 MT
+([8].)SH
+31788 36341 MT
+(Human Factors in Computing Systems, Proceedings)SH
+31788 37446 MT
+(SIGCHI'89, Austin, TX, April, 1989, pp. 319-324.)SH
+5400 38185 MT
+(Marquise is still under development.  When it is)
+269 W( more)270 W
+/Times-Bold SF
+31788 39237 MT
+(6.)SH
+/Times-Roman SF
+33038 XM
+(Brad A. Myers, Dario A. Giuse, Roger B. Dannenberg,)SH
+5400 39283 MT
+(robust, we)
+592 W( will perform user-testing to see if the)591 W
+31788 40342 MT
+(Brad Vander Zanden, David S. Kosbie, Edward Pervin,)SH
+5400 40381 MT
+(demonstrations and)
+246 W( feedback are understandable to both)247 W
+31788 41447 MT
+(Andrew Mickish, and Philippe Marchal.  "Garnet: Com-)SH
+5400 41479 MT
+(non-programmers and programmers.  After)
+208 W( that, we will)207 W
+31788 42552 MT
+(prehensive Support for Graphical, Highly-Interactive User)SH
+5400 42577 MT
+(release it for general use as part of the Garnet system.  All)61 W
+31788 43657 MT
+(Interfaces".)SH
+/Times-Italic SF
+36888 XM
+(IEEE Computer 23)SH
+/Times-Roman SF
+(, 11 \050Nov. 1990\051, 71-85.)SH
+5400 43675 MT
+(this will help show)
+68 W( what kinds of behaviors it can capture,)67 W
+5400 44773 MT
+(and we will continually work to expand the range.)SH
+/Times-Bold SF
+31788 45448 MT
+(7.)SH
+/Times-Roman SF
+33038 XM
+(Brad A. Myers.  Separating Application Code from)SH
+31788 46553 MT
+(Toolkits: Eliminating)
+250 W( the Spaghetti of Call-Backs.  ACM)SH
+5400 46886 MT
+(We believe that interactive,)
+288 W( demonstrational creation of)289 W
+31788 47658 MT
+(SIGGRAPH Symposium on User Interface Software and)SH
+5400 47984 MT
+(user interfaces is easier, faster, and more fun)
+20 W( than program-)19 W
+31788 48763 MT
+(Technology, Proceedings UIST'91, Hilton Head, SC, Nov.,)SH
+5400 49082 MT
+(ming. Many)
+488 W( interactive builders have already shown that)119 W
+31788 49868 MT
+(1991, pp. 211-220.)SH
+5400 50180 MT
+(dialog boxes)
+73 W( and forms can be created interactively.  Mar-)72 W
+5400 51278 MT
+(quise shows that)
+278 W( direct manipulation techniques can be)279 W
+/Times-Bold SF
+31788 51659 MT
+(8.)SH
+/Times-Roman SF
+33038 XM
+(Gurminder Singh, Chun Hong Kok, and Teng Ye Ngan.)SH
+5400 52376 MT
+(used to generate the)
+99 W( user interfaces of a much wider class)98 W
+31788 52764 MT
+(Druid: A System for Demonstrational Rapid User Interface)SH
+5400 53474 MT
+(of graphical applications as well.)SH
+31788 53869 MT
+(Development. ACM)
+250 W( SIGGRAPH Symposium on User In-)SH
+31788 54974 MT
+(terface Software and Technology, Proceedings UIST'90,)SH
+9 /Helvetica-Bold AF
+5400 55587 MT
+(ACKNOWLEDGEMENTS)SH
+10 /Times-Roman AF
+31788 56079 MT
+(Snowbird, Utah, Oct., 1990, pp. 167-177.)SH
+5400 57700 MT
+(For help with)
+222 W( this paper, we would like to thank Dario)223 W
+/Times-Bold SF
+31788 57870 MT
+(9.)SH
+/Times-Roman SF
+33038 XM
+(John M. Vlissides and Mark A. Linton.  Unidraw: A)SH
+5400 58798 MT
+(Giuse, Brad)
+165 W( Vander Zanden, Andrew Werth, and Bernita)164 W
+31788 58975 MT
+(Framework for Building Domain-Specific Editors.  ACM)SH
+5400 59896 MT
+(Myers.)SH
+31788 60080 MT
+(SIGGRAPH Symposium on User Interface Software and)SH
+31788 61185 MT
+(Technology, Proceedings UIST'89, Williamsburg, VA,)SH
+5400 62009 MT
+(This research was sponsored by the Avionics)
+140 W( Laboratory,)141 W
+31788 62290 MT
+(Nov., 1989, pp. 158-167.)SH
+5400 63107 MT
+(Wright Research and Development Center, Aeronautical)263 W
+/Times-Bold SF
+31788 64081 MT
+(10.)SH
+/Times-Roman SF
+33538 XM
+(David Wolber and Gene Fisher.  A Demonstrational)SH
+5400 64205 MT
+(Systems Division)
+460 W( \050AFSC\051, U. S. Air Force, Wright-)461 W
+31788 65186 MT
+(Technique for Developing Interfaces with Dynamically)SH
+5400 65303 MT
+(Patterson AFB,)
+963 W( OH 45433-6543 under Contract)962 W
+31788 66291 MT
+(Created Objects.  ACM SIGGRAPH Symposium on User)SH
+5400 66401 MT
+(F33615-90-C-1465, ARPA Order No. 7597.)SH
+31788 67396 MT
+(Interface Software and Technology, Proceedings UIST'91,)SH
+31788 68501 MT
+(Hilton Head, SC, Nov., 1991, pp. 221-230.)SH
+ES
+%%Trailer
+%%Pages: 8
+%%DocumentFonts: Times-Roman Helvetica-Bold Times-Italic Courier Times-Bold Symbol Helvetica-Oblique

@@ -1,0 +1,2 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+22:11:13	156/156	------	403	error ('Forbidden')	text/html	date:Wed,%2030%20Mar%202016%2005:09:27%20GMT	http://www.cs.cmu.edu/afs/cs.cmu.edu/project/garnet	www.cs.cmu.edu/afs/cs.cmu.edu/project/garnet.0.delayed	(from )

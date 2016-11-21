@@ -1,0 +1,2 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+22:32:31	0/0	---M--	302	error ('Found')	text/html	date:Wed,%2030%20Mar%202016%2005:32:31%20GMT	https://web.archive.org/web/20150919023841/http://dub.washington.edu:2007/denim/	web.archive.org/web/20150919023841/http_/dub.washington.edu_2007/denim/index.html	(from )

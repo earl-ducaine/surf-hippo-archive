@@ -1,0 +1,3 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+22:24:03	7769/7769	---M--	200	added ('OK')	text/html	date:Wed,%2030%20Mar%202016%2005:24:02%20GMT	http://www.cs.cmu.edu/~garnet/	www.cs.cmu.edu/_garnet/index.html	(from )
+22:25:41	2432650/2432650	---M--	200	added ('OK')	application/zip	etag:%221ec830b8-251e8a-3974d5c4da3c0%22	http://www.cs.cmu.edu/~garnet/Garnet-Manual-Doc.zip	www.cs.cmu.edu/_garnet/Garnet-Manual-Doc.zip	(from http://www.cs.cmu.edu/~garnet/)

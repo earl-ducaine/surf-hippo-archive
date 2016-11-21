@@ -1,0 +1,8 @@
+-iC1 -s0 -D https://web.archive.org/web/20150919023841/http://dub.washington.edu:2007/denim/
+File generated automatically on Fri, 01 Apr 2016 13:33:18, do NOT edit
+
+To update a mirror, just launch httrack without any parameters
+The existing cache will be used (and modified)
+To have other options, retype all parameters and launch HTTrack
+To continue an interrupted mirror, just launch httrack without any parameters
+

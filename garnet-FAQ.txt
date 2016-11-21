@@ -1,0 +1,282 @@
+From Brad_Myers@BAM.GARNET.CS.CMU.EDU Thu Apr 14 02:43:43 1994
+Flags: 000000000001
+Article-Number: 672
+Newsgroups: comp.windows.garnet
+Path: ifi.uio.no!nac.no!eunet.no!EU.net!howland.reston.ans.net!europa.eng.gtefsd.com!library.ucla.edu!news.mic.ucla.edu!nntp.club.cc.cmu.edu!honeydew.srv.cs.cmu.edu!Brad_Myers@BAM.GARNET.CS.CMU.EDU
+From: Brad_Myers@BAM.GARNET.CS.CMU.EDU
+Subject: Re: Is there a FAQ in this group? 
+Message-ID: <3069.766284223@BAM.GARNET.CS.CMU.EDU>
+Sender: news+@cs.cmu.edu
+Original-To: Shih-Hua Chao <shihhua@CS.NYU.EDU>
+Organization: School of Computer Science, Carnegie Mellon
+Original-Sender: network@CRABAPPLE.SRV.CS.CMU.EDU
+References: Your message of "13 Apr 94 16:08:37 EDT."
+             <2ohjg5$me6@slinky.cs.nyu.edu> 
+Distribution: comp
+Date: Thu, 14 Apr 1994 00:43:43 GMT
+Original-Cc: garnet-users@cs.cmu.edu
+Approved: bboard-news_gateway
+Lines: 262
+
+
+Here is the FAQ.  What is rtfm.mit.edu?
+Thank you for your interest in Garnet.
+
+Brad A. Myers
+Computer Science Department
+Carnegie Mellon University
+5000 Forbes Avenue
+Pittsburgh, PA  15213-3891
+(412) 268-5150
+FAX: (412) 681-5739
+bam@cs.cmu.edu
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+Frequently Asked Questions (FAQ) about Garnet.
+
+This file is stored as:
+	ftp://a.gp.cs.cmu.edu/usr/garnet/garnet/FAQ
+
+------------------------------------------------------------------------
+The following questions about Garnet are answered below:
+
+[1] What Is Garnet?
+[2] How do I get Garnet?
+[3] Does Garnet run on a Macintosh or a PC?
+[4] Which forms of Lisp does Garnet work in?
+[5] What hardware does Garnet run on?
+[6] How do I get CMU CL (a free, public domain lisp)?
+[7] I am having trouble getting CLX to work...
+[8] Why doesn't Garnet use CLOS?
+[9] When will there be a C or C++ version of Garnet?
+[10] What do all the acronyms stand for?
+[11] How can I learn more about Garnet?
+
+------------------------------------------------------------------------
+[1] What Is Garnet?
+
+Garnet is a user interface development environment for Common Lisp and
+X11.  It helps you create graphical, interactive user interfaces for
+your software.  Garnet is a large scale system containing many
+features and parts.
+* Toolkit intrinsics:
+   - A custom object-oriented programming system which uses a
+	   prototype-instance model. 
+   - Automatic constraint maintenance: so properties of objects can depend on
+	   properties of other objects, and be automatically re-evaluated
+	   when the other objects change.  The constraints can be
+	   arbitrary lisp expressions.
+   - Built-in, high-level input event handling.
+   - Support for gesture recognition
+   - Widgets for multi-font, multi-line, mouse-driven text editing.
+   - Optional automatic layout of application data into lists, tables, trees,
+	   or graphs.
+   - Automatic generation of PostScript for printing.
+   - Support for large-scale applications and data visualization.
+* Two complete widget sets:
+   - One with a Motif look and feel implemented in Lisp, and one with
+	   a custom look and feel.
+* Interactive design tools for creating parts of the interface without
+	   writing code:
+   - Gilt interface builder for creating dialog boxes
+   - Lapidary interactive tool for creating new widgets and for
+	   drawing application-specific objects.
+   - C32 spreadsheet system for specifying complex constraints.
+  (The next parts are not yet ready for release.)
+   - Jade automatic dialog box creation system.
+   - Marquise interactive tool for specifying behaviors.
+
+------------------------------------------------------------------------
+[2] How do I get Garnet?
+	 
+Garnet is available for free by anonymous FTP.  There is currently
+only one site from which it is available.   To retrieve Garnet, ftp to
+a.gp.cs.cmu.edu (128.2.242.7).  When asked to log in, use "anonymous", and
+your name as the password.  Then change to the garnet directory (note the
+double garnet's) and get the README explanation file:
+	ftp> cd /usr/garnet/garnet/
+	ftp> get README
+Now, follow the directions in the README file.
+
+There are no restrictions on your use or redistribution of Garnet.
+
+NOTE: If you are reading this FAQ from Mosaic or another WWW client,
+you can get the README file and perform the ftp operations by selecting
+"Garnet FTP directory" off of the Garnet Home Page -- under the
+Garnet Information menu.
+
+------------------------------------------------------------------------
+[3] Does Garnet run on a Macintosh or a PC?
+
+Currently, Garnet only interfaces to X11.  We have projects underway
+or planned to interface Garnet to the native Macintosh window system
+and to some form of MS Windows for a PC, but these are not yet ready.
+Therefore, you can only run Garnet if you can interface it to X11.
+
+However, the object and constraint system of Garnet, called KR, will
+work by itself on other systems, since it only uses straight
+CommonLisp and not CLX.  You can FTP just the KR part and the KR
+manual from the standard Garnet distribution (see question [2]). 
+	 
+------------------------------------------------------------------------
+[4] Which forms of Lisp does Garnet work in?
+
+We support every Lisp that we have come across which has a CLX
+(interface to X11), which currently includes Allegro, Lucid, CMU,
+Harlequin Lispworks, AKCL, CLISP and TI Explorer Lisps.  It appears
+that AKCL is quite slow and we do not recommend using it.  (See also
+question [6].)
+
+------------------------------------------------------------------------
+[5] What hardware does Garnet run on?
+
+Garnet runs on any hardware that has X11 and Common Lisp
+implementations.  This is pretty much any workstation class machine,
+including Sun, DEC, HP, Apollo, IBM 6000, Silicon Graphics, etc.
+
+------------------------------------------------------------------------
+[6] How do I get CMU CL?
+
+CMU CL is a free, high-quality implementation of full Common Lisp
+which works on Suns and other hardware.  CMU Common Lisp is a separate
+project unrelated to Garnet.  Garnet does work in CMU CL, and the
+following information is from the standard CMU CL FAQ:
+
+   CMU Common Lisp is free, and runs on Sparcs (Mach and SunOs),
+   DecStation 3100 (Mach), IBM RT (Mach) and requires 16mb RAM, 25mb
+   disk. It includes an incremental compiler, Hemlock emacs-style editor,
+   source-code level debugger, code profiler and is mostly X3J13
+   compatible, including the new loop macro.  It is available by anonymous
+   ftp from any CMU CS machine, such as ftp.cs.cmu.edu [128.2.206.173], in the
+   directory /afs/cs.cmu.edu/project/clisp/release. Login with username
+   "anonymous" and "userid@host" (your email address) as password. Due to
+   security restrictions on anonymous ftps (some of the superior
+   directories on the path are protected against outside access), it is
+   important to "cd" to the source directory with a single command.
+   Don't forget to put the ftp into binary mode before using "get" to
+   obtain the compressed/tarred files. The binary releases are
+   contained in files of the form
+                <version>-<machine>_<os>.tar.Z
+   Other files in this directory of possible interest are
+   {15e,16c}-source.tar.Z, which contains all the ".lisp" source files
+   used to build version 15e and 16c. Use "dir" or "ls" to see what is
+   available. Bug reports should be sent to cmucl-bugs@cs.cmu.edu.
+
+Please do not send CMU CL questions to the Garnet group: use 
+cmucl-bugs@cs.cmu.edu instead.
+
+------------------------------------------------------------------------
+[7] I am having trouble getting CLX to work...
+
+CLX should be supplied with every Common Lisp.  If you have trouble
+with CLX, please contact your Lisp vendor.  We can't help you.
+
+------------------------------------------------------------------------
+[8] Why doesn't Garnet use CLOS?
+
+CLOS is the standard Common Lisp Object System, and Garnet uses a
+custom object system (called KR) instead.  There are a number of
+reasons for this.
+
+The main reason is that Garnet uses a prototype-instance model, rather
+than the conventional class-instance model supported by CLOS.  We have
+found the prototype model to be more effective for user interface
+prototyping and construction.  A second reason is performance: it
+appears that KR is more efficient than CLOS for most standard
+operations.  Since we have control of KR, we can also optimize the
+performance of constraint satisfaction, which would require extra
+overhead in CLOS.
+
+There are no plans for a CLOS version of Garnet, although we are
+thinking about easier mechanisms to link Garnet objects and an
+application's CLOS objects.
+
+------------------------------------------------------------------------
+[9] When will there be a C or C++ version of Garnet?
+
+There are no plans to re-implement Garnet in C.  However, we recognize
+that Garnet would have a significantly increased market if it was in
+C, so we are interested in talking with companies or researchers who
+would like to pursue a conversion.  A problem with a C++ version would
+be that it uses a class-instance model rather than Garnet's
+prototype-instance model.
+
+------------------------------------------------------------------------
+[10] What do all the acronyms stand for?
+
+GARNET:				KR:			CORAL:
+Generating an			Knowledge		Constraint-Based,
+Amalgam of			Representation		Object-Oriented
+Real-time,						Relations
+Novel				OPAL:			And
+Editors and			Object			Language
+Toolkits			Programming		
+				Aggregate		
+C32:				Layer			JADE:
+CMU's							Judgement-based
+Clever and			LAPIDARY:		Automatic
+Compelling			Lisp-Based		Dialog
+Contribution to			Assistant for		Editor
+Computer Science in		Prototyping		
+CommonLisp which is		Interface		
+Customizable and		Designs			
+Characterized by a		Allowing		GEM
+Complete			Remarkable		Graphics and
+Coverage of			Yield			Events
+Code and 						Manager
+Contains a			AGATE:			
+Cornucopia of			A			
+Creative			Gesture-recognizer
+Constructs, because it		And
+Can				Trainer by
+Create				Example
+Complex,			
+Correct				
+Constraints that are		MARQUISE:
+Constructed			Mostly
+Clearly and			Automated,
+Concretely, and			Remarkably
+Communicated using		Quick
+Columns of			User
+Cells, that are			Interface
+Constantly			Software
+Calculated so they		Environment
+Change				
+Continuously, and		
+Cancel
+Confusion.
+
+------------------------------------------------------------------------
+[11] How can I learn more about Garnet?
+
+There is an Internet bulletin board called comp.windows.garnet on
+which Garnet is discussed.  If you cannot access this, then the
+messages are repeated on the mailing list garnet-users@cs.cmu.edu.
+Send mail to garnet@cs.cmu.edu to be added if you cannot access the
+bulletin board.
+
+There is a World-wide Web page about Garnet which can be accessed via
+WWW browsers, such as Mosaic.  It contains pictures of the Garnet
+developers, screen shots from some of your applications, abstracts and
+postscript for papers, and links to the Garnet FTP directories and
+other information.  You can get to the Garnet page by opening the
+following URL from within your browser:
+   http://www.cs.cmu.edu:8001/Web/Groups/garnet/garnet-home.html
+
+The complete reference manuals for Garnet, which include a tour and
+tutorial, are available for anonymous FTP (see instructions above).
+The best overview article about Garnet appeared in IEEE Computer, vol.
+23, No. 11., Nov, 1990. pp. 71-85.  A number of old articles about
+Garnet were collected into a CMU Technical Report: "The Garnet
+Compendium: Collected Papers, 1989-1990" CMU-CS-90-154, August, 1990.
+A new compendium has recently been printed including 9 recent papers:
+"The Second Garnet Compendium: Collected Papers, 1990-1992"
+CMU-CS-93-108, February, 1993.  To order either, send mail to
+reports@cs.cmu.edu. There have been about 30 refereed papers and 12
+technical reports about Garnet so far, including papers in OOPSLA (88,
+92), SIGCHI (89, 90, 91, 92, 93), ACM TOIS (July 90), Visual Computer
+(Feb 92), and UIST (89, 91, 92), and a complete bibliography is
+available from garnet@cs.cmu.edu.  The bibliography and the postscript
+for some articles are stored in the directory /usr/garnet/garnet/doc/papers/
+

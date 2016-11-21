@@ -1,0 +1,43 @@
+(ft (wang (tup) (tup) _a _b) (member _x _a) (member _x _b)
+    `(tup both _x (wang _a _b)))
+
+(ft (wang (tup _x | _f) _r _a _b) (atomic _x) !
+    (wang _f _r `(tup _x | _a) _b))
+
+(ft (wang _l (tup _x | _g) _a _b) (atomic _x) !
+    (wang _l _g _a `(tup _x | _b)))
+
+(ft (wang _l (tup (not _p) | _g) _a _b) !
+    (tup right `(not _p) (wang `(tup _p | _l) _g _a _b)))
+
+(ft (wang (tup (not _p) | _f) _r _a _b) !
+    (tup left `(not _p) (wang _f `(tup _p | _r) _a _b)))
+
+(ft (wang _l (tup (and _p _q) | _g) _a _b) !
+    (tup right `(and _p _q) (wang _l `(tup _p | _g) _a _b)
+                            (wang _l `(tup _q | _g) _a _b)))
+
+(ft (wang (tup (and _p _q) | _f) _r _a _b) !
+    (tup left `(and _p _q) (wang `(tup _p _q | _f) _r _a _b)))
+
+(ft (wang _l (tup (or _p _q) | _g) _a _b) !
+    (tup right `(or _p _q) (wang _l `(tup _p _q | _g) _a _b)))
+
+(ft (wang (tup (or _p _q) | _f) _r _a _b) !
+    (tup left `(or _p _q) (wang `(tup _p | _f) _r _a _b)
+                          (wang `(tup _q | _f) _r _a _b)))
+
+(ft (wang _l (tup (impl _p _q) | _g) _a _b) !
+    (tup right `(impl _p _q) (wang `(tup _p | _l) `(tup _q | _g) _a _b)))
+
+(ft (wang (tup (impl _p _q) | _f) _r _a _b) !
+    (tup left `(impl _p _q) (wang `(tup _q | _f) _r _a _b) (wang _f `(tup _p | _r) _a _b)))
+
+(ft (wang _l (tup (equiv _p _q) | _g) _a _b) !
+    (tup right `(equiv _p _q) (wang `(tup _p | _l) `(tup _q | _g) _a _b)
+                              (wang `(tup _q | _l) `(tup _p | _g) _a _b)))
+
+(ft (wang (tup (equiv _p _q) | _f) _r _a _b) !
+    (tup left `(equiv _p _q) (wang `(tup _p _q | _f) _r _a _b)
+                             (wang _f `(tup _p _q | _r) _a _b)))
+

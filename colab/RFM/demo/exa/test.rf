@@ -1,0 +1,5 @@
+(ft (test2) (is _wp1 (wp `(tup (tup l (p 0 0) (p 0 1))
+                               (tup l (p 0 1) (p 0 0)))))
+    `(tup _wp1))
+
+(ft (test3) `(wp (cons (p 0 0) nil)))

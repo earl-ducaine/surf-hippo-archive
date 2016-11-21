@@ -1,0 +1,5 @@
+(ft (recpat 0) `(tup 0))
+(ft (recpat _n) (is _h (recpat (1- _n))) `(tup _h _n _h))
+(ft (f _x) `(tup a b _x _x b a))
+(ft (g _y _z) (is _h (f (f _y))) `(tup _h _z _h))
+(ft (try) (g (g 1 2) (g 3 4)))

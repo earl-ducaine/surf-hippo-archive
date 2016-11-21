@@ -1,0 +1,6 @@
+
+genints() :-& 0.
+genints() :-& genints(Sign[0]).
+genints(Sign[N]) :- Sign is s & Sign[N].
+genints(Sign[N]) :- Sign is p & Sign[N].
+genints(Sign[N]) :-& genints(Sign[Sign[N]]).

@@ -1,0 +1,35 @@
+The following is the copyright notice for GAMA, located at colab/RFM/gama/:
+
+;;; GAMA - a general abstract machine assembler
+;;; (including the GWAM, a port of the NyWAM)
+:::
+;;; Copyright Notice
+;;;
+;;; This software is distributed for non-profit and research purposes only.
+;;; I retain the exclusive right of producing a commercial version from it.
+;;; Non-profit redistribution of the current version or parts of the
+;;; current version is permitted if this copyright notice is included
+;;; unchanged.  I give no warranty of any kind for this prototype. It will be
+;;; further improved as time permits.
+;;; 
+;;; Copyright (c) 1992 by Michael Sintek
+
+
+
+
+The following is the copyright notice for the NyWAM, of which parts were
+used in the program colab/RFM/gama/gwam:
+
+; NyWAM
+; A WAM emulator  Common Lisp
+;
+; Author: Sven-Olof Nystroem
+; Summer 1985 and May 1989
+;
+; Copyright (c) May 1989 by Sven-Olof Nystroem and Uppsala University.
+; Permission to copy all or part of this material is granted, provided that
+; the copies are not made or redistributed for resale, and that the copyright
+; notice and reference to the source file appear.
+
+
+

@@ -1,0 +1,99 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;            microCAD2NC             ;;;
+;;;            RELFUN part             ;;;
+;;;       ANC-Plan Generation          ;;;
+;;; (c) Michael Sintek  September 1991 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; Input: skeletal-plans
+
+
+; Output: abstract NC programs:
+
+; anc-program ::= (tup { <action> }* )
+
+
+(ft (gen-anc-plan (skp _globals (tup)))  
+  `(tup))
+
+(ft (gen-anc-plan _skp)
+  (get-promising-tool
+   no-tool 0 no-actions no-rest-skp
+   (get-tools (extract-actions (get-skp-top _skp))) _skp
+   _best-tool _best-costs _best-actions _best-rest-skp)
+  (rf-pprint _best-actions)
+  (rf-princ _best-costs)
+  (rf-princ ->)
+  (rf-terpri)
+  (rf-pprint _best-rest-skp)
+  (rf-terpri) (rf-terpri)
+  (appfun _best-actions (gen-anc-plan _best-rest-skp)))
+
+
+; get-promising-tool
+; ------------------
+
+; call: (get-promising-tool
+;	 <best-tool-so-far> <best-costs-so-far>
+;	 <best-actions-so-far> <best-rest-skp-so-far>
+;	 <rest-tools> <skp>
+;	 <best-tool> <best-costs> <best-actions> <best-rest-skp>)
+
+(hn (get-promising-tool
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far _best-rest-skp-so-far
+     (tup) _skp					; no more tools
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far _best-rest-skp-so-far)  )
+
+(hn (get-promising-tool
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far _best-rest-skp-so-far
+     (tup _tool | _rest-tools) _skp
+     _best-tool _best-costs _best-actions _best-rest-skp)
+  (once `(compute-costs _skp _tool _actions _rest-plan _costs))
+  (> _costs _best-costs-so-far)  
+  (get-promising-tool2 ; check if rest plan is empty 
+   _tool _costs
+   _actions _rest-plan
+   _rest-tools _skp
+   _best-tool _best-costs _best-actions _best-rest-skp))
+
+(hn (get-promising-tool
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far _best-rest-skp-so-far
+     (tup _tool | _rest-tools) _skp
+     _best-tool _best-costs _best-actions _best-rest-skp)
+  (get-promising-tool
+   _best-tool-so-far _best-costs-so-far
+   _best-actions-so-far _best-rest-skp-so-far
+   _rest-tools _skp
+   _best-tool _best-costs _best-actions _best-rest-skp))
+
+
+(hn (get-promising-tool2
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far (tup) ; empty rest plan -> 
+     _rest-tools _skp		; ignore rest tools  
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far (tup))  )
+
+(hn (get-promising-tool2
+     _best-tool-so-far _best-costs-so-far
+     _best-actions-so-far _best-rest-skp-so-far
+     _rest-tools _skp
+     _best-tool _best-costs _best-actions _best-rest-skp)
+  (get-promising-tool
+   _best-tool-so-far _best-costs-so-far
+   _best-actions-so-far _best-rest-skp-so-far
+   _rest-tools _skp
+   _best-tool _best-costs _best-actions _best-rest-skp))
+
+
+
+(hn (compute-costs _skp _tool _actions _rest-plan _costs)
+  (is (tup _actions _rest-plan _step-costs)
+      (skp-exec-action _skp _tool))
+  (is _costs (+ _step-costs (* 0.7 (count-com-actions _rest-plan)))))
+

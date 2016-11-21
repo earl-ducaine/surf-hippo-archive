@@ -1,0 +1,17 @@
+\stmb{list-strategies}:
+
+Format: \stmt{list-strategies}\\
+        \stmt{list-strategies $<$op$>$}\\
+        \stmt{list-strategies $<$pat$>$}
+
+Options: $<$op$>$ an operator,\\
+         $<$pat$>$ a head pattern
+
+Effect: Shows the knowledge items of the databases \stmt{*fc-strategies*}. If no
+	argument is given, the whole database will be printed on the terminal. 
+	If an operator $<$op$>$ is given, only those knowledge items in the 
+	database will be printed which use this operator as their procedure 
+	name. If a pattern is given, only those knowledge items in the database
+	will be printed whose head matches the pattern $<$pat$>$.
+
+see also: \stmb{consult-strategies}

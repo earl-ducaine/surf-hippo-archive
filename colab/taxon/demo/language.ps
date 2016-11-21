@@ -1,0 +1,661 @@
+%!PS-Adobe-1.0
+%%Page: ? ?
+/max {2 copy lt {exch} if pop} def
+/min {2 copy gt {exch} if pop} def
+/inch {72 mul} def
+/drawbox
+ {/height exch def
+  /width exch def
+  /y exch def
+  /x exch def
+  gsave newpath
+  x y boxradius add moveto
+  x y height add x width add y height add boxradius arcto pop pop pop pop
+  x width add y height add x width add y boxradius arcto pop pop pop pop
+  x width add y x y boxradius arcto pop pop pop pop
+  x y x y height add boxradius arcto pop pop pop pop
+  boxgray setgray boxkind grestore
+ } def
+/printposter
+ {/rows exch def
+  /columns exch def
+  /bigpictureproc exch def
+  newpath
+    leftmargin botmargin moveto
+    0 pageheight rlineto
+    pagewidth 0 rlineto
+    0 pageheight neg rlineto
+  closepath clip
+  leftmargin botmargin translate
+  0 1 rows 1 sub
+   {/rowcount exch def
+    0 1 columns 1 sub
+     {/colcount exch def
+      gsave
+       pagewidth colcount mul neg
+       pageheight rowcount mul neg
+       translate
+       bigpictureproc
+       gsave showpage grestore
+      grestore
+     } for
+   } for
+ } def
+/xarray 30 array def
+/widtharray 30 array def
+/leftmargin 36 def
+/botmargin 36 def
+/pagewidth 540 def
+/pageheight 720 def
+/boxradius 5 def 
+/boxedge 2 def 
+/boxgray .2 def 
+/boxkind {stroke} def
+/Helvetica findfont 10 scalefont setfont
+widtharray 0 (MY-TOP) stringwidth pop put
+widtharray 1 (P3) stringwidth pop put
+widtharray 2 (APRED-CPRED) stringwidth pop put
+widtharray 3 (DISJUNCTION) stringwidth pop put
+widtharray 4 (P1) stringwidth pop put
+widtharray 5 (CONJUNCTION) stringwidth pop put
+widtharray 6 (P2) stringwidth pop put
+widtharray 7 (COMPLEMENT) stringwidth pop put
+widtharray 8 (NAME-OF-OFAMILY) stringwidth pop put
+widtharray 9 (M1) stringwidth pop put
+widtharray 10 (M2) stringwidth pop put
+widtharray 11 (M3) stringwidth pop put
+widtharray 12 (M4) stringwidth pop put
+widtharray 13 (M5) stringwidth pop put
+widtharray 14 (NAME-OF-CFAM) stringwidth pop put
+widtharray 15 (N1) stringwidth pop put
+widtharray 16 (N2) stringwidth pop put
+widtharray 17 (N3) stringwidth pop put
+widtharray 18 (N4) stringwidth pop put
+widtharray 19 (VALUE-RESTRICTION) stringwidth pop put
+widtharray 20 (FORALL-SOME) stringwidth pop put
+widtharray 21 (EXISTS-IN-RESTRICTION) stringwidth pop put
+widtharray 22 (F-VALUE-RESTRICTION) stringwidth pop put
+widtharray 23 (F-FORALL-SOME) stringwidth pop put
+widtharray 24 (AGREEMENT) stringwidth pop put
+widtharray 25 (DISAGREEMENT) stringwidth pop put
+widtharray 26 (APRED-EXISTS-IN-RESTRICTION) stringwidth pop put
+widtharray 27 (CPRED-VALUE-RESTRICTION) stringwidth pop put
+widtharray 28 (APRED-VALUE-RESTRICTION) stringwidth pop put
+widtharray 29 (CPRED-EXISTS-IN-RESTRICTION) stringwidth pop put
+/Helvetica-Oblique findfont 8 scalefont setfont
+widtharray 0 get
+(\(TOP\)) stringwidth pop max
+4 add widtharray exch 0 exch put
+widtharray 1 get
+4 add widtharray exch 1 exch put
+widtharray 2 get
+(\(MY-BOTTOM\ BOTTOM\)) stringwidth pop max
+4 add widtharray exch 2 exch put
+widtharray 3 get
+4 add widtharray exch 3 exch put
+widtharray 4 get
+4 add widtharray exch 4 exch put
+widtharray 5 get
+4 add widtharray exch 5 exch put
+widtharray 6 get
+4 add widtharray exch 6 exch put
+widtharray 7 get
+4 add widtharray exch 7 exch put
+widtharray 8 get
+4 add widtharray exch 8 exch put
+widtharray 9 get
+4 add widtharray exch 9 exch put
+widtharray 10 get
+4 add widtharray exch 10 exch put
+widtharray 11 get
+4 add widtharray exch 11 exch put
+widtharray 12 get
+4 add widtharray exch 12 exch put
+widtharray 13 get
+4 add widtharray exch 13 exch put
+widtharray 14 get
+4 add widtharray exch 14 exch put
+widtharray 15 get
+4 add widtharray exch 15 exch put
+widtharray 16 get
+4 add widtharray exch 16 exch put
+widtharray 17 get
+4 add widtharray exch 17 exch put
+widtharray 18 get
+4 add widtharray exch 18 exch put
+widtharray 19 get
+4 add widtharray exch 19 exch put
+widtharray 20 get
+4 add widtharray exch 20 exch put
+widtharray 21 get
+4 add widtharray exch 21 exch put
+widtharray 22 get
+4 add widtharray exch 22 exch put
+widtharray 23 get
+(\(F-EXISTS-IN-RESTRICTION\)) stringwidth pop max
+4 add widtharray exch 23 exch put
+widtharray 24 get
+4 add widtharray exch 24 exch put
+widtharray 25 get
+4 add widtharray exch 25 exch put
+widtharray 26 get
+4 add widtharray exch 26 exch put
+widtharray 27 get
+4 add widtharray exch 27 exch put
+widtharray 28 get
+4 add widtharray exch 28 exch put
+widtharray 29 get
+4 add widtharray exch 29 exch put
+xarray 0 0 put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 1 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 3 exch put
+xarray 3 get widtharray 3 get add
+20 add xarray exch 4 exch put
+xarray 3 get widtharray 3 get add
+20 add xarray exch 6 exch put
+xarray 4 get widtharray 4 get add
+xarray 6 get widtharray 6 get add max
+20 add xarray exch 5 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 7 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 8 exch put
+xarray 8 get widtharray 8 get add
+20 add xarray exch 9 exch put
+xarray 8 get widtharray 8 get add
+20 add xarray exch 10 exch put
+xarray 8 get widtharray 8 get add
+20 add xarray exch 11 exch put
+xarray 8 get widtharray 8 get add
+20 add xarray exch 12 exch put
+xarray 8 get widtharray 8 get add
+20 add xarray exch 13 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 14 exch put
+xarray 14 get widtharray 14 get add
+20 add xarray exch 15 exch put
+xarray 14 get widtharray 14 get add
+20 add xarray exch 16 exch put
+xarray 14 get widtharray 14 get add
+20 add xarray exch 17 exch put
+xarray 14 get widtharray 14 get add
+20 add xarray exch 18 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 19 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 21 exch put
+xarray 19 get widtharray 19 get add
+xarray 21 get widtharray 21 get add max
+20 add xarray exch 20 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 22 exch put
+xarray 22 get widtharray 22 get add
+20 add xarray exch 23 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 24 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 25 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 26 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 27 exch put
+xarray 27 get widtharray 27 get add
+20 add xarray exch 28 exch put
+xarray 0 get widtharray 0 get add
+20 add xarray exch 29 exch put
+xarray 1 get widtharray 1 get add
+xarray 5 get widtharray 5 get add max
+xarray 7 get widtharray 7 get add max
+xarray 9 get widtharray 9 get add max
+xarray 10 get widtharray 10 get add max
+xarray 11 get widtharray 11 get add max
+xarray 12 get widtharray 12 get add max
+xarray 13 get widtharray 13 get add max
+xarray 15 get widtharray 15 get add max
+xarray 16 get widtharray 16 get add max
+xarray 17 get widtharray 17 get add max
+xarray 18 get widtharray 18 get add max
+xarray 20 get widtharray 20 get add max
+xarray 23 get widtharray 23 get add max
+xarray 24 get widtharray 24 get add max
+xarray 25 get widtharray 25 get add max
+xarray 26 get widtharray 26 get add max
+xarray 28 get widtharray 28 get add max
+xarray 29 get widtharray 29 get add max
+20 add xarray exch 2 exch put
+/maximum-x 0
+xarray 0 get widtharray 0 get add max
+xarray 1 get widtharray 1 get add max
+xarray 2 get widtharray 2 get add max
+xarray 3 get widtharray 3 get add max
+xarray 4 get widtharray 4 get add max
+xarray 5 get widtharray 5 get add max
+xarray 6 get widtharray 6 get add max
+xarray 7 get widtharray 7 get add max
+xarray 8 get widtharray 8 get add max
+xarray 9 get widtharray 9 get add max
+xarray 10 get widtharray 10 get add max
+xarray 11 get widtharray 11 get add max
+xarray 12 get widtharray 12 get add max
+xarray 13 get widtharray 13 get add max
+xarray 14 get widtharray 14 get add max
+xarray 15 get widtharray 15 get add max
+xarray 16 get widtharray 16 get add max
+xarray 17 get widtharray 17 get add max
+xarray 18 get widtharray 18 get add max
+xarray 19 get widtharray 19 get add max
+xarray 20 get widtharray 20 get add max
+xarray 21 get widtharray 21 get add max
+xarray 22 get widtharray 22 get add max
+xarray 23 get widtharray 23 get add max
+xarray 24 get widtharray 24 get add max
+xarray 25 get widtharray 25 get add max
+xarray 26 get widtharray 26 get add max
+xarray 27 get widtharray 27 get add max
+xarray 28 get widtharray 28 get add max
+xarray 29 get widtharray 29 get add max
+def
+174 dict begin
+/box0 {
+xarray 0 get 343 widtharray 0 get 22 drawbox
+} def
+/box1 {
+xarray 1 get 89 widtharray 1 get 14 drawbox
+} def
+/box2 {
+xarray 2 get 349 widtharray 2 get 22 drawbox
+} def
+/box3 {
+xarray 3 get 604 widtharray 3 get 14 drawbox
+} def
+/box4 {
+xarray 4 get 617 widtharray 4 get 14 drawbox
+} def
+/box5 {
+xarray 5 get 591 widtharray 5 get 14 drawbox
+} def
+/box6 {
+xarray 6 get 591 widtharray 6 get 14 drawbox
+} def
+/box7 {
+xarray 7 get 115 widtharray 7 get 14 drawbox
+} def
+/box8 {
+xarray 8 get 513 widtharray 8 get 14 drawbox
+} def
+/box9 {
+xarray 9 get 565 widtharray 9 get 14 drawbox
+} def
+/box10 {
+xarray 10 get 141 widtharray 10 get 14 drawbox
+} def
+/box11 {
+xarray 11 get 539 widtharray 11 get 14 drawbox
+} def
+/box12 {
+xarray 12 get 167 widtharray 12 get 14 drawbox
+} def
+/box13 {
+xarray 13 get 513 widtharray 13 get 14 drawbox
+} def
+/box14 {
+xarray 14 get 461 widtharray 14 get 14 drawbox
+} def
+/box15 {
+xarray 15 get 193 widtharray 15 get 14 drawbox
+} def
+/box16 {
+xarray 16 get 487 widtharray 16 get 14 drawbox
+} def
+/box17 {
+xarray 17 get 219 widtharray 17 get 14 drawbox
+} def
+/box18 {
+xarray 18 get 461 widtharray 18 get 14 drawbox
+} def
+/box19 {
+xarray 19 get 245 widtharray 19 get 14 drawbox
+} def
+/box20 {
+xarray 20 get 271 widtharray 20 get 14 drawbox
+} def
+/box21 {
+xarray 21 get 271 widtharray 21 get 14 drawbox
+} def
+/box22 {
+xarray 22 get 427 widtharray 22 get 14 drawbox
+} def
+/box23 {
+xarray 23 get 427 widtharray 23 get 22 drawbox
+} def
+/box24 {
+xarray 24 get 297 widtharray 24 get 14 drawbox
+} def
+/box25 {
+xarray 25 get 401 widtharray 25 get 14 drawbox
+} def
+/box26 {
+xarray 26 get 323 widtharray 26 get 14 drawbox
+} def
+/box27 {
+xarray 27 get 375 widtharray 27 get 14 drawbox
+} def
+/box28 {
+xarray 28 get 375 widtharray 28 get 14 drawbox
+} def
+/box29 {
+xarray 29 get 349 widtharray 29 get 14 drawbox
+} def
+/text0 {xarray 0 get boxedge add 355 moveto (MY-TOP) show} def
+/secondtext0 {
+xarray 0 get boxedge add 347 moveto (\(TOP\)) show
+} def
+/text1 {xarray 1 get boxedge add 93 moveto (P3) show} def
+/text2 {xarray 2 get boxedge add 361 moveto (APRED-CPRED) show} def
+/secondtext2 {
+xarray 2 get boxedge add 353 moveto (\(MY-BOTTOM\ BOTTOM\)) show
+} def
+/text3 {xarray 3 get boxedge add 608 moveto (DISJUNCTION) show} def
+/text4 {xarray 4 get boxedge add 621 moveto (P1) show} def
+/text5 {xarray 5 get boxedge add 595 moveto (CONJUNCTION) show} def
+/text6 {xarray 6 get boxedge add 595 moveto (P2) show} def
+/text7 {xarray 7 get boxedge add 119 moveto (COMPLEMENT) show} def
+/text8 {xarray 8 get boxedge add 517 moveto (NAME-OF-OFAMILY) show} def
+/text9 {xarray 9 get boxedge add 569 moveto (M1) show} def
+/text10 {xarray 10 get boxedge add 145 moveto (M2) show} def
+/text11 {xarray 11 get boxedge add 543 moveto (M3) show} def
+/text12 {xarray 12 get boxedge add 171 moveto (M4) show} def
+/text13 {xarray 13 get boxedge add 517 moveto (M5) show} def
+/text14 {xarray 14 get boxedge add 465 moveto (NAME-OF-CFAM) show} def
+/text15 {xarray 15 get boxedge add 197 moveto (N1) show} def
+/text16 {xarray 16 get boxedge add 491 moveto (N2) show} def
+/text17 {xarray 17 get boxedge add 223 moveto (N3) show} def
+/text18 {xarray 18 get boxedge add 465 moveto (N4) show} def
+/text19 {xarray 19 get boxedge add 249 moveto (VALUE-RESTRICTION) show} def
+/text20 {xarray 20 get boxedge add 275 moveto (FORALL-SOME) show} def
+/text21 {xarray 21 get boxedge add 275 moveto (EXISTS-IN-RESTRICTION) show} def
+/text22 {xarray 22 get boxedge add 431 moveto (F-VALUE-RESTRICTION) show} def
+/text23 {xarray 23 get boxedge add 439 moveto (F-FORALL-SOME) show} def
+/secondtext23 {
+xarray 23 get boxedge add 431 moveto (\(F-EXISTS-IN-RESTRICTION\)) show
+} def
+/text24 {xarray 24 get boxedge add 301 moveto (AGREEMENT) show} def
+/text25 {xarray 25 get boxedge add 405 moveto (DISAGREEMENT) show} def
+/text26 {xarray 26 get boxedge add 327 moveto (APRED-EXISTS-IN-RESTRICTION) show} def
+/text27 {xarray 27 get boxedge add 379 moveto (CPRED-VALUE-RESTRICTION) show} def
+/text28 {xarray 28 get boxedge add 379 moveto (APRED-VALUE-RESTRICTION) show} def
+/text29 {xarray 29 get boxedge add 353 moveto (CPRED-EXISTS-IN-RESTRICTION) show} def
+/edge0 {newpath
+stroke } def
+/edge1 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 1 get 96 lineto
+stroke } def
+/edge2 {newpath
+xarray 1 get widtharray 1 get add 96 moveto
+xarray 2 get 360 lineto
+xarray 5 get widtharray 5 get add 598 moveto
+xarray 2 get 360 lineto
+xarray 7 get widtharray 7 get add 122 moveto
+xarray 2 get 360 lineto
+xarray 9 get widtharray 9 get add 572 moveto
+xarray 2 get 360 lineto
+xarray 10 get widtharray 10 get add 148 moveto
+xarray 2 get 360 lineto
+xarray 11 get widtharray 11 get add 546 moveto
+xarray 2 get 360 lineto
+xarray 12 get widtharray 12 get add 174 moveto
+xarray 2 get 360 lineto
+xarray 13 get widtharray 13 get add 520 moveto
+xarray 2 get 360 lineto
+xarray 15 get widtharray 15 get add 200 moveto
+xarray 2 get 360 lineto
+xarray 16 get widtharray 16 get add 494 moveto
+xarray 2 get 360 lineto
+xarray 17 get widtharray 17 get add 226 moveto
+xarray 2 get 360 lineto
+xarray 18 get widtharray 18 get add 468 moveto
+xarray 2 get 360 lineto
+xarray 20 get widtharray 20 get add 278 moveto
+xarray 2 get 360 lineto
+xarray 23 get widtharray 23 get add 438 moveto
+xarray 2 get 360 lineto
+xarray 24 get widtharray 24 get add 304 moveto
+xarray 2 get 360 lineto
+xarray 25 get widtharray 25 get add 408 moveto
+xarray 2 get 360 lineto
+xarray 26 get widtharray 26 get add 330 moveto
+xarray 2 get 360 lineto
+xarray 28 get widtharray 28 get add 382 moveto
+xarray 2 get 360 lineto
+xarray 29 get widtharray 29 get add 356 moveto
+xarray 2 get 360 lineto
+stroke } def
+/edge3 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 3 get 611 lineto
+stroke } def
+/edge4 {newpath
+xarray 3 get widtharray 3 get add 611 moveto
+xarray 4 get 624 lineto
+stroke } def
+/edge5 {newpath
+xarray 4 get widtharray 4 get add 624 moveto
+xarray 5 get 598 lineto
+xarray 6 get widtharray 6 get add 598 moveto
+xarray 5 get 598 lineto
+stroke } def
+/edge6 {newpath
+xarray 3 get widtharray 3 get add 611 moveto
+xarray 6 get 598 lineto
+stroke } def
+/edge7 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 7 get 122 lineto
+stroke } def
+/edge8 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 8 get 520 lineto
+stroke } def
+/edge9 {newpath
+xarray 8 get widtharray 8 get add 520 moveto
+xarray 9 get 572 lineto
+stroke } def
+/edge10 {newpath
+xarray 8 get widtharray 8 get add 520 moveto
+xarray 10 get 148 lineto
+stroke } def
+/edge11 {newpath
+xarray 8 get widtharray 8 get add 520 moveto
+xarray 11 get 546 lineto
+stroke } def
+/edge12 {newpath
+xarray 8 get widtharray 8 get add 520 moveto
+xarray 12 get 174 lineto
+stroke } def
+/edge13 {newpath
+xarray 8 get widtharray 8 get add 520 moveto
+xarray 13 get 520 lineto
+stroke } def
+/edge14 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 14 get 468 lineto
+stroke } def
+/edge15 {newpath
+xarray 14 get widtharray 14 get add 468 moveto
+xarray 15 get 200 lineto
+stroke } def
+/edge16 {newpath
+xarray 14 get widtharray 14 get add 468 moveto
+xarray 16 get 494 lineto
+stroke } def
+/edge17 {newpath
+xarray 14 get widtharray 14 get add 468 moveto
+xarray 17 get 226 lineto
+stroke } def
+/edge18 {newpath
+xarray 14 get widtharray 14 get add 468 moveto
+xarray 18 get 468 lineto
+stroke } def
+/edge19 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 19 get 252 lineto
+stroke } def
+/edge20 {newpath
+xarray 19 get widtharray 19 get add 252 moveto
+xarray 20 get 278 lineto
+xarray 21 get widtharray 21 get add 278 moveto
+xarray 20 get 278 lineto
+stroke } def
+/edge21 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 21 get 278 lineto
+stroke } def
+/edge22 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 22 get 434 lineto
+stroke } def
+/edge23 {newpath
+xarray 22 get widtharray 22 get add 434 moveto
+xarray 23 get 438 lineto
+stroke } def
+/edge24 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 24 get 304 lineto
+stroke } def
+/edge25 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 25 get 408 lineto
+stroke } def
+/edge26 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 26 get 330 lineto
+stroke } def
+/edge27 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 27 get 382 lineto
+stroke } def
+/edge28 {newpath
+xarray 27 get widtharray 27 get add 382 moveto
+xarray 28 get 382 lineto
+stroke } def
+/edge29 {newpath
+xarray 0 get widtharray 0 get add 354 moveto
+xarray 29 get 356 lineto
+stroke } def
+/boxchunk0 {
+box0
+box1
+box2
+box3
+box4
+box5
+box6
+box7
+box8
+box9
+box10
+box11
+box12
+box13
+box14
+box15
+box16
+box17
+box18
+box19
+box20
+box21
+box22
+box23
+box24
+box25
+box26
+box27
+box28
+box29
+} def
+/textchunk0 {
+text0
+text1
+text2
+text3
+text4
+text5
+text6
+text7
+text8
+text9
+text10
+text11
+text12
+text13
+text14
+text15
+text16
+text17
+text18
+text19
+text20
+text21
+text22
+text23
+text24
+text25
+text26
+text27
+text28
+text29
+} def
+/secondtextchunk0 {
+secondtext0
+secondtext2
+secondtext23
+} def
+/edgechunk0 {
+edge0
+edge1
+edge2
+edge3
+edge4
+edge5
+edge6
+edge7
+edge8
+edge9
+edge10
+edge11
+edge12
+edge13
+edge14
+edge15
+edge16
+edge17
+edge18
+edge19
+edge20
+edge21
+edge22
+edge23
+edge24
+edge25
+edge26
+edge27
+edge28
+edge29
+} def
+/drawgraph { gsave
+boxchunk0
+.5 setlinewidth
+1 setlinecap
+.2 setgray
+edgechunk0
+0 setgray
+/Helvetica findfont 10 scalefont setfont
+textchunk0
+/Helvetica-Oblique findfont 8 scalefont setfont
+secondtextchunk0
+grestore } def
+{drawgraph} maximum-x pagewidth div ceiling 1 printposter end

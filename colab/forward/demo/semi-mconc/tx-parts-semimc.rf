@@ -1,0 +1,250 @@
+;;; -*- Mode: LISP -*-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                microCAD2NC                 ;;;
+;;;               FORWARD  part                ;;;
+;;;         Feature Aggregation Rules          ;;;
+;;;    (c) Knut Hinkelmann                     ;;;
+;;;        Martin Harm       September 1991    ;;;
+;;;         Changed to couple semi-naive       ;;;
+;;;         evaluation with TAXON              ;;;
+;;;        Thomas Labisch    August 1992       ;;;
+;;;         Resolution of attribut terms       ;;;
+;;;         into assertions of TAXON           ;;;
+;;;        Thomas Labisch    September 1992    ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; Features derived by these rules are asserted into the ABox
+; of TAXON. Attributes common to all features are the
+; leftmost and rightmost surface the feature is covering.
+; This is necessary to chaeck neighbarhood of surfaces and features.
+
+
+; A shoulder is a feature consisting of two components:
+; The ground is a longturning surface.
+; The flank is either a descending surface (on the left)
+; or an ascending surface (on the right) of the longturning
+; surface. An additional condition is that the radius of the
+; longturning surface is not greater than that of the
+; descending or ascending surface, respectively.
+;
+; Examples:
+;                         |         \
+;                         |   or     \
+;       __________________|           \________________
+;
+(up (rshoulder _featid)
+    (ground _featid _ltsid)
+    (flank _featid _id2)
+    (leftmost _featid _l)
+    (rightmost _featid _id2)
+    <-
+    (asc-tc _id2)
+    (center1 _id2 _zl)
+    (center2 _id2 _zr)
+    (radius1 _id2 _rad)
+    (radius2 _id2 _rado)
+    (neighbor _r _id2)
+    (longturningsurface _ltsid)
+    (radius _ltsid _rad-lts)
+    (leftmost _ltsid _l)
+    (rightmost _ltsid _r)
+    (>= _rad-lts _rad)
+    (< _rad-lts _rado)
+    (is _featid (make-instance-name rshoulder _ltsid _id2)))
+    
+
+
+(up (lshoulder _featid) 
+    (ground _featid _ltsid)
+    (flank _featid _id2)
+    (leftmost _featid _id2)
+    (rightmost _featid _r)
+    <-
+    (desc-tc _id2) 
+    (center1 _id2 _zl)
+    (center2 _id2 _zl)
+    (radius1 _id2 _rado)
+    (radius2 _id2 _rad)
+    (neighbor _id2 _l)
+    (longturningsurface  _ltsid)
+    (radius _ltsid _rad-lts)
+    (leftmost _ltsid _l)
+    (rightmost _ltsid _r)
+    (>= _rad-lts _rad)
+    (< _rad-lts _rado)
+    (is _featid (make-instance-name lshoulder _id2 _ltsid)))
+
+
+
+; A groove is an aggregation of two shoulder:
+; a left shoulder and a right shoulder with common ground:
+;
+;          |                          /
+;          |                         /
+;          |________________________/
+;
+(up (groove _featid)
+    (leftflank _featid _id1)
+    (ground _featid _id2)
+    (rightflank _featid _id3)
+    (leftmost _featid _lsleft)
+    (rightmost _featid _rsright)
+    <-
+    (rshoulder _rshid)
+    (ground _rshid _id2)
+    (flank _rshid _id3)
+    (leftmost _rshid _rsleft)
+    (rightmost _rshid _rsright)
+    (lshoulder _lshid)
+    (ground _lshid _id2)
+    (flank _lshid _id1)
+    (leftmost _lshid _lsleft)
+    (rightmost _lshid _lsright)
+    (is _featid (make-instance-name groove _id1 _id2 _id3)))
+
+
+
+; There are three definitions for a longturning surface:
+; 1. Each cylinder is a longturning surface
+; 2. Starting from a descending surface a longturning surface
+;    Extends to the right until either the workpiece ends or
+;    the radius of a surface exceeds the radius of the descinding
+;    surface. The radius of such a longturning surface is the
+;    radius of the highest surface covered by the longturning surface.
+;
+;     \
+;      \......____.........        (the dashed line shows the
+;       \    /   |____/\___         longturning surface)
+;        \__/             |
+;
+; 3. Similar as 2. starting at an ascending surface and going
+;    to the left.
+;
+(up (longturningsurface _cyl)
+    (radius _cyl _rad)
+    (leftmost _cyl _cyl)
+    (rightmost _cyl _cyl)
+    <-
+    (truncone _cyl)
+    (center1 _cyl _zl)
+    (center2 _cyl _zr)
+    (radius1 _cyl _rad)
+    (radius2 _cyl _rad))
+
+     
+
+(up (longturningsurface _featid)
+    (radius _featid _rad)
+    (leftmost _featid _l)
+    (rightmost _featid _rightm)
+    <-
+    (asc-tc _right-end)
+    (center1 _right-end _zl)
+    (center2 _right-end _zr)
+    (radius1 _right-end _rad-first)
+    (radius2 _right-end _rad-limit)
+    (neighbor _rightm _right-end)
+    (is _rad (once
+	       (sub-lts-from-left _rad-first _rad-limit _l _rightm)))
+    (different-tc _l _rightm)
+    (is _featid (make-instance-name lts _l _rightm)))
+
+
+
+(ft (sub-lts-from-left _rad-max _rad-limit _l _tc)
+    (neighbor _next-tc _tc)
+    (truncone _next-tc)
+    (center1 _next-tc _zl)
+    (center2 _next-tc _zr)
+    (radius1 _next-tc _rada)
+    (radius2 _next-tc _radb)
+    (< _rada _rad-limit)
+    (is _new-max (max _rad-max _rada))
+    (sub-lts-from-left _new-max _rad-limit _l _next-tc))
+
+
+
+(ft (sub-lts-from-left _the-max _rad-limit _tc _tc) 
+    _the-max)
+
+
+
+;up data
+(up (longturningsurface _featid)
+    (radius _featid _rad)
+    (leftmost _featid _leftm)
+    (rightmost _featid _r)
+    <-
+    (desc-tc _left-end)
+    (center1 _left-end _zl)
+    (center2 _left-end _zr)
+    (radius1 _left-end _rad-limit)
+    (radius2 _left-end _rad-first)
+    (neighbor _left-end _leftm)
+    (is _rad (once
+	      (sub-lts-from-right _rad-first _rad-limit _r _leftm)))
+    (different-tc _r _leftm)
+    (is _featid (make-instance-name lts _leftm _r)))
+
+
+
+(ft (sub-lts-from-right _rad-max _rad-limit _r _tc)
+    (neighbor _tc _next-tc)
+    (truncone _next-tc)
+    (center1 _next-tc _zl)
+    (center2 _next-tc _zr)
+    (radius1 _next-tc _rada)
+    (radius2 _next-tc _radb)
+    (< _radb _rad-limit)
+    (is _new-max (max _rad-max _radb))
+    (sub-lts-from-right _new-max _rad-limit _r _next-tc))
+
+
+
+(ft (sub-lts-from-right _the-max _rad-limit _tc _tc)
+    _the-max)
+
+
+
+(hn (different-tc _tc1 _tc2)
+    (nou _tc1 _tc2))
+
+(rl (asc-tc _x)
+    (truncone _x)
+    (radius1 _x _rada)
+    (radius2 _x _radb)
+    (< _rada _radb))
+
+(rl (desc-tc _x)
+    (truncone _x)
+    (radius1 _x _rada)
+    (radius2 _x _radb)
+    (> _rada _radb))
+
+(rl (cylinder _x)
+    (truncone _x)
+    (radius1 _x _rad)
+    (radius2 _x _rad))
+
+(rl (ring _x)
+    (truncone _x)
+    (center1 _x _zl)
+    (center2 _x zl))
+
+(rl (circle _x)
+    (truncone _x)
+    (radius1 _x 0))
+
+(rl (circle _x)
+    (truncone _x)
+    (radius2 _x 0))
+
+(rl (cone _x)
+    (truncone _x)
+    (radius1 _x 0))
+
+(rl (cone _x)
+    (truncone _x)
+    (radius2 _x 0))
+

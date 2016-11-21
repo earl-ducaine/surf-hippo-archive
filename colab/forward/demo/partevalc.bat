@@ -1,0 +1,12 @@
+lisp (parteval '((hn (forward _Fact _Head)
+		     (clause `(id _Head | _Body))
+		     (findlit _Body _Fact _ToProve)
+		     (provelist _ToProve)
+		     (retain _Head)))
+	       '((clause `(id _Head | _Body))
+		 (findlit _Body _Fact _ToProve)
+		 (provelist _ToProve)))
+rf-query (break-demo)
+list-forward
+rf-query (break-demo)
+rf-query (df-enum `(truncone a1 1 2 0) _x)

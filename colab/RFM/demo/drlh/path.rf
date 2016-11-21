@@ -1,0 +1,87 @@
+; Subject:  path.rf
+
+(ft (transport)
+
+(is _a `(drlh (tup a1 a2 a3 a5 a4) (tup a4 a2 a3) (tup a7 a4) (tup a8 a7 a6)))
+(is _b `(drlh (tup b1 b2 b6) (tup b4 b2 b1 b3 b5 b6) (tup b6 (cntct b72 _b7))))
+(is _b7 `(drlh (tup b72 b71) (tup b73 b71 b72 b73)))
+(is _c `(drlh (tup c2 c1 c4 c7)
+              (tup c3 c2)
+              (tup (cntct c61 _c6) c4 c2 c3)
+              (tup c7 (cntct c65 _c6))
+              c5))
+(is _c6 `(drlh (tup c61 c63 c62) (tup c62 c61) (tup c65 c63) _c64))
+(is _c64 `(drlh (tup c641 c642) (tup c642 c641)))
+`(drlh (tup (cntct a3 _a) (cntct b1 _b) (cntct c3 _c))
+       (tup (cntct b6 _b) d (cntct c7 _c))
+       (tup (cntct c3 _c) (cntct a7 _a)))
+
+
+)
+
+
+
+(ft (readevalprint)
+
+`(drlh (tup (cntct type (drlh (tup look think type)))
+            read
+            eval
+            print
+            (cntct look (drlh (tup look think type)))))
+
+)
+
+
+(ft (president)
+
+`(drlh (tup govern (cntct (cntct president
+                                 (drlh (tup ask president speaker)))
+                          (drlh (tup welcome
+                                     (cntct speaker (drlh (tup ask
+                                                               president
+                                                               speaker)))
+                                     expert)))
+                   country))
+
+)
+
+
+(ft (overlap)
+
+`(drlh (tup (cntct 3 (drlh (tup 2 3)))
+            (cntct 3 (drlh (tup 3 2) (tup 2 1))))
+       (tup 0 (cntct 2 (drlh (tup 2 3))))
+       (tup (cntct 1 (drlh (tup 3 2) (tup 2 1))) 4) )
+
+)
+
+
+(ft (start)
+
+`(cntct 0 (drlh (tup (cntct 3 (drlh (tup 2 3)))
+                     (cntct 3 (drlh (tup 3 2) (tup 2 1))))
+                (tup 0 (cntct 2 (drlh (tup 2 3))))
+                (tup (cntct 1 (drlh (tup 3 2) (tup 2 1))) 4) ))
+
+)
+
+
+(ft (goal)
+
+`(cntct 4 (drlh (tup (cntct 3 (drlh (tup 2 3)))
+                     (cntct 3 (drlh (tup 3 2) (tup 2 1))))
+                (tup 0 (cntct 2 (drlh (tup 2 3))))
+                (tup (cntct 1 (drlh (tup 3 2) (tup 2 1))) 4) ))
+
+)
+
+
+(ft (upshifts)
+
+`(drlh (tup a (cntct b (drlh (tup b (cntct c (drlh (tup c d)))))))
+       (tup (cntct (cntct d (drlh (tup c d)))
+                   (drlh (tup b (cntct c (drlh (tup c d))))))
+            e))
+       
+
+)

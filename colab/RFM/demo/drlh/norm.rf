@@ -1,0 +1,117 @@
+; RELFUN Normalization of Directed Recursive Labelnode Hypergraphs
+
+(ft (cntct _b (drlh | _r))
+    (ifthel (membdrlh _b `(drlh | _r))
+            ``(cntct _b (drlh | _r))
+            ``(drlh | _r)))
+
+(ft (drlh) ! `(drlh))
+(ft (drlh (tup | _y) | _r) ! (mergearrow `(tup | _y) (drlh | _r)))
+(ft (drlh _b | _r) (mergebox _b (drlh | _r)))
+
+; now in prelude.rf: (ft (tup | _y) `(tup | _y))
+
+(ft (mergearrow _a (drlh)) ! `(drlh _a))
+(ft (mergearrow _a (drlh _a | _r)) ! `(drlh _a | _r))
+(ft (mergearrow _a (drlh _x | _r))
+    (ifthel (eless _a _x)
+            `(consdrlh _a (eatboxes _a `(drlh _x | _r)))
+            `(consdrlh _x (mergearrow _a `(drlh | _r)))))
+
+(ft (eatboxes (tup | _y) (drlh)) ! `(drlh))
+(ft (eatboxes (tup | _y) (drlh (tup | _z) | _r))
+    !
+    (consdrlh `(tup | _z) (eatboxes `(tup | _y) `(drlh | _r))))
+(ft (eatboxes (tup | _y) (drlh _b | _r))
+    (ifthel (membarrow _b `(tup | _y))
+            `(eatboxes `(tup | _y) `(drlh | _r))
+            `(consdrlh _b (eatboxes `(tup | _y) `(drlh | _r)))))
+
+(ft (mergebox _b (drlh)) ! `(drlh _b))
+(ft (mergebox _b (drlh _b | _r)) ! `(drlh _b | _r))
+(ft (mergebox (drlh | _s) (drlh (cntct _c (drlh | _s)) | _r))
+    !
+    `(drlh (cntct _c (drlh | _s)) | _r))
+(ft (mergebox _b (drlh (tup | _y) | _r))
+    !
+    (ifthel (membarrow _b `(tup | _y))
+            ``(drlh (tup | _y) | _r)
+            `(consdrlh `(tup | _y) (mergebox _b `(drlh | _r)))))
+(ft (mergebox _b (drlh _c | _r))
+    (ifthel (eless _b _c)
+            `(ifthel (mgu `(cntct _d (drlh | _s)) _b)
+                     `(consdrlh _b (removedrlh `(drlh | _s) `(drlh _c | _r)))
+                     ``(drlh _b _c | _r))
+            `(consdrlh _c (mergebox _b `(drlh | _r)))))
+
+(ft (removedrlh _x (drlh)) ! `(drlh))
+(ft (removedrlh _x (drlh _x | _r)) ! `(drlh | _r))
+(ft (removedrlh _x (drlh _z | _r))
+    (consdrlh _z (removedrlh _x `(drlh | _r))))
+
+(ft (consdrlh _x (drlh | _r)) `(drlh _x | _r))
+
+(ft (eless (cntct _b (drlh | _r1)) (cntct _b (drlh | _r2))) ! (eless _r1 _r2))
+(ft (eless (cntct _b1 (drlh | _r1)) (cntct _b2 (drlh | _r2))) ! (eless _b1 _b2))
+(hn (eless (cntct _b (drlh | _r)) _c) !)
+(ft (eless _c (cntct _b (drlh | _r))) ! false)
+(ft (eless (drlh | _r1) (drlh | _r2)) ! (eless _r1 _r2))
+(hn (eless (drlh | _r) _b) !)
+(ft (eless _b (drlh | _r)) ! false)
+(ft (eless (tup _head | _tail1) (tup _head | _tail2)) ! (eless _tail1 _tail2))
+(ft (eless (tup _head1 | _tail1) (tup _head2 | _tail2)) ! (eless _head1 _head2))
+(hn (eless (tup) (tup _head | _tail)) !)
+(ft (eless (tup _head | _tail) (tup)) ! false)
+(hn (eless (tup _head | _tail) _b) !)
+(ft (eless _b (tup _head | _tail)) ! false)
+(ft (eless (_f | _y1) (_f | _y2)) ! (eless _y1 _y2))
+(ft (eless (_f | _y1) (_g | _y2)) ! (eless _f _g))
+(hn (eless (_f | _y) _lispatom) !)
+(ft (eless _lispatom (_f | _y)) ! false)
+(ft (eless _lispatom1 _lispatom2) (atomless _lispatom1 _lispatom2))
+
+
+#| doesn't work in emulator!! (cl-predicates fail or proceed!)
+(ft (atomless _lispatom1 _lispatom2)
+    (is _p (string> (princ-to-string _lispatom2) (princ-to-string _lispatom1)))
+    (ifthel (mgu false _p) false true))
+|#
+
+(ft (atomless _la1 _la2)
+  (string> (princ-to-string _la1) (princ-to-string _la2))
+  false)
+
+(ft (atomless _la1 _la2)
+  (string<= (princ-to-string _la1) (princ-to-string _la2))
+  true)
+
+
+(ft (tst1) (drlh b e c e (tup a b c d)(tup a b c d)e(tup b b)c(tup a b c d)))
+
+(ft (tst2)
+(drlh (tup (cntct ii (drlh (tup iv ii i) (tup iii i iii)))
+           b
+           (cntct
+            (drlh k (tup g h) k h (tup h g))
+            (drlh
+             (tup u f)
+             (tup u (cntct i (drlh k (tup g h) (tup h g) h g h)))))
+           (cntct 1 (drlh (tup 1 2) 1 (tup 2 3 1) 2 (tup 2 3) 3)))
+      (tup b b)
+      (cntct ii (drlh (tup iv ii i) i (tup iii i iii)))
+      e)
+)
+
+(ft (tst3) (drlh (cntct b (drlh (tup b c))) (drlh (tup b c))))
+
+(ft (tst4) (drlh (cntct b (drlh (tup b c))) (cntct c (drlh (tup b c)))))
+
+(ft (tst5) (drlh (tup a (cntct b (drlh (tup b c))) d) (drlh (tup b c))))
+
+(ft (tst6) (drlh (tup a (drlh (tup b c)) d) (cntct b (drlh (tup b c)))))
+
+(ft (tst7) (drlh 6 2 (tup 1 2 3) (drlh a b b c) 1 (tup 2 2) 4))
+
+(ft (tst8) (drlh 1 (tup 1 2 3) 4 (drlh c a b) 3 (tup 2 2) 6 (tup 1 2 3)))
+
+(ft (tst9) (drlh b (tup 1 2 3) 4 (drlh c a b) a (tup 2 2) 6 (tup 1 2 3)))

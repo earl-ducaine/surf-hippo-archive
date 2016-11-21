@@ -1,0 +1,562 @@
+head	1.11;
+access;
+symbols;
+locks; strict;
+comment	@;;; @;
+
+
+1.11
+date	92.12.07.09.18.49;	author aabecker;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.12.07.08.58.44;	author aabecker;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.11.12.20.17.56;	author aabecker;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.12.08.54.24;	author aabecker;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.11.11.15.10.04;	author aabecker;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.11.11.11.25.09;	author aabecker;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.11.11.09.26.37;	author aabecker;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.11.09.13.41.34;	author aabecker;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.11.09.13.37.53;	author aabecker;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.11.09.12.59.23;	author aabecker;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.11.09.12.59.15;	author aabecker;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@in-package replaced by defpackage
+@
+text
+@;;; -*- Mode: LISP; Syntax: Common-lisp; Package: USER; Base: 10 -*-
+
+
+(defun load-taxon ()
+  (let (#+:genera (tv:more-processing-global-enable nil)     ; suppress **MORE**
+        #+:genera (sys:inhibit-fdefine-warnings :just-warn)) ; redefine but
+                                                             ; show warnings
+       (pdefsys:load-system 'TAXON :source-if-newer t)
+       )
+  (pushnew :taxon user::*features*)
+  (taxon::destroy-taxon)
+  (taxon::put-cnf-of-conceptname! 'bottom (taxon::make-cnf-of-bottom))
+  (taxon::put-cnf-of-conceptname! 'top (taxon::make-cnf-of-top))
+  t
+  )
+
+(defun compile-taxon ()
+  (let (#+:genera (tv:more-processing-global-enable nil)     ; suppress **MORE**
+        #+:genera (sys:inhibit-fdefine-warnings :just-warn)) ; redefine but
+                                                             ; show warnings
+       (pdefsys:compile-system 'TAXON :propagate t :reload t :recompile t)
+       )
+  )
+
+
+#-:genera (defpackage TAXON  (:nicknames TX))
+#-:genera (defpackage psgraph)
+
+#|
+(make-package 'TAXON :nicknames '(TX))
+(make-package 'psgraph)
+|#
+
+(pdefsys:defsystem TAXON
+  (:default-pathname (our-fs:logdir-file :taxon "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :taxon "ibin")
+		     :needed-systems (TAXON-front-end 
+				      TAXON-print-fcts 
+				      TAXON-representation 
+				      TAXON-subsumption
+				      TAXON-consistency
+				      TAXON-incr-real-ord 
+				      TAXON-concrete)
+		     :default-package "TAXON"
+		     )
+  )
+
+(pdefsys:defsystem TAXON-front-end
+  (:default-pathname (our-fs:logdir-file :front-end "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :front-end "ibin")
+		     :default-package "TAXON"
+		     )
+  ("geto")
+  ("tx-signatur")
+  ("graph")
+  ("classify")
+  
+  ;;; These files are only for producing postscript output
+  ("psgraph")
+  ("draw-hierarchy")
+  ("draw-on-boards")
+  ("draw-objects-on-boards")
+  ;
+  
+  ("abox-manager")
+  ("tbox-manager")
+  ("absynt")
+  ("define")
+  ("sprims")
+  ("push-not")
+  ("assertion")
+  ("ro-predicates")
+  ("predicates")
+  ("exp-asse")
+  ("subsumption")
+  ("filter-graph")
+  
+  ("a-reasoning")
+  ("cmds")
+  ("listing")
+  ("ind-reasoning")
+  ("exp-pred")
+  
+  ("colab-access")
+  ("retrieval")
+  ("trace")  
+  ("switch")
+  ("tx")
+  ("help-fu")
+  
+  ("save-load-graph")
+  
+  )
+
+(pdefsys:defsystem TAXON-print-fcts
+  (:default-pathname (our-fs:logdir-file :print-fcts "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :print-fcts "ibin")
+		     :default-package "TAXON"
+		     )
+  ("print-fcts")
+  
+  )
+
+(pdefsys:defsystem TAXON-representation
+  (:default-pathname (our-fs:logdir-file :representation "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :representation "ibin")
+		     :default-package "TAXON"
+		     )
+  ("cnf-subsumption")
+  ("cnf-representation")
+  ("generate-cn")
+  ("print-cnf")
+  ("tr2knf")
+  ("constructors2fkts")
+  ("get-function")
+  ("object")
+  ("abstract")
+  ("print-abstracts")
+  ("concrete")
+  ("unknown")
+  ("deref")
+  )
+
+(pdefsys:defsystem TAXON-subsumption
+  (:default-pathname (our-fs:logdir-file :subsumption "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :subsumption "ibin")
+		     :default-package "TAXON"
+		     )
+  ("make-subs-rules")
+  ("subsumes-weakly")
+  ("subs-rules")
+  )
+
+
+(pdefsys:defsystem TAXON-consistency
+  (:default-pathname (our-fs:logdir-file :consistency "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :consistency "ibin")
+		     :default-package "TAXON"
+		     )
+  ;;; contains macros
+  ("print-rule")
+  ;;; these files contain proclaim
+  ("stacks")
+  ("predicates")
+  ("choice-points")
+  ;;; this file contains a macro which is used in control
+  ("clash")
+  ;;; rest
+  ("abstract-predicates")
+  ("agreements")
+  ("backtracking")
+  ("concrete-predicates")
+  ("cond-fcts")
+  ("control")
+  ("init")
+  ("make-assertions")
+  ("make-rules")
+  ("pathrules-for-concs")
+  ("pathrules-for-preds")
+  
+  ("process-stacks")
+  ("restrictor-rules")
+  ("rules")
+  ("types")
+  )
+
+(pdefsys:defsystem TAXON-incr-real-ord
+  (:default-pathname (our-fs:logdir-file :incr-real-ord "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :incr-real-ord "ibin")
+		     :default-package "TAXON"
+		     )
+  ("make-predicates")
+  ("print-RO")
+  ("propagate-number-rest")
+  ("propagate-number")
+  ("propagate-real")
+  ("propagate-symbolic")
+  ("representation")
+  ("symbolic-clash")
+  ("propagate-new")
+  ("rules")
+  )
+
+(pdefsys:defsystem TAXON-concrete
+  (:default-pathname (our-fs:logdir-file :concrete "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :concrete "ibin")
+		     :default-package "TAXON"
+		     )
+  ("get-rules")
+  )
+
+#|
+(progn
+  ;(pdefsys:compile-system 'TAXON-front-end :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-front-end))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-print-fcts :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-print-fcts))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-representation :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-representation))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-subsumption :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-subsumption))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-consistency :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-consistency))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-incr-real-ord :reload t)
+  (pdefsys:load-system 'TAXON-incr-real-ord))
+
+(progn
+  ;(pdefsys:compile-system 'TAXON-concrete :recompile t :reload t)
+  (pdefsys:load-system 'TAXON-concrete))
+
+
+(progn
+  ;(pdefsys:compile-system 'TAXON)
+  (pdefsys:load-system 'TAXON))
+
+|#
+
+@
+
+
+1.10
+log
+@defpackage replaced by in-package
+@
+text
+@d26 2
+a27 2
+(in-package 'TAXON  :nicknames '(TX))
+(in-package 'user)
+d29 2
+a30 1
+
+d32 1
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d26 2
+a27 3
+(defpackage TAXON
+  ( :nicknames "TX")
+  )
+d30 1
+a30 1
+(defpackage psgraph)
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d14 1
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@@
+
+
+1.6
+log
+@verschiebung von pushnew :taxon *features*
+@
+text
+@d11 3
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d10 1
+@
+
+
+1.4
+log
+@typos
+@
+text
+@d4 17
+d26 1
+a26 1
+(make-package 'psgraph :use 'lisp)
+a27 2
+
+
+d29 2
+a30 2
+  (:default-pathname (our-fs:logdir-file :TX "")
+		     :default-binary-pathname (our-fs:logdir-extend1 :TX "ibin")
+@
+
+
+1.3
+log
+@ibin zeugs
+@
+text
+@d6 1
+a6 1
+   )
+a11 1
+#+:symbolics (progn
+d14 11
+a24 11
+		   (:default-pathname (our-fs:logdir-file :TX "")
+		    :default-binary-pathname (our-fs:logdir-extend1 :TX "ibin")
+		    :needed-systems (TAXON-front-end 
+				     TAXON-print-fcts 
+				     TAXON-representation 
+				     TAXON-subsumption
+				     TAXON-consistency
+				     TAXON-incr-real-ord 
+				     TAXON-concrete)
+                    :default-package "TAXON"
+                     )
+d29 3
+a31 3
+   :default-binary-pathname (our-fs:logdir-extend1 :front-end "ibin")
+   :default-package "TAXON"
+  )
+d36 2
+a37 2
+
+;;; These files are only for producing postscript output
+d42 2
+a43 2
+  				      ;
+
+d56 1
+a56 1
+
+d62 1
+a62 1
+
+d69 1
+a69 1
+
+d71 1
+a71 1
+
+d75 4
+a78 4
+		   (:default-pathname (our-fs:logdir-file :print-fcts "")
+		    :default-binary-pathname (our-fs:logdir-extend1 :print-fcts "ibin")
+		    :default-package "TAXON"
+                    )
+d84 4
+a87 4
+		   (:default-pathname (our-fs:logdir-file :representation "")
+	 	    :default-binary-pathname (our-fs:logdir-extend1 :representation "ibin")
+ 		    :default-package "TAXON"
+                    )
+d104 4
+a107 4
+		   (:default-pathname (our-fs:logdir-file :subsumption "")
+		    :default-binary-pathname (our-fs:logdir-extend1 :subsumption "ibin")
+		    :default-package "TAXON"
+                    )
+d115 4
+a118 4
+		   (:default-pathname (our-fs:logdir-file :consistency "")
+		    :default-binary-pathname (our-fs:logdir-extend1 :consistency "ibin")
+		    :default-package "TAXON"
+                    )
+d139 1
+a139 1
+
+d147 4
+a150 4
+		   (:default-pathname (our-fs:logdir-file :incr-real-ord "")
+	 	    :default-binary-pathname (our-fs:logdir-extend1 :incr-real-ord "ibin")
+		    :default-package "TAXON"
+                    )
+d164 4
+a167 4
+		   (:default-pathname (our-fs:logdir-file :concrete "")
+		    :default-binary-pathname (our-fs:logdir-extend1 :concrete "ibin")
+		    :default-package "TAXON"
+                    )
+a205 1
+
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@a5 15
+; #-:symbolics
+;  ( :export "destroy-taxon"
+;            "cfam"
+;            "cpred"
+;            "role"
+;            "attr"
+;            "ofam"
+;            "conc"
+;            "prim" 
+;	    "classify-all"
+;	    "pphi"
+;	    "asse"
+;	    "ro")
+  ;( :prefix-name "TAXON")
+ ; ( :use "COMMON-LISP")
+a12 16
+;(in-package 'TAXON)
+#|(export '(taxon::destroy-taxon
+	  taxon::cfam
+	  taxon::cpred
+	  taxon::role
+	  taxon::attr
+	  taxon::ofam
+	  taxon::conc
+	  taxon::prim 
+	  taxon::classify-all
+	  taxon::pphi
+	  taxon::asse
+	  taxon::ro
+	  taxon::forall))|#
+;(in-package 'USER)
+)
+d24 1
+a24 1
+                    :default-package TAXON
+d29 4
+a32 5
+		   (:default-pathname (our-fs:logdir-file :front-end "")
+		 
+		    :default-binary-pathname (our-fs:logdir-extend1 :front-end "ibin"))
+		    :default-package TAXON
+                    )
+d77 2
+a78 2
+		    :default-binary-pathname (our-fs:logdir-extend1 :print-fcts "ibin"))
+		    :default-package TAXON
+d86 2
+a87 2
+	 	    :default-binary-pathname (our-fs:logdir-extend1 :representation "ibin"))
+ 		    :default-package TAXON
+d106 2
+a107 2
+		    :default-binary-pathname (our-fs:logdir-extend1 :subsumption "ibin"))
+		    :default-package TAXON
+d117 2
+a118 2
+		    :default-binary-pathname (our-fs:logdir-extend1 :consistency "ibin")) 
+		    :default-package TAXON
+d149 2
+a150 2
+	 	    :default-binary-pathname (our-fs:logdir-extend1 :incr-real-ord "ibin"))
+		    :default-package TAXON
+d166 2
+a167 2
+		    :default-binary-pathname (our-fs:logdir-extend1 :concrete "ibin"))
+		    :default-package TAXON
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 240
+@

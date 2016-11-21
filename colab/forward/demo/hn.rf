@@ -1,0 +1,10 @@
+
+; Fakten
+
+; alte Wissensbasis
+(HN (truncone a1 1 2 0))
+(HN (truncone a2 4 2 2))
+(HN (connected a2 a1))
+(HN (material a1 metal))
+(HN (material a2 metal))
+

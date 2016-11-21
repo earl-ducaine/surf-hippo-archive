@@ -1,0 +1,13 @@
+\stmb{magic-eval}:
+
+Format: \stmt{magic-eval $<$goal$1>$ ... $<$goal$n>$}
+
+Options: $<$goal$1>$ ... $<$goal$n>$ the initial seeds for magic sets evaluation.
+
+Effect: First magic sets transformation and then semi-naive evaluation is 
+	performed wrt to the given goals. This command is an abbreviation of the
+	sequence of commands \stmb{magic-transform}, \stmb{magic-query}, where the arguments
+	of both commands are the same.
+
+see also: \eval, \stmb{magic-query}, \stmb{magic-transform}
+

@@ -1,0 +1,17 @@
+(ft (foo _x) `(_x 2 3))
+(ft (bar _g) @_g)
+(ft (baz _h) (is _aux @_h) @_aux)
+(ft (emb _a) (tup _a @_a a))
+(ft (fue _a) (@_a _a))
+(ft (tst)
+    (is _x `(+ 1 2))
+    (tup _x
+         `_x
+         @_x
+         `@_x
+         @`_x
+         (+ 1 2)
+         `(+ 1 2)
+         @(+ 1 2)
+         `@(+ 1 2)
+         @`(+ 1 2)))

@@ -1,0 +1,13 @@
+\stmb{magic-query}:
+
+Format: \stmt{magic-query $<$goal$1>$ ... $<$goal$n>$}
+
+Options: $<$goal$1>$ ... $<$goal$n>$ the initial seeds for magic sets evaluation.
+
+Effect: The databases \stmt{*magic-rules*}, \stmt{*factbase*} and \stmt{*derived-factbase*} will be 
+	evaluated wrt the given goals using the semi-naive bottom-up strategy. 
+	If no goals are given, the database \stmt{*magic-seeds*} (all seeds of 
+        transformation) is taken for evaluation.   
+
+see also: \eval, \stmb{magic-eval}, \stmb{magic-transform}
+

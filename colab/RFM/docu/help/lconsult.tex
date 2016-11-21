@@ -1,0 +1,16 @@
+\lconsult:\footnote{only for downward compatibility}
+
+Format: \stmt{lconsult $<$variable$>$}
+
+Options: $<$variable$>$ a LISP variable name
+
+Effect: Loading a database from a LISP variable $<$variable$>$ at the end of
+	the (possibly empty) database \stmt{*rfi-database*}.
+
+	The contents of the LISP variable may be defined by a
+	LISP set command:
+
+	\stmt{(setq consinst '((ft (cons \_a \_b) `(\_a .  \_b))))}
+
+
+see also: \destroy, \lreplace

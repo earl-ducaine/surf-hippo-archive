@@ -1,0 +1,876 @@
+;;; Dribble file "mcad2nc.script" started
+T
+> (colab)
+colab> pwd
+Print the current directory
+Current Pathname is #P"/home.arctecserv-2a/ctec/colab-release/top/demo/mcad2nc/"
+colab> exec start
+Executes a batch file
+batchjob executing...
+colab> taxon
+Taxon Subsystem Switch
+Try to load; please wait a moment.
+;;; Loading system TAXON-FRONT-END
+;;; Loading binary file "ibin/geto.sbin"
+;;; Loading binary file "ibin/tx-signatur.sbin"
+;;; Loading binary file "ibin/graph.sbin"
+;;; Loading binary file "ibin/classify.sbin"
+;;; Loading binary file "ibin/psgraph.sbin"
+;;; Loading binary file "ibin/draw-hierarchy.sbin"
+;;; Loading binary file "ibin/draw-on-boards.sbin"
+;;; Loading binary file "ibin/draw-objects-on-boards.sbin"
+;;; Loading binary file "ibin/abox-manager.sbin"
+;;; Loading binary file "ibin/tbox-manager.sbin"
+;;; Loading binary file "ibin/absynt.sbin"
+;;; Loading binary file "ibin/define.sbin"
+;;; Loading binary file "ibin/sprims.sbin"
+;;; Loading binary file "ibin/push-not.sbin"
+;;; Loading binary file "ibin/assertion.sbin"
+;;; Loading binary file "ibin/ro-predicates.sbin"
+;;; Loading binary file "ibin/predicates.sbin"
+;;; Loading binary file "ibin/exp-asse.sbin"
+;;; Loading binary file "ibin/subsumption.sbin"
+;;; Loading binary file "ibin/filter-graph.sbin"
+;;; Loading binary file "ibin/a-reasoning.sbin"
+;;; Loading binary file "ibin/cmds.sbin"
+;;; Loading binary file "ibin/listing.sbin"
+;;; Loading binary file "ibin/ind-reasoning.sbin"
+;;; Loading binary file "ibin/exp-pred.sbin"
+;;; Loading binary file "ibin/colab-access.sbin"
+;;; Loading binary file "ibin/retrieval.sbin"
+;;; Loading binary file "ibin/trace.sbin"
+;;; Warning: Redefining Variable *TRACE-CONCEPT-CLOSURE which used to be defined in "/home.arctecserv-2a/ctec/colab1/taxon/front-end/ind-reasoning.lisp"
+;;; Warning: Redefining Variable *TRACE-REALIZE which used to be defined in "/home.arctecserv-2a/ctec/colab1/taxon/front-end/ind-reasoning.lisp"
+;;; Loading binary file "ibin/switch.sbin"
+;;; Loading binary file "ibin/tx.sbin"
+;;; Warning: Redefining Function COLAB-CONSULT-TAXON which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-DESTROY-TAXON which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-LIST-TAXON which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Loading binary file "ibin/help-fu.sbin"
+;;; Loading binary file "ibin/save-load-graph.sbin"
+;;; done loading system TAXON-FRONT-END
+;;; Loading system TAXON-PRINT-FCTS
+;;; Loading binary file "ibin/print-fcts.sbin"
+;;; done loading system TAXON-PRINT-FCTS
+;;; Loading system TAXON-REPRESENTATION
+;;; Loading binary file "ibin/cnf-subsumption.sbin"
+;;; Loading binary file "ibin/cnf-representation.sbin"
+;;; Loading binary file "ibin/generate-cn.sbin"
+;;; Loading binary file "ibin/print-cnf.sbin"
+;;; Loading binary file "ibin/tr2knf.sbin"
+;;; Loading binary file "ibin/constructors2fkts.sbin"
+;;; Loading binary file "ibin/get-function.sbin"
+;;; Loading binary file "ibin/object.sbin"
+;;; Loading binary file "ibin/abstract.sbin"
+;;; Loading binary file "ibin/print-abstracts.sbin"
+;;; Loading binary file "ibin/concrete.sbin"
+;;; Loading binary file "ibin/unknown.sbin"
+;;; Loading binary file "ibin/deref.sbin"
+;;; done loading system TAXON-REPRESENTATION
+;;; Loading system TAXON-SUBSUMPTION
+;;; Loading binary file "ibin/make-subs-rules.sbin"
+;;; Loading binary file "ibin/subsumes-weakly.sbin"
+;;; Loading binary file "ibin/subs-rules.sbin"
+;;; done loading system TAXON-SUBSUMPTION
+;;; Loading system TAXON-CONSISTENCY
+;;; Loading binary file "ibin/print-rule.sbin"
+;;; Loading binary file "ibin/stacks.sbin"
+;;; Loading binary file "ibin/predicates.sbin"
+;;; Loading binary file "ibin/choice-points.sbin"
+;;; Loading binary file "ibin/clash.sbin"
+;;; Loading binary file "ibin/abstract-predicates.sbin"
+;;; Loading binary file "ibin/agreements.sbin"
+;;; Loading binary file "ibin/backtracking.sbin"
+;;; Loading binary file "ibin/concrete-predicates.sbin"
+;;; Loading binary file "ibin/cond-fcts.sbin"
+;;; Loading binary file "ibin/control.sbin"
+;;; Loading binary file "ibin/init.sbin"
+;;; Loading binary file "ibin/make-assertions.sbin"
+;;; Loading binary file "ibin/make-rules.sbin"
+;;; Loading binary file "ibin/pathrules-for-concs.sbin"
+;;; Loading binary file "ibin/pathrules-for-preds.sbin"
+;;; Loading binary file "ibin/process-stacks.sbin"
+;;; Loading binary file "ibin/restrictor-rules.sbin"
+;;; Loading binary file "ibin/rules.sbin"
+;;; Loading binary file "ibin/types.sbin"
+;;; done loading system TAXON-CONSISTENCY
+;;; Loading system TAXON-INCR-REAL-ORD
+;;; Loading binary file "ibin/make-predicates.sbin"
+;;; Loading binary file "ibin/print-RO.sbin"
+;;; Loading binary file "ibin/propagate-number-rest.sbin"
+;;; Loading binary file "ibin/propagate-number.sbin"
+;;; Loading binary file "ibin/propagate-real.sbin"
+;;; Loading binary file "ibin/propagate-symbolic.sbin"
+;;; Loading binary file "ibin/representation.sbin"
+;;; Loading binary file "ibin/symbolic-clash.sbin"
+;;; Loading binary file "ibin/propagate-new.sbin"
+;;; Loading binary file "ibin/rules.sbin"
+;;; done loading system TAXON-INCR-REAL-ORD
+;;; Loading system TAXON-CONCRETE
+;;; Loading binary file "ibin/get-rules.sbin"
+;;; done loading system TAXON-CONCRETE
+;;; Loading system TAXON
+;;; done loading system TAXON
+colab,tx> contax
+Contax Subsystem Switch
+Try to load; please wait a moment.
+;;; Loading system CONTAX
+;;; Loading binary file "contax-sbin/assistant-macros.sbin"
+;;; Loading binary file "contax-sbin/assistant-functions.sbin"
+;;; Loading binary file "contax-sbin/constraint-queues.sbin"
+;;; Loading binary file "contax-sbin/hierarchies.sbin"
+;;; Loading binary file "contax-sbin/variables.sbin"
+;;; Loading binary file "contax-sbin/constraints.sbin"
+;;; Loading binary file "contax-sbin/predicates.sbin"
+;;; Loading binary file "contax-sbin/revise.sbin"
+;;; Loading binary file "contax-sbin/control.sbin"
+;;; Loading binary file "contax-sbin/programmer-interface.sbin"
+;;; Loading binary file "contax-sbin/negation.sbin"
+;;; Loading binary file "contax-sbin/colab-interface.sbin"
+;;; Warning: Redefining Function COLAB-DESTROY-CONTAX which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-LIST-CONTAX which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-CONSULT-CONTAX which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Loading binary file "contax-sbin/user-interface.sbin"
+;;; Loading binary file "contax-sbin/debugger.sbin"
+;;; done loading system CONTAX
+;;; Loading source file "/home.arctecserv-2a/ctec/colab-release/contax/convert-hierarchy.lisp"
+CONTAX constraints reset.
+CONTAX variables reset.
+CONTAX concepts reset.
+colab,tx,cn> forward
+Forward Subsystem Switch
+Try to load; please wait a moment.
+;;; Loading system FW-BASIC
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-colab-top.sbin"
+;;; Warning: Redefining Function COLAB-CONSULT-FORWARD which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-DESTROY-FORWARD which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+;;; Warning: Redefining Function COLAB-LIST-FORWARD which used to be defined in "/home.arctecserv-2a/ctec/colab-release/top/colab.lisp"
+; Reading file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/strategies/fc-strategies.rf" ..; Reading file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/strategies/forward-prelude.rf" ..
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-access.sbin"
+;;; done loading system FW-BASIC
+;;; Loading system FW-SEMI
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-bottomup/semi-naive/semi-naive.sbin"
+;;; done loading system FW-SEMI
+;;; Loading system FW-META
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/meta/part-eval.sbin"
+;;; Warning: Redefining Function OR-PROCESS which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/relfun/rfi.lisp"
+;;; Warning: Redefining Function CLAUSE-T which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/relfun/rfi.lisp"
+;;; Warning: Redefining Function S-CLAUSE which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/relfun/rfi.lisp"
+;;; Warning: Redefining Function APPEND-GUARDS which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/relfun/rfi.lisp"
+;;; done loading system FW-META
+;;; Loading system FW-MAGIC
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-bottomup/magic/magic-sets.sbin"
+;;; done loading system FW-MAGIC
+;;; Loading system FW-INTER
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfi/fw-retain-admin.sbin"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfi/fw-horizon-comp.sbin"
+;;; done loading system FW-INTER
+;;; Loading system FW-GASM
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/changes.sbin"
+;;; Warning: Redefining Function CLASSIFY-DB which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/classifier/classify.lisp"
+;;; Warning: Redefining Function CODE-GEN-PROC which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/codegenerator/cg5.lisp"
+;;; Warning: Redefining Function WANDEL which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/codegenerator/misc.lisp"
+;;; Warning: Redefining Function READ-DB which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/codegenerator/misc.lisp"
+;;; Warning: Redefining Function GWAM.HAS-FAILED which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/gama/gwam.lisp"
+;;; Warning: Redefining Function PRINTMSEG which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/gama/gwam.lisp"
+;;; Warning: Redefining Function SHOW-VALUE-OF-SOMETHING which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/gama/gwam.lisp"
+;;; Warning: Redefining Function VALUE-HELP which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/gama/gwam.lisp"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/tools.sbin"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/retain.sbin"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/absyn2.patch.sbin"
+;;; Warning: Redefining Function MK-TERM*CLAS which used to be defined in "/home.arctecserv-2a/ctec/colab1/RFM/classifier/absyn2.lisp"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/procedures.sbin"
+;;; done loading system FW-GASM
+;;; Loading system FW-EMUL
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/fw-rfe/fw-gassem-startup.sbin"
+;;; done loading system FW-EMUL
+;;; Loading system FW-FAM
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fam/compiler.sbin"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fam/emu.sbin"
+
+FAM  Ver 1.1 , 12. Juni 92
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fam/interface.sbin"
+;;; done loading system FW-FAM
+;;; Loading system FW-TX
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/taxon-interface/get-wp.sbin"
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/taxon-interface/instance-name.sbin"
+
+;;; Loading binary file "/home.arctecserv-2a/ctec/colab-release/forward/fw-relfun/taxon-interface/tx-transformer.sbin"
+;;; done loading system FW-TX
+;;; Loading system FORWARD
+;;; done loading system FORWARD
+colab,tx,cn,fwi> colab
+Colab System Switch
+colab> destroy
+Destroy the databases of all known subsystems
+
+T 
+CONTAX constraints reset.
+CONTAX variables reset.
+CONTAX concepts reset.
+CONTAX has been reset.
+colab> taxon
+Taxon Subsystem Switch
+colab,tx> consult micro2.tx
+Consults a database to all known subsystems
+
+Warning -- second definition of = is ignored!
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+colab,tx> switch reduced-abox t
+filtered-graph|reduced-abox|draw-all|draw-bottom|show -- t | nil
+
+T 
+colab,tx> filter
+filter subsumption graph
+colab,tx> switch filtered-graph t
+filtered-graph|reduced-abox|draw-all|draw-bottom|show -- t | nil
+
+T 
+colab,tx> forward
+Forward Subsystem Switch
+colab,tx,fwi> automatic
+Activate automatic mode
+colab,tx,fwi> consult wp-mcad2nc.rf
+Consults a database to all known subsystems
+
+(ASC-CIRCLE) 
+(CYLINDER) 
+(DESC-RING) 
+(CYLINDER) 
+(ASC-RING) 
+(ASC-TC) 
+(CYLINDER) 
+(DESC-RING) 
+(CYLINDER) 
+(DESC-RING) 
+(CYLINDER) 
+(ASC-RING) 
+(CYLINDER) 
+(DESC-CIRCLE) 
+colab,tx,fwi> consult tx-parts-emul.rf
+Consults a database to all known subsystems
+colab,tx,fwi> replace-strategies  tx-additions.rf
+Replace the strategies
+; Reading file "/home.arctecserv-2a/ctec/colab-release/top/demo/mcad2nc/tx-additions.rf" ..
+colab,tx,fwi> compile-strategies
+Compile the actual strategies
+;;; Expanding Dynamic Memory
+colab,tx,fwi> fw-compile
+Compile all databases
+colab,tx,fwi> contax
+Contax Subsystem Switch
+colab,tx,fwi,cn> consult tools.ctx
+Consults a database to all known subsystems
+colab,tx,fwi,cn> consult constdef.lisp
+Consults a database to all known subsystems
+colab,tx,fwi,cn> rfe
+Relfun Emulator Subsystem Switch
+colab,tx,fwi,cn,rfe-l> consult library
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult class-feat
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult rng2p
+Consults a database to all known subsystems
+;;; GC: 517306 words [2069224 bytes] of dynamic storage in use.
+;;; 138052 words [552208 bytes] of free storage available before a GC.
+;;; 793410 words [3173640 bytes] of free storage available if GC is disabled.
+;;; GC: 517306 words [2069224 bytes] of dynamic storage in use.
+;;; 138052 words [552208 bytes] of free storage available before a GC.
+;;; 793410 words [3173640 bytes] of free storage available if GC is disabled.
+;;; Expanding Dynamic Memory
+colab,tx,fwi,cn,rfe-l> consult feat2p
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult skeletal
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult anc-program
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult demo
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> consult examples
+Consults a database to all known subsystems
+colab,tx,fwi,cn,rfe-l> compile
+compile relfun database
+;;; GC: 615830 words [2463320 bytes] of dynamic storage in use.
+;;; 252520 words [1010080 bytes] of free storage available before a GC.
+;;; 1120870 words [4483480 bytes] of free storage available if GC is disabled.
+;;; GC: 615830 words [2463320 bytes] of dynamic storage in use.
+;;; 252520 words [1010080 bytes] of free storage available before a GC.
+;;; 1120870 words [4483480 bytes] of free storage available if GC is disabled.
+;;; Expanding Dynamic Memory
+colab,tx,fwi,cn,rfe-l> (init-tool-sel)
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+true
+
+More solutions?  (Y/N) n
+
+colab,tx,fwi,cn,rfe-l> forward
+Forward Subsystem Switch
+colab,tx,fwi> fw-emul
+Forward emulator mode
+colab,tx,fwe> rf-query (show-demo)
+Query to the RELFUN subsystem
+
+"Derived Fact asserted into TAXON ABox:"
+(desc-tc
+ circ46
+ (tup (tup center1 150) (tup center2 150) (tup radius1 25) (tup radius2 0)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl45
+ (tup (tup radius 25) (tup leftmost cyl45) (tup rightmost cyl45)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(asc-tc
+ rng44
+ (tup (tup center1 120) (tup center2 120) (tup radius1 20) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl43
+ (tup (tup radius 20) (tup leftmost cyl43) (tup rightmost cyl43)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(desc-tc
+ rng42
+ (tup (tup center1 110) (tup center2 110) (tup radius1 30) (tup radius2 20)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl41
+ (tup (tup radius 30) (tup leftmost cyl41) (tup rightmost cyl41)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(desc-tc
+ rng40
+ (tup (tup center1 70) (tup center2 70) (tup radius1 40) (tup radius2 30)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl39
+ (tup (tup radius 40) (tup leftmost cyl39) (tup rightmost cyl39)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(asc-tc
+ tr38
+ (tup (tup center1 50) (tup center2 60) (tup radius1 25) (tup radius2 40)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(asc-tc
+ rng37
+ (tup (tup center1 50) (tup center2 50) (tup radius1 20) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl36
+ (tup (tup radius 20) (tup leftmost cyl36) (tup rightmost cyl36)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(desc-tc
+ rng35
+ (tup (tup center1 40) (tup center2 40) (tup radius1 25) (tup radius2 20)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(longturningsurface
+ lts-cyl34
+ (tup (tup radius 25) (tup leftmost cyl34) (tup rightmost cyl34)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(asc-tc
+ circ33
+ (tup (tup center1 0) (tup center2 0) (tup radius1 0) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ circ46
+ (tup (tup center1 150) (tup center2 150) (tup radius1 25) (tup radius2 0)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ rng44
+ (tup (tup center1 120) (tup center2 120) (tup radius1 20) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(shoulder
+ shoulder-lts-cyl43-rng44
+ (tup
+  (tup ground lts-cyl43)
+  (tup flank rng44)
+  (tup leftmost cyl43)
+  (tup rightmost rng44) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(shoulder
+ shoulder-rng42-lts-cyl43
+ (tup
+  (tup ground lts-cyl43)
+  (tup flank rng42)
+  (tup leftmost rng42)
+  (tup rightmost cyl43) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ rng42
+ (tup (tup center1 110) (tup center2 110) (tup radius1 30) (tup radius2 20)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(shoulder
+ shoulder-rng40-lts-cyl41
+ (tup
+  (tup ground lts-cyl41)
+  (tup flank rng40)
+  (tup leftmost rng40)
+  (tup rightmost cyl41) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ rng40
+ (tup (tup center1 70) (tup center2 70) (tup radius1 40) (tup radius2 30)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ rng37
+ (tup (tup center1 50) (tup center2 50) (tup radius1 20) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(shoulder
+ shoulder-lts-cyl36-rng37
+ (tup
+  (tup ground lts-cyl36)
+  (tup flank rng37)
+  (tup leftmost cyl36)
+  (tup rightmost rng37) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(shoulder
+ shoulder-rng35-lts-cyl36
+ (tup
+  (tup ground lts-cyl36)
+  (tup flank rng35)
+  (tup leftmost rng35)
+  (tup rightmost cyl36) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ rng35
+ (tup (tup center1 40) (tup center2 40) (tup radius1 25) (tup radius2 20)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(truncone
+ circ33
+ (tup (tup center1 0) (tup center2 0) (tup radius1 0) (tup radius2 25)) )
+
+"Derived Fact asserted into TAXON ABox:"
+(groove
+ groove-rng42-lts-cyl43-rng44
+ (tup
+  (tup leftflank rng42)
+  (tup ground lts-cyl43)
+  (tup rightflank rng44)
+  (tup leftmost rng42)
+  (tup rightmost rng44) ) )
+
+"Derived Fact asserted into TAXON ABox:"
+(groove
+ groove-rng35-lts-cyl36-rng37
+ (tup
+  (tup leftflank rng35)
+  (tup ground lts-cyl36)
+  (tup rightflank rng37)
+  (tup leftmost rng35)
+  (tup rightmost rng37) ) )
+
+
+------------------------------BREAK--------------------------------
+
+
+    Continue? (Please type Y)  y
+
+
+
+constructing classified workpiece ...
+
+
+classified workpiece:
+
+(cwp
+ 40
+ (tup
+  (nft
+   (lsh (flk (tup (p 70 40) (p 70 30))) (grd (tup (p 70 30) (p 110 30))))
+   (tup) )
+  (nft
+   (grv
+    (flk (tup (p 110 30) (p 110 20)))
+    (grd (tup (p 110 20) (p 120 20)))
+    (flk (tup (p 120 20) (p 120 25))) )
+   (tup) )
+  (nft
+   (grv
+    (flk (tup (p 40 25) (p 40 20)))
+    (grd (tup (p 40 20) (p 50 20)))
+    (flk (tup (p 50 20) (p 50 25))) )
+   (tup) ) ) )
+
+
+
+
+------------------------------BREAK--------------------------------
+
+
+    Continue? (Please type Y)  y
+
+
+contax tool selection:
+  arguments: roughing high-alloy-steel normal 0 90 left
+  propagating...
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+
+  results: (tup (tup dnmm-71 tmaxp-pdl93) (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30) (tup tnmm-71 tmaxp-ptl90))
+end.
+
+contax tool selection:
+  arguments: roughing high-alloy-steel normal 90 90 right
+  propagating...
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+
+  results: (tup (tup dnmm-71 tmaxp-pdr93) (tup rcmx tmaxp-prr30) (tup tnmm-71 tmaxp-ptr90))
+end.
+
+contax tool selection:
+  arguments: roughing high-alloy-steel normal 90 90 left
+  propagating...
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+
+  results: (tup (tup dnmm-71 tmaxp-pdl93) (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30) (tup tnmm-71 tmaxp-ptl90))
+end.
+
+contax tool selection:
+  arguments: roughing high-alloy-steel normal 90 90 right
+  propagating...
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+
+  results: (tup (tup dnmm-71 tmaxp-pdr93) (tup rcmx tmaxp-prr30) (tup tnmm-71 tmaxp-ptr90))
+end.
+
+contax tool selection:
+  arguments: roughing high-alloy-steel normal 90 90 left
+  propagating...
+contax initialization:
+  creating constraint variables...
+  creating constraint instances...
+  initializing hac datastructures...
+;;; Warning: You are still using HAC, which is absolutely not necessary.
+ok.
+
+  results: (tup (tup dnmm-71 tmaxp-pdl93) (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30) (tup tnmm-71 tmaxp-ptl90))
+end.
+
+
+skeletal plan:
+
+(skp
+ 40
+ (com
+  (tup
+   (alt
+    (tup
+     (roughing
+      (tool dnmm-71 tmaxp-pdl93)
+      left
+      (geo (tup (p 70 40) (p 70 30) (p 110 30))) )
+     (roughing
+      (tool rcmx tmaxp-prl40)
+      left
+      (geo (tup (p 70 40) (p 70 30) (p 110 30))) )
+     (roughing
+      (tool rcmx tmaxp-prl30)
+      left
+      (geo (tup (p 70 40) (p 70 30) (p 110 30))) )
+     (roughing
+      (tool tnmm-71 tmaxp-ptl90)
+      left
+      (geo (tup (p 70 40) (p 70 30) (p 110 30))) ) ) )
+   (alt
+    (tup
+     (seq
+      (tup
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdl93)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl40)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl30)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptl90)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) ) ) )
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdr93)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prr30)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptr90)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) ) ) ) ) )
+     (seq
+      (tup
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdr93)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prr30)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptr90)
+          right
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) ) ) )
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdl93)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl40)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl30)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptl90)
+          left
+          (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) ) ) ) ) ) ) )
+   (alt
+    (tup
+     (seq
+      (tup
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdl93)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl40)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl30)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptl90)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) ) )
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdr93)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prr30)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptr90)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) ) ) ) )
+     (seq
+      (tup
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdr93)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prr30)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptr90)
+          right
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) ) )
+       (alt
+        (tup
+         (roughing
+          (tool dnmm-71 tmaxp-pdl93)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl40)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool rcmx tmaxp-prl30)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+         (roughing
+          (tool tnmm-71 tmaxp-ptl90)
+          left
+          (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) ) ) ) ) ) ) ) ) )
+
+
+
+
+------------------------------BREAK--------------------------------
+
+
+    Continue? (Please type Y)  y
+
+
+
+qualitative simulation:
+
+(tup
+ (roughing
+  (tool dnmm-71 tmaxp-pdl93)
+  left
+  (geo (tup (p 70 40) (p 70 30) (p 110 30))) )
+ (roughing
+  (tool dnmm-71 tmaxp-pdl93)
+  left
+  (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+ (roughing
+  (tool dnmm-71 tmaxp-pdl93)
+  left
+  (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) )
+4.4->
+(skp
+ 40
+ (com
+  (tup
+   (alt
+    (tup
+     (roughing
+      (tool dnmm-71 tmaxp-pdr93)
+      right
+      (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+     (roughing
+      (tool rcmx tmaxp-prr30)
+      right
+      (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+     (roughing
+      (tool tnmm-71 tmaxp-ptr90)
+      right
+      (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) ) ) )
+   (alt
+    (tup
+     (roughing
+      (tool dnmm-71 tmaxp-pdr93)
+      right
+      (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+     (roughing
+      (tool rcmx tmaxp-prr30)
+      right
+      (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+     (roughing
+      (tool tnmm-71 tmaxp-ptr90)
+      right
+      (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) ) ) ) ) )
+
+
+(tup
+ (roughing
+  (tool dnmm-71 tmaxp-pdr93)
+  right
+  (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+ (roughing
+  (tool dnmm-71 tmaxp-pdr93)
+  right
+  (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) )
+2.0->
+(skp 40 (tup))
+
+
+
+
+------------------------------BREAK--------------------------------
+
+
+    Continue? (Please type Y)  y
+
+
+
+anc-program:
+
+`(tup
+  (roughing
+   (tool dnmm-71 tmaxp-pdl93)
+   left
+   (geo (tup (p 70 40) (p 70 30) (p 110 30))) )
+  (roughing
+   (tool dnmm-71 tmaxp-pdl93)
+   left
+   (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+  (roughing
+   (tool dnmm-71 tmaxp-pdl93)
+   left
+   (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) )
+  (roughing
+   (tool dnmm-71 tmaxp-pdr93)
+   right
+   (geo (tup (p 110 30) (p 110 20) (p 120 20) (p 120 25))) )
+  (roughing
+   (tool dnmm-71 tmaxp-pdr93)
+   right
+   (geo (tup (p 40 25) (p 40 20) (p 50 20) (p 50 25))) ) )
+
+More solutions?  (Y/N) n
+
+batchjob done...
+colab,tx,fwe> lisp (dribble)
+Eval expression
+;;; Dribble file "mcad2nc.script" finished

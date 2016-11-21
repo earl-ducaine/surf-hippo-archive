@@ -1,0 +1,5 @@
+(ft (foo (f b) (f _x) _x) (is _y `(g (f _x)))
+                          (is _y  `(g (f b)))
+                          (foo2 _x _y))
+
+(hn (foo2 _X _y))

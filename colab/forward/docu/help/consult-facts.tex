@@ -1,0 +1,11 @@
+\stmb{consult-facts}:
+
+Format: \stmt{consult-facts $<$filename$>$}
+
+Options: $<$filename$>$ a stringified or normal pathname
+
+Effect: Loading all the facts of a hybrid database from file $<$filename$>$ at the 
+	end of the (possibly empty) database \stmt{*factbase*}.
+        If no extension is provided, \COLAB{} extends the filename with \stmt{".rf"}.
+
+see also: \consult, \destroy, \replace

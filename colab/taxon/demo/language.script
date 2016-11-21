@@ -1,0 +1,206 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;  A Sample Session using the File language.col  ;;;;;
+;;;;;;;  - it should make a little bit clearer         ;;;;;
+;;;;;;;    both syntactical possibilities and          ;;;;;
+;;;;;;;    underlying semantics of our concept         ;;;;;
+;;;;;;;    description language                 -      ;;;;;
+;;;;;;;  a. abecker  December 92                       ;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;; Dribble file "language.script" started
+
+T 
+colab,tx> pwd
+Print the current directory
+Current Pathname is #P"/home.arctecserv-2a/aabecker/RCS_Colab/"
+colab,tx> cd taxon
+Change directory
+Current Pathname is #P"/home.arctecserv-2a/aabecker/RCS_Colab/taxon/"
+colab,tx> cd demo
+Change directory
+Current Pathname is #P"/home.arctecserv-2a/aabecker/RCS_Colab/taxon/demo/"
+colab,tx> destroy
+clear all the TAXON specific definitions
+
+T 
+colab,tx> spy classify
+trace classify, assert-ind?, concept-closure
+colab,tx> consult language.col
+Consults a database to all known subsystems
+
+ Classify Concept: CONJUNCTION 
+
+ Classify Concept: DISJUNCTION 
+
+ Classify Concept: COMPLEMENT 
+
+ Classify Concept: MY-TOP 
+
+ MY-TOP new member of equivalence class (TOP) 
+
+ Classify Concept: MY-BOTTOM 
+
+ MY-BOTTOM new member of equivalence class (BOTTOM) 
+
+Open Family NAME-OF-OFAMILY still exists -- it will be extended!
+
+ Classify Concept: VALUE-RESTRICTION 
+
+ Classify Concept: EXISTS-IN-RESTRICTION 
+
+ Classify Concept: FORALL-SOME 
+
+ Classify Concept: F-VALUE-RESTRICTION 
+
+ Classify Concept: F-EXISTS-IN-RESTRICTION 
+
+ Classify Concept: F-FORALL-SOME 
+
+ F-FORALL-SOME new member of equivalence class (F-EXISTS-IN-RESTRICTION) 
+
+ Classify Concept: AGREEMENT 
+
+ Classify Concept: DISAGREEMENT 
+
+ Classify Concept: APRED-VALUE-RESTRICTION 
+
+ Classify Concept: APRED-EXISTS-IN-RESTRICTION 
+
+ Classify Concept: CPRED-VALUE-RESTRICTION 
+
+ Classify Concept: CPRED-EXISTS-IN-RESTRICTION 
+
+ Classify Concept: APRED-CPRED 
+
+ APRED-CPRED new member of equivalence class (MY-BOTTOM BOTTOM) 
+colab,tx> pphi
+print the computed subsumption hierarchy
+        MY-TOP TOP <=== (P3) (DISJUNCTION) (COMPLEMENT) (NAME-OF-OFAMILY) (NAME-OF-CFAM) (VALUE-RESTRICTION) (EXISTS-IN-RESTRICTION) (F-VALUE-RESTRICTION) (AGREEMENT) (DISAGREEMENT) (APRED-EXISTS-IN-RESTRICTION) (CPRED-VALUE-RESTRICTION) (CPRED-EXISTS-IN-RESTRICTION)
+                P3 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+       DISJUNCTION <=== (P1) (P2)
+                P1 <=== (CONJUNCTION)
+       CONJUNCTION <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                P2 <=== (CONJUNCTION)
+        COMPLEMENT <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+   NAME-OF-OFAMILY <=== (M1) (M2) (M3) (M4) (M5)
+                M1 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                M2 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                M3 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                M4 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                M5 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+      NAME-OF-CFAM <=== (N1) (N2) (N3) (N4)
+                N1 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                N2 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                N3 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+                N4 <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+ VALUE-RESTRICTION <=== (FORALL-SOME)
+       FORALL-SOME <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+EXISTS-IN-RESTRICTION <=== (FORALL-SOME)
+F-VALUE-RESTRICTION <=== (F-FORALL-SOME F-EXISTS-IN-RESTRICTION)
+F-FORALL-SOME F-EXISTS-IN-RESTRICTION <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+         AGREEMENT <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+      DISAGREEMENT <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+APRED-EXISTS-IN-RESTRICTION <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+CPRED-VALUE-RESTRICTION <=== (APRED-VALUE-RESTRICTION)
+APRED-VALUE-RESTRICTION <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+CPRED-EXISTS-IN-RESTRICTION <=== (APRED-CPRED MY-BOTTOM BOTTOM)
+
+colab,tx> ? drawhi
+Short help function
+drawhi             draw hierarchy into ps-file; keywords (name hierarch.ps) (top top) (shrink nil) (insert nil)
+colab,tx> drawhi :name "language.ps" 
+draw hierarchy into ps-file; keywords (name hierarch.ps) (top top) (shrink nil) (insert nil)
+Drawing (sub)hierarchy starting with TOP to file language.ps
+Wrote /home.arctecserv-2a/aabecker/RCS_Colab/language.ps
+colab,tx> def n4
+get definition of a TBox object
+
+(SPRIM N4) 
+colab,tx> iup n4
+<concept>; look-up immediate uppers ( see equi )
+
+(NAME-OF-CFAM) 
+colab,tx> lsc
+list separation classes of disjoint primitives
+
+ Classes of disjunct primitive concepts:
+ ---------------------------------------
+ Class                   Type    Members
+
+ NAME-OF-CFAM           CLOSED   (N1 N2 N3 N4)
+ NAME-OF-OFAMILY        OPEN    (M3 M4 M5 M1 M2)
+colab,tx> ilo name-of-cfam
+<concept>; look-up immediate lowers ( see equi )
+
+(N1 N2 N3 N4) 
+colab,tx> conc n12 (and n1 n2)
+define a compound concept
+
+ Classify Concept: N12 
+
+ N12 new member of equivalence class (APRED-CPRED MY-BOTTOM BOTTOM) 
+colab,tx> equi bottom
+<concept>; look-up equivalence class of concept (only for classified concepts)
+
+(N12 APRED-CPRED MY-BOTTOM BOTTOM) 
+colab,tx> nospy classify
+untrace classify, assert-ind?, concept-closure
+colab,tx> conc n1-4 (or n1 n2 n3 n4)
+define a compound concept
+colab,tx> ilo n1-4
+<concept>; look-up immediate lowers ( see equi )
+
+(N1 N2 N3 N4) 
+colab,tx> equi n1-4
+<concept>; look-up equivalence class of concept (only for classified concepts)
+
+(N1-4 NAME-OF-CFAM) 
+colab,tx> iup m1
+<concept>; look-up immediate uppers ( see equi )
+
+(NAME-OF-OFAMILY) 
+colab,tx> ilo name-of-ofamily
+<concept>; look-up immediate lowers ( see equi )
+
+(M1 M2 M3 M4 M5) 
+colab,tx> conc m1-5 (or m1 m2 m3 m4 m5)
+define a compound concept
+colab,tx> equi m1-5
+<concept>; look-up equivalence class of concept (only for classified concepts)
+
+(M1-5) 
+colab,tx> iup m1-5
+<concept>; look-up immediate uppers ( see equi )
+
+(NAME-OF-OFAMILY) 
+colab,tx> ilo name-of-ofamily
+<concept>; look-up immediate lowers ( see equi )
+
+(M1-5) 
+colab,tx> ofam name-of-ofam (m6)
+declare an open family of mutually disjoint primitive concepts
+colab,tx> ilo name-of-ofam
+<concept>; look-up immediate lowers ( see equi )
+
+(M6) 
+colab,tx> ofam name-of-ofamily (m7 m8 m9)
+declare an open family of mutually disjoint primitive concepts
+
+Open Family NAME-OF-OFAMILY still exists -- it will be extended!
+colab,tx> lsc
+list separation classes of disjoint primitives
+
+ Classes of disjunct primitive concepts:
+ ---------------------------------------
+ Class                   Type    Members
+
+ NAME-OF-CFAM           CLOSED   (N1 N2 N3 N4)
+ NAME-OF-OFAM           OPEN    (M6)
+ NAME-OF-OFAMILY        OPEN    (M7 M8 M9 M3 M4 M5 M1 M2)
+colab,tx> (dribble)
+Invalid request: 
+ ((dribble)) 
+colab,tx> lisp (dribble)
+Eval expression
+;;; Dribble file "language.script" finished

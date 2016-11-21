@@ -1,0 +1,6 @@
+(ft (foo (f b) (f _v) _v) (is _w `(g (f _v)))
+                          (is _w _u)
+                          (is _u  `(g (f b)))
+                          (bar _v _w))
+
+(hn (bar _r _s))

@@ -1,0 +1,252 @@
+; RELFUN Operations on Directed Recursive Labelnode Hypergraphs
+
+(ft (apptupdrlh (tup) (drlh | _r)) `(drlh | _r))
+(ft (apptupdrlh (tup _b | _y) (drlh | _r))
+    (mergebox _b (apptupdrlh `(tup | _y) `(drlh | _r))))
+
+(hn (membarrow _e (tup _e | _rest)) !)
+(hn (membarrow (drlh | _r) (tup (cntct _b (drlh | _r)) | _rest)) !)
+(ft (membarrow _x (tup id | _rest)) ! (membarrow _x `(tup | _rest)))
+(ft (membarrow _e (tup)) false)
+(hn (membarrowall _e (tup _e | _rest)))
+(hn (membarrowall (drlh | _r) (tup (cntct _b (drlh | _r)) | _rest)))
+(ft (membarrowall _x (tup id | _rest)) (membarrowall _x `(tup | _rest)))
+(ft (membarrowall _e (tup)) false)
+
+(ft (membdrlh _b (cntct _c (drlh | _r))) (membdrlh _b `(drlh | _r)))
+(ft (membdrlh _b (drlh (tup | _y) | _r))
+    !
+    (ifthel (membarrow _b `(tup | _y))
+            true
+            `(membdrlh _b `(drlh | _r))))
+(hn (membdrlh _b (drlh _b | _r)) !)
+(hn (membdrlh (drlh | _s) (drlh (cntct _d (drlh | _s)) | _r)) !)
+(ft (membdrlh _b (drlh id | _r))
+    !
+    (membdrlh _b `(drlh | _r)))
+(ft (membdrlh _b (drlh)) false)
+
+(ft (membdrlhall _b (cntct _c (drlh | _r))) (membdrlhall _b `(drlh | _r)))
+(hn (membdrlhall _b (drlh (tup | _y) | _r))
+    (membarrowall _b `(tup | _y)))
+(hn (membdrlhall _b (drlh _b | _r)) (nomgu `(tup | _y) _b))
+(hn (membdrlhall (drlh | _s) (drlh (cntct _d (drlh | _s)) | _r)))
+(ft (membdrlhall _b (drlh id | _r))
+    (membdrlhall _b `(drlh | _r)))
+(ft (membdrlhall _b (drlh)) false)
+
+(ft (subboxes (cntct _b (drlh | _r)) (cntct _c (drlh | _s)))
+    (ifthel (mgu _b _c) `(subboxes `(drlh | _r) `(drlh | _s)) false))
+(ft (subboxes (drlh | _r) (cntct _c (drlh | _s)))
+    (subboxes `(drlh | _r) `(drlh | _s)))
+(ft (subboxes (cntct _b (drlh | _r)) (drlh | _s))
+    false)  ; arguments are normalized
+(hn (subboxes (drlh) (drlh | id)))
+(ft (subboxes (drlh (tup _b | _y) | _r) (drlh | _s))
+    !
+    (ifthel (membdrlh _b `(drlh | _s))
+            `(subboxes `(drlh (tup | _y) | _r) `(drlh | _s))
+            false))
+(ft (subboxes (drlh (tup) | _r) (drlh | _s))
+    !
+    (subboxes `(drlh | _r) `(drlh | _s)))
+(ft (subboxes (drlh _b | _r) (drlh | _s))
+    (ifthel (membdrlh _b `(drlh | _s))
+            `(subboxes `(drlh | _r) `(drlh | _s))
+            false))
+
+(ft (subdrlh (cntct _b (drlh | _r)) (cntct _c (drlh | _s)))
+    (ifthel (mgu _b _c) `(subdrlh `(drlh | _r) `(drlh | _s)) false))
+(ft (subdrlh (drlh | _r) (cntct _c (drlh | _s)))
+    (subdrlh `(drlh | _r) `(drlh | _s)))
+(ft (subdrlh (cntct _b (drlh | _r)) (drlh | _s))
+    false)  ; arguments are normalized
+(hn (subdrlh (drlh) (drlh | id)))
+(ft (subdrlh (drlh (tup | _y) | _r) (drlh | _s))
+    !
+    (ifthel (membtup `(tup | _y) `(tup | _s))
+            `(subdrlh `(drlh | _r) `(drlh | _s))
+            false))
+(ft (subdrlh (drlh _b | _r) (drlh | _s))
+    (ifthel (membdrlh _b `(drlh | _s))
+            `(subdrlh `(drlh | _r) `(drlh | _s))
+            false))
+
+(ft (uniondrlh (cntct _b (drlh | _r)) (cntct _b (drlh | _s)))
+;   unknown for 2 cntct expressions with different contact boxes
+    (cntct _b (uniondrlh `(drlh | _r) `(drlh | _s)))) ; conscntct
+(ft (uniondrlh (drlh | _r) (cntct _c (drlh | _s)))
+    (cntct _c (uniondrlh `(drlh | _r) `(drlh | _s)))) ; conscntct
+(ft (uniondrlh (cntct _b (drlh | _r)) (drlh | _s))
+    (cntct _b (uniondrlh `(drlh | _r) `(drlh | _s)))) ; conscntct
+(ft (uniondrlh (drlh | _r) (drlh | _s))
+    (is (tup | _t) (apptup `(tup | _r) `(tup | _s)))
+    (drlh | _t)) ; normalization
+
+(ft (interdrlh (cntct _b (drlh | _r)) (cntct _c (drlh | _s)))
+    (ifthel (mgu _b _c)
+            `(cntct _b (interdrlh `(drlh | _r) `(drlh | _s))) ; conscntct
+            `(interdrlh `(drlh | _r) `(drlh | _s))))
+(ft (interdrlh (drlh | _r) (cntct _c (drlh | _s)))
+    (interdrlh `(drlh | _r) `(drlh | _s)))
+(ft (interdrlh (cntct _b (drlh | _r)) (drlh | _s))
+    (interdrlh `(drlh | _r) `(drlh | _s)))
+(ft (interdrlh (drlh) (drlh | _s)) `(drlh))
+(ft (interdrlh (drlh (tup | _y) | _r) (drlh | _s))
+    !
+    (ifthel (membtup `(tup | _y) `(tup | _s))
+            `(mergearrow `(tup | _y) (interdrlh `(drlh | _r) `(drlh | _s)))
+            `(interdrlh (apptupdrlh `(tup | _y) `(drlh | _r)) ; no nested tups
+                        `(drlh | _s))))
+(ft (interdrlh (drlh _b | _r) (drlh | _s))
+    (ifthel (membdrlh _b `(drlh | _s))
+            `(mergebox _b (interdrlh `(drlh | _r) `(drlh | _s)))
+            `(ifthel (mgu `(cntct _d (drlh | _t)) _b)
+                     `(interdrlh `(drlh (drlh | _t) | _r) `(drlh | _s))
+                     `(interdrlh `(drlh | _r) `(drlh | _s)))))
+
+(ft (differdrlh (cntct _b (drlh | _r)) (cntct _c (drlh | _s)))
+    (ifthel (mgu _b _c)
+            `(differdrlh `(drlh | _r) `(drlh | _s))
+            `(cntct _b (differdrlh `(drlh | _r) `(drlh | _s)))))
+(ft (differdrlh (drlh | _r) (cntct _c (drlh | _s)))
+    (differdrlh `(drlh | _r) `(drlh | _s)))
+(ft (differdrlh (cntct _b (drlh | _r)) (drlh | _s))
+    (cntct _b (differdrlh `(drlh | _r) `(drlh | _s))))
+(ft (differdrlh (drlh) (drlh | _s)) `(drlh))
+(ft (differdrlh (drlh (tup | _y) | _r) (drlh | _s))
+    !
+    (ifthel (membtup `(tup | _y) `(tup | _s))
+            `(differdrlh `(drlh | _r) `(drlh | _s))
+            `(mergearrow `(tup | _y) (differdrlh `(drlh | _r) `(drlh | _s)))))
+(ft (differdrlh (drlh _b | _r) (drlh | _s))
+    (ifthel (membdrlh _b `(drlh | _s))
+            `(differdrlh `(drlh | _r) `(drlh | _s))
+            `(mergebox _b (differdrlh `(drlh | _r) `(drlh | _s)))))
+
+(ft (boxes (cntct _b (drlh | _r))) (cntct _b (boxes `(drlh | _r)))) ; conscntct
+(ft (boxes (drlh)) ! `(drlh))
+(ft (boxes (drlh (tup | _y) | _r))
+    !
+    (apptupdrlh `(tup | _y) (boxes `(drlh | _r))))
+(ft (boxes (drlh _b | _r))
+    (mergebox _b (boxes `(drlh | _r))))
+
+(ft (boxesrec (cntct _b (drlh | _r)))
+    !
+    (cntct (boxesrec _b) (boxesrec `(drlh | _r)))) ; conscntct
+(ft (boxesrec (drlh | _r))
+    !
+    (mapdrlh boxesrec (boxes `(drlh | _r))))
+(ft (boxesrec _b) _b)
+
+(ft (mapdrlh _f (drlh)) `(drlh))
+(ft (mapdrlh _f (drlh _head | _tail))
+    (consdrlh (_f _head) (mapdrlh _f `(drlh | _tail))))
+
+(ft (atomicboxes (cntct _b (drlh | _r))) (cntct _b (atomicboxes `(drlh | _r))))
+(ft (atomicboxes (drlh)) ! `(drlh))
+(ft (atomicboxes (drlh (tup | _y) | _r))
+    !
+    (atomicboxes (apptupdrlh `(tup | _y) `(drlh | _r))))
+(ft (atomicboxes (drlh (cntct _b (drlh | _y)) | _r))
+    !
+    (atomicboxes (apptupdrlh `(tup | _y) `(drlh | _r))))
+(ft (atomicboxes (drlh (drlh | _y) | _r))
+    !
+    (atomicboxes (apptupdrlh `(tup | _y) `(drlh | _r))))
+(ft (atomicboxes (drlh _b | _r))
+    (mergebox _b (atomicboxes `(drlh | _r))))
+
+(ft (qtrav _netin _start _goal) (qtraverse _netin `(tup _start) _goal))
+(ft (qtraverse _netin (tup _goal | _path) _goal) (revtup `(tup _goal | _path)))
+(ft (qtraverse _netin (tup _start | _path) _goal)
+    (qfindarrow _netin _netout _start _resttup)
+    (membtupall _next _resttup)
+    (notp (membtup _next `(tup _start | _path)))
+    (qtraverse _netout `(tup _next _start | _path) _goal))
+(hn (qfindarrow
+     (drlh (tup | _y) | _r) (drlh (tup | _t) | _r) _start (tup _succ | _nodes))
+    (appendtup `(tup | _t) `(tup _start _succ | _nodes) `(tup | _y)))
+(hn (qfindarrow (drlh (tup | _y) | _r) (drlh (tup | _y) | _s) _start _resttup)
+    (qfindarrow `(drlh | _r) `(drlh | _s) _start _resttup))
+    ; the normalized input drlh has a block of tups as prefix
+
+(ft (trav _net _start _goal) (traverse `(tup _net) `(tup (tup _start)) _goal))
+(ft (traverse _netstack (tup (tup _goal | _path) | _pathstack) _goal)
+    (revtuprec (neststack `(tup (tup _goal | _path) | _pathstack))))
+(ft (traverse (tup _net | _netstack)
+              (tup (tup _start | _path) | _pathstack)
+              _goal)
+    (findarrow _net _start _resttup)
+    (membtupall _next _resttup)
+    (notp (membtup _next `(tup _start | _path)))
+    (traverse `(tup _net | _netstack)
+              `(tup (tup _next _start | _path) | _pathstack)
+              _goal))
+(ft (traverse (tup | _netstack)
+              (tup (tup (cntct _b (drlh | _r)) | _path) | _pathstack)
+              _goal)
+    (notp (mgu `(tup (tup _b | id) | id) `(tup | _path))) ; no (cntct)boxpaths
+    (traverse `(tup (drlh | _r) | _netstack)
+              `(tup (tup _b) (tup (cntct _b (drlh | _r)) | _path) | _pathstack)
+              _goal))
+(ft (traverse (tup _net1 _net2 | _netstack)
+              (tup (tup _start | _path) (tup | _pathup) | _pathstack)
+              _goal)
+    (notp (membtup `(cntct _start _net1) `(tup | _pathup)))
+    (traverse `(tup _net2 | _netstack)
+              `(tup (tup (cntct _start _net1) (tup _start | _path) | _pathup)
+                    |
+                    _pathstack)
+              _goal))
+(hn (findarrow
+     (drlh (tup | _y) | _r) _start (tup _succ | _nodes))
+    (appendtup `(tup | id) `(tup _start _succ | _nodes) `(tup | _y)))
+(hn (findarrow (drlh (tup | _y) | _r) _start _resttup)
+    (findarrow `(drlh | _r) _start _resttup))
+    ; the normalized input drlh has a block of tups as prefix
+(ft (neststack (tup (tup | _y))) `(tup | _y))
+(ft (neststack (tup (tup | _y) (tup | _z) | _remtups))
+    (neststack `(tup (tup (tup | _y) | _z) | _remtups)))
+
+(ft (ex1) (tup  (subboxes `(drlh a) `(drlh (tup a)))
+                as-well-as
+                (subboxes `(drlh (tup a)) `(drlh a))
+                but-still
+                (nomgu `(drlh a) `(drlh (tup a)))))
+(ft (ex2) (tup  (subdrlh `(drlh a) `(drlh (tup a)))
+                but-not
+                (subdrlh `(drlh (tup a)) `(drlh a))
+                so-it-is-ok-that
+                (nomgu `(drlh a) `(drlh (tup a)))))
+(ft (ex3) (tup  (subboxes (drlh2-3) (drlh3-2))
+                but-still
+		(interdrlh (drlh2-3) (drlh3-2))
+		not-equals
+		(drlh2-3)))
+(ft (ex4) (tup  (subdrlh (drlh1) (drlh2))
+                as-well-as
+		(interdrlh (drlh1) (drlh2))
+		equals
+		(drlh1)))
+(ft (hyperpath) (trav (drlh-h) a h))
+(ft (recursivepath) (trav (drlh-r) c l))
+
+(ft (drlh1) `(drlh (tup c h e) (tup e c) b f))
+(ft (drlh2) `(drlh (tup c h e) (tup e c) (tup f c g g) b))
+(ft (drlh3) `(drlh (tup a b d) (tup b d c) (tup c h e) (tup e c) i))
+(ft (drlh2-3) `(drlh (tup a1 b1 c1) (tup a2 b2 c2)))
+(ft (drlh3-2) `(drlh (tup a1 a2) (tup b1 b2) (tup c1 c2)))
+(ft (drlh6-1) `(drlh (tup a1) (tup a2) (tup b1) (tup b2) (tup c1) (tup c2)))
+(ft (drlh6-i) `(drlh a1 a2 b1 b2 c1 c2))
+(ft (drlh-h) `(drlh (tup a b f e) (tup b f g) (tup d h g g c) (tup d c d)))
+(ft (drlh-r)
+ (is _d1 `(drlh (tup e (cntct f _d2) g)
+                (tup (cntct j _d2) k)
+                (tup g k)))
+ (is _d2 `(drlh (tup f i)
+                (tup f j)
+                (tup j i)))
+ `(drlh (tup c (cntct e _d1))
+        (tup (cntct k _d1) l)))

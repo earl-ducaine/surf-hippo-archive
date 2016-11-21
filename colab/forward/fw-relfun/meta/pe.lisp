@@ -1,0 +1,10 @@
+(parteval '((hn (forward _Fact _Head)
+               (clause _Head _Body)
+               (findlit _Body _Fact _ToProve)
+               (provelist _ToProve)
+               (retain _Head)))
+	  '((clause _Head _Body)
+	    (findlit _Body _Fact _ToProve)
+	    (provelist _ToProve))
+)
+

@@ -1,0 +1,366 @@
+
+
+; Datei /home/forward/release/FORWARD/taxon-interface/tx-parts.rf
+; Datum: 13.8.1991
+
+
+; Spezifikation der micro-CAD2NC Anwendung in FORWARD
+
+; Die FORWARD-Komponente ist fuer die Feature-Aggregation verantwortlich.
+; die Features selbst sind in TAXON definiert. Da TAXON aber keine neuen
+; Instanzen erzeugen kann (und jedes generierte Feature ist ja eine neue
+; Instanz in Sinne von KL-ONE), wird FORWARD diese Aufgabe uebernehmen.
+; Nun waere es aber unsinnig, alle Definitionen doppelt zu haben, also
+; einmal in TAXON und nochmals in FORWARD. Aus diesem Grund wird es in
+; FORWARD nur sehr allgemeine Regeln geben, also z.B. die Definition einer
+; Nut, die aus zwei Schultern mit gemeinsamer Grundflaeche besteht,
+; waehrend TAXON fuer die Konkretisierung zustaendig ist.
+; Diese Konkretisierung entspricht gerade der Realisierung, bei der
+; z.B. fuer die Nut gefunden werden koennte, dass es eine spezielle Nut
+; ist, bei der die linke Flanke hoeher ist als die rechte.
+; 
+; Nun muss aber FORWARD mit jedem abgeleiteten Fakt weitere Regeln
+; triggern koennen, wozu natuerlich die speziellste Zuordnung bekannt sein
+; muss, die aber nicht eindeutig ist und sich im Laufe der weiteren
+; Verarbeitung noch veraendern kann.
+; Aus diesem Grund traegt FORWARD die abgeleitete Instanz in seinen Stack
+; ein, laesst sie aber nochmals realisieren, bevor sie zum Triggern einer
+; Regel verwendet wird. Das Ergebnis dieser Realisierung sind alle
+; Konzepte, die in der Hierarchie allgemeiner sind als die speziellste
+; Zuordnung. Mit all diesen allgemeineren Zuordnungen werden nun Regeln
+; aktiviert.
+; 
+; In der FORWARD-Komponente sind Regeln definiert, die die Features
+; definieren. Daneben gibt es noch eine Menge von Fakten, die das
+; Werkstueck beschreiben.
+; 
+; 
+; 
+
+; Fuer die Schnittstelle zu TAXON wird ein Operator ADD-DATA in der
+; Konklusion eingefuehrt. Das Argument von ADD-DATA ist ein Konzept-
+; Term der Form 
+; (ADD-DATA <concept-name>
+;           <instance-name>
+;           (tup <attr1> <val1>)
+;           ...
+;           (tup <attrN> <valN>))
+; Fuer Praemissen, die auf solche Instanzen zugreifen, wird ein
+; neuer built-in Operator DATA benoetigt.
+
+; (Alternative: Die up-Regeln sind in tx-up Regeln umzuwandeln.
+; Bei der horizontalen Compilation von tx-up Regeln wird die Konklusion
+; als DATA-Term auf den RETAIN-Stack gelegt.)
+
+; Features sind wie auch die Flaechen-Repraesentationen als
+; Attribut-Listen dargestellt. Im Gegensatz zu psi-Termen
+; ist dabei aber die Reihenfolge und auch die Anzahl von
+; Bedeutung. Das heisst zwei Attribut-Terme sind nur dann
+; unifizierbar, wenn sie in Anzahl, Art und Wert der Attribute
+; uebereinstimmen, also ganz normale Unifikation wie auch in
+; Prolog.
+; Fuer Attribut-Term Unifikation muesste die Unifikationsfunktion
+; von RELFUN geaendert werden.
+
+
+; Attribute, die bei allen Features vorkommen sind die linkeste und
+; rechteste Flaeche des Features (um Nachbarschaften zwischen Features
+; und Flaechen pruefen zu koennen)
+
+
+
+
+; Eine Schulter setzt sich zusammen aus einer abfallenden bzw.
+; ansteigenden Flaeche und einer Langdrehflaeche.
+; Attribute einer Schulter sind die Grundflaeche (Langdrehflaeche)
+; und die Flanke (die abfallende  bzw. ansteigende  Flaeche).
+;
+; Zu beachten ist noch, dass es fuer linke und rechte Schultern
+; keine eigenen Regeln geben muss, da die spezielle Zuordnung
+; durch das TAXON-System erfolgt. 
+
+
+
+
+; Sehr komplex ist die Definition einer Langdrehflaeche.
+; Dabei unterscheiden wir grundsaetzlich zwischen Langdrehflaechen
+; die von links und solchen die von rechts bearbeitet werden.
+;
+; ACHTUNG: Einzelne Zylinderflaechen sind 
+;          Langdrehflaechen nach dieser Definition!!
+;
+; Die Attribute einer Langdrehflaeche sind:
+;    - der Bezeichner: ein Lisp-Atom das aus dem Funkor "lts" und
+;      Bezeichnern der ersten und letzten Flaeche der Langdrehflaeche
+;      duch Konkatenation erzeugt wird (Lisp-Funktion MAKE-INSRANCE-NAME)
+;    - Die linkeste und rechteste Flaeche der Langdrehflaeche
+;
+; Eine Langdrehflaeche beginnt an einer abfallenden (bzw. ansteigenden)
+; Flaeche F! und endet entweder am Ende des Werkstuecks oder an einer
+; Flaeche F2, deren Radius den oberen Radius der Flaeche F1 uebersteigt.
+; F1 und F2 selbst gehoeren NICHT mehr zur Langdrehflaeche.
+;
+;                            ______________
+;                            |
+;                            |                      (1)
+;               _    ________|
+;     -----|   | \  /
+;          |___|  \/
+;          
+; 
+;     \
+;      \                          |
+;       \                         |                 (2)
+;        \          __________    |
+;         \____   /           |   |
+;               \/            |___|
+;          
+;
+; An Beispiel-Schema 1 sieht man, dass eine Langdrehflaeche auch
+; eine absteigende Sequenz sein kann. Dies ist deshalb sinnvoll, weil
+; ueber einer absteigenden Sequenz zuerst ein langer Schrupp-Schnitt
+; gemacht werden kann.
+
+
+; Die Definition einer Langdrehflaeche wird von zwei Preadikaten
+; aufgestellt. Das Hauptpraedikat LTS-FROM-LEFT bzw. LTS-FROM-RIGHT
+; testet den Beginn einer Langedrehflaeche (ansteigende bzw.
+; Flaeche), waehrend die Hilfspraedikate SUB-LTS-FROM-LEFT bzw.
+; SUB-LTS-FROM-RIGHT die restlichen Flaechen mit entsprechend
+; niedrigem Radius aufsammeln.
+
+
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 _rada)))
+    (cylinder _x `(tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup  radius2 _rada))))
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zl) (tup radius1 _rada) (tup radius2 _radb)))
+    (ring _x `(tup (tup center1 _zl) (tup center2 _zl) (tup radius1 _rada) (tup radius2 _radb))))
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zl) (tup radius1 _rada) (tup radius2 0)))
+    (circle _x `(tup (tup center1 _zl) (tup center2 _zl) (tup radius1 _rada) (tup radius2 0))))
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zl) (tup radius1 0) (tup radius2 _radb)))
+    (circle _x `(tup (tup center1 _zl) (tup center2 _zl) (tup radius1 0) (tup radius2 _radb))))
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 0)))
+    (cone _x `(tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 0))))
+
+(rl (truncone _x (tup (tup center1 _zl) (tup center2 _zr) (tup radius1 0) (tup radius2 _radb)))
+    (cone _x `(tup (tup center1 _zl) (tup center2 _zr) (tup radius1 0) (tup radius2 _radb))))
+
+(rl (asc-tc _x (tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 _radb)))
+    (truncone _x `(tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 _radb)))
+    (< _rada _radb))
+
+(rl (desc-tc _x (tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 _radb)))
+    (truncone _x `(tup (tup center1 _zl) (tup center2 _zr) (tup radius1 _rada) (tup radius2 _radb)))
+    (> _rada _radb))
+
+
+
+;up add-data
+(rl (add-data shoulder _featid
+			(tup (tup ground _ltsid)
+			     (tup flank _id2)
+			     (tup leftmost _l)
+			     (tup rightmost _id2)))
+    (asc-tc _id2  `(tup (tup center1 _zl)
+			(tup center2 _zr)
+			(tup radius1 _rad)
+			(tup radius2 _rado)))
+    (neighbor _r _id2 )
+    (data longturningsurface _ltsid
+			     `(tup  (tup radius _rad-lts)
+			 	    (tup leftmost _l)
+				    (tup rightmost _r)))
+    (>= _rad-lts _rad)
+    (< _rad-lts _rado)
+    (is _featid (make-instance-name shoulder _ltsid _id2)))
+    
+
+
+;up add-data
+(rl (add-data shoulder _featid 
+			(tup (tup ground _ltsid)
+			     (tup flank _id2)
+			     (tup leftmost _id2)
+			     (tup rightmost _r)))
+    (desc-tc _id2 `(tup (tup center1 _zl)
+		        (tup center2 _zl)
+		        (tup radius1 _rado)
+		        (tup radius2 _rad)))
+    (neighbor _id2 _l)
+    (data longturningsurface  _ltsid
+			      `(tup (tup radius _rad-lts)
+				    (tup leftmost _l)
+				    (tup rightmost _r)))
+    (>= _rad-lts _rad)
+    (< _rad-lts _rado)
+    (is _featid (make-instance-name shoulder _id2 _ltsid) )
+
+    
+)
+
+
+; up add-data
+(rl (add-data longturningsurface _featid
+                                 (tup (tup radius _rad)
+                                      (tup leftmost _cyl)
+                                      (tup rightmost _cyl)))
+    (cylinder _cyl (tup (tup center1 _zl)
+                        (tup center2 _zr)
+			(tup radius1 _rad)
+			(tup radius2 _rad)))
+    (is _featid (make-instance-name lts _cyl _cyl)))
+
+(rl (add-data longturningsurface _featid
+			         (tup (tup radius _rad)
+				      (tup leftmost _l)
+				      (tup rightmost _rightm)))
+
+    (asc-tc _right-end
+	     `(tup (tup center1 _zl)
+                   (tup center2 _zr)
+		   (tup radius1 _rad-first)
+		   (tup radius2 _rad-limit)))
+    (< _rad-first _rad-limit)
+    (neighbor _rightm _right-end)
+    (is _rad (once
+	       (sub-lts-from-left `(tup rad-max _rad-first)
+				  `(tup rad-limit _rad-limit)
+				  `(tup leftmost _l)
+                                  `(tup rightmost _rightm))
+	       ))
+    (is _featid (make-instance-name lts _l _rightm)))
+
+(ft (sub-lts-from-left
+     (tup rad-max _rad-max)       ;;; bisheriges maximum
+     (tup rad-limit _rad-limit)   ;;; obere schranke( darf nicht! erreicht werden)
+     (tup leftmost _l)
+     (tup rightmost _tc))
+    (neighbor _next-tc _tc)
+    (truncone _next-tc
+	      `(tup (tup center1 _zl)
+		    (tup center2 _zr)
+		    (tup radius1 _rada)
+		    (tup radius2 _radb)))
+    (< _rada _rad-limit)
+    (is _new-max (max _rad-max _rada))
+    (sub-lts-from-left 
+        `(tup rad-max _new-max)      ; bisheriges maximum
+	`(tup rad-limit _rad-limit)  ; obere schranke( darf nicht! erreicht werden)
+	`(tup leftmost _l)
+        `(tup rightmost _next-tc)))
+
+
+(ft (sub-lts-from-left (tup rad-max _the-max)
+                       (tup rad-limit _rad-limit)
+                       (tup leftmost _tc)
+                       (tup rightmost _tc))
+    _the-max)
+
+
+; up add-data
+(rl (add-data longturningsurface _featid
+	                         (tup (tup radius _rad)
+		                      (tup leftmost _leftm)
+		                      (tup rightmost _r)))
+
+    (desc-tc _left-end
+	     `(tup (tup center1 _zl)
+                   (tup center2 _zr)
+		   (tup radius1 _rad-limit)
+		   (tup radius2 _rad-first)))
+    (< _rad-first _rad-limit)
+    (neighbor _left-end _leftm)
+    (is _rad (once
+	      (sub-lts-from-right `(tup rad-max _rad-first)
+				  `(tup rad-limit _rad-limit)
+				  `(tup rightmost _r)
+                                  `(tup leftmost _leftm)))
+	)
+    (is _featid (make-instance-name lts _leftm _r)))
+
+(ft (sub-lts-from-right
+     (tup rad-max _rad-max)       ;;; bisheriges maximum
+     (tup rad-limit _rad-limit)   ;;; obere schranke( darf nicht! erreicht werden)
+     (tup rightmost _r)
+     (tup leftmost _tc))
+    (neighbor _tc _next-tc)
+    (truncone _next-tc
+	      `(tup (tup center1 _zl)
+		    (tup center2 _zr)
+		    (tup radius1 _rada)
+		    (tup radius2 _radb)))
+    (< _radb _rad-limit)
+    (is _new-max (max _rad-max _radb))
+    (sub-lts-from-right `(tup rad-max _new-max)   
+                        `(tup rad-limit _rad-limit)
+                        `(tup rightmost _r)
+                        `(tup leftmost _next-tc)))
+
+
+(ft (sub-lts-from-right (tup rad-max _the-max)
+                        (tup rad-limit _rad-limit)
+                        (tup rightmost _tc)
+                        (tup leftmost _tc))
+    _the-max)
+
+
+
+
+(hn (peak (feat _id1 _id2)
+	  (tup leftmost _id1)
+	  (tup rightmost _id2))
+    (asc-tc _id1 `(tup (tup center1 _zl)
+		       (tup center2 _zr1)
+		       (tup radius1 _rada)
+		       (tup radius2 _radb)))
+    (neighbor _id1 _id2)
+    (desc-tc _id2 `(tup (tup center1 _zr1) 
+			(tup center2 _zr2)
+			(tup radius1 _radb)
+			(tup radius2 _radb2)))
+    )
+
+
+(hn (nutch (feat _id1 _id2)
+	   (tup leftmost _id1)
+	   (tup rightmost _id2))
+    (desc-tc _id1 `(tup (tup center1 _zl)
+			(tup center2 _zr1)
+			(tup radius1 _rada)
+			(tup radius2 _radb)))
+    (neighbor _id1 _id2)
+    (asc-tc _id2 `(tup (tup center1 _zr1)
+		       (tup center2 _zr2)
+		       (tup radius1 _radb)
+		       (tup radius2 _radb2))))
+
+
+
+;
+
+; up add-data
+(rl (add-data groove _featid 
+		      (tup (tup leftflank _id1)
+			   (tup ground _id2)
+			   (tup rightflank _id3)
+			   (tup leftmost _lsleft)
+			   (tup rightmost _rsright)))
+    (data rshoulder _rshid
+		    `(tup (tup ground _id2)
+		          (tup flank _id3)
+			  (tup leftmost _rsleft)
+			  (tup rightmost _rsright)))
+    (data lshoulder _lshid
+		    `(tup (tup ground _id2)
+			  (tup flank _id1)
+			  (tup leftmost _lsleft)
+			  (tup rightmost _lsright)))
+    (is _featid (make-instance-name groove _id1 _id2 _id3)))
+
+
+
+

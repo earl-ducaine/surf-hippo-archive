@@ -1,0 +1,118 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;            microCAD2NC             ;;;
+;;;            RELFUN part             ;;;
+;;;               Demo                 ;;;
+;;; (c) Michael Sintek  September 1991 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+(ft (show _headline _x)
+  (rf-terpri)
+  (rf-print _headline)
+  (rf-terpri)
+  (rf-terpri)
+  (rf-pprint _x)
+  (rf-terpri)
+  (rf-terpri)
+  _x)
+
+
+(ft (headline _headline _x)
+  (rf-terpri)
+  (rf-print _headline)
+  (rf-terpri)
+  (rf-terpri)
+  _x)
+
+
+(ft (cwp2anc _cwp)
+ (headline anc-program\:
+  (gen-anc-plan
+   (headline qualitative\ simulation\:
+    (show skeletal\ plan\:
+          (skeletal-plan (show classified\ workpiece\: _cwp)))))))
+
+(ft (rng2cwp _wp-rng)
+  (cwp-rng2p
+   (show classified\ workpiece\ in\ rng-notation\:
+	 (class-feat (show workpiece\ in\ rng-notation\: _wp-rng)))))
+
+(ft (tec2cwp)
+  (init-retain-stack)  
+  (feat2p 
+   (headline constructing\ classified\ workpiece\ ... 
+	     (show features\:
+		   (bf-all `(data truncone _a (tup (tup center1 _zl)
+						   (tup center2 _zr)
+						   (tup radius1 _rada)
+						   (tup radius2 _radb)))
+			   _c)))))
+
+
+(ft (demo/r) ; pure relfun + contax demo
+  (cwp2anc (rng2cwp (exa))))
+
+(ft (demo/f) ; forward + taxon + relfun + contax demo
+  (cwp2anc (tec2cwp)))
+
+(ft (show-demo)
+    (init-retain-stack)
+    (is _x1 (bf-all `(data truncone _a (tup (tup center1 _zl)
+					    (tup center2 _zr)
+					    (tup radius1 _rada)
+					    (tup radius2 _radb)))
+		    `(data _x _y _z)))
+    (break-demo)
+    (is _x2 (show classified\ workpiece\:
+                  (feat2p (headline constructing\ classified\ workpiece\ ...
+                          _x1))))
+    (break-demo)
+    (is _x3 (show skeletal\ plan\: (skeletal-plan _x2)))
+    (break-demo)
+    (is _x4 (gen-anc-plan (headline qualitative\ simulation\: _x3)))
+    (break-demo)
+    (headline anc-program\: _x4))
+
+
+
+; example
+; -------
+
+
+#|
+
+|                       D  E
+40                      +--+
+|                      /   |
+35                    /    |
+|                    /     |                F
+30                  /      +----------------+
+|  A            B  /                        |  G            H
+25--------------+  + C                      |  +------------+
+|               |  |                        |  |            |
+20              +--+                        +--+            |
+|                                                           |
+15                                                          |
+|                                                           |
+10                                                          |
+|                                                           |
+5                                                           |
+|                                                           |
+0_______________________________________________________________
+    10  20  30  40  50  60  70  80  90  100 110 120 130 140 150
+|#
+
+
+(ft (exa)
+  `(tup (rng   0  0 25) ; A
+        (rng  40 25 20) ; B
+        (rng  50 20 25) ; C
+        (rng  60 40 40) ; D
+        (rng  70 40 30) ; E
+        (rng 110 30 20) ; F
+        (rng 120 20 25) ; G
+        (rng 150 25  0) ; H
+        ))
+
+

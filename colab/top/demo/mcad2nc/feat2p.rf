@@ -1,0 +1,485 @@
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                         microCAD2NC                        ;;;
+;;;                         RELFUN part                        ;;;
+;;;  Transforming Aggregated Features to Classified Workpieces ;;;
+;;;            (c) Thomas Oltzen  September 1991               ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+(ft (feat2p _ret)
+    (compacting _ret _x)
+    ; (rf-print compacting)
+    ;; (rf-print-self _x)
+    (transform _x _x _z1)
+    ; (rf-print transformiert)
+    ;; (rf-print-self _z1)
+    (sorting-in _z1 _z2)
+   
+    ; (rf-print sorting-in)
+    ;; (rf-print-self _z2)
+    (sort-reverse _z2 _z3)
+    ; (rf-print reverse-liste)
+    ;; (rf-print-self _z3)
+    (sort-kill-tomuch _z3 _z4)
+    ; (rf-print kill-tomuch-feature)
+    ;; (rf-print-self _z4)
+    (sort-maxradius _z4 0 _maxradius)
+    ; (rf-print maxradius)
+    ;; (rf-print-self _maxradius)
+    (sort-nft _z4 `(tup) _z5)
+    ; (rf-print nft-struktur)
+    ;; (rf-print-self _z5)
+    (sort-height-adaptation _maxradius _z5 _zw1)
+    ; (rf-print radius-anpassung)
+    ;; (rf-print-self _zw1)
+    (sort-2nftsintec _zw1 _z6)
+    ; (rf-print nft-sintec)
+    ;; (rf-print-self _z6)
+    (is _e `(cwp _maxradius _z6))
+    ; (rf-print ergebnis) 
+    _e)
+
+;--------------------------------------------------------------
+
+(hn (cy _x _o) (cylinder _x _o))
+(hn (tr _x _o) (truncone _x _o))
+(hn (rn _x _o) (ring _x _o))
+(hn (ci _x _o) (circle _x _o))
+(hn (co _x _o) (cone _x _o))
+
+;------------------------------------------------------------
+
+(hn (compacting (tup) (tup)))
+(hn (compacting (tup (data shoulder _fn 
+				     (tup (tup ground _g)
+					  (tup flank _f)
+					  (tup leftmost _lm)
+					  (tup rightmost _rm)))
+		     | _rest)
+		_new-ret)
+    (compacting _rest _zw-erg)
+    (is _new-ret `(tup (shoulder _fn 
+				 (ground _g)
+				 (flank _f)
+				 (leftmost _lm)
+				 (rightmost _rm))
+		       | _zw-erg)))
+(hn (compacting (tup (data groove _fn 
+				   (tup (tup leftflank _lf)
+					(tup ground _g)
+					(tup rightflank _rf)
+					(tup leftmost _lm)
+					(tup rightmost _rm)))
+		     | _rest)
+		_new-ret)
+    (compacting _rest _zw-erg)
+    (is _new-ret `(tup (groove _fn
+			       (leftflank _lf)
+			       (ground _g)
+			       (rightflank _rf)
+			       (leftmost _lm)
+			       (rightmost _rm))
+
+	       | _zw-erg)))
+(hn (compacting (tup (data longturningsurface _fn 
+					  (tup (tup radius _rad)
+					       (tup leftmost _lm)
+					       (tup rightmost _rm)))
+		     | _rest)
+		_new-ret)
+    (compacting _rest _zw-erg)
+    (is _new-ret `(tup (longturningsurface _fn
+			       (radius _rad)
+			       (leftmost _lm)
+			       (rightmost _rm))
+		       | _zw-erg)))
+
+(hn (compacting (tup _feat-kann-weg | _rest) _new-ret)
+    (compacting _rest _new-ret))
+
+(hn (sort-normalisator _z1 _z2 _r1 _r _r _z2))
+(hn (sort-normalisator _z1 _z2 _r _r2 _r _z1)) 
+(hn (sort-normalisator _z1 _z2 _r1 _r2 _r _zout)
+    (> _r1 _r2)
+    (< _r2 _r)
+    (<= _r _r1)
+    (is _zout (- _z2 (* (- _z2 _z1) (/ (- _r1 _r2)(- _r _r2))))))
+(hn (sort-normalisator _z1 _z2 _r1 _r2 _r _zout)
+    (> _r2 _r1)
+    (< _r1 _r)
+    (<= _r _r2)
+    (is _zout (+ _z1 (* (- _z2 _z1) (/ (- _r2 _r1)(- _r _r1))))))
+(hn (sort-normalisator _z1 _z2 _r1 _r2 _r _z2)
+    ; (rf-print warnig-lts-has-a-not-good-radius)
+    (>= _r1 _r2))
+(hn (sort-normalisator _z1 _z2 _r1 _r2 _r _z1)
+    ; (rf-print warnig-lts-has-a-not-good-radius)
+    (> _r2 _r1)) 
+; leftshoulder ls rs lmz rmz _r (p z1 r1) (p z2 r2) (p z3 r3)	
+     
+(hn (transfeat _ret
+	       (shoulder _fid (ground _lts)
+			 (flank _lms)
+			 (leftmost _lms)
+			 (rightmost _rms))
+	       (tup leftshoulder _lms _rms _lmz _rmz _r 
+		    (p _lmz _r1)(p _z2 _r)(p _rmz _r)))
+    (leftmost-s _lms _lmz)
+    (rightmost-s _rms _rmz)
+    (tc _lms _lmz1 _lmz2 _lmsr1 _lmsr2)
+    (is _r1 (maximal _lmsr1 _lmsr2))
+;    ;; (rf-print-self _lts)
+    (searchid _lts _ret _o)
+;    ; (rf-print 6)
+    (is _ov `(longturningsurface _lts (radius _r) (leftmost _lts-lm) _e3))
+    (is _ov _o)
+    ; (rf-print leftshoulder) 
+    (sort-normalisator _lmz1 _lmz2 _lmsr1 _lmsr2 _r _z2))
+    
+(hn (transfeat _ret
+	       (shoulder _fid (ground _lts)
+			 (flank _rms)
+			 (leftmost _lms)
+			 (rightmost _rms))
+	       ( tup rightshoulder _lms _rms _lmz _rmz _r 
+		     (p _lmz _r)(p _z2 _r)(p _rmz _r1)))
+    (leftmost-s _lms _lmz)
+    (rightmost-s _rms _rmz)
+;    ; (rf-print ddddddddddddddddddddd)
+    (tc _rms _lmsz1 _lmsz2 _lmsr1 _lmsr2)
+;    ; (rf-print dddddddddddddddddd)
+    (is _r1 (maximal _lmsr1 _lmsr2))
+;    ; (rf-print dddddddddddddddd)
+    (searchid _lts _ret _o)
+;    ; (rf-print ddddddddddddd)
+    (is _ov `(longturningsurface _lts (radius _r) _e3 (rightmost _lts-rm)))
+    (is _ov _o)
+    ; (rf-print rightshoulder)
+    (sort-normalisator _lmsz1 _lmsz2 _lmsr1 _lmsr2 _r _z2))
+
+(hn (transfeat _ret
+	       (groove _fid 
+		       (leftflank _lf)
+		       (ground _lts)
+		       (rightflank _sf)
+		       (leftmost _lms)
+		       (rightmost _rms))
+	       (tup groove _lms _rms _lmz _rmz _r 
+		    (p _lmz _rl)(p _ltslmz _r)(p _ltsrmz _r)(p _rmz _rr)))
+    (leftmost-s _lms _lmz)
+    (rightmost-s _rms _rmz)    
+    (tc _lms _e1 _e2 _lmsr1 _lmsr2)
+    (is _rl (maximal _lmsr1 _lmsr2))
+    (tc _rms _e3 _e4 _rmsr1 _rmsr2)
+    (is _rr (maximal _rmsr1 _rmsr2))
+    (searchid _lts _ret _o)
+    (is _ov `(longturningsurface _lts (radius _r) (leftmost _lts-lm)
+			 (rightmost _lts-rm)))
+    (is _ov _o)
+    ; (rf-print groove)
+    (sort-normalisator _e1 _e2 _lmsr1 _lmsr2 _r _ltslmz)
+    (sort-normalisator _e3 _e4 _rmsr1 _rmsr2 _r _ltsrmz))
+
+(hn (leftmost-s _idf _lm)
+    (tc _idf _c1 _c2 _r1 _r2)
+    (is _lm (minimal _c1 _c2)))
+
+(hn (rightmost-s _idf _lm)
+    (tc _idf _c1 _c2 _r1 _r2)
+    (is _lm (maximal _c1 _c2)))
+
+(ft (maximal _a _b)
+    (>= _a _b)
+    _a)
+
+(ft (maximal _a _b)
+    (>= _b _a)
+    _b)
+
+(ft (minimal _a _b)
+    (>= _a _b)
+    _b)
+
+(ft (minimal _a _b)
+    (>= _b _a)
+    _a)
+
+
+(ft (tc _fid _c1 _c2 _r1 _r2)
+    (tr _fid `(tup (tup center1 _c1) (tup center2 _c2 )
+			 (tup radius1 _r1) (tup radius2 _r2))))
+(ft (tc _fid _c1 _c2 _r1 _r2)
+    (rn _fid `(tup (tup center1 _c1) (tup center2 _c2 )
+			 (tup radius1 _r1) (tup radius2 _r2))))
+(ft (tc _fid _c1 _c2 _r1 _r2)
+    (cy _fid `(tup (tup center1 _c1) (tup center2 _c2 )
+			 (tup radius1 _r1) (tup radius2 _r2))))
+(ft (tc _fid _c1 _c2 _r1 _r2)
+    (co _fid `(tup (tup center1 _c1) (tup center2 _c2 )
+			 (tup radius1 _r1) (tup radius2 _r2))))
+(ft (tc _fid _c1 _c2 _r1 _r2)
+    (ci _fid `(tup (tup center1 _c1) (tup center2 _c2 )
+			 (tup radius1 _r1) (tup radius2 _r2))))
+
+
+(hn (transform _ret (tup) (tup)))
+(hn (transform _ret (tup _f | _r) _out)
+    ;; (rf-print-self _f)
+    (transfeat _ret _f _nf)
+    ; (rf-print erkannt)
+    (transform _ret _r _o)
+    (is _out `(tup _nf | _o)))
+(hn (transform _ret (tup _f | _r) _o)
+;    ; (rf-print fehlschlag)
+    (transform _ret _r _o))
+
+
+(hn (searchid _fid (tup _rf | _rr) _o)
+    (is _rf `(longturningsurface _fid _r _lm _rm))
+    (is _o `(longturningsurface _fid _r _lm _rm)))
+
+
+(hn (searchid _fid (tup _rf | _r) _o)
+    (searchid _fid _r _o))
+
+
+(hn (sorting-in (tup) (tup)))
+(hn (sorting-in (tup _f | _r) _o)
+    (sorting-in _r _s)
+    ; (rf-print make-sorting)
+    (sort-feat _f _s _o))
+
+(hn (sort-feat _data-feat (tup) (tup _data-feat)))
+(hn (sort-feat _data-feat _s-feat (tup _data-feat | _s-feat))
+    (tup-car _s-feat _car)
+    (sort-kleiner? _data-feat _car))
+(hn (sort-feat _data-feat (tup _f | _r) _out)
+    (is _out `(tup _f | _o))
+    (sort-feat _data-feat _r _o))
+
+(hn (sort-kleiner? (tup _n1 _ls1 _rs1 | _r1)
+		   (tup _n2 _ls2 _rs2 | _r2))
+    ;; (rf-print-self _ls1);(o _ls1 _ls2 _rs1 _rs2))
+    (sort-id-topo _rs1 _rs2)
+    (sort-id-topo _ls2 _ls1))
+
+(hn (sort-id-topo _n1 _n1))
+(hn (sort-id-topo _n1 _n2)
+    (neighbor _n1 _n2))
+(hn (sort-id-topo _n1 _n2)
+    (neighbor _n1 _a)
+    (sort-id-topo _a _n2))
+
+(hn (tup-car (tup _x | _y) _x))
+(hn (tup-cdr (tup _x | _y) _y))
+
+(hn (sort-rev (tup) _revl _revl))
+(hn (sort-rev (tup _f | _r) _revl _o)
+    (sort-rev _r `(tup _f | _revl) _o))
+
+(hn (sort-reverse _i _o)
+    (sort-rev _i `(tup) _o))
+    
+(hn (sort-kill-tomuch (tup) (tup)))
+(hn (sort-kill-tomuch (tup _f | _r) _o)
+    (sort-kill-lower _f _r _ze1)
+    (sort-kill-tomuch _ze1 _ze)
+    (is _o `(tup _f | _ze)))
+
+(hn (sort-kill-lower _ele (tup) (tup)))
+(hn (sort-kill-lower _ele (tup _f | _r) _out)
+    (sort-lower _f _ele)
+     
+    (sort-kill-lower _ele _r _out))
+(hn (sort-kill-lower _ele (tup _f | _r) _out)
+    (sort-kill-lower _ele _r _ze)
+    (is _out `(tup _f | _ze)))
+
+
+;; is _ele1 lower as _ele2 ?
+(hn (sort-lower _ele1 _ele1))
+(hn (sort-lower (tup _fname _e1 _e2 _lmz _rmz _r | _fplist)
+		(tup _fname2 _e3 _e4 _lmz2 _rmz2 _r2 | _fplist2))
+;    ;; (rf-print-self _fname)
+;    ;; (rf-print-self _fplist)
+;    ;; (rf-print-self _fname2)
+;    ;; (rf-print-self _fplist2)
+
+    (>= _lmz _lmz2)
+    (<= _rmz _rmz2)
+    (sort-2tup-lower _fplist _fplist2))
+
+; constraint is _z1 < _z2
+(hn (sort-point-lower (p _z1 _r) (p _z2 _r) (p _fz _fr))
+    (>= _fr _r) 
+    (< _z1 _z2)
+    (>= _fz _z1)
+    (>= _z2 _fz))
+(hn (sort-point-lower (p _z1 _r1)(p _z2 _r2) (p _z1 _r1)))
+(hn (sort-point-lower (p _z1 _r1)(p _z2 _r2) (p _z2 _r2)))
+(hn (sort-point-lower (p _z1 _r1)(p _z2 _r2) (p _fz _fr))
+    (> _r1 _r2)
+    (< _z1 _z2)
+    (>= _fz _z1)
+    (>= _z2 _fz)
+    (> _fr _r2)
+    (is _a (- _z2 _z1))
+    (is _b (- _r1 _r2))
+    (is _d (- _z2 _fz))
+    (is _c (- _fr _r2))
+    (<= (/ _d _c) (/ _a _b)))
+(hn (sort-point-lower (p _z1 _r1)(p _z2 _r2) (p _fz _fr))
+    (< _r1 _r2)
+    (< _z1 _z2)
+    (>= _fz _z1)
+    (>= _z2 _fz)
+    (> _fr _r1)
+    (is _a (- _z2 _z1))
+    (is _b (- _r2 _r1))
+    (is _d (- _z2 _fz))
+    (is _c (- _fr _r1))
+    (<= (/ _d _c) (/ _a _b)))
+
+(hn (sort-tuppoint-lower _fp (tup _p1 _p2 | _r))
+    (sort-point-lower _p1 _p2 _fp))
+(hn (sort-tuppoint-lower _fp (tup _p1 | _r))
+    (sort-tuppoint-lower _fp _r))
+
+(hn (sort-2tup-lower (tup) _r))
+(hn (sort-2tup-lower (tup _fp | _rfp) _r)
+    (sort-tuppoint-lower _fp _r)
+    (sort-2tup-lower _rfp _r))
+
+(hn (sort-nft (tup) _nft-tup _nft-tup))
+(hn (sort-nft (tup _f | _r) _nft-tup _out)
+    (sort-insert-nft _f _nft-tup _zw-erg)
+    (sort-nft _r _zw-erg _out))
+
+(hn (sort-insert-nft _feat (tup) (tup (nft _feat (tup)))))
+(hn (sort-insert-nft _feat 
+		     (tup (nft _nft-feat _tuppel) | _rest-nft)
+		     _out-tup)
+    (sort-kleiner? _feat _nft-feat)
+;    ;; (rf-print-self _feat)
+;    ;; (rf-print-self _nft-feat)
+;    ; (rf-print kleiner)
+    (sort-insert-nft _feat _tuppel _zw-erg)
+    (is _zw-erg2 `(nft _nft-feat _zw-erg))
+    (is _out-tup `(tup _zw-erg2 | _rest-nft)))
+(hn (sort-insert-nft _feat 
+		     (tup _nft-list | _rest-nft)
+		     _out-nft)
+    (sort-insert-nft _feat _rest-nft _zw-erg)
+    (is _out-nft `(tup _nft-list | _zw-erg)))
+
+(hn (sort-2nftsintec (tup) (tup)))
+(hn (sort-2nftsintec (tup _nft-feat | _rest) _out)
+    (sort-2sintec-nft _nft-feat _zw-erg)
+    (sort-2nftsintec _rest _zw-erg2)
+    (is _out `(tup _zw-erg | _zw-erg2)))
+
+(hn (sort-height-adaptation _maxrad (tup) (tup)))
+(hn (sort-height-adaptation _maxrad (tup _nft-feat | _rest)
+			    (tup _new-nft | _new-rest))
+    (sort-height-adaptation-nft _maxrad _nft-feat _new-nft)
+    (sort-height-adaptation _maxrad _rest _new-rest))
+
+(hn (sort-height-adaptation-nft _maxrad (nft _feat _tupel)
+				(nft _newfeat _new-tupel))
+    ;; (rf-print-self _feat)
+    (sort-height-adaptation-radius _maxrad _feat _zw-feat)
+    (sort-height-adaptation-radius _maxrad _zw-feat _newfeat)
+    ; (rf-print radiusanpassung-fuer-das-feature-is-gemacht)
+    (sort-height-minradius _feat _minrad)
+    ; (rf-print minrad)
+    ;; (rf-print-self _minrad)
+    ;; (rf-print-self _tupel)
+    (sort-height-adaptation _minrad _tupel _new-tupel))
+
+(hn (sort-height-adaptation-radius _maxradius
+				   (tup groove _e1 _e2 _e3 _e4 _e5
+					(p _z1 _r1)(p _z2 _r2)
+					(p _z3 _r3)(p _z4 _r4))
+				   (tup groove _e1 _e2 _e3 _e4 _e5
+					(p _nz1 _maxradius)(p _z2 _r2)
+					(p _z3 _r3)(p _z4 _r4)))
+    (< _maxradius _r1)
+    (sort-normalisator _z1 _z2 _r1 _r2 _maxradius _nz1))
+(hn (sort-height-adaptation-radius _maxradius
+				   (tup groove _e1 _e2 _e3 _e4 _e5
+					(p _z1 _r1)(p _z2 _r2)
+					(p _z3 _r3)(p _z4 _r4))
+				   (tup groove _e1 _e2 _e3 _e4 _e5
+					(p _z1 _r1)(p _z2 _r2)
+					(p _z3 _r3)(p _nz4 _maxradius)))
+    (< _maxradius _r4)
+    (sort-normalisator _z3 _z4 _r3 _r4 _maxradius _nz4))
+(hn (sort-height-adaptation-radius _maxradius 
+				   _feat
+				   _feat))
+
+(hn (sort-height-minradius (tup _fn _e1 _e2 _e3 _e4 _e5 | _plist) _minrad)
+    (sort-height-minradius-plist _plist 10000000 _minrad))
+
+(hn (sort-height-minradius-plist (tup) _x _x))
+(hn (sort-height-minradius-plist (tup (p _z _r) | _rest) _rad _minrad)
+    (sort-height-minradius-plist _rest (minimal _r _rad) _minrad))
+
+(hn (sort-2sintec-nft (nft (tup leftshoulder _w1 _w2 _w3 _w4 _w5 _p1 _p2 _p3)
+			   _rest)
+		      (nft _feat-out _rest-out))
+    (is _feat-out `(lsh (flk (tup _p1 _p2))	
+			(grd (tup _p2 _p3))))
+    (sort-2nftsintec _rest _rest-out))
+(hn (sort-2sintec-nft (nft (tup rightshoulder _w1 _w2 _w3 _w4 _w5 _p1 _p2 _p3)
+			   _rest)
+		      (nft _feat-out _rest-out))
+    (is _feat-out `(rsh (grd (tup _p1 _p2))	
+			(flk (tup _p2 _p3))))
+    (sort-2nftsintec _rest _rest-out))
+(hn (sort-2sintec-nft (nft (tup groove _w1 _w2 _w3 _w4 _w5 
+				_p1 _p2 _p3 _p4)
+			   _rest)
+		      (nft _feat-out _rest-out))
+    (is _feat-out `(grv (flk (tup _p1 _p2))
+			(grd (tup _p2 _p3))	
+			(flk (tup _p3 _p4))))
+    (sort-2nftsintec _rest _rest-out))
+
+(hn (sort-maxradius (tup) _r _r))
+(hn (sort-maxradius (tup (tup leftshoulder _w1 _w2 _w3 _w4 _w5 
+			      (p _w6 _r1)(p _w7 _r2)(p _w8 _r3))
+			 | _rest) 
+		    _r
+		    _rout)
+    (sort-maxradius _rest
+		    (maximal (maximal (maximal _r _r1)
+				      _r2)
+			     _r3)
+		    _rout))
+(hn (sort-maxradius (tup (tup rightshoulder _w1 _w2 _w3 _w4 _w5 
+			      (p _w6 _r1)(p _w7 _r2)(p _w8 _r3))
+			 | _rest) 
+		    _r
+		    _rout)
+    (sort-maxradius _rest
+		    (maximal (maximal (maximal _r _r1)
+				      _r2)
+			     _r3)
+		    _rout))
+(hn (sort-maxradius (tup (tup groove _w1 _w2 _w3 _w4 _w5 
+			      (p _w6 _r1)(p _w7 _r2)(p _w8 _r3)(p _w9 _r4))
+			 | _rest) 
+		    _r
+		    _rout)
+    (sort-maxradius _rest
+		    (maximal (maximal (maximal (maximal _r _r1)
+					       _r2)
+				      _r3)
+			     _r4)
+		    _rout))
+
+

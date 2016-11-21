@@ -1,0 +1,62 @@
+;     A brief introduction to basic RELFUN, using its LISP-like syntax
+;                             Harold Boley            Mar 1991 (rev.: Aug 1991)
+
+; In RELFUN, a LISP list (e1 ... eN) or PROLOG list [e1,...,eN] is represented
+; as an (N-)tup(le) structure (tup e1 ... eN). Logical variables are marked by
+; an underscore, "_". The PROLOG list pattern [1,2|V] becomes (tup 1 2 | _v),
+; matching instances like (tup 1 2 3 4 5) with the binding _v = (tup 3 4 5).
+
+; A PROLOG clause c(...) :- b1(...), .., bM(...). in RELFUN becomes a 'hornish'
+; (or hn) structure (hn (c ...) (b1 ...) .. (bM ...)), where facts just have no
+; premise (M=0). A conditional equation g(...) = f(...) if b1(...), .., bM(...)
+; in RELFUN is generalized to (ft (g ...) (b1 ...) .. (bM ...) (f ...)), an ft
+; (or 'footed') clause, whose "b" premises may accumulate partial results and
+; whose "f" premise returns the (non-)ground/(non-)deterministic values.
+
+; As in LISP, nestings like (+ (* 3 3) (1- 8)) => 16 are reduced call-by-value.
+; "Passive" structures are marked by a backquote, "`", except in clause heads.
+; RELFUN's tup FUNCTION returns the tup STRUCTURE of its evaluated arguments:
+  (ft (tup | _r) `(tup | _r))  ; _r will be bound to the tup of all arguments.
+; This permits calls like (is _t 3) (tup `(* _t _t) (1- 8)) => (tup (* 3 3) 7).
+
+; The below definitions of append and naive reverse illustrate our RELational/
+; FUNctional merger (e.g., "is" can invert functions almost as if relations).
+
+; PROLOGish REL style (inversion (revrel _u (tup 1 2)) loops on MORE):
+
+(hn (apprel (tup) _l _l))
+(hn (apprel (tup _h | _r) _m (tup _h | _s))  (apprel _r _m _s))
+(hn (revrel (tup) (tup)))
+(hn (revrel (tup _h | _r) _l) (revrel _r _m) (apprel _m `(tup _h) _l))
+
+; LISP-like FUN style (is-syntax (is (tup 1 2) (revfun _u)) exhibits inversion):
+
+(ft (appfuni (tup) _l) _l)
+(ft (appfuni (tup _h | _r) _l) (tup _h | (appfuni _r _l)));NESTED (user) form ->
+;(ft (appfuni (tup _h | _r) _l) (is _1 (appfuni _r _l)) (tup _h | _1));FLATTENED
+(ft (revfun (tup)) `(tup))
+(ft (revfun (tup _h | _r)) (appfuni (revfun _r) `(tup _h))) ;nest and (compiler)
+;(ft (revfun (tup _h | _r)) (is _1 (revfun _r)) (appfuni _1 `(tup _h))) ;flatten
+
+; Using nested or flattened clauses, the RELFUN interpreter allows this dialog:
+
+; rfi> (apprel (tup 1 2) (tup a) _u)  ; rfi> (appfuni (tup 1 2) (tup a))
+; true                                ; (tup 1 2 a)
+; (_u = (tup 1 2 a))                  ;
+; rfi> (apprel _i _j (tup 1 2 a))     ; rfi> (is (tup 1 2 a) (appfuni _i _j))
+; true                                ; (tup 1 2 a)
+; (_i = (tup))                        ; (_i = (tup))
+; (_j = (tup 1 2 a))                  ; (_j = (tup 1 2 a))
+; rfi> more    ; 4th MORE would fail  ; rfi> more         ; 4th MORE would loop
+; true                                ; (tup 1 2 a) ; like: for the conjunction
+; (_i = (tup 1))                      ; (_i = (tup 1))    ; (apprel _i _j   _f)
+; (_j = (tup 2 a))                    ; (_j = (tup 2 a))  ; (is (tup 1 2 a) _f)
+; rfi> (revfun (tup a b | _v))  ; A function called with a non-ground "|"-list.
+; (tup b a)                     ; Returned value no. 1 is ground (variableless)
+; (_v = (tup))                  ; because _v can be bound to the empty list.
+; rfi> more                     ; The request for MORE solutions (PROLOG's ";")
+; (tup _h:15 b a)               ; returns a 3-list pattern starting with _h:15,
+; (_v = (tup _h:15))            ; a (free) variable also occurring in _v.
+; rfi> more                     ; Another MORE (of infinitely many successes)
+; (tup _h:24 _h:26 b a)         ; now returns a non-ground list of length 4,
+; (_v = (tup _h:26 _h:24))      ; whose first two elements reverse those in _v.

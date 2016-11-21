@@ -1,0 +1,15 @@
+
+\stmb{rf-query}:
+
+Format: \stmt{rf-query $<$query$>$}
+
+Options: $<$query$>$ a query to \RELFUN{}
+
+Effect: The specified $<$query$>$ is evaluated either by thr \RELFUN{}-interpreter
+	or emulator depending on the operating mode in \FORWARD{}. In interpreter
+	mode you are able to retrieve alternative solutions by typing the 
+	command \stmt{more} directly when the answer of the query is displayed,
+	except the system indicates that there are no more solutions by 
+	showing the item \stmt{unknown}.
+
+see also: \stmb{magic-query}

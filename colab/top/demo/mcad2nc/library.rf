@@ -1,0 +1,34 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;            microCAD2NC             ;;;
+;;;            RELFUN part             ;;;
+;;;          Library Functions         ;;;
+;;; (c) Michael Sintek  September 1991 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(ft (tup) `(tup))
+(ft (tup _x | _ r) `(tup _x | _r))
+
+(ft (appfun (tup) _l) _l)
+(ft (appfun (tup _h | _r) _l) (tup _h | (appfun _r _l)))
+
+(ft (rf-reverse (tup)) `(tup))
+(ft (rf-reverse (tup _h | _t))
+  (appfun (rf-reverse _t) `(tup _h)))
+
+(ft (rf-last (tup _last))   _last)
+(ft (rf-last (tup _first | _rest)) (rf-last _rest))
+
+(ft (rf-max (tup _x)) _x)
+(ft (rf-max (tup _h | _t))
+  (max _h (rf-max _t)))
+
+(hn (rf-member _x (tup _x | _r))  )
+(hn (rf-member _x (tup _y | _r))
+  (rf-member _x _r))
+
+(ft (rf-nth 0 (tup _h | _t))   _h)
+(ft (rf-nth _no (tup _h | _t))
+  (rf-nth (1- _no) _t))
+
+

@@ -1,0 +1,437 @@
+;;; -*- Base: 10 -*-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                    ;;
+;;                               DecPlan                              ;;
+;;                                                                    ;;
+;;                      Lathe-tool selection module                   ;;
+;;                                                                    ;;
+;;    (c) 1991,92 Manfred Meyer, J"org M"uller, Michael Kreinbihl     ;;
+;;                                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;                    Part 1: domain definitions
+;;                    ==========================
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domains for tools (cutting plates)         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd lathe-tools ( finishing-tools roughturn-tools ))
+
+(dd roughturn-tools ( universal-tools mm71 nma mm41 ))
+
+(dd finishing-tools ( universal-tools mm53 cma ))
+
+(dd universal-tools ( nmg mm52 RCMX ))
+
+(dd mm71 ( DNMM-71 TNMM-71 SNMM-71 CNMM-71 ))
+
+(dd mm41 ( TNMM-41 SNMM-41 DNMM-41 CNMM-41 ))
+
+(dd nma ( TNMA DNMA SNMA CNMA ))
+
+(dd nmg (RNMG TNMG SNMG DNMG CNMG ))
+
+(dd mm52 ( TCMM-52 DCMM-52 SCMM-52 CCMM-52 RCMM-52 ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;         domain definitions for tool systems (holders)                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; The names of the holders result from a projection of the relevant 
+;; criteria from the ISO names of workpieces.
+;; For example TMAXP-PTL90 means:
+;;            Holder type = TMAX-P
+;;            fixing system = P
+;;            form of cutting plate = T
+;;            cutting direction = L (from right to left)
+;;            tool cutting edge angle = 90
+
+(dd holders ( tmax-p tmax-u ))
+
+;; TMAX-P holders
+
+(dd tmax-p ( pt ps pc pr pd ))
+
+(dd pt     ( TMAXP-PTL90 
+	     TMAXP-PTL80 
+	     TMAXP-PTL45 
+	     TMAXP-PTN60 
+	     TMAXP-PTR90 
+	     TMAXP-PTR80 
+	     TMAXP-PTR45 ))
+
+(dd ps     ( TMAXP-PSL75
+             TMAXP-PSL45
+             TMAXP-PSN45 
+             TMAXP-PSR75
+             TMAXP-PSR45 ))
+
+(dd pc     ( TMAXP-PCL95
+             TMAXP-PCL75
+             TMAXP-PCN65 
+             TMAXP-PCR95
+             TMAXP-PCR75
+             TMAXP-PCR65 ))
+
+(dd pr     ( TMAXP-PRL30
+             TMAXP-PRL40
+             TMAXP-PRR30 ))
+
+(dd pd     ( TMAXP-PDL93 
+             TMAXP-PDR93 ))
+
+;; TMAX-U holders
+
+(dd tmax-u ( st ss sr TMAXU-SCN95 TMAXU-SDL93 ))
+
+(dd st    ( TMAXU-STL90
+            TMAXU-STL75
+            TMAXU-STN60
+            TMAXU-STN45 
+            TMAXU-STR90
+            TMAXU-STR75 ))
+
+(dd ss    ( TMAXU-SSR75
+            TMAXU-SSN45 
+            TMAXU-SSL75
+            TMAXU-SSL45 ))
+
+(dd sv    ( TMAXU-SVL93
+            TMAXU-SVN72
+            TMAXU-SVR93 ))
+	  
+(dd sr    ( TMAXU-SRN
+            TMAXU-SRN30 ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for working processes               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd processes (roughing finishing))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for cutting kinds                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd cutting-kinds (lengthwise contour radial))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for workpiece materials             ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd wp-materials ( steel cast alu ))
+
+(dd steel ( building-steel alloy-steel stainless-steel ))
+
+(dd cast ( GG GGG ))
+
+(dd alloy-steel ( low-alloy-steel high-alloy-steel ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for relevant angles                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd acute-angles (0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 
+		  48 51 54 57 60 63 65 66 69 72 75 78 81 84 87 90))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for tool cutting edge angles        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd tc-edge-angles ( 0 small-tc-angles big-tc-angles ))
+
+(dd small-tc-angles ( 45 60 72 75 ))
+
+(dd big-tc-angles ( 90 93 95 ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for edge-angle of the cutting plate ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd edge-angles ( 0 small-edge-angles medium-edge-angles big-edge-angles ))
+
+(dd small-edge-angles (0 35 ))
+
+(dd medium-edge-angles (55 60))
+
+(dd big-edge-angles (0 80 90 ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for cutting-plate geometry          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd plate-geometries ( R S T D C K ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          definitions of domain for cutting directions              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dd directions ( left right ))
+
+
+
+;;                    Part 2: constraint definitions
+;;                    ==============================
+
+
+;; holder-tool describes the cutting-plates fitting to several holders for
+;; reasons of geometry
+
+(pc holder-tool (ho to) (holders lathe-tools)
+          (pt TNMM-71)
+          (pt TNMM-41)
+          (pt TNMG)
+          (ps SNMM-71)
+          (ps SNMM-41)
+          (ps SNMG)
+          (pc CNMM-71)
+          (pc CNMM-41)
+          (pc CNMG)
+          (pc CNMA)
+          (pr RCMX)
+          (pr RNMG)
+          (pd DNMG)
+          (pd DNMM-71)
+          (pd DNMM-41) )
+
+
+;; process-holder describes the fact that TMAX-P holders are favourable for 
+;; roughing, whereas TMAX-U holders should be preferred for finishing. If 
+;; quality restrictions are not so critical, for finishing, TMAX-S holders
+;; may be used.
+
+(pc process-holder (pr ho) (processes holders)
+          (roughing tmax-p)
+          (finishing tmax-u ))
+
+;; holder-description describes the relation between the holder, the cutting
+;; direction, the tool-cutting-edge-angle and the plate geometry.
+
+(pc holder-description (ho di tc pg) 
+  (holders directions tc-edge-angles plate-geometries)
+          (TMAXP-PTL90 left 90 T)
+          (TMAXP-PTR90 right 90 T )
+          (TMAXP-PTL80 left 80 T )
+          (TMAXP-PTR80 right 80 T )
+          (TMAXP-PTN60 directions 60 T )
+          (TMAXP-PTL45 left 45 T )
+          (TMAXP-PTR45 right 45 T )
+          (TMAXP-PSL75 left 75 S )
+          (TMAXP-PSR75 right 75 S )
+          (TMAXP-PSL45 left 45 S )
+          (TMAXP-PSR45 right 45 S )
+          (TMAXP-PSN45 directions 45 S )
+          (TMAXP-PCL95 left 95 C)
+          (TMAXP-PCR95 right 95 C )
+          (TMAXP-PCL75 left 75 C )
+          (TMAXP-PCR75 right 75 C )
+          (TMAXP-PCR65 right 65 C )
+          (TMAXP-PCN65 directions 65 C)
+          (TMAXP-PDL93 left 93 D )
+          (TMAXP-PDR93 right 93 D )
+          (TMAXP-PRL30 left 0 R )
+          (TMAXP-PRR30 right 0 R )
+          (TMAXP-PRL40 left 0 R ) )  
+
+
+(pc holder-cutting (ho ck) (holders cutting-kinds)
+	  (TMAXP-PTN60 lengthwise)
+	  (TMAXP-PTR90 lengthwise)
+	  (TMAXP-PTR80 lengthwise)
+	  (TMAXP-PTR45 lengthwise)
+          (TMAXP-PSN45 lengthwise)
+          (TMAXP-PSR75 lengthwise)
+          (TMAXP-PSR45 lengthwise)
+          (TMAXP-PCN65 lengthwise)
+          (TMAXP-PCR95 lengthwise)
+          (TMAXP-PCR75 lengthwise)
+          (TMAXP-PCR65 lengthwise)
+          (TMAXP-PRR30 lengthwise)
+          (TMAXP-PDR93 lengthwise)
+          (TMAXU-STN60 lengthwise)
+          (TMAXU-STN45 lengthwise)
+          (TMAXU-STR90 lengthwise)
+          (TMAXU-STR75 lengthwise)
+          (TMAXU-SSN45 lengthwise)
+          (TMAXU-SSR75 lengthwise)
+          (TMAXU-SVN72 lengthwise)
+          (TMAXU-SVR93 lengthwise)
+          (TMAXU-SRN lengthwise)
+          (TMAXU-SRN30 lengthwise)
+          (TMAXP-PTL90 contour)
+          (TMAXP-PTL80 contour)
+          (TMAXP-PTL45 contour)
+          (TMAXP-PSL75 contour)
+          (TMAXP-PSL45 contour)
+          (TMAXP-PCL95 contour)
+          (TMAXP-PCL75 contour)
+          (TMAXP-PRL40 contour)
+          (TMAXP-PRL30 contour)
+          (TMAXP-PDL93 contour)
+          (TMAXU-STL90 contour)
+          (TMAXU-STL75 contour)
+          (TMAXU-SSL75 contour)
+          (TMAXU-SSL45 contour)
+          (TMAXU-SVL93 contour)
+	  (TMAXP-PTR90 contour) 
+          (TMAXP-PTR80 contour)
+	  (TMAXP-PTR45 contour)
+          (TMAXP-PSR75 contour)
+          (TMAXP-PSR45 contour)
+          (TMAXP-PCR95 contour)
+          (TMAXP-PCR75 contour)
+          (TMAXP-PCR65 contour)
+          (TMAXP-PRR30 contour)
+          (TMAXP-PDR93 contour)
+          (TMAXU-STR90 contour)
+          (TMAXU-STR75 contour)
+          (TMAXU-SSR75 contour)
+          (TMAXU-SVR93 contour))
+       
+
+
+;; process-material-tool specifies the usability of cutting-plates w.r.t. the
+;; working-process to be done and the properties of materials.
+;; The constraint reflects the suitability of the cutting-plate materials 
+;; (which are implicitly contained in their names) for certain workpiece
+;; materials, e.g. short-cutting, long-cutting, stainless, warmfest, hard.
+
+(pc process-material-tool (pr ma to) (processes wp-materials lathe-tools)
+          (roughing  steel           mm71 )
+          (roughing  cast            mm71 )
+          (roughing  cast            nma )
+          (roughing  stainless-steel mm41 )
+          (roughing  alloy-steel     nma )
+          (roughing  low-alloy-steel mm52 )
+          (processes alu             nmg )
+          (processes steel           RCMX )
+          (processes cast            RCMX ))
+
+          
+;; the constraint plate-eangle maps the cutting-plates to their edge-angles
+
+(pc plate-eangle (to pl) (plate-geometries edge-angles)
+          (R 0)
+          (S 90)
+          (T 60)
+          (D 55)
+          (C 80)
+          (K 55))
+
+;; the constraint process-eangle gives expression to the fact that roughing
+;; should be performed using a big edge angle whereas for finishing, a small
+;; edge angle is appropriate. Round plates (with edge-angle 0) can be used 
+;; both for roughing and finishing.
+
+(pc process-eangle (pr ea) (processes edge-angles)
+          (roughing small-edge-angles)
+          (roughing medium-edge-angles)
+          (finishing medium-edge-angles)
+          (finishing big-edge-angles))
+
+;; The constraint tc-ea-al gives expression to the requirement that
+;; the sum of the tool-cutting-edge angle, the tool-edge-angle and the
+;; angle alpha must be less or equal 180 degrees.
+
+( lc tc-ea-al (tc ea al) (tc-edge-angles edge-angles acute-angles) le180)
+
+( lc tc-beta (tc bt) (tc-edge-angles acute-angles) ge-or-zero)
+
+;; le180(W1 W2 W3) is true if the sum of W1, W2 and W3 is less or equal 180
+
+(lispeval (defun le180 (W1 W2 W3)
+            (<= (+ (+ W1 W2) W3) 180)) )
+
+;; ge-or-zero(W1 W2) is true if W1 >= W2 or W1 = 0
+
+(lispeval (defun ge-or-zero (W1 W2)
+            (or (>= W1 W2)
+                (equal W1 0))))
+
+
+;;                    Part 3: generation of variables
+;;                    ===============================
+
+
+;; relevant variables: 
+;;
+;;    TOOL, HOLDER, QUALITY, EDGE-ANGLE, WP-MATERIAL, PROCESS
+
+
+ ( cv tool hrcl (lathe-tools) )
+
+ ( cv holder hrcl (holders) )
+
+ ( cv cutting hrcl (cutting-kinds))
+
+ ( cv edge-angle hrcl (edge-angles) )
+
+ ( cv alpha hrcl (acute-angles) )
+
+ ( cv beta hrcl (acute-angles) )
+
+ ( cv tc-edge-angle hrcl (tc-edge-angles) )
+
+ ( cv wp-material hrcl (wp-materials) )
+
+ ( cv process hrcl (processes) )
+
+ ( cv plate  hrcl (plate-geometries) )
+
+ ( cv direction hrcl (directions) )
+
+
+
+;;   Part 4: instantiation of constraints building the constraint net
+;;   ================================================================
+
+
+ ( ci inst-ho-to hard holder-tool holder tool )
+
+ ( ci inst-pr-ho hard process-holder process holder )
+
+ ( ci inst-ho-desc hard holder-description holder direction tc-edge-angle plate )
+
+ ( ci inst-ho-ck hard holder-cutting holder cutting)
+
+ ( ci inst-pr-ma-to hard process-material-tool process wp-material tool )
+
+ ( ci inst-pl-ea hard plate-eangle plate edge-angle )
+
+ ( ci inst-pr-ea hard process-eangle process edge-angle )
+
+ ( ci inst-tc-ea-al hard tc-ea-al tc-edge-angle edge-angle alpha )
+
+ ( ci inst-tc-beta hard tc-beta tc-edge-angle beta)
+
+
+
+;;   Part 5: propagating initial values through the constraint net
+;;   =============================================================
+
+#|   
+     global hard ( process roughing )
+                 ( cutting contour )
+		 ( wp-material high-alloy-steel )
+		 ( alpha 0 )
+		 ( beta 90 )
+		 ( direction left )
+		 tool
+		 holder
+		 plate
+		 edge-angle
+		 tc-edge-angle
+
+|#
+

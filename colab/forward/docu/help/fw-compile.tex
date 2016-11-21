@@ -1,0 +1,13 @@
+\stmb{fw-compile}:
+
+Format: \stmt{fw-compile $<$op$>$ }
+
+Options: $<$op$>$ an operator
+
+Effect: If an operator is given only the matching rules of \stmt{*rule-database*} are 
+	regarded otherwise all rules of \stmt{*rule-database*} are splitted. The
+	resulting up-rules will be horizontally and vertically compiled into the
+	extended \WAM{}. The resulting horn-rules and the \stmt{*factbase*} are 
+	vertically compiled.
+
+see also: \stmb{fw-compile-facts}, \stmb{fw-compile-rules},\stmb{fw-transform}, \stmb{hornify-up}.

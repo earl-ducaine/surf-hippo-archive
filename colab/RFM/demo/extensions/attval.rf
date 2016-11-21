@@ -1,0 +1,4 @@
+(ft (attval _obj _valfilter) (tup _f (_valfilter (_f _obj))))
+(ft (numfilter _x) (numberp _x) _x)
+(ft (area china) 3380)
+(ft (pop china) 825)

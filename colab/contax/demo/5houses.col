@@ -1,0 +1,112 @@
+;;; -*- Base: 10; Mode: LISP -*-
+
+;;; 5 HOUSES PROBLEM in COLAB Syntax                                                          
+;;; define concept(s)
+
+( dd places ( first second third fourth fifth ))
+
+;;; introduce constraint variables ( 5 x 5 )
+
+( cv red    hrcl ( places ))
+( cv green  hrcl ( places ))
+( cv white  hrcl ( places ))
+( cv yellow hrcl ( places ))
+( cv blue   hrcl ( places ))
+
+( cv dog   hrcl ( places ))
+( cv snail hrcl ( places ))
+( cv fox   hrcl ( places ))
+( cv horse hrcl ( places ))
+( cv zebra hrcl ( places ))
+
+( cv milk   hrcl ( places ))
+( cv juice  hrcl ( places ))
+( cv water  hrcl ( places ))
+( cv coffee hrcl ( places ))
+( cv tea    hrcl ( places ))
+
+( cv painter   hrcl ( places ))
+( cv diplomat  hrcl ( places ))
+( cv violonist hrcl ( places ))
+( cv doctor    hrcl ( places ))
+( cv sculptor  hrcl ( places ))
+
+( cv england hrcl ( places ))
+( cv spain   hrcl ( places ))
+( cv italy   hrcl ( places ))
+( cv norway  hrcl ( places ))
+( cv japan   hrcl ( places ))
+
+( lispeval
+  ( defun not-equal (x y) (not (equal x y))))
+
+( lispeval (compile 'not-equal))
+
+( lc different ( x y ) ( places places ) not-equal )
+
+( lispeval
+  ( contax:connect-pairwise different ( green red yellow blue white )))
+
+( lispeval
+  ( contax:connect-pairwise different ( dog zebra fox snail horse )))
+
+( lispeval
+  ( contax:connect-pairwise different ( painter diplomat violonist doctor sculptor )))
+
+( lispeval
+  ( contax:connect-pairwise different ( juice water tea coffee milk )))
+
+( lispeval
+  ( contax:connect-pairwise different ( england spain japan italy norway )))
+
+
+( lc equal ( x y ) ( places places ) eq )
+
+( ci eng-red hard equal england red )
+
+( ci spa-dog hard equal spain dog )
+
+( ci cof-gre hard equal coffee green )
+
+( ci rus-tea hard equal italy tea )
+
+( ci jap-pai hard equal japan painter )
+
+( ci scu-sna hard equal sculptor snail )
+
+( ci dip-yel hard equal diplomat yellow )
+
+( ci vio-jui hard equal violonist juice )
+
+
+( pc to-the-left ( left right ) ( places places )
+  ( first second )
+  ( second third )
+  ( third fourth )
+  ( fourth fifth ))
+
+
+( dc next-to ( house-1 house-2 ) ( places places )
+  ( to-the-left house-1 house-2 )
+  ( to-the-left house-2 house-1 ))
+
+
+( ci gre-whi hard to-the-left white green )
+
+( ci nor-blu hard next-to norway blue )
+
+( ci fox-doc hard next-to fox doctor )
+
+( ci hor-dip hard next-to horse diplomat )
+
+
+#| Sample Call:
+   
+   global hard red green white yellow blue
+	       dog snail  fox horse zebra
+	       ( milk third ) juice water coffee tea
+	       painter diplomat violonist doctor sculptor
+	       england spain italy ( norway first ) japan
+
+|#
+

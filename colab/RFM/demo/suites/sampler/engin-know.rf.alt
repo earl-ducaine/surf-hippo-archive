@@ -1,0 +1,62 @@
+;; Towards Functional/Relational Engineering Knowledge in RELFUN
+
+;; Harold Boley       -       Kaiserslautern       -       October  1989
+;;                                                Revised: February 1991
+
+
+; Deterministic functions
+
+(ft (weight _volume _material) (* _volume (specific-gravity _material)))
+; LISP: (defun weight (volume material) (* volume (specific-gravity material)))
+
+(ft (specific-gravity steel)   7.8)
+; LISP: (defun specific-gravity (stuff) (if (eq stuff 'steel) 7.8 'unknown))
+
+(ft (composed-of steel)        iron)         ; steel is composed of iron ...
+
+
+; Non-deterministic function
+
+(ft (alloyed-with steel) carbon)             ; ... and alloyed with carbon etc.
+(ft (alloyed-with steel) manganese)
+(ft (alloyed-with steel) chromium)
+
+
+; Relation: Non-deterministically invertible iff (lessp) = sym-lessp
+; [A workpiece is (strongly) monotone if its disk-segment diameters increase]
+
+(hn (monotone (workpiece)))
+(hn (monotone (workpiece _disk)))
+(hn (monotone (workpiece _disk1 _disk2 | _disks))
+ ((lessp) _disk1 _disk2)
+ (monotone (workpiece _disk2 | _disks)))
+
+
+; Self-normalizing data structures (here just returning workpiece/disk terms)
+
+(ft (workpiece | _disks) `(workpiece | _disks))
+(ft (disk | _elements)   `(disk | _elements))
+
+
+; Numeric (non-invertible) and symbolic (invertible) lessp definitions
+
+(hn (num-lessp _diameter1 _diameter2) (< _diameter1 _diameter2))
+
+(hn (sym-lessp  (disk)                 (disk id | _elements)))
+(hn (sym-lessp  (disk id | _elements1) (disk id | _elements2))
+ (sym-lessp  (disk | _elements1)    (disk | _elements2)))
+
+
+; Switch for setting the lessp version
+
+(ft (lessp) sym-lessp)
+
+
+; Sample calls [try (a), ..., (e) with more, more, ...]
+
+(ft (a)  (alloyed-with steel))
+(ft (b)  (is manganese (alloyed-with _x)) _x)
+(ft (c)  (monotone (workpiece (disk a) (disk 1 2 3) (disk k l m n o))))
+(ft (d)  (monotone (workpiece _x (disk 1 2 3) _y))  `(tup _x _y))
+(ft (e)  (monotone (workpiece (disk _u _v _u) _x (disk _u | _y)))
+         `(tup _x _y _u _v))

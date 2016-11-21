@@ -1,0 +1,138 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; this example demonstrates the language constructs of ;;;;;;;;;
+;;;;;; our terminological formalism                         ;;;;;;;;;
+;;;;;; ph. hanschke  november 92                            ;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;primitive concepts
+
+(prim P1 P2 P3)
+
+(conc conjunction (and p1 p2))
+(conc disjunction (or p1 p2))
+(conc complement (not p1))
+
+(conc my-top (or p3 (not p3)))
+(conc my-bottom (and p3 (not p3)))
+;these concepts are equivalent to the built-in concepts top and bottom
+
+
+
+;families of disjoint, not further defined concepts
+
+;open families
+(ofam name-of-ofamily (m1 m2))
+;name-of-family as well as m1 and m2 are concepts
+;name-of-family subsumes m1 and m2
+;m2 and m1 are disjoint
+;The concept (or m1 m2) is subsumed by name-of-family
+;name-of-family is not subsumed by (or m1 m2)
+
+(ofam name-of-ofamily (m3 m4 m5))
+;this comand extends the family
+
+
+;closed families
+(cfam name-of-cfam (n1 n2 n3 n4))
+;name-of-cfam is equivalent to (or n1 n2 n3 n4)
+;the nI are pairwise disjoint
+
+
+;roles
+(role r r1 r2 r3)
+;roles are binary predicates
+;an object may have more than one role filler for a single role
+
+(conc value-restriction (forall (r) p1))
+;an individual belongs to this concept iff each r-role filler is a p1
+
+(conc exists-in-restriction (some (r) p1))
+;an individaul belongs to this concept iff there is a r-role
+;filler which is a p1
+
+(conc forall-some (and value-restriction exists-in-restriction))
+;now there must be at least one r-role filler which is a p1 and all of them
+;must be p1s
+
+;attributes
+(attr f f1 f2 f3)
+;attributes are functional roles.
+;an individual may have at most one attribute filler per attribute
+
+(conc f-value-restriction (forall (f) p1))
+;an individual belongs to this concept iff each f-role filler (there can be
+;at most one) is a p1
+
+(conc f-exists-in-restriction (some (f) p1))
+;an individaul belongs to this concept iff there is a f-role
+;filler which is a p1
+
+(conc f-forall-some (and f-value-restriction f-exists-in-restriction))
+;now there must be at least one f-role filler which is a p1
+;not that f-forall-some is equivalent to f-exists-in-restriction
+
+
+;agreements
+(conc agreement (agree (f1 f2) (f3)))
+;an individual belongs to agree iff
+;  when there is a f3-filler a3 and an f1-filler a1 and an f2-filler a2 of f1
+;  then a1 is equal to a3
+;agree may only be applied to pairs of possibly empty
+;chainings of *attributes*
+
+;disagreements
+(conc disagreement (disagree (f1 f2) (f3)))
+;an individual belongs to disagree iff
+;  there is a f3-filler a3 and an f1-filler a1 and an f2-filler a2 of f1
+;  and a1 is not a3
+;disaggree may only be applied to pairs of possibly empty
+;chainings of *attributes*
+
+
+;abstract predicates
+(apred ap 2)
+;p is a binary predicate that is not further defined
+;it is not considered as a role nor as an attribute
+;it can restrict attribute/role fillers
+
+;value-restriction
+(conc apred-value-restriction
+	(forall (f r1) (r f1) ap))
+;read this as follows:
+;	every pair of fillers for f-r1 and r-f1 are ap
+
+;exists-in-restriction
+(conc apred-exists-in-restriction
+	(some (f r1) (r f1) ap))
+;read this as follows:
+;	there is a pair of fillers for f-r1 and r-f1 that are ap
+
+
+;concrete predicates
+(doma ro edom-real-ord)
+;this assigns the concrete domain edom-real-ord to the tag ro
+
+(cpred  cp (ro (x y) (< x y)))
+;this introduces a binary predicate (less than) over the concrete domain
+
+;value-restriction
+(conc cpred-value-restriction
+	(forall (f r1) (r f1) cp))
+;read this as follows:
+;	every pair of fillers for f-r1 and r-f1 are cp
+
+;exists-in-restriction
+(conc cpred-exists-in-restriction
+	(some (f r1) (r f1) cp))
+;read this as follows:
+;	there is a pair of fillers for f-r1 and r-f1 that are cp
+
+
+(conc apred-cpred
+	(and apred-exists-in-restriction cpred-value-restriction))
+;An individal cannot be a member of a concrete and the abstract domain
+;at the same time.
+;So apred-cpred can not be satisfied and is yet another name for bottom.
+
+

@@ -1,0 +1,62 @@
+;;; -*- Mode: LISP; Base: 10 -*-
+;;
+;;  CONTAX example:  Define some constraints over TAXON-defined domains
+;;  ===============
+;;
+
+(princ "Loading constraint definitions...")
+(terpri)
+
+;;  some more plain domains:
+
+(contax::def-concept material (cast steel1 steel2))
+(contax::def-concept holder (holder1 holder2 holder3))
+(contax::def-concept surface (fine medium extrafine))
+(contax::def-concept shape (steep-ascent horizontal))
+
+;;  generate variables over these domains:
+
+(cn::make-variable M :domains (material) :type :hierarchical)
+(cn::make-variable T :domains (lathe-tool) :type :hierarchical)
+(cn::make-variable H :domains (holder) :type :hierarchical)
+(cn::make-variable S :domains (surface) :type :hierarchical)
+(cn::make-variable Sh :domains (shape) :type :hierarchical)
+
+;;  some primitive constraints:
+
+(cn::def-primitive-constraint material-tool (M T) ((material)(lathe-tool))
+  (cast finishing-tool)
+  (steel1 lathe-tool)
+  (steel2 tool1))
+
+(cn::def-primitive-constraint holder (H T) ((holder)(lathe-tool))
+  (holder1 roughturn-tool)
+  (holder2 tool1)
+  (holder2 tool4))
+
+(cn::def-primitive-constraint holder-req (H S Sh) ((holder)(surface)(shape))
+  (holder1 fine steep-ascent)
+  (holder1 medium steep-ascent)
+  (holder2 extrafine steep-ascent)
+  (holder2 fine steep-ascent)
+  (holder2 extrafine horizontal)
+  (holder2 fine horizontal)
+  (holder3 extrafine horizontal))
+
+(cn::def-primitive-constraint surface-req (S T) ((surface)(lathe-tool))
+  (fine roughturn-tool)
+  (extrafine tool4))
+
+;  generate constraint instances:
+
+(cn::make-constraint s-req1 surface-req :s s :t t)
+(cn::make-constraint h-req holder-req :h h :s s :sh sh)
+(cn::make-constraint holder1 holder :h h :t t)
+(cn::make-constraint mat-tool1 material-tool :m m :t t)
+
+;(terpri)
+;(princ "Initializing HAC ...")
+;(cn::init-hac)
+;(princ "... HAC is ready")
+;(terpri)
+

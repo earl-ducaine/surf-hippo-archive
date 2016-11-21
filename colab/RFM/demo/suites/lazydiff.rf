@@ -1,0 +1,52 @@
+(ft (seqnat _n) `(tup))
+(ft (seqnat _n) (tup _n | (seqnat (1+ _n))))
+
+(ft (square _x) (* _x _x))
+
+(ft (seqsqu _n) (maptup square (seqnat _n)))
+
+(ft (natsqu _n) (maptup square (nats _n)))
+
+(ft (nths 1 (tup _a | _d)) _a)
+(ft (nths _n (tup _a | _d)) (nths (1- _n) _d))
+
+(ft (nats _str)
+    _str )
+(ft (nats (tup _e | _str))
+    (nats (tup (1+ _e) _e | _str)) )
+
+
+
+(ft (maptup _f (tup)) `(tup))
+(ft (maptup _f (tup _head | _tail))
+    (tup (_f _head) | (maptup _f _tail)))
+
+
+(ft (as) (seqas `(d (tup | _a) _a)))
+(ft (seqas (d _str _y))  (is _y `(tup)) _str)
+(ft (seqas (d _str _y))
+    (is _y `(tup a | _z))
+    (seqas `(d _str _z)))
+
+
+; (mapcar square (ns/ms 1)) berechnen stream jedesmal neu
+
+(ft (ns _n) (natl `(d (tup | _p) _p) _n))
+(ft (natl (d _str _y) _n)  (is _y `(tup _n)) _str)
+(ft (natl (d _str _y) _n)
+    (is _y `(tup _n | _z))
+    (natl `(d _str _z) (1+ _n)))
+
+
+(ft (ms _n) (is _p `(tup _n | _q)) (matl `(d _p _p)))
+(ft (matl (d _str _y)) `(d _str _y))
+(ft (matl (d _str (tup _old | _z)))
+    (is _new (1+ _old))
+    (is _z `(tup _new | _q))
+    (matl `(d _str (tup _new | _q))))
+
+; (mths 2 (ns 1)) divergiert
+
+(ft (mths 1 (d (tup _a | _r) _y)) _a)
+(ft (mths _n (d _y _y)) (mths _n (matl `(d _y _y))))
+(ft (mths _n (d (tup _a | _r) _y)) (mths (1- _n) `(d _r _y)))

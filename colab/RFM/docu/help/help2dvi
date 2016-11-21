@@ -1,0 +1,30 @@
+#!/bin/csh
+
+# help2dvi : transforms all help tex files to dvi files
+
+
+if ("$1" == "") then
+  echo "Usage: help2dvi <name>  or  help2dvi -a"
+  exit 1
+else if ("$1" == "-a") then
+
+	/bin/rm -f currenthelp.tex
+	set texfiles=(`/bin/ls *.tex`)
+
+	foreach file ($texfiles)
+	  if ("$file" != "help2dvi.tex") then
+	    ln -fs $file currenthelp.tex
+	    latex help2dvi
+	    /bin/mv help2dvi.dvi `echo $file | cut -f1 -d.`.dvi
+	  endif
+	end
+
+	/bin/rm -f currenthelp.tex *.log *.aux
+
+else # only one help file
+  /bin/rm -f currenthelp.tex
+  ln -s ${1}.tex currenthelp.tex
+  latex help2dvi
+  /bin/mv help2dvi.dvi ${1}.dvi
+  /bin/rm -f currenthelp.tex *.log *.aux
+endif

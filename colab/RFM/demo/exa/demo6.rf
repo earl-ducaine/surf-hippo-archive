@@ -1,0 +1,239 @@
+; file    "demo?.rf"
+; date    27 june 1990
+; author  R. Scheubrein
+;
+;
+; this program is adaped from 
+; K.A. Bowen / R. A. Kowalski "amalgamating language and metalanguage in logic programming"
+;
+
+
+;
+; kernel procedure
+;
+(hn (demo _prog _goals)
+       (rfi-print `|enter demo 1|)
+       (rfi-print `|program: |)
+       (rfi-princ _prog)
+       (rfi-print `|goals:   |)
+       (rfi-princ _goals)
+       (rfi-fresh-line)
+    (empty _goals))
+
+(hn (demo _prog _goals)
+       (rfi-print `|enter demo 2|)
+       (rfi-print `|program: |)
+       (rfi-princ _prog)
+       (rfi-print `|goals:   |)
+       (rfi-princ _goals)
+       (rfi-fresh-line)
+    (select _goals _goal _rest)
+;       (rfi-pprint `|select|)
+;       (rfi-pprint _goal)
+    (member-r _proc _prog)
+;       (rfi-pprint `|member-r|)
+;       (rfi-pprint _proc)
+    (rename-r _proc _goals _variantproc)
+;       (rfi-pprint `|rename-r|)
+;       (rfi-pprint _variantproc)
+    (parts _variantproc _concl _conds)
+;       (rfi-pprint `|parts|)
+;       (rfi-pprint _concl)
+    (match _concl _goal _sub)
+;       (rfi-pprint `|match|)
+;       (rfi-pprint _sub)
+    (rf-apply _conds _rest _sub _newgoals)
+;       (rfi-pprint `|rf-apply|)
+;       (rfi-pprint _newgoals)
+    (demo _prog _newgoals))
+
+
+;
+; help procedures
+;
+
+; procedure demo.1.1
+(hn !(empty nil))
+ 
+
+; procedure demo.2.1
+(hn !(select (_firstgoal . _restgoals) _firstgoal _restgoals))
+
+; procedure demo.2.2
+(hn (member-r _x _y)
+    (member-rest-r _x _y id))
+(hn (member-rest-r _x (_x . _t) (_x . _t)))
+(hn (member-rest-r _x (_y . _t) _r)
+    (member-rest-r _x _t _r))
+
+; procedure demo.2.3
+(hn !(rename-r _proc _goals _variantproc)
+    (get-highest-index _goals _index)
+    (collect-variables _proc _varlist)
+    (substitute-variables _index _proc _varlist _variantproc))
+
+
+; procedure demo.2.3.1
+(hn !(get-highest-index _goals _index)
+    (get-highest-index1 _goals 0 _index))
+(hn !(get-highest-index1 nil _i _i))
+(hn !(get-highest-index1 ((var . (id . _index)) . _r) _x _i)
+    (variable-index `(var . (id . _index)) _v)
+    (rf-max _v _x _z)
+    (get-highest-index1 _r _z _i))
+(hn !(get-highest-index1 ((_h1 . _r1) . _r) _x _i)
+    (get-highest-index1 _h _x _i1)
+    (get-highest-index1 _r _x _i2)
+    (rf-max _i1 _i2 _i))
+(hn (get-highest-index1 (_h . _r) _x _i)
+    (get-highest-index1 _r _x _i))
+
+
+; procedure demo.2.3.3
+(hn (rf-max _x _y _z)
+    (is _z (max _x _y)))
+
+
+; procedure demo.2.3.1
+(hn !(collect-variables (var _name) ((var _name))))
+(hn !(collect-variables (_h . _t) _l)
+    (collect-variables _h _l1)
+    (collect-variables _t _l2)
+    (append-r _l1 _l2 _l))
+(hn (collect-variables _x nil))
+
+
+; procedure demo 2.3.3
+(hn !(substitute-variables _index _proc nil _proc))
+(hn (substitute-variables _index _proc ((var _name) . _rest) _variantproc)
+    (increment _index _newindex)
+    (rf-subst `(var _name) `(var _name _newindex) _proc _variantproc1)
+    (substitute-variables _newindex _variantproc1 _rest _variantproc))
+
+(hn (variable-p (var . (id . _rest))))
+(hn (variable-name (var . (_name . _rest)) _name))
+(hn (variable-index (var . (id . nil)) 0))
+(hn (variable-index (var . (id . (_index))) _index))
+
+(hn (increment _oldindex _newindex)
+    (is _newindex (+ 1 _oldindex)))
+
+(hn !(change-index _variable _newindex nil _newproc))
+(hn !(change-index _variable  _newindex (_variable . _rest) _newproc)
+    (variable-name _variable _name)
+    (append-r _newproc `(var _name _newindex) _newerproc)
+    (change-index _variable _newindex _newerproc))
+(hn !(change-index _variable _newindex (_first . _rest) _variantproc1)
+    (cons-p _first)
+    (change-index _variable _newindex _first _variantproc1)
+    (change-index _variable _newindex _rest _variantproc1))
+
+(hn (append-r nil _l _l))
+(hn (append-r (_h . _t) _l (_h . _r))
+    (append-r _t _l _r))
+
+(hn (cons-p (id . id)))
+
+(hn !(parts (_concl . _conds) _concl _conds))
+
+
+
+
+
+
+;
+; substitution
+; 
+
+; demo-2.6
+(hn !(rf-apply _old1 _old2 _sub _new)
+    (append-r _old1 _old2 _old)
+    (rf-subst-list _sub _old _new))
+
+(hn !(rf-subst-list nil _term _term))
+(hn (rf-subst-list ((_old _new) . _rest) _oldterm _newterm)
+    (rf-subst _old _new _oldterm _substterm)
+    (rf-subst-list _rest _substterm _newterm))
+
+(hn !(rf-subst _o _n nil nil))
+(hn !(rf-subst _o _n (_o . _oldrest) (_n . _newrest))
+    (rf-subst _o _n _oldrest _newrest))
+(hn !(rf-subst _o _n ((_x . _y) . _y1) ((_newhead . _newtail) . _z))
+    (rf-subst _o _n `(_x . _y) `(_newhead . _newtail))
+    (rf-subst _o _n _y1 _z))
+(hn (rf-subst _o _n (_x . _y) (_x . _z))
+    (rf-subst _o _n _y _z))   
+
+
+
+
+
+;
+; unification
+;
+
+; demo-2.5
+(hn !(match _concl _goal _sub)
+    (rf-unify _concl _goal _sub))
+
+(hn !(rf-unify _t1 _t2 _mgu)
+    (rf-unify1 _t1 _t2 nil _mgu))
+
+(hn !(rf-unify1 _t1 _t1 _subst _subst))
+(hn (rf-unify1 _t1 _t2 _oldsubst _newsubst)
+    (diffterm _t1 _t2 _difft1 _difft2)
+    (one-variable _difft1 _difft2 _variable _anything)
+    (rf-subst _variable _anything _t1 _newt1)
+    (rf-subst _variable _anything _t2 _newt2)
+    (append-r _oldsubst `((_variable _anything)) _newersubst)
+    (rf-unify1 _newt1 _newt2 _newersubst _newsubst))
+
+(hn !(diffterm (_h . _r1) (_h . _r2) _difft1 _difft2)
+    (diffterm _r1 _r2 _difft1 _difft2))
+(hn (diffterm (_h1 . _r1) (_h2 . _r2) _h1 _h2))
+
+(hn (one-variable _x _y _x _y)
+    (variable-p _x))
+(hn (one-variable _x _y _y _x)
+    (variable-p _y))
+
+
+;
+;   sample:
+;   likes(john,Z) :- likes(jim,Z),
+;                     likes(bob,Z).
+;   likes(bob,sue).
+;   likes(jim,sue).
+;   ?- likes(X,Y).
+;
+;   rf> (demo `(((likes john (var z))(likes jim (var z)) (likes bob (var z)))
+;               ((likes bob sue))
+;               ((likes jim sue))) 
+;             `((likes (var x) (var y)))
+;       )
+;
+;   enter demo 1
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES (VAR X) (VAR Y)))
+;   enter demo 2
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES (VAR X) (VAR Y)))
+;   enter demo 1
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES JIM (VAR Y)) (LIKES BOB (VAR Y)))
+;   enter demo 2
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES JIM (VAR Y)) (LIKES BOB (VAR Y)))
+;   enter demo 1
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES BOB SUE))
+;   enter demo 2
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   ((LIKES BOB SUE))
+;   enter demo 1
+;   program: (((LIKES JOHN (VAR Z)) (LIKES JIM (VAR Z)) (LIKES BOB (VAR Z))) ((LIKES BOB SUE)) ((LIKES JIM SUE)))
+;   goals:   NIL
+;   TRUE
+;
+;   (this will take some time...)
+;

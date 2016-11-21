@@ -1,0 +1,4 @@
+
+inv[F](V) :- V is F(| X) & X.
+area(india) :-& 1139.
+f(I, J | R) :-& J.

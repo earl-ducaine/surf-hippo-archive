@@ -1,0 +1,1395 @@
+rfi> exec dialog
+rfi> here (is _relfun reading) its first line `(tup binding the variable) _relfun
+reading
+(_relfun = reading)
+rfi> 
+rfi> ; ;;
+rfi> ; Instantiation of tuples (lists) ;;
+rfi> (is _x 1) `(tup _x 2 _z)
+`(tup 1 2 _z)
+(_x = 1)
+rfi> (is _x 1) `(tup an instantiation which acts like quoting)
+`(tup an instantiation which acts like quoting)
+(_x = 1)
+rfi> prelude  ; look if tup is defined in the prelude, hence can be used actively
+(ft (tup)
+    `(tup) )
+(ft (tup _first | _rest)
+    `(tup _first | _rest) )
+rfi> (is _x 1) (tup _x 2 _z)
+`(tup 1 2 _z)
+(_x = 1)
+rfi> (is _x 1) (tup an instantiation which acts like quoting)
+`(tup an instantiation which acts like quoting)
+(_x = 1)
+rfi> (is _x 1) (tup x _x `x `_x `(tup x) (tup x) `(tup _x) (tup _x) `(tup x _x 2))
+`(tup x 1 x 1 (tup x) (tup x) (tup 1) (tup 1) (tup x 1 2))
+(_x = 1)
+rfi> consult instex
+rfi> l
+(ft (recpat 0)
+    `(tup 0) )
+(ft (recpat _n)
+    (is _h (recpat (1- _n)))
+    `(tup _h _n _h) )
+(ft (f _x)
+    `(tup a b _x _x b a) )
+(ft (g _y _z)
+    (is _h (f (f _y)))
+    `(tup _h _z _h) )
+(ft (try)
+    (g (g 1 2) (g 3 4)) )
+rfi> (f 1)
+`(tup a b 1 1 b a)
+rfi> (f (f 1))
+`(tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+rfi> (g 1 2)
+`(tup
+  (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+  2
+  (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+rfi> (try)
+`(tup
+  (tup
+   a
+   b
+   (tup
+    a
+    b
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    b
+    a )
+   (tup
+    a
+    b
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    b
+    a )
+   b
+   a )
+  (tup
+   (tup a b (tup a b 3 3 b a) (tup a b 3 3 b a) b a)
+   4
+   (tup a b (tup a b 3 3 b a) (tup a b 3 3 b a) b a) )
+  (tup
+   a
+   b
+   (tup
+    a
+    b
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    b
+    a )
+   (tup
+    a
+    b
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    (tup
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a)
+     2
+     (tup a b (tup a b 1 1 b a) (tup a b 1 1 b a) b a) )
+    b
+    a )
+   b
+   a ) )
+rfi> (recpat 1)
+`(tup (tup 0) 1 (tup 0))
+rfi> (recpat 5)
+`(tup
+  (tup
+   (tup
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0)))
+    3
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0))) )
+   4
+   (tup
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0)))
+    3
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0))) ) )
+  5
+  (tup
+   (tup
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0)))
+    3
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0))) )
+   4
+   (tup
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0)))
+    3
+    (tup (tup (tup 0) 1 (tup 0)) 2 (tup (tup 0) 1 (tup 0))) ) ) )
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Pure list processing ;;
+rfi> azft (cons-f _head _tail) `(tup _head | _tail)
+rfi> (cons-f a b)
+`(tup a | b)
+rfi> (cons-f a `(tup))
+`(tup a)
+rfi> (cons-f a _rest)
+`(tup a | _tail:1)
+(_rest = _tail:1)
+rfi> (cons-f _first `(tup b c))
+`(tup _head:1 b c)
+(_first = _head:1)
+rfi> (cons-f _first _rest)
+`(tup _head:1 | _tail:1)
+(_first = _head:1)
+(_rest = _tail:1)
+rfi> (is _x `(tup 1 2)) `(tup _x | _x)
+`(tup (tup 1 2) 1 2)
+(_x = `(tup 1 2))
+rfi> (is _x `(tup 1 2)) (cons-f _x _x)
+`(tup (tup 1 2) 1 2)
+(_x = `(tup 1 2))
+rfi> azft (car-f (tup _head | _tail)) _head
+rfi> azft (cdr-f (tup _head | _tail)) _tail
+rfi> (car-f `(tup leading element is leading))
+leading
+rfi> (cdr-f `(tup leading element is leading))
+`(tup element is leading)
+rfi> (car-f `(tup _q 2 _q))
+_head:1
+(_q = _head:1)
+rfi> (cdr-f `(tup _q 2 _q))
+`(tup 2 _head:1)
+(_q = _head:1)
+rfi> (is _a (car-f `(tup _q 2 _q))) (is _q 1) (is _d (cdr-f `(tup _q 2 _q))) (cons-f _a _d)
+`(tup 1 2 1)
+(_q = 1)
+(_a = 1)
+(_d = `(tup 2 1))
+rfi> azft (list-f | _this-is-the-list-already) _this-is-the-list-already  ; like tup
+rfi> `(tup all of these elements)
+`(tup all of these elements)
+rfi> (list-f all of these elements)
+`(tup all of these elements)
+rfi> (list-f another | `(tup way of consing))
+`(tup another way of consing)
+rfi> (list-f _e1 _e2 _e3)
+`(tup _e1 _e2 _e3)
+rfi> (list-f _e)
+`(tup _e)
+rfi> (list-f | _e)
+_this-is-the-list-already:1
+(_e = _this-is-the-list-already:1)
+rfi> azhn (consp-r (tup _head | _tail))
+rfi> (consp-r a)
+unknown
+rfi> (consp-r `(tup a h))
+true
+rfi> (consp-r `(tup))
+unknown
+rfi> (consp-r _what)
+true
+(_what = `(tup _head:1 | _tail:1))
+rfi> more
+unknown
+rfi> azhn (listp-r (tup))
+rfi> azhn (listp-r _x) (consp-r _x)
+rfi> (listp-r `(tup))
+true
+rfi> (listp-r a)
+unknown
+rfi> (listp-r _what)
+true
+(_what = `(tup))
+rfi> more
+true
+(_what = `(tup _head:2 | _tail:2))
+rfi> more
+unknown
+rfi> listing
+(ft (cons-f _head _tail)
+    `(tup _head | _tail) )
+(ft (car-f (tup _head | _tail))
+    _head )
+(ft (cdr-f (tup _head | _tail))
+    _tail )
+(ft (list-f | _this-is-the-list-already)
+    _this-is-the-list-already )
+(hn (consp-r (tup _head | _tail)))
+(hn (listp-r (tup)))
+(hn (listp-r _x)
+    (consp-r _x) )
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; The function appfun ;;
+rfi> consult sampler/brief-intro
+rfi> l
+(hn (apprel (tup) _l _l))
+(hn (apprel (tup _h | _r) _m (tup _h | _s))
+    (apprel _r _m _s) )
+(hn (revrel (tup) (tup)))
+(hn (revrel (tup _h | _r) _l)
+    (revrel _r _m)
+    (apprel _m `(tup _h) _l) )
+(ft (appfun (tup) _l)
+    _l )
+(ft (appfun (tup _h | _r) _l)
+    (tup _h | (appfun _r _l)) )
+(ft (revfun (tup))
+    `(tup) )
+(ft (revfun (tup _h | _r))
+    (appfun (revfun _r) `(tup _h)) )
+rfi> (appfun `(tup a b) `(tup 1 2 3))
+`(tup a b 1 2 3)
+rfi> (appfun `(tup a b) _suffix)
+`(tup a b | _rest:6)
+(_suffix = _rest:6)
+rfi> (appfun `(tup a b) id)
+`(tup a b | _rest:6)
+rfi> (appfun _prefix `(tup 1 2 3))
+`(tup 1 2 3)
+(_prefix = `(tup))
+rfi> more
+`(tup _first:4 1 2 3)
+(_prefix = `(tup _first:4))
+rfi> more
+`(tup _first:7 _first:6 1 2 3)
+(_prefix = `(tup _first:7 _first:6))
+rfi> (appfun id `(tup 1 2 3))
+`(tup 1 2 3)
+rfi> more
+`(tup _first:4 1 2 3)
+rfi> more
+`(tup _first:7 _first:6 1 2 3)
+rfi> (appfun _prefix _suffix)
+_l:1
+(_prefix = `(tup))
+(_suffix = _l:1)
+rfi> more
+`(tup _first:4 | _rest:4)
+(_prefix = `(tup _first:4))
+(_suffix = _rest:4)
+rfi> (appfun id id)
+_l:1
+rfi> more
+`(tup _first:4 | _rest:4)
+rfi> (appfun `(tup a b) (appfun `(tup 1 2) `(tup 3)))
+`(tup a b 1 2 3)
+rfi> azft (selfapp-f _half) (appfun _half _half)
+rfi> (selfapp-f `(tup a b))
+`(tup a b a b)
+rfi> (selfapp-f _any)
+`(tup)
+(_any = `(tup))
+rfi> more
+`(tup _first:5 _first:5)
+(_any = `(tup _first:5))
+rfi> more
+`(tup _first:8 _first:7 _first:8 _first:7)
+(_any = `(tup _first:8 _first:7))
+rfi> 
+rfi> ; ;;
+rfi> ; The relation apprel ;;
+rfi> (apprel `(tup a b) `(tup 1 2 3) _res)
+true
+(_res = `(tup a b 1 2 3))
+rfi> (apprel `(tup a b) `(tup 1 2 3) id)
+true
+rfi> (apprel `(tup a b) _suffix _res)
+true
+(_suffix = _l:3)
+(_res = `(tup a b | _l:3))
+rfi> (apprel `(tup a b) id _res)
+true
+(_res = `(tup a b | _l:3))
+rfi> (apprel _prefix `(tup 1 2 3) _res)
+true
+(_prefix = `(tup))
+(_res = `(tup 1 2 3))
+rfi> more
+true
+(_prefix = `(tup _h:1))
+(_res = `(tup _h:1 1 2 3))
+rfi> more
+true
+(_prefix = `(tup _h:1 _h:2))
+(_res = `(tup _h:1 _h:2 1 2 3))
+rfi> (apprel id `(tup 1 2 3) _res)
+true
+(_res = `(tup 1 2 3))
+rfi> more
+true
+(_res = `(tup _h:1 1 2 3))
+rfi> more
+true
+(_res = `(tup _h:1 _h:2 1 2 3))
+rfi> (apprel _prefix _suffix _res)
+true
+(_prefix = `(tup))
+(_suffix = _l:1)
+(_res = _l:1)
+rfi> more
+true
+(_prefix = `(tup _h:1))
+(_suffix = _l:2)
+(_res = `(tup _h:1 | _l:2))
+rfi> (apprel id id _res)
+true
+(_res = _l:1)
+rfi> more
+true
+(_res = `(tup _h:1 | _l:2))
+rfi> (apprel `(tup 1 2) `(tup 3) _x) (apprel `(tup a b) _x _res)
+true
+(_x = `(tup 1 2 3))
+(_res = `(tup a b 1 2 3))
+rfi> azhn (selfapp-r _half _lst) (apprel _half _half _lst)
+rfi> (selfapp-r `(tup a b) _res)
+true
+(_res = `(tup a b a b))
+rfi> (selfapp-r _any _res)
+true
+(_any = `(tup))
+(_res = `(tup))
+rfi> more
+true
+(_any = `(tup _h:2))
+(_res = `(tup _h:2 _h:2))
+rfi> more
+true
+(_any = `(tup _h:2 _h:3))
+(_res = `(tup _h:2 _h:3 _h:2 _h:3))
+rfi> azhn (equalhalves-r _lst) (apprel _half _half _lst)
+rfi> (equalhalves-r `(tup a b a b))
+true
+rfi> (equalhalves-r `(tup a b a))
+unknown
+rfi> (equalhalves-r _res)
+true
+(_res = `(tup))
+rfi> more
+true
+(_res = `(tup _h:2 _h:2))
+rfi> more
+true
+(_res = `(tup _h:2 _h:3 _h:2 _h:3))
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; The relation-function append-rf ;;
+rfi> consult cmlist
+rfi> l
+(ft (last-rf _e (tup _e))
+    _e )
+(ft (last-rf _e (tup _head | _tail))
+    (last-rf _e _tail) )
+(ft (nextto-rf _x _y (tup _x _y | _any))
+    `(tup _x _y) )
+(ft (nextto-rf _x _y (tup _any | _z))
+    (nextto-rf _x _y _z) )
+(ft (append-rf (tup) _lst _lst)
+    _lst )
+(ft (append-rf
+     (tup _head | _tail)
+     _lst
+     (tup _head | _rest) )
+    (append-rf _tail _lst _rest)
+    `(tup _head | _rest) )
+(ft (member-rf _e (tup _e | _rest))
+    `(tup _e | _rest) )
+(ft (member-rf _x (tup _y | _rest))
+    (member-rf _x _rest) )
+(ft (rev-rf (tup) (tup))
+    `(tup) )
+(ft (rev-rf (tup _head | _tail) _lst)
+    (rev-rf _tail _x)
+    (append-rf _x `(tup _head) _lst)
+    _lst )
+(ft (efface-rf _a (tup _a | _l) _l)
+    _l )
+(ft (efface-rf _a (tup _b | _l) (tup _b | _m))
+    (efface-rf _a _l _m)
+    `(tup _b | _m) )
+rfi> (append-rf `(tup a b) `(tup 1 2 3) _res)
+`(tup a b 1 2 3)
+(_res = `(tup a b 1 2 3))
+rfi> (append-rf `(tup a b) `(tup 1 2 3) id)
+`(tup a b 1 2 3)
+rfi> (append-rf `(tup a b) _suffix _res)
+`(tup a b | _lst:3)
+(_suffix = _lst:3)
+(_res = `(tup a b | _lst:3))
+rfi> (append-rf `(tup a b) id _res)
+`(tup a b | _lst:3)
+(_res = `(tup a b | _lst:3))
+rfi> (append-rf `(tup a b) id id)
+`(tup a b | _lst:3)
+rfi> (append-rf _prefix `(tup 1 2 3) _res)
+`(tup 1 2 3)
+(_prefix = `(tup))
+(_res = `(tup 1 2 3))
+rfi> more
+`(tup _head:1 1 2 3)
+(_prefix = `(tup _head:1))
+(_res = `(tup _head:1 1 2 3))
+rfi> more
+`(tup _head:1 _head:2 1 2 3)
+(_prefix = `(tup _head:1 _head:2))
+(_res = `(tup _head:1 _head:2 1 2 3))
+rfi> (append-rf id `(tup 1 2 3) _res)
+`(tup 1 2 3)
+(_res = `(tup 1 2 3))
+rfi> more
+`(tup _head:1 1 2 3)
+(_res = `(tup _head:1 1 2 3))
+rfi> more
+`(tup _head:1 _head:2 1 2 3)
+(_res = `(tup _head:1 _head:2 1 2 3))
+rfi> (append-rf id `(tup 1 2 3) id)
+`(tup 1 2 3)
+rfi> more
+`(tup _head:1 1 2 3)
+rfi> more
+`(tup _head:1 _head:2 1 2 3)
+rfi> (append-rf _prefix _suffix _res)
+_lst:1
+(_prefix = `(tup))
+(_suffix = _lst:1)
+(_res = _lst:1)
+rfi> more
+`(tup _head:1 | _lst:2)
+(_prefix = `(tup _head:1))
+(_suffix = _lst:2)
+(_res = `(tup _head:1 | _lst:2))
+rfi> (append-rf id id _res)
+_lst:1
+(_res = _lst:1)
+rfi> more
+`(tup _head:1 | _lst:2)
+(_res = `(tup _head:1 | _lst:2))
+rfi> (append-rf id id id)
+_lst:1
+rfi> more
+`(tup _head:1 | _lst:2)
+rfi> (append-rf `(tup a b) (append-rf `(tup 1 2) `(tup 3) id) id)
+`(tup a b 1 2 3)
+rfi> azft (selfapp-rf _half _lst) (append-rf _half _half _lst)
+rfi> (selfapp-rf `(tup a b) _res)
+`(tup a b a b)
+(_res = `(tup a b a b))
+rfi> (selfapp-rf _any _res)
+`(tup)
+(_any = `(tup))
+(_res = `(tup))
+rfi> more
+`(tup _head:2 _head:2)
+(_any = `(tup _head:2))
+(_res = `(tup _head:2 _head:2))
+rfi> more
+`(tup _head:2 _head:3 _head:2 _head:3)
+(_any = `(tup _head:2 _head:3))
+(_res = `(tup _head:2 _head:3 _head:2 _head:3))
+rfi> azft (equalhalves-rf _lst) (append-rf _half _half _lst) _half
+rfi> (equalhalves-rf `(tup a b a b))
+`(tup a b)
+rfi> (equalhalves-rf `(tup a b a))
+unknown
+rfi> (equalhalves-rf _res)
+`(tup)
+(_res = `(tup))
+rfi> more
+`(tup _head:2)
+(_res = `(tup _head:2 _head:2))
+rfi> more
+`(tup _head:2 _head:3)
+(_res = `(tup _head:2 _head:3 _head:2 _head:3))
+rfi> 
+rfi> ; ;;
+rfi> ; And further relation-functions ;;
+rfi> (last-rf 3 `(tup 1 2 3))
+3
+rfi> (last-rf _what `(tup 1 2 3))
+3
+(_what = 3)
+rfi> (last-rf 3 _where)
+3
+(_where = `(tup 3))
+rfi> (last-rf _what _where)
+_e:1
+(_what = _e:1)
+(_where = `(tup _e:1))
+rfi> more
+_e:2
+(_what = _e:2)
+(_where = `(tup _head:1 _e:2))
+rfi> more
+_e:3
+(_what = _e:3)
+(_where = `(tup _head:1 _head:2 _e:3))
+rfi> more
+_e:4
+(_what = _e:4)
+(_where = `(tup _head:1 _head:2 _head:3 _e:4))
+rfi> (last-rf id `(tup 1 2 3))
+3
+rfi> (nextto-rf id house `(tup there is a funny house in the garden))
+`(tup funny house)
+rfi> (member-rf 2 `(tup 1 2 3 4))
+`(tup 2 3 4)
+rfi> (member-rf _x `(tup a _x c))
+`(tup a a c)
+(_x = a)
+rfi> more
+`(tup _e:2 c)
+(_x = _e:2)
+rfi> more
+`(tup c)
+(_x = c)
+rfi> more
+unknown
+rfi> (rev-rf `(tup a b c) _res)
+`(tup c b a)
+(_res = `(tup c b a))
+rfi> (rev-rf _res `(tup a b c))
+`(tup a b c)
+(_res = `(tup c b a))
+rfi> (efface-rf 2 `(tup 1 2 3 4) id)
+`(tup 1 3 4)
+rfi> 
+rfi> ; ;;
+rfi> ; Permutation relation-function ;;
+rfi> az (ft (permutation-rf (tup) (tup)) `(tup))
+rfi> az (ft (permutation-rf _lst (tup _head | _tail))
+       (append-rf _v `(tup _head | _u) _lst)
+       (append-rf _v _u _w)
+       (permutation-rf _w _tail)
+       `(tup _head | _tail))
+rfi> (permutation-rf `(tup a b c) _res)
+`(tup a b c)
+(_res = `(tup a b c))
+rfi> more
+`(tup a c b)
+(_res = `(tup a c b))
+rfi> more
+`(tup b a c)
+(_res = `(tup b a c))
+rfi> more
+`(tup b c a)
+(_res = `(tup b c a))
+rfi> more
+`(tup c a b)
+(_res = `(tup c a b))
+rfi> more
+`(tup c b a)
+(_res = `(tup c b a))
+rfi> more
+unknown
+rfi> (permutation-rf `(tup a | _r) `(tup b | _s))
+`(tup b a)
+(_s = `(tup a))
+(_r = `(tup b))
+rfi> more
+`(tup b a _head:9)
+(_s = `(tup a _head:9))
+(_r = `(tup b _head:9))
+rfi> more
+`(tup b a _head:9 _head:12)
+(_s = `(tup a _head:9 _head:12))
+(_r = `(tup b _head:9 _head:12))
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Relational facts ;;
+rfi> az (hn (brother jesus _person))
+rfi> az (hn (brother fred john))
+rfi> az (hn (brother fred mark))
+rfi> az (hn (father mark mary))
+rfi> (brother _who _whom)
+true
+(_who = jesus)
+(_whom = _person:1)
+rfi> more
+true
+(_who = fred)
+(_whom = john)
+rfi> more
+true
+(_who = fred)
+(_whom = mark)
+rfi> more
+unknown
+rfi> (brother fred _x) _x
+john
+(_x = john)
+rfi> (brother jesus _x) _x
+_person:1
+(_x = _person:1)
+rfi> (brother _who _x) _x
+_person:1
+(_who = jesus)
+(_x = _person:1)
+rfi> more
+john
+(_who = fred)
+(_x = john)
+rfi> more
+mark
+(_who = fred)
+(_x = mark)
+rfi> (brother fred _x) (father _x mary)
+true
+(_x = mark)
+rfi> 199z
+199z
+rfi> ; ;;
+rfi> ; Functional facts ;;
+rfi> az (ft (fatherof mary) fred)
+rfi> az (ft (fatherof mark) fred)
+rfi> az (ft (brotherof fred) john)
+rfi> az (hn (elder fred john))
+rfi> az (ft (brotherof jesus) _person)
+rfi> az (hn (elder-jesus-brother) (elder (brotherof jesus) (brotherof jesus)))
+rfi> spy
+rfi> (_test)
+(and (_test))
+(and `(tup))
+`(tup)
+(_test = tup)
+rfi> more
+(and (elder (brotherof jesus) (brotherof jesus)) true)
+(and
+ (is _1:2 (brotherof jesus))
+ (is _2:2 (brotherof jesus))
+ (elder _1:2 _2:2)
+ true )
+(and
+ (is _1:2 _person:3)
+ (is _2:2 (brotherof jesus))
+ (elder _1:2 _2:2)
+ true )
+(and
+ (is _2:2 (brotherof jesus))
+ (elder _person:3 _2:2)
+ true )
+(and
+ (is _2:2 _person:4)
+ (elder _person:3 _2:2)
+ true )
+(and (elder _person:3 _person:4) true)
+(and true)
+true
+(_test = elder-jesus-brother)
+rfi> nospy
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Higher-order functions ;;
+rfi> az (ft (twice1 _f) `(compose _f _f))
+rfi> az (ft ((twice2 _f) _a) (`(compose _f _f) _a))
+rfi> az (ft ((compose _f _g) | _a) (_f (_g | _a)))
+rfi> az (ft (adofad1) (twice1 1+))
+rfi> az (ft (adofad2) `(twice2 1+))
+rfi> az (ft (add2 _x) ((twice1 1+) _x))
+rfi> (`(compose 1+ *) 2 3)
+7
+rfi> (twice1 1+)
+`(compose 1+ 1+)
+rfi> ((twice1 1+) 0)
+2
+rfi> ((adofad1) 0)
+2
+rfi> (add2 0)
+2
+rfi> (twice1 twice1)
+`(compose twice1 twice1)
+rfi> (((twice1 twice1) 1+) 0)
+4
+rfi> (is _fct (((twice1 twice1) twice1) 1+)) (tup _fct (_fct 0))
+`(tup
+  (compose
+   (compose
+    (compose (compose 1+ 1+) (compose 1+ 1+))
+    (compose (compose 1+ 1+) (compose 1+ 1+)) )
+   (compose
+    (compose (compose 1+ 1+) (compose 1+ 1+))
+    (compose (compose 1+ 1+) (compose 1+ 1+)) ) )
+  16 )
+(_fct
+ =
+ `(compose
+   (compose
+    (compose (compose 1+ 1+) (compose 1+ 1+))
+    (compose (compose 1+ 1+) (compose 1+ 1+)) )
+   (compose
+    (compose (compose 1+ 1+) (compose 1+ 1+))
+    (compose (compose 1+ 1+) (compose 1+ 1+)) ) ) )
+rfi> consult mapper
+rfi> azft (ncons-f _e) `(tup _e)
+rfi> l
+(ft (twice1 _f)
+    `(compose _f _f) )
+(ft ((twice2 _f) _a)
+    (`(compose _f _f) _a) )
+(ft ((compose _f _g) | _a)
+    (_f (_g | _a)) )
+(ft (adofad1)
+    (twice1 1+) )
+(ft (adofad2)
+    `(twice2 1+) )
+(ft (add2 _x)
+    ((twice1 1+) _x) )
+(ft (mapper _f (tup))
+    `(tup) )
+(ft (mapper _f (tup _head | _tail))
+    (cons-f (_f _head) (mapper _f _tail)) )
+(ft (mapper2 _f (tup) (tup))
+    `(tup) )
+(ft (mapper2
+     _f
+     (tup _head1 | _tail1)
+     (tup _head2 | _tail2) )
+    (cons-f
+     (_f _head1 _head2)
+     (mapper2 _f _tail1 _tail2) ) )
+(ft (cons-f _head _tail)
+    `(tup _head | _tail) )
+(ft (ncons-f _e)
+    `(tup _e) )
+rfi> (mapper ncons-f `(tup a _x (tup 1 2) (tup _y _x _y) b))
+`(tup
+  (tup a)
+  (tup _e:6)
+  (tup (tup 1 2))
+  (tup (tup _y _e:6 _y))
+  (tup b) )
+(_x = _e:6)
+rfi> (mapper (twice1 ncons-f) `(tup a _x (tup 1 2) (tup _y _x _y) b))
+`(tup
+  (tup (tup a))
+  (tup (tup _e:13))
+  (tup (tup (tup 1 2)))
+  (tup (tup (tup _y _e:13 _y)))
+  (tup (tup b)) )
+(_x = _e:13)
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Modal logic ;;
+rfi> az (hn (knows john (brother fred mary)))
+rfi> az (hn (ask _prop _ind)
+       (is _prop `(brother fred _ind))
+       (knows john _prop))
+rfi> (knows john _proposition)
+true
+(_proposition = `(brother fred mary))
+rfi> (ask _p mary)
+true
+(_p = `(brother fred mary))
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Embedded non-determinism ;;
+rfi> az (ft (pet-f mary) canary)
+rfi> az (ft (pet-f mary) doggy)
+rfi> az (ft (pet-f mary) pony)
+rfi> az (hn (mammal doggy))
+rfi> az (hn (mammal pony))
+rfi> (mammal (pet-f mary))
+true
+rfi> more
+true
+rfi> more
+unknown
+rfi> (_predicate (pet-f _being))
+`(tup canary)
+(_being = mary)
+(_predicate = tup)
+rfi> more
+`(tup doggy)
+(_being = mary)
+(_predicate = tup)
+rfi> more
+true
+(_being = mary)
+(_predicate = mammal)
+rfi> more
+`(tup pony)
+(_being = mary)
+(_predicate = tup)
+rfi> more
+true
+(_being = mary)
+(_predicate = mammal)
+rfi> more
+unknown
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; The call feature ;;
+rfi> consult callex
+rfi> azft (first-of-pair (pair _1 _2)) _1
+rfi> l
+(ft (foo _x)
+    `(_x 2 3) )
+(ft (bar _g)
+    @_g )
+(ft (baz _h)
+    (is _aux @_h)
+    @_aux )
+(ft (emb _a)
+    (tup _a @_a a) )
+(ft (fue _a)
+    (@_a _a) )
+(ft (tst)
+    (is _x `(+ 1 2))
+    (tup
+     _x
+     `_x
+     @_x
+     `@_x
+     @`_x
+     (+ 1 2)
+     `(+ 1 2)
+     @(+ 1 2)
+     `@(+ 1 2)
+     @`(+ 1 2) ) )
+(ft (first-of-pair (pair _1 _2))
+    _1 )
+rfi> (foo 1)
+`(1 2 3)
+rfi> `(foo 1)
+`(foo 1)
+rfi> @(foo 1)
+unknown
+rfi> @`(foo 1)
+`(1 2 3)
+rfi> (is _variable `(foo 1)) @_variable
+`(1 2 3)
+(_variable = `(foo 1))
+rfi> (bar `(foo 1))
+`(1 2 3)
+rfi> (baz `(first-of-pair `(pair (foo 1) (foo 2))))
+`(1 2 3)
+rfi> (emb `(foo 1))
+`(tup (foo 1) (1 2 3) a)
+rfi> (tst)
+`(tup (+ 1 2) (+ 1 2) 3 @(+ 1 2) 3 3 (+ 1 2) 3 @(+ 1 2) 3)
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Explicit "unknown" and "false" ;;
+rfi> true
+true
+rfi> unknown
+unknown
+rfi> false
+false
+rfi> 1 true 3
+3
+rfi> 1 unknown 3
+unknown
+rfi> 1 false 3
+unknown
+rfi> (is _a 1) true 3
+3
+(_a = 1)
+rfi> (is _a 1) unknown 3
+unknown
+rfi> (is _a 1) false 3
+unknown
+rfi> (is _x unknown)
+unknown
+rfi> (is _x false)
+false
+(_x = false)
+rfi> 1 `unknown 3
+3
+rfi> 1 `false 3
+3
+rfi> (is _x `unknown)
+unknown
+(_x = unknown)
+rfi> (is _x `false)
+false
+(_x = false)
+rfi> (is _x `unknown) _x
+unknown
+(_x = unknown)
+rfi> (is _x `false) _x
+false
+(_x = false)
+rfi> (is _x `unknown) @_x
+unknown
+rfi> (is _x `false) @_x
+false
+(_x = false)
+rfi> (is _x `unknown) (is _y _x)
+unknown
+(_x = unknown)
+(_y = unknown)
+rfi> (is _x `false) (is _y _x)
+false
+(_x = false)
+(_y = false)
+rfi> (is _x `unknown) (is _y @_x)
+unknown
+rfi> (is _x `false) (is _y @_x)
+false
+(_x = false)
+(_y = false)
+rfi> (is _x `unknown) (tup _x 1 _x)
+`(tup unknown 1 unknown)
+(_x = unknown)
+rfi> (is _x `false) (tup _x 1 _x)
+`(tup false 1 false)
+(_x = false)
+rfi> spy
+rfi> (is _x `unknown) (tup @_x 1 @_x)
+(and (is _x unknown) (tup @_x 1 @_x))
+(and (tup @unknown 1 @unknown))
+(and
+ (is _1:1 @unknown)
+ (is _2:1 @unknown)
+ (tup _1:1 1 _2:1) )
+(and
+ (is _1:1 unknown)
+ (is _2:1 @unknown)
+ (tup _1:1 1 _2:1) )
+unknown
+rfi> (is _x `false) (tup @_x 1 @_x)
+(and (is _x false) (tup @_x 1 @_x))
+(and (tup @false 1 @false))
+(and
+ (is _1:1 @false)
+ (is _2:1 @false)
+ (tup _1:1 1 _2:1) )
+(and
+ (is _1:1 false)
+ (is _2:1 @false)
+ (tup _1:1 1 _2:1) )
+(and (is _2:1 @false) (tup false 1 _2:1))
+(and (is _2:1 false) (tup false 1 _2:1))
+(and (tup false 1 false))
+(and `(tup false 1 false))
+`(tup false 1 false)
+(_x = false)
+rfi> nospy
+rfi> az (ft (notp true) false)
+rfi> az (ft (notp false) true)
+rfi> az (ft (likes john mary) false)
+rfi> az (hn (likes john jeany))
+rfi> az (ft (likes john nelly) unknown)
+rfi> az (ft (tst) (is _res (likes john _whom)) `(_res _whom))
+rfi> (likes john mary)
+false
+rfi> (notp (likes john mary))
+true
+rfi> (tst)
+`(false mary)
+rfi> more
+`(true jeany)
+rfi> more
+unknown
+rfi> 
+rfi> ; ;;
+rfi> ; Deriving negative facts ;;
+rfi> az (ft (negat (married john)) (happy john))
+rfi> az (ft (negat (happy john)) (married john))
+rfi> az (hn (happy john))
+rfi> az (ft (negat _p) (notp @_p))
+rfi> az (ft (happy fred) false)
+rfi> l
+(ft (notp true)
+    false )
+(ft (notp false)
+    true )
+(ft (likes john mary)
+    false )
+(hn (likes john jeany))
+(ft (likes john nelly)
+    unknown )
+(ft (tst)
+    (is _res (likes john _whom))
+    `(_res _whom) )
+(ft (negat (married john))
+    (happy john) )
+(ft (negat (happy john))
+    (married john) )
+(hn (happy john))
+(ft (negat _p)
+    (notp @_p) )
+(ft (happy fred)
+    false )
+rfi> (happy fred)
+false
+rfi> (notp (happy fred))
+true
+rfi> (negat `(happy fred))
+true
+rfi> (married john)
+unknown
+rfi> (notp (married john))
+unknown
+rfi> (negat `(married john))
+true
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; The initial cut operator ;;
+rfi> consult fibcut
+rfi> l
+(ft (fib 0)
+    !
+    1 )
+(ft (fib 1)
+    !
+    1 )
+(ft (fib _n)
+    (+ (fib (1- _n)) (fib (1- (1- _n)))) )
+rfi> (fib 0)
+1
+rfi> more
+unknown
+rfi> (fib 1)
+1
+rfi> more
+unknown
+rfi> (fib _res)
+1
+(_res = 0)
+rfi> more
+unknown
+rfi> (fib 2)
+2
+rfi> (fib 4)
+5
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; A (tup) list generator ;;
+rfi> az (ft (genlst) `(tup))
+rfi> az (ft (genlst) (tup `(tup) | (genlst)))
+rfi> (genlst)
+`(tup)
+rfi> more
+`(tup (tup))
+rfi> more
+`(tup (tup) (tup))
+rfi> more
+`(tup (tup) (tup) (tup))
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Lazy evaluation through non-determinism ;;
+rfi> consult lazydiff
+rfi> l
+(ft (seqnat _n)
+    `(tup) )
+(ft (seqnat _n)
+    (tup _n | (seqnat (1+ _n))) )
+(ft (square _x)
+    (* _x _x) )
+(ft (seqsqu _n)
+    (maptup square (seqnat _n)) )
+(ft (natsqu _n)
+    (maptup square (nats _n)) )
+(ft (nths 1 (tup _a | _d))
+    _a )
+(ft (nths _n (tup _a | _d))
+    (nths (1- _n) _d) )
+(ft (nats _str)
+    _str )
+(ft (nats (tup _e | _str))
+    (nats (tup (1+ _e) _e | _str)) )
+(ft (maptup _f (tup))
+    `(tup) )
+(ft (maptup _f (tup _head | _tail))
+    (tup (_f _head) | (maptup _f _tail)) )
+(ft (as)
+    (seqas `(d (tup | _a) _a)) )
+(ft (seqas (d _str _y))
+    (is _y `(tup))
+    _str )
+(ft (seqas (d _str _y))
+    (is _y `(tup a | _z))
+    (seqas `(d _str _z)) )
+(ft (ns _n)
+    (natl `(d (tup | _p) _p) _n) )
+(ft (natl (d _str _y) _n)
+    (is _y `(tup _n))
+    _str )
+(ft (natl (d _str _y) _n)
+    (is _y `(tup _n | _z))
+    (natl `(d _str _z) (1+ _n)) )
+(ft (ms _n)
+    (is _p `(tup _n | _q))
+    (matl `(d _p _p)) )
+(ft (matl (d _str _y))
+    `(d _str _y) )
+(ft (matl (d _str (tup _old | _z)))
+    (is _new (1+ _old))
+    (is _z `(tup _new | _q))
+    (matl `(d _str (tup _new | _q))) )
+(ft (mths 1 (d (tup _a | _r) _y))
+    _a )
+(ft (mths _n (d _y _y))
+    (mths _n (matl `(d _y _y))) )
+(ft (mths _n (d (tup _a | _r) _y))
+    (mths (1- _n) `(d _r _y)) )
+rfi> (seqnat 1)
+`(tup)
+rfi> more
+`(tup 1)
+rfi> more
+`(tup 1 2)
+rfi> more
+`(tup 1 2 3)
+rfi> more
+`(tup 1 2 3 4)
+rfi> (seqsqu 1)
+`(tup)
+rfi> more
+`(tup 1)
+rfi> more
+`(tup 1 4)
+rfi> more
+`(tup 1 4 9)
+rfi> more
+`(tup 1 4 9 16)
+rfi> (nths 3 (seqsqu 1))
+9
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Anonymous variable "id" in clause heads ;;
+rfi> az (hn (knows id _x) (president _x))
+rfi> az (hn (president reagan))
+rfi> (knows john reagan)
+true
+rfi> (knows mary _whom)
+true
+(_whom = reagan)
+rfi> destroy
+rfi> 
+rfi> ; ;;
+rfi> ; Static flattening ;;
+rfi> az (ft (f _1 _2) (g (h _1 _2)) (is _4 (h _5 _6)) (h _1 _2) (g (h _8 _9)))
+rfi> az (hn (h a b))
+rfi> az (ft (g true) ok)
+rfi> az (ft (tst) (f (is _x a) b))
+rfi> az (ft (isis _x _y) (is _x (is _y (f a b))))
+rfi> az (ft (intst) (is _x a) (f | `(tup _x b)))
+rfi> azft (second (tup _1 _2 | _rem)) _2
+rfi> l
+(ft (f _1 _2)
+    (g (h _1 _2))
+    (is _4 (h _5 _6))
+    (h _1 _2)
+    (g (h _8 _9)) )
+(hn (h a b))
+(ft (g true)
+    ok )
+(ft (tst)
+    (f (is _x a) b) )
+(ft (isis _x _y)
+    (is _x (is _y (f a b))) )
+(ft (intst)
+    (is _x a)
+    (f | `(tup _x b)) )
+(ft (second (tup _1 _2 | _rem))
+    _2 )
+rfi> (f a b)
+ok
+rfi> spy
+rfi> (f (first `(tup a b)) (second `(tup a b)))
+(and (f (first `(tup a b)) (second `(tup a b))))
+(and
+ (is _1:1 (first `(tup a b)))
+ (is _2:1 (second `(tup a b)))
+ (f _1:1 _2:1) )
+(and
+ (is _1:1 a)
+ (is _2:1 (second `(tup a b)))
+ (f _1:1 _2:1) )
+(and (is _2:1 (second `(tup a b))) (f a _2:1))
+(and (is _2:1 b) (f a _2:1))
+(and (f a b))
+(and
+ (g (h a b))
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and
+ (is _1:4 (h a b))
+ (g _1:4)
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and
+ (is _1:4 true)
+ (g _1:4)
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and
+ (g true)
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and
+ ok
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and
+ (is _4:3 (h _5:3 _6:3))
+ (h a b)
+ (g (h _8:3 _9:3)) )
+(and (is _4:3 true) (h a b) (g (h _8:3 _9:3)))
+(and (h a b) (g (h _8:3 _9:3)))
+(and (g (h _8:3 _9:3)))
+(and (is _1:9 (h _8:3 _9:3)) (g _1:9))
+(and (is _1:9 true) (g _1:9))
+(and (g true))
+(and ok)
+ok
+rfi> nospy
+rfi> (tst)
+ok
+rfi> (isis _r _r)
+ok
+(_r = ok)
+rfi> (intst)
+ok
+rfi> flatten
+rfi> l
+(ft (f _1 _2)
+    (is _3 (h _1 _2))
+    (g _3)
+    (is _4 (h _5 _6))
+    (h _1 _2)
+    (is _7 (h _8 _9))
+    (g _7) )
+(hn (h a b))
+(ft (g true)
+    ok )
+(ft (tst)
+    (is _x a)
+    (is _1 _x)
+    (f _1 b) )
+(ft (isis _x _y)
+    (is _y (f a b))
+    (is _x _y) )
+(ft (intst)
+    (is _x a)
+    (f | `(tup _x b)) )
+(ft (second (tup _1 _2 | _rem))
+    _2 )
+rfi> static
+rfi> (f a b)
+ok
+rfi> spy
+rfi> (f (first `(tup a b)) (second `(tup a b)))
+(and
+ (is _1:-1 (first `(tup a b)))
+ (is _2:-1 (second `(tup a b)))
+ (f _1:-1 _2:-1) )
+(and
+ (is _1:-1 a)
+ (is _2:-1 (second `(tup a b)))
+ (f _1:-1 _2:-1) )
+(and (is _2:-1 (second `(tup a b))) (f a _2:-1))
+(and (is _2:-1 b) (f a _2:-1))
+(and (f a b))
+(and
+ (is _3:2 (h a b))
+ (g _3:2)
+ (is _4:2 (h _5:2 _6:2))
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and
+ (is _3:2 true)
+ (g _3:2)
+ (is _4:2 (h _5:2 _6:2))
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and
+ (g true)
+ (is _4:2 (h _5:2 _6:2))
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and
+ ok
+ (is _4:2 (h _5:2 _6:2))
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and
+ (is _4:2 (h _5:2 _6:2))
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and
+ (is _4:2 true)
+ (h a b)
+ (is _7:2 (h _8:2 _9:2))
+ (g _7:2) )
+(and (h a b) (is _7:2 (h _8:2 _9:2)) (g _7:2))
+(and (is _7:2 (h _8:2 _9:2)) (g _7:2))
+(and (is _7:2 true) (g _7:2))
+(and (g true))
+(and ok)
+ok
+rfi> nospy
+rfi> (tst)
+ok
+rfi> (isis _r _r)
+ok
+(_r = ok)
+rfi> (intst)
+ok
+rfi> destroy
+rfi> az (ft (l) `(tup 2 3))
+rfi> az (ft (catst dot) (is _x `(l)) (tup a | @_x))
+rfi> az (ft (catst lst) (is _x `(l)) (tup a @_x))
+rfi> flatten
+rfi> l
+(ft (l)
+    `(tup 2 3) )
+(ft (catst dot)
+    (is _x `(l))
+    (is _1 @_x)
+    (tup a | _1) )
+(ft (catst lst)
+    (is _x `(l))
+    (is _1 @_x)
+    (tup a _1) )
+rfi> (catst _which)
+`(tup a 2 3)
+(_which = dot)
+rfi> more
+`(tup a (tup 2 3))
+(_which = lst)
+rfi> 
+rfi> bye

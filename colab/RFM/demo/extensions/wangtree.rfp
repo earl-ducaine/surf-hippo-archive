@@ -1,0 +1,69 @@
+
+work([], [], A, B) :- member(X, A),
+                      member(X, B),
+                      ! &
+                      both[X, wang[A, B]].
+work([X | L], R, A, B) :- atomic(X), ! & work(L, R, [X | A], B).
+work(L, [X | R], A, B) :- atomic(X), ! & work(L, R, A, [X | B]).
+work(L,
+     [not[P] | R],
+     A,
+     B) :- ! & right(not[P], work([P | L], R, A, B)).
+work([not[P] | L],
+     R,
+     A,
+     B) :- ! & left(not[P], work(L, [P | R], A, B)).
+work(L,
+     [and[P, Q] | R],
+     A,
+     B) :- ! &
+           right(and[P, Q], work(L, [P | R], A, B), work(L, [Q | R], A, B)).
+work([and[P, Q] | L],
+     R,
+     A,
+     B) :- ! & left(and[P, Q], work([P, Q | L],
+                                    R,
+                                    A,
+                                    B)).
+work(L,
+     [or[P, Q] | R],
+     A,
+     B) :- ! & right(or[P, Q], work(L,
+                                    [P, Q | R],
+                                    A,
+                                    B)).
+work([or[P, Q] | L],
+     R,
+     A,
+     B) :- ! & left(or[P, Q], work([P | L], R, A, B), work([Q | L], R, A, B)).
+work(L,
+     [impl[P, Q] | R],
+     A,
+     B) :- ! & right(impl[P, Q], work([P | L], [Q | R], A, B)).
+work([impl[P, Q] | L],
+     R,
+     A,
+     B) :- ! &
+           left(impl[P, Q], work([Q | L], R, A, B), work(L, [P | R], A, B)).
+work(L,
+     [equiv[P, Q] | R],
+     A,
+     B) :- 
+  ! &
+  right(equiv[P, Q],
+        work([P | L], [Q | R], A, B),
+        work([Q | L], [P | R], A, B)).
+work([equiv[P, Q] | L],
+     R,
+     A,
+     B) :- 
+  ! &
+  left(equiv[P, Q], work([P, Q | L],
+                         R,
+                         A,
+                         B), work(L,
+                                  [P, Q | R],
+                                  A,
+                                  B)).
+right(| R) :-& right[| R].
+left(| R) :-& left[| R].

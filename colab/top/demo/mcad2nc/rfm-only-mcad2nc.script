@@ -1,0 +1,88 @@
+[colab] lisp
+;;; Lucid Common Lisp/SPARC
+;;; Development Environment Version 4.1 Beta DBCS, 9 June 1992
+;;; Copyright (C) 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992 by Lucid, Inc.
+;;; All Rights Reserved
+;;;
+;;; This software product contains confidential and trade secret information
+;;; belonging to Lucid, Inc.  It may not be copied for any reason other than
+;;; for archival and backup purposes.
+;;;
+;;; Lucid and Lucid Common Lisp are trademarks of Lucid, Inc.  Other brand
+;;; or product names are trademarks or registered trademarks of their
+;;; respective holders.
+;;;
+;;; This is a preliminary version to be used for testing purposes only.
+
+;;; Loading source file "/home/sintek/lisp-init.lisp"
+;;; This image features CLOS, COMMON-LISP, COMPILER, DBCS, EGC,
+;;; IEEE-FLOATING-POINT, LCL3.0, LCL4.0, LCL4.1, LOOP, LUCID, MONITORING,
+;;; MULTITASKING, NEWCFG, PQC, SPARC, SUN, SUN-OS, UNIX.
+Fri 13-Nov-92 10:09:12 AM
+;;; Expanding Dynamic Memory
+;;; Loading source file "init.lsp"
+loading start-colab
+;;; Loading source file "/home/sintek/colab/top/our-fs.lisp"
+
+
+....
+
+
+;;; Loading source file "top/demo-break.lisp"
+> (colab)
+colab> rfe
+Relfun Emulator Subsystem Switch
+colab,rfe-l> cd top/demo/mcad2nc
+Change directory
+Current Pathname is #P"/home.arctecserv-2a/sintek/colab/top/demo/mcad2nc/"
+colab,rfe-l> consult library
+Consults a database to all known subsystems
+colab,rfe-l> consult class-feat
+Consults a database to all known subsystems
+colab,rfe-l> compile
+compile relfun database
+colab,rfe-l> (exa)
+`(tup
+  (rng 0 0 25)
+  (rng 40 25 20)
+  (rng 50 20 25)
+  (rng 60 40 40)
+  (rng 70 40 30)
+  (rng 110 30 20)
+  (rng 120 20 25)
+  (rng 150 25 0) )
+
+More solutions?  (Y/N) n
+
+colab,rfe-l> (class-feat (exa))
+`(cwp
+  40
+  (tup
+   (nft
+    (rsh
+     (grd (tup (rng 0 25 25) (rng 50 25 25)))
+     (flk (tup (rng 50 25 25) (rng 60 40 40))) )
+    (tup
+     (nft
+      (grv
+       (flk (tup (rng 40 25 20)))
+       (grd (tup (rng 40 20 20) (rng 50 20 20)))
+       (flk (tup (rng 50 20 25))) )
+      (tup) ) ) )
+   (nft
+    (lsh
+     (flk (tup (rng 70 40 30) (rng 110 30 25)))
+     (grd (tup (rng 110 25 25) (rng 150 25 25))) )
+    (tup
+     (nft
+      (grv
+       (flk (tup (rng 110 25 20)))
+       (grd (tup (rng 110 20 20) (rng 120 20 20)))
+       (flk (tup (rng 120 20 25))) )
+      (tup) ) ) ) ) )
+
+More solutions?  (Y/N) n
+
+colab,rfe-p> lisp
+T
+> (quit)

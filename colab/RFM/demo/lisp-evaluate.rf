@@ -1,0 +1,2 @@
+(ft (qua9 _v) (is _v 9) (* _v _v))
+(hn (qua9 _v) (is _v 9) (* _v _v))

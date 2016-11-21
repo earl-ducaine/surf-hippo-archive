@@ -1,0 +1,15 @@
+\lreplace:\footnote{only for downward compatibility}
+
+Format: \stmt{lreplace $<$variable$>$}
+
+Options: $<$variable$>$ a LISP variable name
+
+Effect: Replacing the database \stmt{*rfi-database*} with the contents of the 
+	LISP variable $<$variable$>$.
+
+	The contents of the LISP variable may be defined by a
+	LISP set command:
+
+	\stmt{(setq consinst '((ft (cons \_a \_b) `(\_a . \_b))))}
+
+see also: \destroy, \lconsult

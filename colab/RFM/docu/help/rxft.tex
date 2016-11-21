@@ -1,0 +1,17 @@
+\rxft:
+
+Format: \stmt{rxft $<$head$>$ $<$body$1>$ ... $<$body$n>$ $<$foot$>$}
+
+Options: $<$head$>$ the head,\\
+	 $<$body$1>$ ... $<$body$n>$ the bodies, and\\
+	 $<$foot$>$ the foot of an ft clause.
+
+Effect: The clause 
+        \stmt{(ft $<$head$>$ $<$body1$>$ ...b $<$bodyn$>$ $<$foot$>$)} 
+        will be removed 
+	from the database \stmt{*rfi-database*}.
+	This command is an abbreviation of 
+        \stmt{rx (ft $<$head$>$ $<$body1$>$ ... $<$bodyn$>$ $<$foot$>$)}.
+        Not available in P-syntax.
+
+see also: \rx, \rxhn, \consult, \destroy, \replace

@@ -1,0 +1,78 @@
+; Subject:  samples.rf
+
+(ft (johnbelieves)
+`(drlh (tup bankrupt john)
+      (tup buy john house linda)
+      (tup gang (drlh (tup command marco paul greg fred)))
+      (tup hire john house (cntct marco (drlh (tup command marco paul greg fred))))
+      (tup like john mary)
+      (tup like mary john)
+      (tup mother linda mary)
+      car
+      fido)
+)
+
+(ft (marybelieves)
+`(drlh (tup buy john house linda)
+      (tup economical mary)
+      (tup economical peter)
+      (tup give linda car mary)
+      (tup like john mary)
+      (tup like mary john)
+      (tup mother linda mary)
+      (drlh (tup command marco paul greg fred))
+      fido)
+)
+
+
+(ft (johnsecrets)
+`(drlh (tup bankrupt john)
+      (tup gang (drlh (tup command marco paul greg fred)))
+      (tup hire john house (cntct marco (drlh (tup command marco paul greg fred)))))
+)
+
+(ft (marysecrets)
+`(drlh (tup economical mary)
+      (tup economical peter)
+      (tup give linda car mary))
+)
+
+
+(ft (johnmaryshared)
+`(drlh (tup buy john house linda)
+      (tup like john mary)
+      (tup like mary john)
+      (tup mother linda mary)
+      (drlh (tup command marco paul greg fred))
+      car
+      fido)
+)
+
+
+(ft (johnunpack)
+(drlh (tup bankrupt john)
+      (tup gang (drlh (tup command marco paul greg fred)))
+      (tup hire john house (cntct marco (drlh (tup command marco paul greg fred))))
+      (unpack (johnmaryshared)))
+)
+
+(ft (maryunpack)
+(drlh (tup economical mary)
+      (tup economical peter)
+      (tup give linda car mary)
+      (unpack (johnmaryshared)))
+)
+
+
+(ft (johnt)
+`(drlh (tup bankrupt john)
+      (tup gang (drlh (tup command marco paul greg fred)))
+      (tup hire john house (cntct marco (drlh (tup command marco paul greg fred))))
+)
+)
+
+(ft (maryt)
+`(drlh (tup buy john house linda)
+      (drlh (tup command marco paul greg fred))
+)
+)

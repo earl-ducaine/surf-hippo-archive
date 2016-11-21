@@ -1,0 +1,27 @@
+\indexing:
+
+Format: \stmt{indexing \{ on | off | 
+		 :min-clauses $<$no$>$ | 
+		 :max-vars $<$no$>$ | :max-depth $<$no$>$ | 
+		 :max-args $<$no$>$ |
+		 :debug on | :debug off \} } 
+
+Effect: 
+   without any option display current settings,\\
+   \stmt{on (off)} switches indexing on (off),\\
+   \stmt{:min-clauses $<$no$>$} sets the minimal number of clauses
+	  for an indexable operator definition to $<$no$>$,\\
+   \stmt{:max-vars $<$no$>$} sets the maximal number of variables
+	  allowed in a constant block (block-variable-size) to $<$no$>$,\\
+   \stmt{:max-depth $<$no$>$} sets the maximal depth of the index
+	  tree to $<$no$>$,\\
+   \stmt{:max-args $<$no$>$} sets the maximal number of parallelly
+	  indexable arguments (index tree breadth) to $<$no$>$,\\
+   \stmt{:debug on (off)}: for internal use only
+
+Mutually excluding options result in executing only the last one.
+
+Example: \\
+\stmt{indexing off :min-clauses 5 on :debug off} :\\
+switches indexing on, debugging off and sets min-clauses to 5.
+

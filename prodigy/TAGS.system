@@ -1,0 +1,193 @@
+
+defsystem.lisp,5046
+(defpackage "MAKE" 549,29507
+(defpackage "MAKE" 552,29657
+(defparameter *defsystem-version* 625,31906
+(defvar *dont-redefine-require* 632,32118
+(defvar *central-registry* 638,32394
+(defvar *bin-subdir* 644,32654
+(defvar *tell-user-when-done* 652,33104
+(defvar *oos-verbose* 654,33202
+(defvar *oos-test* 656,33265
+(defvar *load-source-if-no-binary* 658,33322
+(defvar *bother-user-if-no-binary* 660,33432
+(defvar *load-source-instead-of-binary* 663,33565
+(defvar *compile-during-load* 665,33680
+(defvar *minimal-load* 669,33868
+(defvar *files-missing-is-an-error* 673,33993
+(defvar *operations-propagate-to-subsystems* 677,34144
+(defvar *compile-error-file-type* 683,34394
+(defvar *cmu-errors-to-terminal* 685,34486
+(defvar *cmu-errors-to-file* 687,34585
+(defvar *filename-extensions*707,35207
+(defvar *system-dependencies-delayed* 750,37597
+(defun non-empty-listp 754,37732
+(defvar *component-operations* 760,37901
+(defun component-operation 762,38016
+(defun afs-binary-directory 784,38714
+(defun afs-source-directory 799,39419
+(defun null-string 809,39903
+(defun ensure-trailing-slash 813,39973
+(defun afs-component 822,40170
+(defvar *machine-type-alist* 827,40286
+(defun machine-type-translation 829,40395
+(defvar *software-type-alist* 843,40923
+(defun software-type-translation 845,41034
+(defun canonicalize-system-name 862,41672
+(defvar *defined-systems* 874,42284
+(defun get-system 877,42408
+(defsetf get-system 881,42550
+(defun undefsystem 884,42665
+(defun defined-systems 888,42777
+(defun new-append-directories 938,44976
+(defparameter *append-dirs-tests* 990,47414
+(defun test-new-append-directories 1006,47827
+(defun append-directories 1034,49197
+(defun append-directories 1058,50382
+(defun parse-with-delimiter 1120,53547
+(defun parse-slashed-pathname 1128,53805
+(defun merge-directories 1142,54311
+(defun namestring-or-nil 1190,55387
+(defun new-file-type 1194,55469
+(defvar *source-pathname-default* 1208,55843
+(defvar *binary-pathname-default* 1211,56022
+(defvar *file-load-time-table* 1254,58327
+(defun component-load-time 1257,58494
+(defsetf component-load-time 1276,59216
+(defun compute-system-path 1298,60009
+(defvar *reload-systems-from-disk* 1315,60671
+(defun FIND-SYSTEM 1320,60865
+(defun print-component 1357,62226
+(defun describe-system 1363,62413
+(defun canonicalize-component-name 1393,63726
+(defun component-pathname 1402,64111
+(defun component-error-pathname 1408,64351
+(defsetf component-pathname 1411,64507
+(defun component-root-dir 1417,64741
+(defsetf component-root-dir 1423,64944
+(defvar *version-dir* 1429,65178
+(defvar *version-replace* 1431,65243
+(defvar *version* 1433,65313
+(defun component-full-pathname 1435,65356
+(defun translate-version 1478,67277
+(defun component-extension 1497,67935
+(defsetf component-extension 1502,68140
+(defmacro defsystem 1511,68516
+(defun create-component 1514,68635
+(defun create-component-pathnames 1563,70582
+(defun generate-component-pathname 1599,72245
+(defun expand-component-components 1671,75596
+(defun expand-component-definition 1679,75881
+(defun link-component-depends-on 1701,76907
+(defun topological-sort 1720,77648
+(defun split-string 1748,78729
+(defun prompt-string 1762,79216
+(defun format-justified-string 1768,79339
+(defun format-justified-string 1774,79540
+(defun tell-user 1794,80324
+(defun tell-user-done 1824,81412
+(defmacro with-tell-user 1832,81722
+(defun tell-user-no-files 1838,81936
+(defun tell-user-require-system 1847,82382
+(defun tell-user-generic 1853,82594
+(defun internal-real-time-in-seconds 1864,82957
+(defun read-char-wait 1868,83075
+(defvar *use-timeouts* 1883,83825
+(defvar *clear-input-before-query* 1888,84023
+(defun y-or-n-p-wait 1892,84168
+(defun operate-on-system 1961,87345
+(defun COMPILE-SYSTEM 2002,89039
+(defun LOAD-SYSTEM 2025,89870
+(defun operate-on-component 2048,90671
+(defvar *force* 2133,94186
+(defvar *providing-blocks-load-propagation* 2134,94207
+(defun operate-on-system-dependencies 2136,94326
+(defun operate-on-components 2181,96284
+(defvar *old-require* 2217,97534
+(defun new-require 2222,97718
+(defun compile-and-load-operation 2319,101824
+(defun compile-file-operation 2333,102465
+(defun needs-compilation 2364,103662
+(defun needs-loading 2378,104237
+(defun load-file-operation 2397,104974
+(defun delete-binaries-operation 2483,108555
+(defun binary-exists 2502,109274
+(defun compile-and-load-source-if-no-binary 2506,109386
+(defun load-source-if-no-binary 2542,110627
+(defun allegro-make-system-fasl 2569,111617
+(defun files-which-need-compilation 2576,111817
+(defun files-in-system 2582,112040
+(defun file-pathnames-in-component 2590,112397
+(defun file-components-in-component 2594,112589
+(defun edit-operation 2636,113937
+(defun system-source-size 2658,114703
+(defun file-list-size 2667,115106
+(defun alist-lookup 2688,115747
+(defmacro set-alist-lookup 2691,115864
+(defun component-operation 2699,116129
+(defun machine-type-translation 2704,116314
+(defun software-type-translation 2710,116545
+
+loader.lisp,697
+(defvar *prodigy-loaded* 33,1165
+(defvar *directory-separator*45,1471
+(defvar *prodigy-base-directory*54,1812
+(defparameter *prodigy-root-directory* 58,1933
+(defparameter *system-directory*63,2081
+(defvar *world-path* 68,2234
+(defun set-binary-path 82,2854
+(defparameter *binary-pathname*110,3986
+(defparameter *binary-extension*116,4088
+(defvar *prodigy-modules*130,4459
+(defparameter *prodigy-modules*146,5264
+(defparameter *prodigy-modules*163,6066
+(defvar *UI* 175,6525
+(defun prod-ui 187,6972
+(defun p-compile 202,7499
+(defun p-load 224,7864
+(defun load-source 236,8052
+(defun compile-all 242,8208
+(defun load-compiled 247,8339
+(defvar *load-prodigy-immediately* 260,8856
+
+macloader.lisp,398
+(defvar *directory-separator*25,920
+(defparameter *prodigy-root-directory* 34,1235
+(defparameter *system-directory*39,1420
+(defparameter *world-path*44,1603
+(defparameter *binary-pathname*52,1983
+(defparameter *binary-extension*65,2509
+(defparameter *prodigy-modules*73,2689
+(defun load-compiled 86,3310
+(defun load-source 99,3875
+(defun compile-all 107,4129
+(defun compile-new 117,4501
+
+system-loader.lisp,637
+(defvar *use-monitors-p* 15,275
+(defparameter *load-monitors-p* 19,355
+(defparameter *interactive-loading* 23,454
+(defparameter *disable-loading* 27,591
+(defvar *prodigy-base-directory* 30,669
+(defparameter *customizations-path* 41,1180
+(defvar *personal-customizations-path* 55,1692
+(defvar *post-tcl-customizations-filename* 62,1825
+(defparameter *run-with-no-terminal-io* 66,1958
+(defparameter *load-patches* 79,2470
+(defparameter *load-partial-goal-satisfac* 86,2630
+(defparameter *load-prodigy-front-end* 98,3083
+(defun load-prodigy 111,3354
+(defun matches-initial-substr 192,5573
+(defun disable-terminal-io 213,5951
+
+./system/planner/TAGS,include
+
+./system/analogy/TAGS,include
+
+./system/ui/TAGS,include
+
+./system/monitors/TAGS,include
+
+./system/jade/TAGS,include
+
+./system/customizations/TAGS,include

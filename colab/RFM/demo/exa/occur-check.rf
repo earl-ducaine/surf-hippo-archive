@@ -1,0 +1,3 @@
+(ft (head )(p _y) (is _z `(f _x)) (is _y `(f _z)) (is _x _y))
+(ft (head )(is a b))
+(ft (head _x _y) (is (f (g (h (k _x)))) `(f (g _y))) (is _x _y))

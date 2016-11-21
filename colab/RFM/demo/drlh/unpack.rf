@@ -1,0 +1,7 @@
+; Subject:  unpack.rf
+
+; overlay to be consulted *before* the other drlh clauses (of norm.rf)
+
+(ft (unpack _collection) `(unpack _collection))
+
+(ft (drlh (unpack (drlh | _y)) | _r) ! (uniondrlh `(drlh | _y) `(drlh | _r)))

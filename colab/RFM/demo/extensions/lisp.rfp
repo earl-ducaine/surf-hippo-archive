@@ -1,0 +1,108 @@
+
+lisp() :- rf-pprint("==> "),
+          E is readl(),
+          E is readl(),
+          naf(bye is E),
+          rf-pprint(eval(E, tup())),
+          lisp().
+eval([], A) :- ! & tup().
+eval(t, A) :- ! & t.
+eval(E, A) :- numberp(E), ! & E.
+eval(E, A) :- atom(E),
+              !,
+              [_, V] is assoc(E, A) &
+              V.
+eval([quote, Exp], A) :- ! & Exp.
+eval([function, Fn], A) :- ! & [closure, Fn, A].
+eval([cond], A) :- ! & tup().
+eval([cond, [P, Q] | R], A) :- [] is eval(P, A), ! & eval([cond | R], A).
+eval([cond, [P, Q] | R], A) :- ! & eval(Q, A).
+eval([Fn | Exps], A) :- atom(Fn),
+                        defmacro(Fn, Args, Body),
+                        ! &
+                        eval(apply([lambda, Args, Body], Exps, A), A).
+eval([Fn | Exps], A) :-& apply(Fn, evlis(Exps, A), A).
+apply(Fn, Vals, A) :- atom(Fn),
+                      defun(Fn, Args, Body),
+                      ! &
+                      apply([lambda, Args, Body], Vals, A).
+apply(car, [[Hd | Tl]], A) :- ! & Hd.
+apply(cdr, [[Hd | Tl]], A) :- ! & Tl.
+apply(cons, [Hd, Tl], A) :- ! & tup(Hd | Tl).
+apply(atom, [Val], A) :- ! & lispatom(Val).
+apply(eq, [Val1, Val2], A) :- ! & lispeq(Val1, Val2).
+apply(add1, [Val], A) :- ! & 1+(Val).
+apply(sub1, [Val], A) :- ! & 1-(Val).
+apply(list, Vals, A) :- ! & Vals.
+apply(eval, [Val], A) :- ! & eval(Val, A).
+apply([lambda, [], Body], [], A) :- ! & eval(Body, A).
+apply([lambda, [Arg | Rargs], Body], [Val | Rvals], A) :- 
+  ! &
+  apply([lambda, Rargs, Body], Rvals, tup(tup(Arg, Val) | A)).
+apply([closure, Fn, Env], Vals, A) :- ! & apply(Fn, Vals, Env).
+apply(Fn, Vals, A) :-& apply(eval(Fn, A), Vals, A).
+evlis([], A) :-& tup().
+evlis([E | Re], A) :-& tup(eval(E, A) | evlis(Re, A)).
+assoc(N, []) :- ! & tup().
+assoc(N, [[N, V] | Ar]) :- ! & tup(N, V).
+assoc(N, [_ | Ar]) :-& assoc(N, Ar).
+lispatom([Hd | Tl]) :- ! & tup().
+lispatom(X) :-& t.
+lispeq(X, X) :- t is lispatom(X) & !.
+lispeq(X, Y) :-& tup().
+defun(ff, [x], [cond, [[atom, x], x], [t, [ff, [car, x]]]]).
+tff() :-& eval([ff, x], tup(tup(x, tup(tup(1, 2), 3)))).
+uff() :-& eval([ff, [list,
+                     [cdr, [quote, [a, [[b, c], d]]]],
+                     2,
+                     3]], tup()).
+defun(
+  alt,
+  [u],
+  [cond,
+   [[eq, [], u], []],
+   [[eq, [], [cdr, u]], u],
+   [t, [cons, [car, u], [alt, [cdr, [cdr, u]]]]]]).
+talt() :-& eval([alt, [quote, [1, 2, 3, 4, 5]]], tup()).
+defun(null, [l], [eq, [], l]).
+defun(
+  memeq,
+  [x, l],
+  [cond,
+   [[null, l], l],
+   [[eq, [car, l], x], l],
+   [t, [memeq, x, [cdr, l]]]]).
+defun(
+  mapcar,
+  [f, l],
+  [cond, [[null, l], l], [t, [cons, [f, [car, l]], [mapcar, f, [cdr, l]]]]]).
+tmapcar() :-& 
+  eval(
+    [mapcar,
+     [function, [lambda, [x], [car, [cdr, x]]]],
+     [quote, [[1, 2], [3, 4]]]],
+    tup()).
+defun(maptwice, [f, l], [mapcar, [compose, f, f], l]).
+defun(compose, [f, g], [function, [lambda, [x], [f, [g, x]]]]).
+defun(twice, [f], [compose, f, f]).
+tmaptwice() :-& 
+  eval([maptwice, [function, cdr], [quote, [[a, 1, 2], [b, 3, 4]]]], tup()).
+defmacro(if,
+         [test, then, else],
+         [list,
+          [quote, cond],
+          [list, test, then],
+          [list, t, else]]).
+tif() :-& 
+  eval(
+    [if,
+     [if, t, [], 2],
+     [if, a, b, c],
+     [if,
+      [],
+      nn,
+      [quote, thisistheresult]]],
+    tup()).
+teval() :-& eval([[lambda, [x, y], [eval, x]], [quote, y], 1], tup()).
+teval() :-& eval([eval, [car, [quote, [[atom, 1], [atom, []]]]]], tup()).
+defun(doublex, [x, y, x], [list, x, y, x]).

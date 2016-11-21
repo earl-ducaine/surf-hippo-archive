@@ -1,0 +1,240 @@
+;microCAD2NC features
+;Wed Sep  4 08:55:17 MET DST 1991		Version 1
+;(defmacro a (&rest k) `(mapcar 'front-end::add-taxon ',k))
+
+;Intersting features defined in this file
+(hierarchy  	FEATURE 
+	    	COMPOSED ATOMIC
+	    	;DESCENDING ASCENDING
+		;HOLLOW FILLED
+		RSHOULDER LSHOULDER
+		LONGTURNINGSURFACE
+		lts-from-right
+		lts-from-left
+		GROOVE
+		TRUNCONE CYLINDER CONE RING CIRCLE
+		ASC-CONE DESC-CONE
+		ASC-RING DESC-RING
+		ASC-tc DESC-tc
+		DESC-CIRCLE  ASC-CIRCLE
+		INSERTION SHOULDER)
+;The concrete domain of rational numbers with comparison
+;operators and boolean connectives is assigned to the tag RA.
+(doma RA edom-real-ord)
+
+;Some simple predicates of the concrete domain.
+(pred  >0	(RA (x) (> x 0)))
+(pred  <0 	(RA (x) (< x 0)))
+(pred  >=0 	(RA (x) (>= x 0)))
+(pred  <=0 	(RA (x) (<= x 0)))
+(pred  =0 	(RA (x) (= x 0)))
+(pred  <= 	(RA (x y) (<= x y)))
+(pred  >= 	(RA (x y) (>= x y)))
+(pred  < 	(RA (x y) (< x y)))
+(pred  > 	(RA (x y) (> x y)))
+(pred  != 	(RA (x y) (!= x y)))
+(pred  = 	(RA (x y) (= x y)))
+
+
+
+;Seperate atomic and composed objects
+(prim	atomic)
+(conc	composed	(not atomic))
+
+
+;A truncated cone is given by two centers and two radii.
+;It should not degenerate.
+(attr	center1
+	center2
+	radius1
+	radius2)
+
+#|(conc	truncone
+		(and atomic
+		     (ra center1)
+		     (ra center2)
+		     (>=0 radius1)
+		     (>=0 radius2)
+		     (or (and (=  center1 center2)
+			      (!= radius1 radius2))
+			 (and (!= center1 center2)
+			      (or (>0 radius1)
+		     		  (>0 radius2))))))
+|#
+(pred	tc-condition
+		(ra (radius1 radius2 center1 center2)
+			(and    (>=0 radius1)
+		     		(>=0 radius2)
+				(or (and (=  center1 center2)
+			      		 (!= radius1 radius2))
+			 	    (and (!= center1 center2)
+			      		 (or (>0 radius1)
+		     		  	     (>0 radius2)))))))
+
+(conc	truncone
+		(and atomic
+		     (tc-condition radius1 radius2 center1 center2)))
+		    
+
+;A ring is a very flat surface
+(conc	ring
+		(and truncone (=  center1 center2)))
+
+
+;Two adjectives, filled and hollow, suitable for  non rings. They replace
+;the in/out resp. left/right resp. +/- flags determining the orientation of the
+;surface. 
+(conc	filled
+		(and (< center1 center2)))
+(conc   hollow	(and (> center1 center2)))
+
+;two adjectives, ascending and descending, suitable for filled truncated cones.
+(conc	ascending
+		(and (< radius1 radius2)))
+(conc	descending
+		(and (> radius1 radius2)))
+
+;A cylinder
+(conc   cylinder
+		(and truncone (=  radius1 radius2)))
+
+;A circle is a ring where one radius is 0
+(conc	circle
+		(and ring (or (=0 radius1) (=0 radius2))))
+
+
+;A cone
+(conc   cone
+		(and truncone (or (=0 radius1) (=0 radius2))))
+
+
+;Applying some adjectives to ring, circle, and cone.
+(conc	asc-tc
+		(and truncone ascending))
+(conc	desc-tc
+		(and truncone descending))
+(conc	asc-ring
+		(and ring ascending))
+(conc	desc-ring
+		(and ring descending))
+(conc	asc-circle
+		(and ring (=0 radius1)))
+(conc	desc-circle
+		(and ring (=0 radius2)))
+(conc	asc-cone
+		(and truncone (=0 radius1)))
+(conc	desc-cone
+		(and truncone (=0 radius2)))
+
+	
+
+;Seperate shoulders from grooves
+(prim	shoulder-class)
+(conc	groove-class	(not shoulder-class))
+
+
+;Neighbourhood is tested by the embedding system.
+(prim	neighbouring)
+(role	neighbours)
+
+
+;The attributes leftmost and rightmost are used to check neighbourhood
+;Till attributes agreements are available this must be done by the
+;embedding system.
+(attr leftmost rightmost)
+(conc feature	(and (some leftmost truncone)
+                     (some rightmost truncone)))
+
+;left and right
+(prim left)
+(conc right (not left))
+
+;For long turning surface only necessary conditions can be expressed
+(prim	lts-sufficient)
+(attr	radius)
+(conc longturningsurface
+		(and feature
+		     (>=0 radius)
+                     lts-sufficient))
+(conc lts-from-right
+		(and right longturningsurface))
+(conc lts-from-left
+		(and left longturningsurface))
+
+;Attributes for long turning surfaces and shoulders
+(attr	ground
+	flank
+	depth2width
+        depth
+        width
+)
+
+
+;the flank is left to the ground
+(conc	flankleft2ground
+		(and (<= (flank leftmost center1)
+			 (ground leftmost center2))))
+(conc	flankright2ground
+		(and (>= (flank leftmost center1)
+			 (ground leftmost center2))))
+
+;There are two kinds of shoulders
+(conc	shoulder-aux
+		(and composed  
+		     shoulder-class
+		     feature; that leftmost/rightmost are related to
+			    ; leftmost/rightmost of the ground and the flank
+			    ; has to be tested by the embedding system
+		     neighbouring
+		     (some ground longturningsurface)
+		     (>0 depth)
+		     ))
+(conc	lshoulder
+		(and shoulder-aux
+		     flankleft2ground
+		     (some flank descending)))
+(conc	rshoulder
+		(and shoulder-aux
+		     flankright2ground
+		     (some flank ascending)))
+(conc	shoulder
+		(and shoulder-aux
+		     (or (and flankleft2ground
+		              (some flank descending))
+			 (and flankright2ground
+		              (some flank ascending)))))
+	   
+
+;A groove
+(attr	leftflank
+	rightflank)
+(conc	groove
+		(and feature
+		     groove-class
+		     (some leftflank descending)
+		     (some rightflank ascending)
+		     (some ground longturningsurface)
+		     (>0 depth2width)
+		     (>0 depth)
+		     (>0 width)
+		     neighbouring
+		))
+
+
+(pred	insertion-condition
+		(ra (d2w d) (and (< d2w  0.25) (< d 30))))
+(conc	insertion
+		(and groove (insertion-condition depth2width depth)))
+
+
+
+;technological properties of a surface
+(role   has-finish)
+(attr	kind
+	value)
+(conc	finish
+		(and (or (some kind top) (front-end::u-pred kind))
+		     (or (some value top) (front-end::u-pred value))))
+
+
+

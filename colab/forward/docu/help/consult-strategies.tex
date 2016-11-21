@@ -1,0 +1,11 @@
+\stmb{consult-strategies}:
+
+Format: \stmt{consult-strategies $<$filename$>$}
+
+Options: $<$filename$>$ a stringified or normal pathname
+
+Effect: Loading strategies for tuple-oriented forward chaining from file
+	$<$filename$>$ at the end of the database \stmt{*fc-strategies*}.
+        If no extension is provided, \COLAB{} extends the filename with \stmt{".rf"}.
+
+see also: \consult, \destroy, \replace

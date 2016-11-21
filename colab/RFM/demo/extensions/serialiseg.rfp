@@ -1,0 +1,21 @@
+serialise(L) :- numbered(qsort[before](pairlists(L, R)), 1) & R.
+pairlists([X | L], [Y | R]) :-& tup([X, Y] | pairlists(L, R)).
+pairlists([], []) :-& tup().
+before([X1, Y1], [X2, Y2]) :- string<(X1, X2).
+numbered([[X, N] | R], N) :- numbered(R, 1+(N)).
+numbered([], N).
+qsort[Cr]([]) :-& [].
+qsort[Cr]([X | Y]) :- partition[Cr](X, Y, Sm, Gr) &
+                      appfun(qsort[Cr](Sm), tup(X | qsort[Cr](Gr))).
+partition[Cr](X, [], [], []).
+partition[Cr](X, [X | Z], L1, L2) :- partition[Cr](X, Z, L1, L2).
+partition[Cr](X,              % here starts an extremely vertical pretty print!
+              [Y | Z],
+              [Y | Sm],
+              Gr) :- Cr(Y, X), partition[Cr](X, Z, Sm, Gr).
+partition[Cr](X,
+              [Y | Z],
+              Sm,
+              [Y | Gr]) :- Cr(X, Y), partition[Cr](X, Z, Sm, Gr).
+appfun([], L) :-& L.
+appfun([H | R], L) :-& tup(H | appfun(R, L)).

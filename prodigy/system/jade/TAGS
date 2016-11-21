@@ -1,0 +1,12 @@
+
+loader.lisp,371
+(defparameter *format-directory* 24,622
+(defparameter *format-binary-pathname*31,768
+(defparameter *front-end-files*42,1001
+(defparameter *front-end-modules* 59,1325
+(defvar *ForMat-Loaded* 73,1797
+(defpackage :sockfig)95,2264
+(defun load-jade-source 97,2287
+(defun load-jade 110,2636
+(defun jade-compile-all 126,2957
+(defvar *load-format-immediately* 141,3305

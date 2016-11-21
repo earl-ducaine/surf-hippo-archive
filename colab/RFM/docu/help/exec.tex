@@ -1,0 +1,11 @@
+\exec:
+
+Format: \stmt{exec $<$filename$>$}
+
+Options: $<$filename$>$ a pathname
+
+Effect: Executing batch commands from the file $<$filename$>$.
+        If no extension is provided, \RELFUN{} extends the filename with ".bat".
+	The batch file may again contain \exec\ commands.
+
+see also: \EndScript, \script

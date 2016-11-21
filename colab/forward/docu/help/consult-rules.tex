@@ -1,0 +1,11 @@
+\stmb{consult-rules}:
+
+Format: \stmt{consult-rules $<$filename$>$}
+
+Options: $<$filename$>$ a stringified or normal pathname
+
+Effect: Loading all the rl- and up- rules of a hybrid database from file 
+	$<$filename$>$ at the end of the (possibly empty) database \stmt{*rule-database*}.
+        If no extension is provided, \COLAB{} extends the filename with \stmt{".rf"}.
+
+see also: \consult, \destroy, \replace

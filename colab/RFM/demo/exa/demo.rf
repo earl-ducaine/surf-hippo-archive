@@ -1,0 +1,20 @@
+; file    "demo?.rf"
+; date    19 june 1990
+; author  R. Scheubrein
+;
+;
+; this program is adaped from 
+; K.A. Bowen / R. A. Kowalski "amalgamating language and metalanguage in logic programming"
+;
+
+(hn (demo _prog _goals)
+    (empty _goals))
+
+(hn (demo _prog _goals)
+    (select _goals _goal _rest)
+    (rf-member _proc _prog)
+    (rename _proc _goals _variantproc)
+    (parts _variantproc _concl _conds)
+    (match _concl _goal _sub)
+    (rf-apply (rf-add _conds _rest) _sub _newgoals)
+    (demo _prog _newgoals))

@@ -1,0 +1,6 @@
+(ft (mapper _f (tup)) `(tup))
+(ft (mapper _f (tup _head | _tail)) (cons-f (_f _head) (mapper _f _tail)))
+(ft (mapper2 _f (tup) (tup)) `(tup))
+(ft (mapper2 _f (tup _head1 | _tail1) (tup _head2 | _tail2))
+ (cons-f (_f _head1 _head2) (mapper2 _f _tail1 _tail2)))
+(ft (cons-f _head _tail) `(tup _head | _tail))

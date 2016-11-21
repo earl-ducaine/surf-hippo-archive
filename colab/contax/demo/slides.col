@@ -1,0 +1,120 @@
+;;; -*- Mode: LISP; Base: 10; Syntax: Common-Lisp -*-
+
+;;
+;;  TAXON/CONTAX example:  Define some lathe-tool concepts
+;;  =====================
+;;
+
+;;  1) Define some lathe-tool concepts
+;;  ----------------------------------
+
+(prim lathe-tool finish rough specialized)
+
+(conc finishing-tool (and lathe-tool finish))
+(conc roughturn-tool (and lathe-tool rough))
+(conc universal-tool (and finishing-tool roughturn-tool))
+
+(conc tool1 (and roughturn-tool (not finish)))
+(conc tool2 (and finishing-tool rough specialized))
+(conc tool3 (and universal-tool (not tool2)))
+(conc tool4 (and finishing-tool (not rough)))
+
+;;  2) Import TAXON-defined terminology of lathe-tools
+;;  --------------------------------------------------
+
+(tt lathe-tool)  
+
+;;  Draw the computed subsumption hierarchy
+;;  ---------------------------------------
+
+(lispeval (tx::init-hierarchy-window))
+(lispeval (tx::draw-hierarchy-window))
+
+;;  3) Define some more plain domains for CONTAX
+;;  --------------------------------------------
+
+(dd material-domain (cast steel1 steel2))
+(dd holder-domain (holder1 holder2 holder3))
+(dd surface-domain (fine medium extrafine))
+(dd shape-domain (steep-ascent horizontal))
+
+;;  4) Define some primitive constraints 
+;;  ------------------------------------
+
+;;; primitive constraint named MATERIAL-TOOL between MA and TO
+ 
+(pc material-tool (ma to) (material-domain lathe-tool)
+    (cast finishing-tool)
+    (steel1 lathe-tool)
+    (steel2 tool1))
+
+;;; primitive constraint named HOLDER-TOOL between HO and TO
+ 
+(pc holder-tool (ho to) (holder-domain lathe-tool)
+    (holder1 roughturn-tool)
+    (holder2 tool1)
+    (holder2 tool4))
+
+;;; compound constraint named MATERIAL-HOLDER-TOOL between HO, TO and MA.
+
+(cc material-holder-tool (x y z) (holder-domain lathe-tool material-domain)
+    (material-tool z y)
+    (holder-tool x y))
+
+;;; primitive constraint HOLDER-SURFACE-SHAPE between HO, SU and SH
+ 
+(pc holder-surface-shape (ho su sh) (holder-domain surface-domain shape-domain)
+    (holder1 fine steep-ascent)
+    (holder1 medium steep-ascent)
+    (holder2 extrafine steep-ascent)
+    (holder2 fine horizontal)
+    (holder3 extrafine horizontal))
+
+;;; primitive constraint SURFACE-TOOL between SU and TO
+ 
+(pc surface-tool (su to) (surface-domain lathe-tool)
+    (fine roughturn-tool)
+    (extrafine tool4))
+
+;;; 5) Generate the variables MATERIAL, SURFACE, HOLDER, SHAPE and TOOL of the
+;;;    constraint net together with their type (hrcl: hierarchical) and domains
+
+(cv material hrcl (material-domain))
+ 
+(cv surface hrcl (surface-domain))
+
+(cv holder hrcl (holder-domain))
+
+(cv shape hrcl (shape-domain ))
+
+(cv tool hrcl (lathe-tool))
+
+;;; 6) Connect the variables via instances of the previously defined 
+;;;    constraints
+ 
+(ci material-tool-constraint hard material-tool material tool)
+
+(ci holder-tool-constraint hard holder-tool holder tool)
+
+(ci holder-surface-shape-constraint hard 
+    holder-surface-shape holder surface shape)
+
+(ci surface-tool-constraint hard surface-tool surface tool)
+
+(ci material-holder-tool-constraint hard 
+    material-holder-tool holder tool material)
+
+(lispeval (format *standard-output* "Knowledge-base consulted..."))
+
+;;; Starting the propagation of the constraint net, supplying initial value
+;;; assignments to the variables
+
+#|  Sample call:
+
+    local hard ( material cast )
+	       ( surface fine medium )
+	       holder
+	       ( shape steep-ascent )
+	       tool 
+
+|#

@@ -1,0 +1,50 @@
+
+; diverse Ableitungsstrategien
+(HN (forward-loaded))
+
+; Depth first:
+
+
+;df-enum zaehlt die Konsequenzen eines Faktes auf (Tiefensuche):
+(HN (df-enum _Fact _Inference)
+    (fc-initialize)
+    (df-one _Fact _Inference))
+
+(HN (df-one _Fact _Inference)
+    (forward _Fact _Conclusion)
+    (df-one-more _Conclusion _Inference))
+
+(HN (df-one-more _Conclusion _Conclusion))
+(HN (df-one-more _Conclusion _Next)
+    (df-one _Conclusion _Next))
+
+
+
+(HN (forward _Fact _Head)
+    (clause `(id _Head | _Body))
+    (findlit _Body _Fact _ToProve)
+    (provelist _ToProve)
+    (retain _Head))
+
+(HN (findlit (tup _Fact1 | _Rest) _Fact2 _Rest)
+    (is t (literal-p _Fact1))
+    (is _Fact2 (premise-to-head _Fact1)))
+(HN (findlit (tup _First | _Rest) _Fact (tup _First | _ProveRest))
+    (findlit _Rest _Fact _ProveRest))
+
+(HN (provelist (tup)))
+(HN (provelist (tup _First | _Rest))
+    @ _First
+    (provelist _Rest))
+
+
+
+
+(HN (retain _Fact)
+    (not-reached _Fact)
+    (push-fact-retain _Fact))
+
+
+(HN (not-reached _Conclusion)
+    (is true (subsumes-value _Conclusion)))
+

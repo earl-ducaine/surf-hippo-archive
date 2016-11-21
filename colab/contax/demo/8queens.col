@@ -1,0 +1,202 @@
+;;; -*- Mode: LISP; Base: 10 -*-
+;;
+;;  CONTAX example: The famous 8 queens problem
+;;  ===============
+;;
+
+(lispeval ( defun not-diagonal-1-p ( x y )
+  ( and (not (= x ( 1+ y )))
+        (not (= x ( 1- y )))))  )
+
+(lispeval ( defun not-diagonal-2-p ( x y )
+  ( and (not (= x ( + y 2 )))
+        (not (= x ( - y 2 )))))  )
+
+(lispeval ( defun not-diagonal-3-p ( x y )
+  ( and (not (= x ( + y 3 )))
+        (not (= x ( - y 3 )))))  )
+
+(lispeval ( defun not-diagonal-4-p ( x y )
+  ( and (not (= x ( + y 4 )))
+        (not (= x ( - y 4 )))))  )
+
+(lispeval ( defun not-diagonal-5-p ( x y )
+  ( and (not (= x ( + y 5 )))
+        (not (= x ( - y 5 )))))  )
+
+(lispeval ( defun not-diagonal-6-p ( x y )
+  ( and (not (= x ( + y 6 )))
+        (not (= x ( - y 6 )))))  )
+
+(lispeval ( defun not-diagonal-7-p ( x y )
+  ( and (not (= x ( + y 7 )))
+        (not (= x ( - y 7 )))))  )
+
+(lispeval (defun not-equal (x y)
+  (not (= x y)))  )
+
+(lispeval ( compile 'not-diagonal-1-p ))
+(lispeval ( compile 'not-diagonal-2-p ))
+(lispeval ( compile 'not-diagonal-3-p ))
+(lispeval ( compile 'not-diagonal-4-p ))
+(lispeval ( compile 'not-diagonal-5-p ))
+(lispeval ( compile 'not-diagonal-6-p ))
+(lispeval ( compile 'not-diagonal-7-p ))
+(lispeval ( compile 'not-equal ))
+
+(lispeval (contax::reset))
+
+(dd columns ( 1 2 3 4 5 6 7 8 ))
+
+    ( lc not-equal ( x y ) ( columns columns ) not-equal )
+
+    ( lc not-diagonal-1 ( x y ) ( columns columns ) not-diagonal-1-p )
+
+    ( lc not-diagonal-2 ( x y ) ( columns columns ) not-diagonal-2-p )
+
+    ( lc not-diagonal-3 ( x y ) ( columns columns ) not-diagonal-3-p )
+
+    ( lc not-diagonal-4 ( x y ) ( columns columns ) not-diagonal-4-p )
+
+    ( lc not-diagonal-5 ( x y ) ( columns columns ) not-diagonal-5-p )
+
+    ( lc not-diagonal-6 ( x y ) ( columns columns ) not-diagonal-6-p )
+
+    ( lc not-diagonal-7 ( x y ) ( columns columns ) not-diagonal-7-p )
+
+
+    ( cv q1 hrcl ( columns ))
+
+    ( cv q2 hrcl ( columns ))
+
+    ( cv q3 hrcl ( columns ))
+
+    ( cv q4 hrcl ( columns ))
+
+    ( cv q5 hrcl ( columns ))
+
+    ( cv q6 hrcl ( columns ))
+
+    ( cv q7 hrcl ( columns ))
+
+    ( cv q8 hrcl ( columns ))
+
+
+    ( ci neq12 hard not-equal q1 q2 )
+
+    ( ci neq13 hard not-equal q1 q3 )
+
+    ( ci neq14 hard not-equal q1 q4 )
+
+    ( ci neq15 hard not-equal q1 q5 )
+
+    ( ci neq16 hard not-equal q1 q6 )
+
+    ( ci neq17 hard not-equal q1 q7 )
+
+    ( ci neq18 hard not-equal q1 q8 )
+
+    ( ci neq23 hard not-equal q2 q3 )
+
+    ( ci neq24 hard not-equal q2 q4 )
+
+    ( ci neq25 hard not-equal q2 q5 )
+
+    ( ci neq26 hard not-equal q2 q6 )
+
+    ( ci neq27 hard not-equal q2 q7 )
+
+    ( ci neq28 hard not-equal q2 q8 )
+
+    ( ci neq34 hard not-equal q3 q4 )
+
+    ( ci neq35 hard not-equal q3 q5 )
+
+    ( ci neq36 hard not-equal q3 q6 )
+
+    ( ci neq37 hard not-equal q3 q7 )
+
+    ( ci neq38 hard not-equal q3 q8 )
+
+    ( ci neq45 hard not-equal q4 q5 )
+
+    ( ci neq46 hard not-equal q4 q6 )
+
+    ( ci neq47 hard not-equal q4 q7 )
+
+    ( ci neq48 hard not-equal q4 q8 )
+
+    ( ci neq56 hard not-equal q5 q6 )
+    
+    ( ci neq57 hard not-equal q5 q7 )
+    
+    ( ci neq58 hard not-equal q5 q8 )
+    
+    ( ci neq67 hard not-equal q6 q7 )
+    
+    ( ci neq68 hard not-equal q6 q8 )
+    
+    ( ci neq78 hard not-equal q7 q8 )
+
+
+    ( ci ndia12 hard not-diagonal-1 q1 q2 )
+
+    ( ci ndia13 hard not-diagonal-2 q1 q3 )
+
+    ( ci ndia14 hard not-diagonal-3 q1 q4 )
+
+    ( ci ndia15 hard not-diagonal-4 q1 q5 )
+
+    ( ci ndia16 hard not-diagonal-5 q1 q6 )
+
+    ( ci ndia17 hard not-diagonal-6 q1 q7 )
+
+    ( ci ndia18 hard not-diagonal-7 q1 q8 )
+
+    ( ci ndia23 hard not-diagonal-1 q2 q3 )
+
+    ( ci ndia24 hard not-diagonal-2 q2 q4 )
+
+    ( ci ndia25 hard not-diagonal-3 q2 q5 )
+
+    ( ci ndia26 hard not-diagonal-4 q2 q6 )
+
+    ( ci ndia27 hard not-diagonal-5 q2 q7 )
+
+    ( ci ndia28 hard not-diagonal-6 q2 q8 )
+
+    ( ci ndia34 hard not-diagonal-1 q3 q4 )
+
+    ( ci ndia35 hard not-diagonal-2 q3 q5 )
+
+    ( ci ndia36 hard not-diagonal-3 q3 q6 )
+
+    ( ci ndia37 hard not-diagonal-4 q3 q7 )
+
+    ( ci ndia38 hard not-diagonal-5 q3 q8 )
+
+    ( ci ndia45 hard not-diagonal-1 q4 q5 )
+
+    ( ci ndia46 hard not-diagonal-2 q4 q6 )
+
+    ( ci ndia47 hard not-diagonal-3 q4 q7 )
+
+    ( ci ndia48 hard not-diagonal-4 q4 q8 )
+
+    ( ci ndia56 hard not-diagonal-1 q5 q6 )
+
+    ( ci ndia57 hard not-diagonal-2 q5 q7 )
+    
+    ( ci ndia58 hard not-diagonal-3 q5 q8 )
+
+    ( ci ndia67 hard not-diagonal-1 q6 q7 )
+
+    ( ci ndia68 hard not-diagonal-2 q6 q8 )
+
+    ( ci ndia78 hard not-diagonal-1 q7 q8 )
+
+    (lispeval ( contax:init-hac ))
+
+    (lispeval (time ( setf l ( contax:propagate :consistency-mode :global ))))
+
+

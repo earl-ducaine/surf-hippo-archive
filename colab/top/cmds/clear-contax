@@ -1,0 +1,17 @@
+
+#!/bin/csh
+
+####### NO WARRANTY  -  NEVER TESTED #########################
+# clear-contax: CONTAX cleanup script for packing      -MM-  #
+# must be started in directory above contax (like rcs_colab) #
+##############################################################
+
+echo "removing contax/docu/papers"
+rm -rf contax/docu/papers
+echo "removing contax/docu/manual/*.tex"
+rm -f  contax/docu/manual/*.tex
+echo "removing contax/enno_wza"
+rm -rf contax/enno_wza
+echo "removing contax/examples"
+rm -rf contax/examples
+

@@ -1,0 +1,245 @@
+
+rfi> exex "workpiece.bat"
+"workpiece.bat"
+
+rfi> exec "workpiece.bat"
+
+batchjob executing...
+
+rfi> ;  A Self-Normalizing Term Representation of Rotation-Symmetric Workpieces
+
+rfi> ;
+
+rfi> ; by Harold Boley (program)
+
+rfi> ; and Thomas Krause (demo-script) 
+
+rfi> 
+
+rfi> ; switching to interpreter mode
+
+rfi> inter
+
+rfi> 
+
+rfi> ; consulting the database
+
+rfi> destroy
+
+rfi> consult "wp-demo"
+
+rfi> 
+
+rfi> ; A workpiece (wp) is a list of curve terms (lines (l), circle-concave (ca) or points (p)
+
+rfi> ; A curve term is self-sormalizing for example the line which starts and ends in the same point
+
+rfi> ; degenerates to a point.
+
+rfi> (l ` (p 0 0) ` (p 0 0))
+(p 0 0)
+
+rfi> 
+
+rfi> 
+
+rfi> ; All workpieces are checked of 'well-formedness' by the RELFUN definition WP.
+
+rfi> ; We use the well-formed wp n For the rest of the demonstration.
+
+rfi> l n
+(ft (n)
+    `(wp
+      (cns
+       (cns l (cns (p 0 0) (cns (p 0 12.5) nil)))
+       (cns
+        (cns l (cns (p 0 12.5) (cns (p 27 44.5) nil)))
+        (cns
+         (cns l (cns (p 27 44.5) (cns (p 44 44.5) nil)))
+         (cns
+          (cns l (cns (p 44 44.5) (cns (p 44 20) nil)))
+          (cns
+           (cns l (cns (p 44 20) (cns (p 149 20) nil)))
+           (cns
+            (cns l (cns (p 149 20) (cns (p 149 15) nil)))
+            (cns
+             (cns l (cns (p 149 15) (cns (p 183 15) nil)))
+             (cns
+              (cns ca (cns (p 183 15) (cns (p 185 13) (cns (p 185 15) nil))))
+              (cns (cns l (cns (p 185 13) (cns (p 185 0) nil))) nil) ) ) ) ) ) ) ) ) ) )
+
+rfi> 
+
+rfi> ; Is (n) really well-formed?
+
+rfi> l test-wp
+(ft (test-wp)
+    (is _workp (n))
+    (is _workp `(wp _wp-terms))
+    (wp _wp-terms)
+    well-formed )
+
+rfi> (test-wp)
+well-formed
+
+rfi> 
+
+rfi> ; Computing some property of n.
+
+rfi> (wplength (n))
+185
+
+rfi> 
+
+rfi> (wptypes (n))
+(cns l (cns l (cns l (cns l (cns l (cns l (cns l (cns ca (cns l nil)))))))))
+
+rfi> 
+
+rfi> (wpedges (n))
+(cns
+ (p 0 0)
+ (cns
+  (p 0 12.5)
+  (cns
+   (p 27 44.5)
+   (cns
+    (p 44 44.5)
+    (cns
+     (p 44 20)
+     (cns (p 149 20) (cns (p 149 15) (cns (p 183 15) (cns (p 185 0) nil)))) ) ) ) ) )
+
+rfi> 
+
+rfi> (wpradius (n))
+44.5
+
+rfi> 
+
+rfi> 
+
+rfi> ; Now compiling the database
+
+rfi> ; First computing the RELFUN kernel
+
+rfi> horizon
+
+rfi> 
+
+rfi> ; The representation of n after HORIZON
+
+rfi> l n
+(ft (n)
+    (is _1 `(cns _2 _3))
+    (is _2 `(cns l _4))
+    (is _3 `(cns _8 _9))
+    (is _9 `(cns _14 _15))
+    (is _8 `(cns l _10))
+    (is _4 `(cns _5 _6))
+    (is _5 `(p 0 0))
+    (is _6 `(cns _11 nil))
+    (is _10 `(cns _11 _12))
+    (is _14 `(cns l _16))
+    (is _15 `(cns _20 _21))
+    (is _21 `(cns _26 _27))
+    (is _20 `(cns l _22))
+    (is _16 `(cns _17 _18))
+    (is _12 `(cns _17 nil))
+    (is _11 `(p 0 12.5))
+    (is _17 `(p 27 44.5))
+    (is _18 `(cns _23 nil))
+    (is _22 `(cns _23 _24))
+    (is _26 `(cns l _28))
+    (is _27 `(cns _32 _33))
+    (is _33 `(cns _38 _39))
+    (is _32 `(cns l _34))
+    (is _28 `(cns _29 _30))
+    (is _24 `(cns _29 nil))
+    (is _23 `(p 44 44.5))
+    (is _29 `(p 44 20))
+    (is _30 `(cns _35 nil))
+    (is _34 `(cns _35 _36))
+    (is _38 `(cns l _40))
+    (is _39 `(cns _44 _45))
+    (is _45 `(cns _52 nil))
+    (is _44 `(cns ca _46))
+    (is _40 `(cns _41 _42))
+    (is _36 `(cns _41 nil))
+    (is _35 `(p 149 20))
+    (is _41 `(p 149 15))
+    (is _42 `(cns _47 nil))
+    (is _46 `(cns _47 _48))
+    (is _52 `(cns l _53))
+    (is _53 `(cns _54 _55))
+    (is _48 `(cns _54 _50))
+    (is _47 `(p 183 15))
+    (is _50 `(cns _51 nil))
+    (is _54 `(p 185 13))
+    (is _55 `(cns _56 nil))
+    (is _56 `(p 185 0))
+    (is _51 `(p 185 15))
+    `(wp _1) )
+
+rfi> 
+
+rfi> ; Generating the RFM instructions
+
+rfi> compile
+
+rfi> 
+
+rfi> ; Switching to the emualtor mode
+
+rfi> emul
+
+rfe> 
+
+rfe> ; Is n allready 'well-formed'
+
+rfe> l test-wp
+(ft (test-wp)
+    (is _workp (n))
+    (is _workp `(wp _wp-terms))
+    (wp _wp-terms)
+    well-formed )
+
+rfe> (test-wp)
+well-formed
+
+
+rfe> 
+
+rfe> ; Computing some property of n.
+
+rfe> (wplength (n))
+185
+
+
+rfe> 
+
+rfe> (wptypes (n))
+(tup l l l l l l l ca l)
+
+
+rfe> 
+
+rfe> (wpedges (n))
+(tup
+ (p 0 0)
+ (p 0 12.5)
+ (p 27 44.5)
+ (p 44 44.5)
+ (p 44 20)
+ (p 149 20)
+ (p 149 15)
+ (p 183 15)
+ (p 185 0) )
+
+
+rfe> 
+
+rfe> (wpradius (n))
+44.5
+
+
+batchjob done...

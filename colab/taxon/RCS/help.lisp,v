@@ -1,0 +1,67 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@;;; @;
+
+
+1.2
+date	92.11.09.12.58.43;	author aabecker;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.11.09.12.58.35;	author aabecker;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@;*******************************************************************************
+;*
+;*	Help File -- not permanent
+;*
+;*******************************************************************************
+
+;;; front-end functions
+
+(defmacro obj (ud-object)
+  (get-object ud-object))
+(defmacro dobj (ud-object)
+  (get-dereferenced-object ud-object))
+
+(defmacro objn (number)
+  (get-new-obj-of-number number))
+(defmacro dobjn (number)
+  (get-new-dereferenced-obj-of-number number))
+
+(defmacro cnf (concept-name)
+  (get-cnf-of-conceptname concept-name))
+
+(defmacro cnfn (number)
+  (get-cnf-of-new-concept number))
+
+(defmacro tbe (name)
+  (get-tbox-entry name))
+(defmacro tben (number)
+  (get-tbox-entry (get-new-conceptname-of-number number)))
+
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 30
+@

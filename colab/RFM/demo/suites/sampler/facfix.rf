@@ -1,0 +1,62 @@
+;           Symbolic and numeric RELFUN factorial fixpoints
+;                             Harold Boley                             Mar 1991
+
+; Factorial can be defined numerically or symbolically, both in the relational
+; and functional RELFUN subsets. The symbolic versions can be inverted in both
+; formulations, as shown by fixpoint computations (no cuts are used).
+
+; Relational factorial for symbolic and numeric use
+
+(hn  (facrel 0  1)    (num))  ; numeric mode iff (num) is asserted
+(hn  (facrel 0  (s 0)))       ; symbolic mode with integers as s(uccessor) terms
+(hn  (facrel _n _r)  (sub1rel _n _p) (facrel _p _v) (multrel _n _v _r))
+
+; Functional factorial for symbolic and numeric use
+
+(ft  (facfun 0)   (num) 1)  ; numeric mode iff (num) is asserted
+(ft  (facfun 0)   `(s 0))   ; symbolic mode with integers as s(uccessor) terms
+(ft  (facfun _n)  (multfun _n (facfun (sub1fun _n))))
+
+; Equivalent FLATTENed version of recursive clause, as produced by the compiler
+
+; (ft  (facfun _n)  (is _2 (sub1fun _n)) (is _1 (facfun _2)) (multfun _n _1))
+
+; Arithmetic operators ...
+
+(hn  (sub1rel _n _p)     (is _p (sub1fun _n)))
+(hn  (multrel _n _v _r)  (is _r (multfun _n _v)))
+
+; ... implementable via numeric LISP builtins (non-invertible arithmetics)
+
+(ft  (sub1fun _n)     (num) (1- _n))
+(ft  (multfun _n _v)  (num) (* _n _v))
+
+; ... or symbolically (invertible arithmetics)
+
+(ft  (sub1fun (s _n))     _n)
+(ft  (add1fun _n)         `(s _n))
+(ft  (plusfun 0      _v)  _v)
+(ft  (plusfun (s _n) _v)  (plusfun _n (add1fun _v)))
+(ft  (multfun 0      _v)  0)
+(ft  (multfun (s _n) _v)  (plusfun _v (multfun _n _v)))
+
+; rfi> (facrel _x _x)       ; Relational fixpoint computation:
+; true
+; (_x = (s 0))              ; the "smallest"
+; rfi> more
+; true
+; (_x = (s (s 0)))          ; the "largest" (another MORE would diverge)
+; rfi> (is _x (facfun _x))  ; Functional fixpoint computation:
+; (s 0)
+; (_x = (s 0))              ; the "smallest"
+; rfi> more
+; (s (s 0))
+; (_x = (s (s 0)))          ; the "largest" (another MORE would diverge)
+; rfi> azhn (num)     ; Switching to numeric mode:
+; rfi> (facrel 1 1)   ; (facrel _x _x) would now lead to "free variable" error
+; true
+; rfi> (facrel 2 _w)  ; (facrel _w 2) would here lead to "free variable" error
+; true
+; (_w = 2)
+; rfi> (facfun 57)    ; The symbolic mode would not be suited for large integers
+; 40526919504877216755680601905432322134980384796226602145184481280000000000000

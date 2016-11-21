@@ -1,0 +1,41 @@
+(ft (lesseq _y _x) (<= _y _x))
+; A less-or-equal relation over s-terms:
+; (ft (lesseq 0 _x) true)
+; (ft (lesseq (s _x) (s _y)) (lesseq _x _y))
+
+; The call (tup  |  ) evaluates its arguments, unlike the structure `(tup  |  ):
+; (ft (tup | _r) `(tup | _r))
+
+(ft (tup _f | _r) `(tup _f | _r))
+(ft (tup) `(tup))
+
+
+; The non-ground sample call (ssort `(tup (s (s 0)) _e (s 0))) returns:
+; 1. (tup 0 (s 0) (s (s 0)))              and binds _e = 0
+; 2. (tup (s 0) (s 0) (s (s 0)))          and binds _e = (s 0)
+; 3. (tup (s 0) (s (s 0)) (s (s _x:32)))  and binds _e = (s (s _x:32))
+; 4. (tup (s 0) (s 0) (s (s 0)))          and binds _e = (s 0)
+; 5. (tup (s 0) (s (s 0)) (s (s 0)))      and binds _e = (s (s 0))
+; Results 2. and 4. bind _e to (s 0) in different places of the sorted list
+
+
+;; A (mostly) functional quicksort program
+
+; Partition/recurse into lists of elements _sm(aller) and _gr(eater) than _x:
+(ft (qsort (tup)) `(tup))
+(ft (qsort (tup _x | _y)) (partition _x _y _sm _gr)
+                          (appfun (qsort _sm) (tup _x | (qsort _gr))))
+
+; Relational definition makes delivery of 2 outputs (_sm and _gr) easy:
+(hn (partition _x (tup) (tup) (tup)))
+(hn (partition _x (tup _y | _z) (tup _y | _sm) _gr) (lesseq _y _x)
+                                                    (partition _x _z _sm _gr))
+(hn (partition _x (tup _y | _z) _sm (tup _y | _gr)) (lesseq _x _y)
+                                                    (partition _x _z _sm _gr))
+
+; Functional append:
+(ft (appfun (tup) _l) _l)
+(ft (appfun (tup _h | _r) _l) (tup _h | (appfun _r _l)))
+
+; The sample call (qsort `(tup (s (s 0)) _e (s 0))) gives the same 5 results as
+; ssort did, albeit in different order (and time).

@@ -1,0 +1,391 @@
+;;; Dribble file "decplan.script" started
+
+T 
+colab> exec decplan
+Executes a batch file
+batchjob executing...
+colab> taxon
+Taxon Subsystem Switch
+colab,tx> forward
+Forward Subsystem Switch
+colab,tx,fwi> contax
+Contax Subsystem Switch
+colab,tx,fwi,cn> colab
+Colab System Switch
+colab> destroy
+Destroy the databases of all known subsystems
+
+T 
+CONTAX constraints reset.
+CONTAX variables reset.
+CONTAX concepts reset.
+CONTAX has been reset.
+colab> taxon
+Taxon Subsystem Switch
+colab,tx> spy classify
+trace classify, assert-ind?, concept-closure
+colab,tx> consult feature-concepts.tx
+Consults a database to all known subsystems
+
+Warning -- second definition of = is ignored!
+
+ Classify Concept: TRUNCONE 
+
+ Classify Concept: RING 
+
+ Classify Concept: FILLED 
+
+ Classify Concept: HOLLOW 
+
+ Classify Concept: ASCENDING 
+
+ Classify Concept: DESCENDING 
+
+ Classify Concept: CYLINDER 
+
+ Classify Concept: CIRCLE 
+
+ Classify Concept: CONE 
+
+ Classify Concept: ASC-TC 
+
+ Classify Concept: DESC-TC 
+
+ Classify Concept: ASC-RING 
+
+ Classify Concept: DESC-RING 
+
+ Classify Concept: ASC-CIRCLE 
+
+ Classify Concept: DESC-CIRCLE 
+
+ Classify Concept: ASC-CONE 
+
+ Classify Concept: DESC-CONE 
+
+ Classify Concept: FEATURE 
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+
+ Classify Concept: LTS 
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+
+ Classify Concept: TC+LTS 
+
+ Classify Concept: LNOSE 
+
+ Classify Concept: LSHOULDER 
+
+ Classify Concept: LTS+TC 
+
+ Classify Concept: RNOSE 
+
+ Classify Concept: RSHOULDER 
+
+Open Family LEVELS-OF-COMPOSITION still exists -- it will be extended!
+
+ Classify Concept: TC+LTS+TC 
+
+ Classify Concept: UP-STEP 
+
+ Classify Concept: DOWN-STEP 
+
+ Classify Concept: TOWER 
+;;; Expanding Dynamic Memory
+
+ Classify Concept: GROOVE 
+
+ Classify Concept: INSERTION 
+
+ Classify Concept: SHOULDER 
+
+ Classify Concept: LONGTURNINGSURFACE 
+
+ LONGTURNINGSURFACE new member of equivalence class (LTS) 
+
+ Classify Concept: WORKPIECE 
+colab,tx> nospy classify
+untrace classify, assert-ind?, concept-closure
+colab,tx> pphi
+print the computed subsumption hierarchy
+               TOP <=== (LEVELS-OF-COMPOSITION) (FILLED) (HOLLOW) (ASCENDING) (DESCENDING) (FEATURE) (LIST)
+LEVELS-OF-COMPOSITION <=== (ATOMIC) (BICONIC) (TRICONIC) (NCONIC) (H-LTS) (LTS+) (+LTS) (+LTS+) (SHOULDER)
+            ATOMIC <=== (TRUNCONE)
+          TRUNCONE <=== (RING) (CONE) (ASC-TC) (DESC-TC)
+              RING <=== (CIRCLE) (ASC-RING) (DESC-RING)
+            CIRCLE <=== (ASC-CIRCLE) (DESC-CIRCLE)
+        ASC-CIRCLE <=== (BOTTOM)
+       DESC-CIRCLE <=== (BOTTOM)
+          ASC-RING <=== (ASC-CIRCLE)
+         DESC-RING <=== (DESC-CIRCLE)
+              CONE <=== (CIRCLE) (ASC-CONE) (DESC-CONE)
+          ASC-CONE <=== (ASC-CIRCLE)
+         DESC-CONE <=== (DESC-CIRCLE)
+            ASC-TC <=== (CYLINDER) (ASC-RING) (ASC-CONE)
+          CYLINDER <=== (BOTTOM)
+           DESC-TC <=== (CYLINDER) (DESC-RING) (DESC-CONE)
+           BICONIC <=== (BOTTOM)
+          TRICONIC <=== (BOTTOM)
+            NCONIC <=== (BOTTOM)
+             H-LTS <=== (LONGTURNINGSURFACE LTS)
+LONGTURNINGSURFACE LTS <=== (BOTTOM)
+              LTS+ <=== (LTS+TC)
+            LTS+TC <=== (RNOSE) (RSHOULDER)
+             RNOSE <=== (BOTTOM)
+         RSHOULDER <=== (BOTTOM)
+              +LTS <=== (TC+LTS)
+            TC+LTS <=== (LNOSE) (LSHOULDER)
+             LNOSE <=== (BOTTOM)
+         LSHOULDER <=== (BOTTOM)
+             +LTS+ <=== (TC+LTS+TC)
+         TC+LTS+TC <=== (UP-STEP) (DOWN-STEP) (TOWER) (GROOVE) (WORKPIECE)
+           UP-STEP <=== (BOTTOM)
+         DOWN-STEP <=== (BOTTOM)
+             TOWER <=== (BOTTOM)
+            GROOVE <=== (INSERTION)
+         INSERTION <=== (BOTTOM)
+         WORKPIECE <=== (BOTTOM)
+          SHOULDER <=== (RSHOULDER) (LSHOULDER)
+            FILLED <=== (BOTTOM)
+            HOLLOW <=== (BOTTOM)
+         ASCENDING <=== (ASC-TC)
+        DESCENDING <=== (DESC-TC)
+           FEATURE <=== (LONGTURNINGSURFACE LTS) (TC+LTS) (LTS+TC) (TC+LTS+TC) (SHOULDER)
+              LIST <=== (BOTTOM)
+
+colab,tx> filter 
+filter subsumption graph
+colab,tx> switch filtered-graph T
+filtered-graph|reduced-abox|draw-all|draw-bottom|show -- t | nil
+
+T 
+colab,tx> switch reduced-abox t
+filtered-graph|reduced-abox|draw-all|draw-bottom|show -- t | nil
+
+T 
+colab,tx> pphi
+print the computed subsumption hierarchy
+               TOP <=== (TC+LTS+TC) (LTS+TC) (TC+LTS) (LONGTURNINGSURFACE) (TRUNCONE)
+         TC+LTS+TC <=== (WORKPIECE) (GROOVE)
+         WORKPIECE <=== (BOTTOM)
+            GROOVE <=== (BOTTOM)
+            LTS+TC <=== (RSHOULDER) (RNOSE)
+         RSHOULDER <=== (BOTTOM)
+             RNOSE <=== (BOTTOM)
+            TC+LTS <=== (LSHOULDER) (LNOSE)
+         LSHOULDER <=== (BOTTOM)
+             LNOSE <=== (BOTTOM)
+LONGTURNINGSURFACE <=== (BOTTOM)
+          TRUNCONE <=== (ASC-TC) (DESC-TC) (CIRCLE)
+            ASC-TC <=== (CYLINDER)
+          CYLINDER <=== (BOTTOM)
+           DESC-TC <=== (CYLINDER)
+            CIRCLE <=== (BOTTOM)
+
+colab,tx> clear-abox
+clear TAXON's ABox (delete individuals and assertions)
+
+#<Hash-Table 1205A96> 
+colab,tx> contax
+Contax Subsystem Switch
+colab,tx,cn> consult decplan.col
+Consults a database to all known subsystems
+colab,tx,cn> rfe
+Relfun Emulator Subsystem Switch
+colab,tx,cn,rfe-l> destroy
+destroy the relfun database
+colab,tx,cn,rfe-l> consult skeletal
+Consults a database to all known subsystems
+colab,tx,cn,rfe-l> compile
+compile relfun database
+;;; GC: 491178 words [1964712 bytes] of dynamic storage in use.
+;;; 147796 words [591184 bytes] of free storage available before a GC.
+;;; 786770 words [3147080 bytes] of free storage available if GC is disabled.
+;;; GC: 491178 words [1964712 bytes] of dynamic storage in use.
+;;; 147796 words [591184 bytes] of free storage available before a GC.
+;;; 786770 words [3147080 bytes] of free storage available if GC is disabled.
+;;; Expanding Dynamic Memory
+colab,tx,cn,rfe-l> destroy
+destroy the relfun database
+colab,tx,cn,rfe-l> forward
+Forward Subsystem Switch
+colab,tx,cn,rfe-l,fwi> automatic
+Activate automatic mode
+colab,tx,cn,rfe-l,fwi> destroy-facts
+Destroy the factbase
+colab,tx,cn,rfe-l,fwi> destroy-rules
+Destroy the rulebases
+colab,tx,cn,rfe-l,fwi> destroy-magic
+Destroy magic rules and seeds
+colab,tx,cn,rfe-l,fwi> consult wp-facts.rf
+Consults a database to all known subsystems
+
+(ASC-TC CIRCLE) 
+(CYLINDER) 
+(DESC-TC) 
+(CYLINDER) 
+(ASC-TC) 
+(CYLINDER) 
+(ASC-TC) 
+(CYLINDER) 
+(DESC-TC) 
+(CYLINDER) 
+(ASC-TC) 
+(CYLINDER) 
+(DESC-TC) 
+(CYLINDER) 
+(DESC-TC CIRCLE) 
+colab,tx,cn,rfe-l,fwi> consult feature-rules.rf
+Consults a database to all known subsystems
+colab,tx,cn,rfe-l,fwi> eval
+Bottom-up-evaluation
+colab,tx,cn,rfe-l,fwi> taxon
+Taxon Subsystem Switch
+colab,tx> instances workpiece
+compute a list of all instances of <concept term>
+
+(TC+LTS+TC-CIRC1-LTS-CIRC1-CIRC15-CIRC15) 
+colab,tx> forward
+Forward Subsystem Switch
+colab,tx,fwi> rfe
+Relfun Emulator Subsystem Switch
+colab,tx,fwi,rfe-l> (decplan)
+-----------contax-call--------------
+roughing contour high-alloy-steel right 90 90 
+-----------contax-result------------`(tup (tup rcmx tmaxp-prr30))
+
+-----------contax-call--------------
+roughing contour high-alloy-steel left 90 90 
+-----------contax-result------------`(tup (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30))
+
+`(tup
+  skp
+  (tup dir both)
+  (tup kind contour)
+  (tup
+   s/d
+   (tup
+    actions
+    (tup
+     (tup tool rcmx tmaxp-prr30)
+     (tup right contour (tup geo (tup p 40 0) (tup p 40 80) (tup p 60 80)))
+     (tup right contour (tup geo (tup p 30 0) (tup p 30 60) (tup p 40 60)))
+     (tup
+      right
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) )
+     (tup
+      right
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) ) )
+    (tup
+     (tup tool rcmx tmaxp-prl40)
+     (tup
+      left
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) )
+     (tup
+      left
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) )
+     (tup left contour (tup geo (tup p 60 160) (tup p 30 160) (tup p 30 200))) ) )
+   (tup actions) ) )
+
+More solutions?  (Y/N) y
+
+
+-----------contax-call--------------
+roughing contour high-alloy-steel left 90 90 
+-----------contax-result------------`(tup (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30))
+
+`(tup
+  skp
+  (tup dir both)
+  (tup kind contour)
+  (tup
+   s/d
+   (tup
+    actions
+    (tup
+     (tup tool rcmx tmaxp-prr30)
+     (tup right contour (tup geo (tup p 40 0) (tup p 40 80) (tup p 60 80)))
+     (tup right contour (tup geo (tup p 30 0) (tup p 30 60) (tup p 40 60)))
+     (tup
+      right
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) )
+     (tup
+      right
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) ) )
+    (tup
+     (tup tool rcmx tmaxp-prl40)
+     (tup
+      left
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) )
+     (tup
+      left
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) )
+     (tup left contour (tup geo (tup p 60 160) (tup p 30 160) (tup p 30 200))) ) )
+   (tup actions) ) )
+
+More solutions?  (Y/N) y
+
+
+-----------contax-call--------------
+roughing contour high-alloy-steel left 90 90 
+-----------contax-result------------`(tup (tup rcmx tmaxp-prl40) (tup rcmx tmaxp-prl30))
+
+-----------contax-call--------------
+roughing contour high-alloy-steel left 0 90 
+-----------contax-result------------`(tup
+  (tup dnmm-71 tmaxp-pdl93)
+  (tup rcmx tmaxp-prl40)
+  (tup rcmx tmaxp-prl30)
+  (tup tnmm-71 tmaxp-ptl90) )
+
+`(tup
+  skp
+  (tup dir both)
+  (tup kind contour)
+  (tup
+   s/d
+   (tup
+    actions
+    (tup
+     (tup tool rcmx tmaxp-prr30)
+     (tup right contour (tup geo (tup p 40 0) (tup p 40 80) (tup p 60 80)))
+     (tup right contour (tup geo (tup p 30 0) (tup p 30 60) (tup p 40 60)))
+     (tup
+      right
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) )
+     (tup
+      right
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) ) )
+    (tup
+     (tup tool rcmx tmaxp-prl40)
+     (tup
+      left
+      contour
+      (tup geo (tup p 60 110) (tup p 50 110) (tup p 50 130) (tup p 60 140)) )
+     (tup
+      left
+      contour
+      (tup geo (tup p 30 40) (tup p 20 40) (tup p 20 60) (tup p 30 60)) ) )
+    (tup
+     (tup tool dnmm-71 tmaxp-pdl93)
+     (tup left contour (tup geo (tup p 60 160) (tup p 30 160) (tup p 30 200))) ) )
+   (tup actions) ) )
+
+More solutions?  (Y/N) n
+
+colab,tx,fwi,rfe-l> 
+batchjob done...
+colab,tx,fwi,rfe-l> lisp (dribble)
+Eval expression
+;;; Dribble file "decplan.script" finished

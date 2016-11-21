@@ -1,0 +1,33 @@
+;;; Palindrome via Higher-Order Operators in Compiled RELFUN
+;;; Michael Sintek				    10.02.92
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(ft ((palin _ev _sf _rf) (tup)) _ev)
+(ft ((palin _ev _sf _rf) (tup _center))
+  (_sf `(tup _center)))
+(ft ((palin _ev _sf _rf) (tup _first-and-last | _rest))
+  (append _middle `(tup _first-and-last) _rest)
+  (_rf (`(palin _ev _sf _rf) _middle)))
+
+(ft (ident _a) _a)
+(ft ((co _c) _a) _c)
+(ft ((twice _f) _a) (_f (_f _a)))
+
+(ft (palindrome) `(palin true (co true) ident))
+(ft (palinclass) `(palin even (co odd) ident))
+(ft (palinzoom)  `(palin (tup) ident ident))
+(ft (palinlength)`(palin 0 (co 1) (twice add1)))
+
+
+; auxiliaries:
+
+(hn (append (tup) _x _x))
+(hn (append (tup _f | _r) _x (tup _f | _y))
+  (append _r _x _y))
+
+(ft (add1 _x) (1+ _x)) ; apply can not be used on builtins!
+
+
+
+

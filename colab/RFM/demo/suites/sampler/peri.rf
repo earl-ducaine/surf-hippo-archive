@@ -1,0 +1,341 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Grouping and Verifying the Period System of the Elements: ;
+;                A Relfun Knowledge Base                    ; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; (c) Michael Sintek  &  Werner Stein             March 1991
+
+; A lot of basic physics/chemistry knowledge is encoded in the
+; period system of the elements. The below Relfun knowledge base
+; represents some properties of the elements and groups of elements.
+; It was motivated by our work on enhanced WAM-like indexing
+; techniques.
+; Each entry has the following structure (the emphasis on metals
+; derives from our application considerations):
+;
+; (per   <number>
+;	 (name <abbr> <name>)
+;	 (info <a metal or not a metal>
+;	       (eco <electron configuration of last three shells>)
+;	       <atom weight>
+;	       (oxi <list of possible oxidations>)))
+;
+; Using "domain-dependent" formulas, we compute groups (new notation)
+; and verify the electron configuration of the entire knowledge base
+; (see check-all-econs).
+
+
+(hn (per 1 
+	 (name H Hydrogen) 
+	 (info n 
+	       (eco 1 0 0) 
+	       1.00794
+	       (oxi +1 -1))))
+
+(hn (per 2
+	 (name He Helium)
+	 (info n
+	       (eco 2 0 0)
+	       4.0020602
+	       (oxi 0))))
+
+(hn (per 3
+	 (name Li Lithium)
+	 (info n
+	       (eco 2 1 0)
+	       6.941
+	       (oxi +1))))
+
+(hn (per 4
+	 (name Be Beryllium)
+	 (info n
+	       (eco 2 2 0)
+	       9.012182
+	       (oxi +2))))
+
+(hn (per 5
+	 (name B Boron)
+	 (info n
+	       (eco 2 3 0)
+	       10.811
+	       (oxi +3))))
+
+(hn (per 6
+	 (name C Carbon)
+	 (info n
+	       (eco 2 4 0)
+	       12.011
+	       (oxi +2 +4 -4))))
+
+(hn (per 7
+	 (name N Nitrogen)
+	 (info n
+	       (eco 2 5 0)
+	       14.00674 
+	       (oxi +1 +2 +3 +4 +5 -1 -2 -3))))
+
+(hn (per 8
+	 (name O Oxygen)
+	 (info n
+	       (eco 2 6 0)
+	       15.9994
+	       (oxi -2))))
+
+(hn (per 9
+	 (name F Fluorine)
+	 (info n
+	       (eco 2 7 0)
+	       18.9984032
+	       (oxi -1))))
+
+(hn (per 10
+	 (name Ne Neon)
+	 (info n
+	       (eco 2 8 0)
+	       20.1797
+	       (oxi 0))))
+
+(hn (per 11
+	 (name Na Sodium)
+	 (info m
+	       (eco 2 8 1)
+	       22.989768
+	       (oxi 1))))
+
+(hn (per 12
+	 (name Mg Magnesium)
+	 (info m
+	       (eco 2 8 2)
+	       24.305
+	       (oxi +2))))
+
+(hn (per 13
+	 (name Al Aluminium)
+	 (info m
+	       (eco 2 8 3)
+	       26.981539
+	       (oxi +3))))
+
+(hn (per 14
+	 (name Si Silicon)
+	 (info n 
+	       (eco 2 8 4)
+               28.0855
+	       (oxi +2 +4 -4))))
+
+(hn (per 15
+	 (name P Phosphorus)
+	 (info n
+	       (eco 2 8 5)
+	       30.97362
+	       (oxi +3 +5 -3))))
+
+(hn (per 16
+	 (name S Sulfur)
+	 (info n 
+	       (eco 2 8 6)
+	       32.066
+	       (oxi +4 +6 -2))))
+
+(hn (per 17
+	 (name Cl Chlorine)
+	 (info n
+	       (eco 2 8 7)
+	       35.4527
+	       (oxi +1 +5 +7 -1))))
+(hn (per 18
+	 (name Ar Argon)
+	 (info n
+	       (eco 2 8 8)
+	       39.948
+	       (oxi 0))))
+(hn (per 19
+	 (name K Potassium)
+	 (info m
+	       (eco 8 8 1)
+	       39.0983
+	       (oxi +1))))
+
+(hn (per 20
+	 (name Ca Calcium)
+	 (info m
+	       (eco 8 8 2)
+	       40.078
+	       (oxi +2))))
+
+
+
+; ...
+
+
+
+(hn (per 107
+	 (name Uns Unnilseptium)
+	 (info ?
+	       (eco 32 13 2)
+	       262
+	       (oxi))))
+
+
+
+; some simple access functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(hn (element _no)		; "generate" elements
+  (per _no _id1 _id2))
+
+
+(ft (metal) 			; return metal names
+  (per _x 
+       `(name _y _z)
+       `(info m
+	      _a
+	      _b
+	      _c))
+  _z)
+
+
+
+
+; computing groups
+;;;;;;;;;;;;;;;;;;
+
+(ft (group 1) 1)		; find group no. of an element
+(ft (group 2) 18)
+(ft (group 3) 1)
+(ft (group 4) 2)
+(ft (group _no)
+  (element _no)
+  (<= 5 _no)
+  (<= _no 10)
+  (+ _no 8))
+(ft (group 11) 1)
+(ft (group 12) 2)
+(ft (group _no)
+  (element _no)
+  (<= 13 _no)
+  (<= _no 57)
+  (+ 1 (mod (- _no 1) 18)))
+(ft (group _no)			;Lanthanides
+  (element _no)
+  (<= 58 _no)
+  (<= _no 71)
+  (- _no 55))
+(ft (group _no)
+  (element _no)
+  (<= 72 _no)
+  (<= _no 89)
+  (+ 1 (mod (- _no 69) 18)))
+(ft (group _no)			;Actinides
+  (element _no)
+  (<= 90 _no)
+  (<= _no 103)
+  (- _no 87)))
+(ft (group _no)
+  (element _no)
+  (<= 104 _no)
+  (<= _no 107)
+  (- _no 100)))
+
+
+
+; verify electron configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(hn (check-econ _no)		; element no. must be equal to the
+  (is _no (sum (econ _no))))	; sum of (econ _no)
+
+
+
+(ft (check-all-econs)		; check knowledge base for inconsistencies
+  (element _no)			; in electron configuration
+  (<> 0 (check-econ1 _no))	; enumerate the numbers of inconsistent
+  _no)				; `per' entries
+
+(ft (check-all-econs) ok)	; return ok if no more inconsistency is
+				; detected
+
+(ft (check-econ1 _no) (- _no (sum (econ _no))))
+
+
+(ft (offs _no)			; no. of inner shells before last three
+  (<= 1 _no)			; (see per/3)
+  (<= _no 18)
+  0)
+(ft (offs _no)
+  (<= 19 _no)
+  (<= _no 36)
+  1)
+(ft (offs _no)
+  (<= 37 _no)
+  (<= _no 54)
+  2)
+(ft (offs _no)
+  (<= 55 _no)
+  (<= _no 86)
+  3)
+(ft (offs _no)
+  (<= 87 _no)
+  (<= _no 107)
+  4)
+
+
+(ft (maxel 1) 2)		; max. no. of electrons on a shell
+(ft (maxel 2) 8)
+(ft (maxel 3) 18)
+(ft (maxel 4) 32)
+
+
+(ft (econ _no)			; compute electron configuration of an
+  (per _no			; element (returns a list)
+       _n
+       `(info _m
+	      (eco _l1 _l2 _l3)
+	      _w
+	      _o))
+  (lpref `(tup _l1 _l2 _l3) (offs _no)))
+
+
+(ft (lpref _l 0) _l)		; generate prefix of inner shells
+(ft (lpref _l _of)		; before last three
+  (< 0 _of)
+  (lpref (tup (maxel _of) | _l)  (- _of 1)))
+
+
+
+; auxiliary functions
+;;;;;;;;;;;;;;;;;;;;;
+
+(ft (tup) `(tup))		 ; evaluates its arguments!
+(ft (tup _x | _ r) `(tup _x | _r))
+
+
+(ft (sum (tup)) 0)		; return sum of a list
+(ft (sum (tup _h | _t)) (+ _h (sum _t)))
+
+
+(hn (<> _x _y) (> _x _y))
+(hn (<> _x _y) (> _y _x))
+
+
+(ft (mod _x _y) (< _x _y) _x)
+(ft (mod _x _y) (>= _x _y) (mod (- _x _y) _y))
+
+
+
+
+
+; sample dialog
+;;;;;;;;;;;;;;;
+
+
+; rfi> (group 10)
+; 18
+; rfi> (econ 10)
+; (tup 2 8 0)
+; rfi> (econ 107)
+; (tup 2 8 18 32 32 13 2)
+; rfi> (check-all-econs)
+; ok
+; rfi>
+

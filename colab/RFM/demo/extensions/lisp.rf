@@ -1,0 +1,151 @@
+(hn (lisp)
+    (rf-pprint "==> ")
+    (is _e (readl))        ; Klammern um _e weggenommen
+    (is _e (readl))
+    (naf (is bye _e))
+    (rf-pprint (eval _e (tup)))
+    (lisp))
+
+
+(ft (eval (tup) _a) ! (tup))
+(ft (eval t _a) ! t)
+(ft (eval _e _a) (numberp _e) ! _e)
+(ft (eval _e _a) (atom _e) ! (is (tup id _v) (assoc _e _a)) _v)
+
+(ft (eval (tup quote _exp) _a) ! _exp)
+(ft (eval (tup function _fn) _a) ! `(tup closure _fn _a))
+
+(ft (eval (tup cond) _a) ! (tup))
+(ft (eval (tup cond (tup _p _q) | _r) _a) (is (tup) (eval _p _a)) !
+    (eval `(tup cond | _r) _a))
+(ft (eval (tup cond (tup _p _q) | _r) _a) ! (eval _q _a))
+
+(ft (eval (tup _fn | _exps) _a)
+    (atom _fn)
+    (defmacro _fn _args _body) !
+    (eval (apply `(tup lambda _args _body) _exps _a) _a))
+
+(ft (eval (tup _fn | _exps) _a) (apply _fn (evlis _exps _a) _a))
+
+
+(ft (apply _fn _vals _a)
+    (atom _fn)
+    (defun _fn _args _body) !
+    (apply `(tup lambda _args _body) _vals _a))
+
+(ft (apply car (tup (tup _hd | _tl)) _a) ! _hd)
+(ft (apply cdr (tup (tup _hd | _tl)) _a) ! _tl)
+(ft (apply cons (tup _hd _tl) _a) ! (tup _hd | _tl))
+(ft (apply atom (tup _val) _a) ! (lispatom _val))
+(ft (apply eq (tup _val1 _val2) _a) ! (lispeq _val1 _val2))
+
+(ft (apply add1 (tup _val) _a) ! (1+ _val))
+(ft (apply sub1 (tup _val) _a) ! (1- _val))
+
+(ft (apply list _vals _a) ! _vals)
+(ft (apply eval (tup _val) _a) ! (eval _val _a))
+
+(ft (apply (tup lambda (tup) _body) (tup) _a) ! (eval _body _a))
+(ft (apply (tup lambda (tup _arg | _rargs) _body) (tup _val | _rvals) _a) !
+    (apply `(tup lambda _rargs _body) _rvals (tup (tup _arg _val) | _a)))
+
+(ft (apply (tup closure _fn _env) _vals _a) ! (apply _fn _vals _env))
+
+(ft (apply _fn _vals _a)
+    (apply (eval _fn _a) _vals _a))
+
+
+(ft (evlis (tup) _a) (tup))
+(ft (evlis (tup _e | _re) _a) (tup (eval _e _a) | (evlis _re _a)))
+
+(ft (assoc _n (tup)) ! (tup))
+(ft (assoc _n (tup (tup _n _v) | _ar)) ! (tup _n _v))
+(ft (assoc _n (tup id | _ar)) (assoc _n _ar))
+
+
+(ft (lispatom (tup _hd | _tl)) ! (tup))
+(ft (lispatom _x) t)
+
+;(ft (lispeq _x _x) (is t (lispatom _x)) ! t)
+(ft (lispeq _x _x) (is t (lispatom _x)) !)
+(ft (lispeq _x _y) (tup))
+
+
+
+(hn (defun ff (tup x)
+           (tup cond (tup (tup atom x) x) (tup t (tup ff (tup car x))))))
+
+(ft (tff) (eval `(tup ff x) (tup (tup x (tup (tup 1 2) 3)))))
+(ft (uff) (eval `(tup ff (tup list
+                              (tup cdr (tup quote (tup a (tup (tup b c) d))))
+                              2
+                              3))
+                (tup)))
+
+(hn (defun alt (tup u)
+           (tup cond (tup (tup eq (tup) u) (tup))
+                          (tup (tup eq (tup) (tup cdr u)) u)
+                          (tup t (tup cons (tup car u)
+                                           (tup alt (tup cdr (tup cdr u))))))))
+
+(ft (talt) (eval `(tup alt (tup quote (tup 1 2 3 4 5))) (tup)))
+
+(hn (defun null (tup l) (tup eq (tup) l)))
+
+(hn (defun memeq (tup x l) (tup cond (tup (tup null l) l)
+                                     (tup (tup eq (tup car l) x) l)
+                                     (tup t (tup memeq x (tup cdr l))))))
+
+(hn (defun mapcar (tup f l) 
+           (tup cond (tup (tup null l) l)
+                     (tup t (tup cons (tup f (tup car l))
+                                      (tup mapcar f (tup cdr l)))))))
+
+(ft (tmapcar)
+    (eval `(tup mapcar (tup function (tup lambda (tup x) (tup car (tup cdr x))))
+                                     (tup quote (tup (tup 1 2) (tup 3 4))))
+          (tup)))
+
+(hn (defun maptwice (tup f l) (tup mapcar (tup compose f f) l)))
+
+(hn (defun compose (tup f g)
+           (tup function (tup lambda (tup x) (tup f (tup g x))))))
+
+(hn (defun twice (tup f) (tup compose f f)))
+
+(ft (tmaptwice) (eval `(tup maptwice (tup function cdr)
+                                     (tup quote (tup (tup a 1 2) (tup b 3 4))))
+                      (tup)))
+
+(hn (defmacro if (tup test then else)
+              (tup list (tup quote cond) (tup list test then)
+                                         (tup list t else))))
+
+(ft (tif)
+    (eval `(tup if (tup if t (tup) 2)
+                   (tup if a b c)
+                   (tup if (tup) nn (tup quote thisistheresult)))
+          (tup)))
+
+(ft (teval)
+    (eval `(tup (tup lambda (tup x y) (tup eval x)) (tup quote y) 1)
+          (tup)))
+(ft (teval)
+    (eval `(tup eval (tup car (tup quote (tup (tup atom 1) (tup atom (tup))))))
+          (tup)))
+
+(hn (defun doublex (tup x y x) (tup list x y x)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+

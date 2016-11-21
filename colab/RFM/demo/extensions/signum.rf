@@ -1,0 +1,24 @@
+(ft (signum _x) (< _x 0) -1)
+(ft (signum 0) 0)
+(ft (signum _x) (> _x 0) 1)
+
+
+(ft (sigint _x) (less _x 0) -1)
+(ft (sigint 0) 0)
+(ft (sigint _x) (greater _x 0) 1)
+
+
+
+(hn (less _x _y) (negless _x _y))
+(hn (less _x _y) (posless _x _y))
+(hn (less _x _y) (neg _x) (pos _y))
+
+(hn (negless _x 0) (neg _x))
+(hn (negless (p _x) (p _y)) (negless _x _y))
+(hn (posless 0 _y) (pos _y))
+(hn (posless (s _x) (s _y)) (posless _x _y))
+
+(hn (neg (p 0)))
+(hn (neg (p _x)) (neg _x))
+(hn (pos (s 0)))
+(hn (pos (s _x)) (pos _x))

@@ -1,0 +1,12 @@
+\stmb{a0up}:
+
+Format: \stmt{a0up $<$head$>$ $<$body$1>$ ... $<$body$n>$}
+
+Options: $<$head$>$ the conclusion,\\
+         $<$body$1>$ ... $<$body$n>$ the premises of an up clause.
+
+Effect: The rule \stmt{(up head body1 ... bodyn)} will be inserted in front of the 
+	(possibly empty) database \stmt{*rule-database*}.
+        This command is an abbreviation of \stmt{a0 (up head body1 ... bodyn)}.
+
+see also: \stmb{a0}, \stmb{a0rl}, \consult, \destroy, \replace

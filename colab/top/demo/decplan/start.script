@@ -1,0 +1,8 @@
+;;; Dribble file "start.script" started
+
+T 
+colab> (dribble)
+colab: invalid user command ((DRIBBLE))
+colab> lisp (dribble)
+Eval expression
+;;; Dribble file "start.script" finished

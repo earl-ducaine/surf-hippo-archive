@@ -1,0 +1,248 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;            microCAD2NC             ;;;
+;;;            RELFUN part             ;;;
+;;; Recursive Workpiece Classification ;;;
+;;; (c) Michael Sintek     August 1991 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; The program mainly uses RELFUN functions defined by ft clauses which
+; are all deterministic
+
+; classify wp
+; -----------
+
+(ft (class-feat _wp-rng) ; _wp-rng must be in rng notation
+  (is _rad (max-rad _wp-rng))
+  (is _class-feat (class-sec _rad _wp-rng))
+  `(cwp _rad _class-feat))
+
+
+; classify section (class-sec <max> <wp-rng>)
+; -------------------------------------------
+
+; end at (tup) or (tup _x)
+(ft (class-sec _max (tup))  
+  `(tup))
+
+(ft (class-sec _max (tup _x))  	; _x thrown out because a single supporting	
+  `(tup))			; point cannot become a feature
+
+; ignore max height cylinders
+(ft (class-sec _max (tup (rng _z1 _ri _max) (rng _z2 _max _ro) | _rest))  
+  (class-sec _max `(tup (rng _z2 _max _ro) | _rest)))
+
+; groove: begins with max and split-wp-rng succeeds
+(ft (class-sec _max (tup (rng _z _max _ro) | _rest))
+  (is (tup _left-wp-rng | _rest-wp-rng)   ; check for and return part
+	    (split-wp-rng _max _rest))    ; up to maximum
+  (tup (class-grv `(tup (rng _z _max _ro) | _left-wp-rng))
+       | (class-sec _max _rest-wp-rng)))
+
+; right shoulder: doesn't start with max and split-wp-rng succeeds
+(ft (class-sec _max (tup (rng _z _ri _ro) | _rest))
+  (/= _ri _max)
+  (is (tup _left-wp-rng | _rest-wp-rng)
+      (split-wp-rng _max `(tup (rng _z _ri _ro) | _rest)))  
+  (tup (class-rsh _left-wp-rng) | (class-sec _max _rest-wp-rng)))
+
+; left shoulder: no more maxima
+(ft (class-sec _max _wp-rng)
+  (tup (class-lsh _wp-rng)))
+
+
+; classify groove
+; ---------------
+
+(ft (class-grv _wp-rng)
+  (is (tup _test-flank1 | _rest-wp1) (find-flank _wp-rng 0))
+  (is (tup _test-flank2 | _rest-wp2) (find-flank (reverse-wp-rng _rest-wp1) 0))
+  (is (rng _tz _tri _test-flank1-min) (rf-last _test-flank1))
+  (is _ground-max (max _test-flank1-min (max-rad _rest-wp2)))
+  (is (tup _l-flank | _rest) (find-flank _wp-rng _ground-max))
+  (is (tup _r-flank | _ground) (find-flank (reverse-wp-rng _rest) _ground-max))
+  (class-grd (reverse-wp-rng _ground) _ground-max _grd _refined-ground)
+  (is _r-flank-rev (reverse-wp-rng _r-flank))
+  `(nft (grv (flk _l-flank ) _grd (flk _r-flank-rev)) _refined-ground))
+
+
+; classify left shoulder
+; ----------------------
+
+(ft (class-lsh _wp-rng)
+  (is (tup _test-flank | _rest-wp) (find-flank _wp-rng 0))
+  (is (rng _tz _tri _test-flank-min) (rf-last _test-flank))
+  (is _ground-max (max _test-flank-min (max-rad _rest-wp)))
+  (is (tup _flank | _ground) (find-flank _wp-rng _ground-max))
+  (class-grd _ground _ground-max _grd _refined-ground)
+  `(nft (lsh (flk _flank) _grd) _refined-ground))
+
+
+; classify right shoulder
+; -----------------------
+
+(ft (class-rsh _wp-rng)
+  (reverse-feature (class-lsh (reverse-wp-rng _wp-rng))))
+
+
+; classify ground
+; ---------------
+
+(hn (class-grd (tup) _ground-max (grd (tup)) (tup))  )
+
+(hn (class-grd (tup _x) _ground-max (grd (tup)) (tup))  )
+
+(hn (class-grd _ground _ground-max
+	       (grd (tup
+		      (rng _fz _ground-max _ground-max)
+		      (rng _lz _ground-max _ground-max)))
+	       _refined-ground) 
+  (is _refined-ground (class-sec _ground-max _ground))
+  (is (tup (rng _fz _fri _fro) | _rest-ground) _ground)
+  (is (rng _lz _lri _lro) (rf-last _ground)))
+
+
+; find flank (find-flank <wp-rng> <min>)
+; --------------------------------------
+
+; (a) asc. ring
+(ft (find-flank (tup (rng _z _ri _ro) | _rest) _min)
+  (> _ro _ri)  
+  `(tup (tup (rng _z _ri _ri)) | (tup (rng _z _ro _ro) | _rest)))
+
+; (b) desc. ring passing or downto min
+(ft (find-flank (tup (rng _z _ri _ro) | _rest) _min)
+  (>= _min _ro )  
+  `(tup (tup (rng _z _ri _min)) | (tup (rng _z _min _ro) | _rest)))
+
+; (c) desc. last ring above min
+(ft (find-flank (tup (rng _z _ri _ro)) _min)  
+  ; (>= _ri _ro) (> _ro _min) holds
+  `(tup (tup (rng _z _ri _ro)) | (tup)))
+
+; (d) asc. truncone
+(ft (find-flank (tup (rng _z1 _ri1 _ro1) (rng _z2 _ri2 _ro2) | _rest) _min)
+  (> _ri2 _ro1)   ; (>= _ri1 _ro1) (> _ro1 _min) holds
+  `(tup (tup (rng _z1 _ri1 _ro1))
+	| (tup (rng _z1 _ro1 _ro1) (rng _z2 _ri2 _ro2) | _rest)))
+
+; (e1) desc. truncone downto min
+(ft (find-flank (tup (rng _z1 _ri1 _ro1) (rng _z2 _ri2 _ro2) | _rest) _min)
+  (= _min _ri2)   ; (>= _ri1 _ro1) (> _ro1 _min) holds
+  `(tup (tup (rng _z1 _ri1 _ro1) (rng _z2 _min _min))
+	| (tup (rng _z2 _ri2 _ro2) | _rest)))
+
+; (e2) desc. truncone passing min
+(ft (find-flank (tup (rng _z1 _ri1 _ro1) (rng _z2 _ri2 _ro2) | _rest) _min)
+  (> _min _ri2)   ; (>= _ri1 _ro1) (> _ro1 _min) holds
+  (is _z12 (split-truncone _z1 _ro1 _z2 _ri2 _min))
+  `(tup (tup (rng _z1 _ri1 _ro1) (rng _z12 _min _min))
+	| (tup (rng _z12 _min _min) (rng _z2 _ri2 _ro2) | _rest)))
+
+; (f) cylinder or desc. truncone above min
+(ft (find-flank (tup (rng _z1 _ri1 _ro1) (rng _z2 _ri2 _ro2) | _rest) _min)
+  ; fall through case: (>= _ri1 _ro1 _ri2) holds
+  (is (tup _rest-flank | _rest-wp)
+      (find-flank `(tup (rng _z2 _ri2 _ro2) | _rest) _min))
+  `(tup (tup (rng _z1 _ri1 _ro1) | _rest-flank) | _rest-wp))
+
+
+; reverse feature & reverse feature list
+; --------------------------------------
+
+(ft (reverse-feature (nft (lsh (flk _flank) (grd _ground)) _refined-ground))
+  (is _flank-rev (reverse-wp-rng _flank))
+  (is _ground-rev (reverse-wp-rng _ground))
+  (is _refined-ground-rev (reverse-feature-list _refined-ground))
+  `(nft (rsh (grd _ground-rev) (flk _flank-rev)) _refined-ground-rev))
+
+(ft (reverse-feature (nft (rsh (grd _ground) (flk _flank)) _refined-ground))
+  (is _flank-rev (reverse-wp-rng _flank))
+  (is _ground-rev (reverse-wp-rng _ground))
+  (is _refined-ground-rev (reverse-feature-list _refined-ground))
+  `(nft (lsh (flk _flank-rev) (grd _ground-rev)) _refined-ground-rev))
+
+(ft (reverse-feature (nft (grv (flk _flank1) (grd _ground) (flk _flank2))
+			  _refined-ground))
+  (is _flank1-rev (reverse-wp-rng _flank1))
+  (is _ground-rev (reverse-wp-rng _ground))
+  (is _flank2-rev (reverse-wp-rng _flank2))
+  (is _refined-ground-rev (reverse-feature-list _refined-ground))
+  `(nft (grv (flk _flank2-rev) (grd _ground-rev) (flk _flank1-rev))
+	_refined-ground-rev))
+
+
+(ft (reverse-feature-list (tup))
+  `(tup))
+(ft (reverse-feature-list (tup _h | _t))
+  (appfun (reverse-feature-list _t) (tup (reverse-feature _h))))
+
+
+
+; auxiliary functions
+; -------------------
+
+(ft (split-wp-rng _max (tup (rng _z _max _ro) | _rest))  
+  `(tup (tup (rng _z _max _max)) | (tup (rng _z _max _ro) | _rest)))
+(ft (split-wp-rng _max (tup (rng _z _ri _max) | _rest))  
+  `(tup (tup (rng _z _ri _max)) | (tup (rng _z _max _max) | _rest)))
+(ft (split-wp-rng _max (tup (rng _z _ri _ro) | _rest))
+  (is (tup _left-wp-rng | _rest-wp-rng) (split-wp-rng _max _rest))
+  `(tup (tup (rng _z _ri _ro) | _left-wp-rng) | _rest-wp-rng))
+
+(ft (split-truncone _z1 _r1 _z2 _r2 _min)
+  (is _h (- _r1 _r2))
+  (+ _z1 (/ (* (- _z2 _z1) (- _h (- _min _r2))) _h)))
+
+(ft (max-rad (tup))   0)
+(ft (max-rad (tup (rng _z _ri _ro) | _rest-rng-list))
+  (max _ri _ro (max-rad _rest-rng-list)))
+
+(ft (reverse-wp-rng (tup)) `(tup))
+(ft (reverse-wp-rng (tup (rng _z _ri _ro) | _rest))
+  (is _mirr-z (- 0 _z))
+  (appfun (reverse-wp-rng _rest) `(tup (rng _mirr-z _ro _ri))))
+
+
+
+
+; example
+; -------
+
+
+#|
+
+|                       D  E
+40                      +--+
+|                      /   |
+35                    /    |
+|                    /     |                F
+30                  /      +----------------+
+|  A            B  /                        |  G            H
+25--------------+  + C                      |  +------------+
+|               |  |                        |  |            |
+20              +--+                        +--+            |
+|                                                           |
+15                                                          |
+|                                                           |
+10                                                          |
+|                                                           |
+5                                                           |
+|                                                           |
+0_______________________________________________________________
+    10  20  30  40  50  60  70  80  90  100 110 120 130 140 150
+|#
+
+
+(ft (exa)
+  `(tup (rng   0  0 25)	; A
+	(rng  40 25 20)	; B
+	(rng  50 20 25)	; C
+	(rng  60 40 40)	; D
+	(rng  70 40 30)	; E
+	(rng 110 30 20)	; F
+	(rng 120 20 25)	; G
+	(rng 150 25  0) ; H
+	))
+
+

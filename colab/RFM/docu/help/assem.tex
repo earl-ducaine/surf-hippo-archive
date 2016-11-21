@@ -1,0 +1,33 @@
+\assem:
+
+Format: \stmt{assem [ put $<$file-name$>$ | 
+	      get $<$file-name$>$ | 
+	      $<$mod-cmd$>$ [$<$module-name$>$] | 
+	      $<$list-cmd$>$ [$<$start$>$ [$<$end$>$]] ] }
+        (where  \stmt{mod-cmd  ::= mod | module | modules}\\ 
+	 and    \stmt{list-cmd ::= l | listing})
+
+Effect: \stmt{assem} : assemble *rfi-database* (\compile\ and \verti\ also \\
+	  assemble the database, so this command is not yet necessary!),\\
+        \stmt{assem put $<$file-name$>$} : stores the assembler code \\
+          of all operators in *rfi-database* in file $<$file-name$>$;\\
+          \compile\ or \verti\ must have been used first! ($<$file-name$>$ must \\
+          be a string enclosed in double quotes),\\
+    	\stmt{assem get $<$file-name$>$} : retrieve assembler code from\\
+     	  file $<$file-name$>$ and link it (this allows to use operators\\
+          compiled in previous sessions without having to load the source\\
+          code again and compile it; be careful:\\
+     	  \listing\ / \listcode\ / \listclass\ will not show information\\
+          on operators *only* loaded with \stmt{assem get}),\\
+   	\stmt{assem modules} (or \stmt{mod} / \stmt{module} instead of \stmt{modules}) :\\
+	  show interesting information on all current modules\\
+	  (name, size, position of hashtable, imports),\\
+    	\stmt{assem module $<$name$>$} (or \stmt{mod} instead of \stmt{module}) :\\
+	  show contents of module $<$name$>$ (each entry consists of three\\
+          cells: label name, address, additional information),\\
+   	\stmt{assem listing [$<$start$>$ [$<$end$>$]]}\\ (or \stmt{l} instead of \stmt{listing}) :\\
+	  list memory section; if $<$end$>$ is omitted, list 20 cells;\\
+	  if $<$start$>$ and $<$end$>$ are omitted, list next 20 cells \\
+	  starting one cell behind the last displayed cell).
+
+see also: \horizon, \verti, \compile

@@ -1,0 +1,14 @@
+(ft (tup | _x) _x)
+
+(hn (nou _x _x) ! unknown)
+(hn (nou _x _y))
+
+(hn (continue) (wait continue\:\ ))
+
+
+(ft (predicate _p) ; is a type !
+    (member _p (rfi-predicates)))
+  
+;(hn (member _x (tup _x | _rest)))
+;(hn (member _x (tup _y | _rest)) (member _x _rest))
+  

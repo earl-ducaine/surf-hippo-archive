@@ -1,0 +1,57 @@
+; Datei /home/forward/release/FORWARD/taxon-interface/wp-facts.rf
+; Datum: 13.8.1991
+;
+; Diese Datei enthaelt ein Beispiel-Drehteil mit Geometrie und
+; Topologie-Daten
+;
+;
+; Die Flaechen des Werkstuecks haben alle die gleichen Argumente wie
+; ein Kegelmantelstumpf. Alternativ koennte man auch die urspruengliche
+; TEC-REP Darstellung nehmen und daraus erst (durch die unten angegebenen
+; truncone-Regeln) diese vollstaendige Darstellung mit allen 
+; Attributen herleiten und an TAXON uebergeben. In allen Regeln,
+; in denen man auf "truncone" zugreift, muesste man dann mit
+; dem DATA-Operator darauf zugreifen.
+
+(hn (circ 38 (a -40) (b -40) (ra 0) (rb 100)))
+(hn (cylinder 39 (a -40) (b -10) (ra 100) (rb 100)))
+(hn (ring 40 (a -10) (b -10) (ra 100) (rb 90)))
+(hn (cylinder 41 (a -10) (b 0) (ra 90) (rb 90)))
+(hn (ring 42 (a 0) (b 0) (ra 90) (rb 100)))
+(hn (cylinder 43 (a 0) (b 54) (ra 100) (rb 100)))
+(hn (ring 44 (a 54) (b 54) (ra 100) (rb 179)))
+(hn (truncone 45 (a 54) (b 55) (ra 179) (rb 180)))
+(hn (cylinder 46 (a 55) (b 84) (ra 180) (rb 180)))
+(hn (ring 47 (a 84) (b 84) (ra 180) (rb 162)))
+(hn (cylinder 48 (a 84) (b 107) (ra 162) (rb 162)))
+(hn (ring 49 (a 107) (b 107) (ra 162) (rb 180)))
+(hn (cylinder 50 (a 107) (b 137) (ra 180) (rb 180)))
+(hn (ring 51 (a 137) (b 137) (ra 180) (rb 162)))
+(hn (cylinder 52 (a 137) (b 160) (ra 162) (rb 162)))
+(hn (ring 53 (a 160) (b 160) (ra 162) (rb 180)))
+(hn (cylinder 54 (a 160) (b 189) (ra 180) (rb 180)))
+(hn (truncone 55 (a 189) (b 190) (ra 180) (rb 179)))
+(hn (ring 56 (a 190) (b 190) (ra 179) (rb 100)))
+(hn (cylinder 57 (a 190) (b 240) (ra 100) (rb 100)))
+(hn (circ 58 (a 240) (b 240) (ra 100) (rb 0)))
+(hn (neighbor 38 39))
+(hn (neighbor 39 40))
+(hn (neighbor 40 41))
+(hn (neighbor 41 42))
+(hn (neighbor 42 43))
+(hn (neighbor 43 44))
+(hn (neighbor 44 45))
+(hn (neighbor 45 46))
+(hn (neighbor 46 47))
+(hn (neighbor 47 48))
+(hn (neighbor 48 49))
+(hn (neighbor 49 50))
+(hn (neighbor 50 51))
+(hn (neighbor 51 52))
+(hn (neighbor 52 53))
+(hn (neighbor 53 54))
+(hn (neighbor 54 55))
+(hn (neighbor 55 56))
+(hn (neighbor 56 57))
+(hn (neighbor 57 58))
+

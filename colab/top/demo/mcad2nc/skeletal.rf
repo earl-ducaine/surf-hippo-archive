@@ -1,0 +1,651 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;            microCAD2NC             ;;;
+;;;            RELFUN part             ;;;
+;;;          Skeletal Plans            ;;;
+;;; (c) Michael Sintek  September 1991 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+#|
+
+Input: classified workpieces
+----------------------------
+
+
+class-wp ::= (cwp <globals> <feature-list>)
+
+globals ::= "set of global annotations; momentarily the max radius;
+	     should additionally contain the material and the
+	     surface quality"
+
+feature-list ::= (tup { <nested-feature> }* )
+
+nested-feature ::= (nft <feature> <feature-list>)
+
+feature ::= <leftshoulder> | <rightshoulder> | <groove> | ...
+
+leftshoulder ::= (lsh <flank> <ground>)
+
+rightshoulder :: (rsh <ground> <flank>)
+
+groove ::= (grv <flank> <ground> <flank>)
+
+flank ::= (flk <coordinates>)
+
+ground ::= (grd <coordinates>)
+
+coordinates ::= (tup { <point> }* )
+
+point ::= (p <num> <num>)  ; z-coordinate and radius
+
+
+
+Output: skeletal plans	
+----------------------
+
+
+skeletal-plan ::= (skp <globals> <sac-plan>)
+		  ; sac = sequential/alternative/commutative
+
+plan ::=   (tup)		; empty plan
+	 | <action>		; atomar action
+	 | (seq <plan-list>)	; sequential
+	 | (com <plan-list>)	; commutative
+	 | (alt <plan-list>)	; alternative
+
+plan-list ::= (tup { <plan> }* )
+
+action ::= <roughing> | <finishing> | ...
+
+roughing ::= (roughing <tool> <way> <geometry>)
+
+tool ::= (tool <plate> <holder>)
+
+way ::= left | right ; means: working into this direction
+
+geometry ::= (geo <coordinates>)
+
+
+|#
+
+
+
+; 1. create skeletal plan
+; =======================
+
+(ft (skeletal-plan (cwp _globals _features))
+  (is _skp (skp/com _features))
+  `(skp _globals _skp))
+
+
+; skp/com
+; -------
+
+(ft (skp/com (tup))  
+  `(tup))
+
+(ft (skp/com (tup _h | _t))
+  (norm-com (skp/cfeat _h) (skp/com _t)))
+
+
+; skp/cfeat (complex features like nft = nested feature)
+; ------------------------------------------------------
+
+(ft (skp/cfeat (nft _feat _refined-feat))
+  (norm-seq (skp/feat _feat) (skp/com _refined-feat)))
+
+; additional complex/nested features ...
+
+
+; skp/feat (for unnested features like lsh, rsh, grv)
+; ---------------------------------------------------
+
+(ft (skp/feat (lsh (flk _flank) (grd _ground)))  
+  (skp/lsh _flank _ground))
+
+(ft (skp/feat (rsh (grd _ground) (flk _flank)))  
+  (skp/rsh _ground _flank))
+
+(ft (skp/feat (grv (flk _flank1) (grd _ground) (flk _flank2)))
+  (skp/grv _flank1 _ground _flank2))
+
+
+
+; skeletal plans for unnested features
+; ------------------------------------
+
+; global constants for demo version:
+
+(ft (wp-material) high-alloy-steel)
+
+(ft (quality) normal)
+
+
+; skp/lsh
+; -------
+
+(ft (skp/lsh _flank _ground)
+  (is _fl-gr (append-coord _flank _ground))
+  (tool-sel roughing (wp-material) (quality)
+	    0 (rf-max (compute-flank-angles _flank))
+	    left _tools)
+  (check-alternatives
+   (gen-roughing-alternatives _tools left `(geo _fl-gr))))
+
+
+; skp/rsh
+; -------
+
+(ft (skp/rsh _ground _flank)
+  (is _gr-fl (append-coord _ground _flank))
+  (tool-sel roughing (wp-material) (quality)
+	    0 (rf-max (compute-flank-angles (reverse-coord _flank)))
+	    right
+	    _tools)
+  (check-alternatives
+   (gen-roughing-alternatives _tools right `(geo _gr-fl))))
+
+
+; skp/grv
+; -------
+
+(ft (skp/grv _flank1 _ground _flank2)
+  (is _fl-gr-fl (append-coord _flank1 (append-coord _ground _flank2)))
+  (is _max1 (rf-max (compute-flank-angles _flank1)))
+  (is _max2 (rf-max (compute-flank-angles (reverse-coord _flank2))))
+  (tool-sel roughing (wp-material) (quality)
+	    _max1 _max2 right _tools1)
+  (tool-sel roughing (wp-material) (quality)
+	    _max2 _max1 left _tools2)
+  (is _right-alt (check-alternatives (gen-roughing-alternatives
+				      _tools1 right `(geo _fl-gr-fl))))
+  (is _left-alt (check-alternatives (gen-roughing-alternatives
+				     _tools2 left `(geo _fl-gr-fl))))
+  (norm-alt (norm-seq _left-alt _right-alt)
+	    (norm-seq _right-alt _left-alt)))
+
+
+; additional skeletal plans ...
+
+
+
+; tool-sel (tool selection)
+; -------------------------
+
+; format:
+; (tool-sel <process> <wp-material> <quality> <alpha> <beta> <way>
+;           (tup { (tup <plate> <holder>) }+ ))
+
+; place precomputed tool selections here ...
+
+
+; CONTAX tool selection:
+
+(hn (tool-sel _process _wp-material _quality _alpha _beta _direction
+	      _tools)
+
+  (rf-print contax\ tool\ selection\:)
+  (rf-print \ \ arguments\:\ )
+  (rf-princ _process) (rf-princ \ )
+  (rf-princ _wp-material) (rf-princ \ )
+  (rf-princ _quality) (rf-princ \ )
+  (rf-princ _alpha) (rf-princ \ )
+  (rf-princ _beta) (rf-princ \ )
+  (rf-princ _direction)
+  (rf-terpri)
+  (rf-print \ \ propagating...)
+  (cn reconsult "tools.ctx")
+  (init-tool-sel)
+  (is _tools (get-cn-tools
+	      (cn global hard
+		  ; (tup quality _quality)
+		  (tup wp-material _wp-material)
+		  (tup process _process)
+		  (tup alpha _alpha)
+		  (tup beta _beta)
+		  (tup direction _direction)
+		  (tup tool lathe-tools)
+		  (tup holder holders)
+		  (tup plate plate-geometries)
+		  (tup edge-angle edge-angles)
+		  (tup tc-edge-angle tc-edge-angles))
+	      tool holder))
+  (rf-terpri)
+  (rf-princ \ \ results\:\ )
+  (rf-princ _tools)
+  (rf-print end.)
+  (rf-terpri) (rf-terpri))
+
+
+; init routine for tool selection via CONTAX
+; must be run prior to calling (skeletal-plan ...)
+
+(hn (init-tool-sel)
+
+  (rf-print contax\ initialization\:)
+	
+  (rf-print \ \ creating\ constraint\ variables...)
+  ; (cn cv quality hrcl (tup qualities))
+  (cn cv wp-material hrcl (tup wp-materials))
+  (cn cv process hrcl (tup processes))
+  (cn cv tool hrcl (tup lathe-tools))
+  (cn cv holder hrcl (tup holders))
+  (cn cv alpha hrcl (tup acute-angles))
+  (cn cv beta hrcl (tup acute-angles))
+  (cn cv direction hrcl (tup directions))
+  (cn cv plate hrcl (tup plate-geometries))
+  (cn cv edge-angle hrcl (tup edge-angles))
+  (cn cv tc-edge-angle hrcl (tup tc-edge-angles))
+
+  (rf-print \ \ creating\ constraint\ instances...)
+  (cn ci inst-ho-to hard holder-tool holder tool)
+  (cn ci inst-pr-ho hard process-holder process holder)
+  (cn ci inst-ho-de1 hard holder-desc1 holder direction)
+  (cn ci inst-ho-de2 hard holder-desc2 holder tc-edge-angle)
+  (cn ci inst-ho-de3 hard holder-desc3 holder plate)
+  (cn ci inst-pr-ma-to hard process-material-tool
+         process wp-material tool)
+  (cn ci inst-pl-ea hard plate-eangle plate
+         edge-angle)
+  (cn ci inst-pr-ea hard process-eangle process edge-angle)
+  ; (cn ci inst-tc-ea-al hard tc-ea-al tc-edge-angle
+           ; edge-angle alpha)
+  (cn ci inst-tc-beta hard tc-beta tc-edge-angle beta)
+
+  (rf-print \ \ initializing\ HAC\ datastructures...)
+  (cn hacinit)
+  (rf-print ok.)
+  (rf-terpri))
+
+  
+
+; append-coord
+; ------------
+
+(ft (append-coord (tup) _f)  
+  _f)
+(ft (append-coord _f (tup))  
+  _f)
+(ft (append-coord (tup (p _z _r)) (tup (p _z _r) | _rest))  
+  `(tup (p _z _r) | _rest))
+(ft (append-coord (tup _h | _t) _r)
+  (tup _h | (append-coord _t _r)))
+
+
+; reverse-coord
+; -------------
+
+(ft (reverse-coord (tup))   `(tup))
+(ft (reverse-coord (tup (p _z _r) | _rest))
+  (is _mirr-z (- 0 _z))
+  (appfun (reverse-coord _rest) `(tup (p _mirr-z _r))))
+
+
+; compute-flank-angles (only for descending flanks)
+; -------------------------------------------------
+
+(ft (compute-flank-angles (tup))  
+  `(tup))
+
+(ft (compute-flank-angles (tup (p _z _r)))  
+  `(tup))
+
+(ft (compute-flank-angles (tup (p _z _r1) (p _z _r2) | _rest))   ; 90 deg ring
+  (tup 90
+       | (compute-flank-angles `(tup (p _z _r2) | _rest))))
+
+(ft (compute-flank-angles (tup (p _z1 _r1) (p _z2 _r2) | _rest))
+  (tup (rad2rounded-deg (atan (/ (- _r1 _r2) (- _z2 _z1))))
+       | (compute-flank-angles `(tup (p _z2 _r2) | _rest))))
+
+(ft (rad2rounded-deg _rad)
+  (* (round (/ (+ (* _rad 57.295779513082323) 2.9999) 3)) 3))
+
+
+; gen-roughing-alternatives
+; -------------------------
+
+(ft (gen-roughing-alternatives (tup) _way _geo)
+  `(tup))
+(ft (gen-roughing-alternatives
+     (tup (tup _tool _holder) | _rest) _way _geo)
+  (norm-alt `(roughing (tool _tool _holder) _way _geo)
+	    (gen-roughing-alternatives _rest _way _geo)))
+
+
+; check-alternatives
+; ------------------
+
+(ft (check-alternatives (tup))  
+  (rf-print tool\ selection\ unsuccessfull))
+(ft (check-alternatives _x) _x)
+
+
+; get-cn-tools
+; ------------
+
+; extract a list of tools/holders from the return value
+; of the CONTAX propagation
+
+(ft (get-cn-tools (tup _vars | _values) _tool-var-name _holder-var-name)
+  (is _tool-pos (find-pos _tool-var-name _vars))
+  (is _holder-pos (find-pos _holder-var-name _vars))
+  (get-cn-tools1 _values _tool-pos _holder-pos))
+
+(ft (get-cn-tools1 (tup) _tool-pos _holder-pos)  
+  `(tup))
+
+(ft (get-cn-tools1 (tup _h | _t) _tool-pos _holder-pos)
+  (add-if-new (tup (rf-nth _tool-pos _h)
+		   (rf-nth _holder-pos _h))
+	      (get-cn-tools1 _t _tool-pos _holder-pos)))
+
+
+
+; 2. skp access/transform functions
+; =================================
+
+; a) get-skp-top
+; --------------
+
+(ft (get-skp-top (skp _globals _sac-plan))
+  (skp-top/plan _sac-plan))
+
+
+(ft (skp-top/plan (tup))  
+  `(tup))
+
+(ft (skp-top/plan (com _com))  
+  (skp-top/com _com))
+
+(ft (skp-top/plan (seq _seq))  
+  (skp-top/seq _seq))
+
+(ft (skp-top/plan (alt _alt))  
+  (skp-top/alt _alt))
+
+(ft (skp-top/plan _action)
+  _action)
+
+
+(ft (skp-top/com (tup))  
+  `(tup))
+
+(ft (skp-top/com (tup _h | _t))
+  (norm-com (skp-top/plan _h) (skp-top/com _t)))
+
+
+(ft (skp-top/seq (tup))  
+  `(tup))
+
+(ft (skp-top/seq (tup _h | _t))
+  (skp-top/plan _h))
+
+
+(ft (skp-top/alt (tup))  
+  `(tup))
+
+(ft (skp-top/alt (tup _h | _t))
+  (norm-alt (skp-top/plan _h) (skp-top/alt _t)))
+
+
+; b) execute-skp-action
+; ---------------------
+
+; skp-exec-action (skp-exec-action <skp> <actspec>)
+;    -> (tup <action-list> <rest-plan> <costs>)
+; -----------------------------------------------
+
+(ft (skp-exec-action (skp _globals _sac-plan) _actspec)
+  (is (tup _actions _rest-plan _costs) (skp-exec/plan _sac-plan _actspec))
+  `(tup _actions (skp _globals _rest-plan) _costs))
+
+
+(ft (skp-exec/plan (tup) _actspec)  
+  `(tup (tup) (tup) 0))
+
+(ft (skp-exec/plan (com _com) _actspec)  
+  (skp-exec/com _com _actspec))
+
+(ft (skp-exec/plan (seq _seq) _actspec)  
+  (skp-exec/seq _seq _actspec))
+
+(ft (skp-exec/plan (alt _alt) _actspec)  
+  (skp-exec/alt _alt _alt _actspec))
+
+(ft (skp-exec/plan _action _actspec)
+  (skp-exec/act _action _actspec))
+
+
+(ft (skp-exec/com (tup) _actspec)  
+  `(tup (tup) (tup) 0))
+
+(ft (skp-exec/com (tup _h | _t) _actspec)
+  (is (tup _h-actions _h-rest-plan _h-costs) (skp-exec/plan _h _actspec))
+  (is (tup _t-actions _t-rest-plan _t-costs) (skp-exec/com _t _actspec))
+  (tup (appfun _h-actions _t-actions)
+       (norm-com _h-rest-plan _t-rest-plan)
+       (+ _h-costs _t-costs)))
+
+
+(ft (skp-exec/seq (tup) _actspec)  
+  `(tup (tup) (tup) 0))
+
+(ft (skp-exec/seq (tup _h | _t) _actspec)
+  (skp-exec/seq1 (skp-exec/plan _h _actspec) _t _actspec))
+
+(ft (skp-exec/seq1 (tup _h-actions (tup) _h-costs) _t _actspec)  
+  (is (tup _t-actions _t-rest-plan _t-costs) (skp-exec/com _t _actspec))
+  (tup (appfun _h-actions _t-actions)
+       _t-rest-plan
+       (+ _h-costs _t-costs)))
+
+(ft (skp-exec/seq1 (tup _h-actions _h-rest-plan _h-costs) _t _actspec)
+  (tup _h-actions
+       (norm-seq _h-rest-plan (norm-rest-seq _t))
+       _h-costs))
+
+
+(ft (skp-exec/alt _alt (tup) _actspec)   ; no more alternatives to check
+  `(tup (tup) (alt _alt) 0))
+
+(ft (skp-exec/alt _alt (tup _h | _t) _actspec)
+  (skp-exec/alt1 _alt (skp-exec/plan _h _actspec) _h _t _actspec))
+
+(ft (skp-exec/alt1 _alt (tup _h-actions _h _costs) _h _t _actspec)  
+  (skp-exec/alt _alt _t _actspec)) ; try remaining alternatives
+
+(ft (skp-exec/alt1 _alt (tup _h-actions _h-rest-plan _h-costs) _h _t _actspec)
+  `(tup _h-actions _h-rest-plan _h-costs)) ; alternative found
+
+
+(ft (skp-exec/act (roughing _tool _way _geo) _tool)  
+  `(tup (tup (roughing _tool _way _geo)) (tup) 1)) ; costs: 1
+
+(ft (skp-exec/act _action _actspec)
+  `(tup (tup) _action 0))
+
+
+; (c) extract-actions (extract-actions <sac-skp>)
+; -----------------------------------------------
+
+(ft (extract-actions (tup))  
+  `(tup))
+
+(ft (extract-actions (com _com))  
+  (extract-actions/list _com))
+
+(ft (extract-actions (seq _seq))  
+  (extract-actions/list _seq))
+
+(ft (extract-actions (alt _alt))  
+  (extract-actions/list _alt))
+
+(ft (extract-actions _action)
+  `(tup _action))
+
+
+(ft (extract-actions/list (tup))  
+  `(tup))
+
+(ft (extract-actions/list (tup _h | _t))
+  (appfun (extract-actions _h) (extract-actions/list _t)))
+
+
+; (d) get-tools (from action-list; removing duplicates)
+; -----------------------------------------------------
+
+(ft (get-tools (tup))   `(tup))
+(ft (get-tools (tup (roughing _tool _way _geo) | _rest))
+  (is _rest-tools (get-tools _rest))
+  (add-if-new _tool _rest-tools))
+
+
+; (e) count-com-actions
+; ---------------------
+
+(ft (count-com-actions (skp _globals _sac-plan))
+  (cca/plan _sac-plan))
+
+
+(ft (cca/plan (tup))  
+  0)
+
+(ft (cca/plan (com _com))  
+  (cca/com _com))
+
+(ft (cca/plan (seq (tup _h | _t)))  
+  (cca/plan _h))
+
+(ft (cca/plan (alt (tup _h | _t)))   ; only consider first alternative 
+  (cca/plan _h))
+
+(ft (cca/plan _action)
+  1)
+
+
+(ft (cca/com (tup))  
+  0)
+
+(ft (cca/com (tup _h | _t))
+  (+ (cca/plan _h) (cca/com _t)))
+
+
+
+; 3. skp normalizations
+; =====================
+
+; norm-com (norm-com <plan1> <plan2>)
+; -----------------------------------
+
+(ft (norm-com (tup) _plan)  
+  _plan)
+
+(ft (norm-com _plan (tup))  
+  _plan)
+
+(ft (norm-com (com _com1) (com _com2))  
+  (is _com12 (appfun _com1 _com2))
+  `(com _com12))
+
+(ft (norm-com _plan (com _com))  
+  `(com (tup _plan | _com)))
+
+(ft (norm-com (com _com) _plan)  
+  (is _cp (appfun _com `(tup _plan)))
+  `(com _cp))
+
+(ft (norm-com _plan1 _plan2)
+  `(com (tup _plan1 _plan2)))
+
+
+; norm-seq (norm-seq <plan1> <plan2>) & (norm-rest-seq <tup>)
+; -----------------------------------------------------------
+
+(ft (norm-seq (tup) _plan)  
+  _plan)
+
+(ft (norm-seq _plan (tup))  
+  _plan)
+
+(ft (norm-seq (seq _seq1) (seq _seq2))  
+  (is _seq12 (appfun _seq1 _seq2))
+  `(seq _seq12))
+
+(ft (norm-seq _plan (seq _seq))  
+  `(seq (tup _plan | _seq)))
+
+(ft (norm-seq (seq _seq) _plan)  
+  (is _sp (appfun _seq `(tup _plan)))
+  `(seq _sp))
+
+(ft (norm-seq _plan1 _plan2)
+  `(seq (tup _plan1 _plan2)))
+
+
+; (norm-rest-seq <tup>) : <tup> is expected to be the rest of a
+; normalized sequence 
+
+(ft (norm-rest-seq (tup))  
+  `(tup))
+
+(ft (norm-rest-seq (tup _plan))  
+  _plan)
+
+(ft (norm-rest-seq _tup)
+  `(seq _tup))
+
+
+
+; norm-alt (norm-alt <plan1> <plan2>)
+; -----------------------------------
+
+(ft (norm-alt (tup) _plan)  
+  _plan)
+
+(ft (norm-alt _plan (tup))  
+  _plan)
+
+(ft (norm-alt (alt _alt1) (alt _alt2))  
+  (is _alt12 (appfun _alt1 _alt2))
+  `(alt _alt12))
+
+(ft (norm-alt _plan (alt _alt))  
+  `(alt (tup _plan | _alt)))
+
+(ft (norm-alt (alt _alt) _plan)  
+  (is _ap (appfun _alt `(tup _plan)))
+  `(alt _ap))
+
+(ft (norm-alt _plan1 _plan2)
+  `(alt (tup _plan1 _plan2)))
+
+
+
+; 4. skp auxiliaries
+; ==================
+
+; add-if-new
+; ----------
+
+(ft (add-if-new _tool _rest-tools)
+  (rf-member _tool _rest-tools)  
+  _rest-tools)
+
+(ft (add-if-new _tool _rest-tools)
+  `(tup _tool | _rest-tools))
+
+
+; find-pos
+; --------
+
+(ft (find-pos _element _list)
+  (find-pos1 _element _list 0))
+
+(ft (find-pos1 _element (tup _element | _rest) _no)  
+  _no)
+
+(ft (find-pos1 _element (tup _h | _t) _no)
+  (find-pos1 _element _t (1+ _no)))
+

@@ -1,0 +1,102 @@
+(hn (immerwahr))
+(ft (wp nil)
+    `(wp nil) )
+(ft (wp
+     (cons
+      (cons _f (cons (p 0 0) (cons _end _t)))
+      _rem ) )
+    (wph
+     `(cons
+       (cons _f (cons (p 0 0) (cons _end _t)))
+       _rem ) ) )
+(ft (wp (cons (p 0 0) _rem))
+    (wph `(cons (p 0 0) _rem)) )
+(ft (wph
+     (cons
+      (cons _f (cons _begin (cons (p _z 0) _t)))
+      nil ) )
+     (immerwahr)
+    `(wp
+      (cons
+       (cons _f (cons _begin (cons (p _z 0) _t)))
+       nil ) ) )
+(ft (wph (cons (p _z 0) nil))
+    `(wp) )
+(ft (wph
+     (cons
+      (cons
+       _f
+       (cons (p _z1 _x1) (cons (p _z2 _x2) _t)) )
+      (cons
+       (cons
+        _g
+        (cons (p _z2 _x2) (cons (p _z3 _x3) _u)) )
+       _rem ) ) )
+    (> _x2 0)
+    (is _1 `(wp _s))
+    (is
+     _1
+     (wph
+      `(cons
+        (cons
+         _g
+         (cons (p _z2 _x2) (cons (p _z3 _x3) _u)) )
+        _rem ) ) )
+    `(wp
+      (cons
+       (cons
+        _f
+        (cons (p _z1 _x1) (cons (p _z2 _x2) _t)) )
+       _s ) ) )
+(ft (wph (cons (p _z _x) (cons (p _z _x) _rem)))
+    (wph `(cons (p _z _x) _rem)) )
+(ft (wph
+     (cons
+      (p _z _x)
+      (cons
+       (cons _f (cons (p _z _x) (cons _end _t)))
+       _rem ) ) )
+    (wph
+     `(cons
+       (cons _f (cons (p _z _x) (cons _end _t)))
+       _rem ) ) )
+(ft (wph
+     (cons
+      (cons _f (cons _begin (cons (p _z _x) _t)))
+      (cons (p _z _x) _rem) ) )
+    (wph
+     `(cons
+       (cons
+        _f
+        (cons _begin (cons (p _z _x) _t)) )
+       _rem ) ) )
+
+(ft (test-k)
+    (is
+     _wp1
+     (wph
+      `(cons
+        (cons l (cons (p 0 0) (cons (p 0 12.5) nil)))
+        (cons
+         (cons l (cons (p 0 12.5) (cons (p 27 44.5) nil)))
+         (cons
+          (cons l (cons (p 27 44.5) (cons (p 27 0) nil)))
+          nil ) ) ) ) )
+    (is
+     _wp2
+     (wph
+      `(cons
+        (p 0 0)
+        (cons
+         (cons l (cons (p 0 0) (cons (p 0 12.5) nil)))
+         (cons
+          (cons l (cons (p 0 12.5) (cons (p 0 12.5) nil)))
+          (cons
+           (cons l (cons (p 0 12.5) (cons (p 27 44.5) nil)))
+           (cons
+            (p 27 44.5)
+            (cons
+             (cons l (cons (p 27 44.5) (cons (p 27 0) nil)))
+             nil ) ) ) ) ) ) ) )
+    `(cons _wp1 (cons _wp2 nil)) )
+

@@ -1,0 +1,19 @@
+\colab{} \cd:
+
+Format: \stmt{cd}\\
+        \stmt{cd $<$dir$>$}
+
+Options: $<$dir$>$ a directory pathname
+
+Effect: Function for changing the current directory.
+	\cd \ without arguments switches to the directory from where 
+	\COLAB{} has been started. 
+	If a global directory pathname (beginning with "/") is provided
+	the string which contains the current path is changed to $<$dir$>$.
+	Otherwise $<$dir$>$ is added to the current pathname. No checks 
+	about the physical existence of these pathnames are made.
+	If the provided pathname contains capital letters, they are
+	transformed in small letters. To avoid this or if $<$dir$>$
+        contains .. or . one must use quotation marks.
+        
+see also: \pwd

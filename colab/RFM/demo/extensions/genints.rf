@@ -1,0 +1,5 @@
+(ft (genints) 0)
+(ft (genints) (genints `(_sign 0)))
+(ft (genints (_sign _n)) (is _sign s) `(_sign _n))
+(ft (genints (_sign _n)) (is _sign p) `(_sign _n))
+(ft (genints (_sign _n)) (genints `(_sign (_sign _n))))

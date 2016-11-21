@@ -1,0 +1,60 @@
+Tests im Emulator:
+------------------
+
+rfe-l> (tst1)
+`(drlh (tup a b c d) (tup b b) e)
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst2)
+`(drlh
+  (cntct ii (drlh (tup iii i iii) (tup iv ii i)))
+  (tup
+   (cntct ii (drlh (tup iii i iii) (tup iv ii i)))
+   b
+   (cntct
+    (drlh (tup g h) (tup h g) k)
+    (drlh (tup u (drlh (tup g h) (tup h g) k)) (tup u f)) )
+   (cntct 1 (drlh (tup 1 2) (tup 2 3) (tup 2 3 1))) )
+  (tup b b)
+  e )
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst3)
+`(drlh (cntct b (drlh (tup b c))))
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst4)
+`(drlh (cntct b (drlh (tup b c))) (cntct c (drlh (tup b c))))
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst5)
+`(drlh (drlh (tup b c)) (tup a (cntct b (drlh (tup b c))) d))
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst6)
+`(drlh (cntct b (drlh (tup b c))) (tup a (drlh (tup b c)) d))
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst7)
+`(drlh (tup 1 2 3) (tup 2 2) (drlh a b c) 4 6)
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst8)
+`(drlh (tup 1 2 3) (tup 2 2) (drlh a b c) 4 6)
+
+More solutions?  (Y/N) n
+
+rfe-l> (tst9)
+`(drlh (tup 1 2 3) (tup 2 2) (drlh a b c) 4 6 a b)
+
+More solutions?  (Y/N) n
+
+rfe-l>
+

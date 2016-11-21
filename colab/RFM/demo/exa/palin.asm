@@ -1,0 +1,6 @@
+
+(GASM AUTHOR "from internal database" CODE
+      (.PROC |(PALIN (VARI EV) (VARI SF) (VARI RF))/1| .PROC IDENT/1
+             .PROC |(CO (VARI C))/1| .PROC |(TWICE (VARI F))/1| .PROC
+             PALINDROME/0 .PROC PALINCLASS/0 .PROC PALINZOOM/0 .PROC
+             PALINLENGTH/0 .PROC APPEND/3 .PROC ADD1/1)) 

@@ -1,0 +1,19 @@
+\listing:
+
+Format: \stmt{listing}\\
+        \stmt{listing $<$op$>$}\\
+        \stmt{listing $<$pat$>$}
+
+Options: $<$op$>$ an operator,\\
+         $<$pat$>$ a head pattern
+
+Effect: Global listing function. Shows the knowledge items of all databases in
+	\COLAB. If no argument is given, the all databases will be printed on
+	the terminal. If an operator $<$op$>$ is given, only those knowledge items
+	in the databases will be printed which use this operator as their 
+	procedure name. If a pattern is given, only those knowledge items in the
+	databases will be printed whose head matches the pattern $<$pat$>$.
+
+
+see also: \stmb{l}, \stmb{list-facts}, \stmb{list-forward}, \stmb{list-magic}, \stmb{list-rules}, \stmb{list-strategies}, 
+	  \consult

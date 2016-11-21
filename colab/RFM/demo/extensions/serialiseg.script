@@ -1,0 +1,119 @@
+# rlogin 131.246.11.75 -l rfm  (ist die arctecserv-2)
+# im Verzeichnis RFM 'lucid' aufrufen
+#####################################################
+
+rfi-l> style prolog
+rfi-p> rf-cd(demo/extensions)
+"/home.arctecserv-2a/rfm/RFM/demo/extensions/"
+rfi-p> consult serialiseg
+% Reading file "serialiseg.rfp" ..
+rfi-p> serialise([d,a,l,l,a,s])
+[2, 1, 3, 3, 1, 4]
+rfi-p> l
+serialise(L) :- numbered(qsort[before](pairlists(L, R)), 1) & R.
+pairlists([X | L], [Y | R]) :-& tup([X, Y] | pairlists(L, R)).
+pairlists([], []) :-& tup().
+before([X1, Y1], [X2, Y2]) :- string<(X1, X2).
+numbered([[X, N] | R], N) :- numbered(R, 1+(N)).
+numbered([], N).
+qsort[Cr]([]) :-& [].
+qsort[Cr]([X | Y]) :- partition[Cr](X, Y, Sm, Gr) &
+                      appfun(qsort[Cr](Sm), tup(X | qsort[Cr](Gr))).
+partition[Cr](X, [], [], []).
+partition[Cr](X, [X | Z], L1, L2) :- partition[Cr](X, Z, L1, L2).
+partition[Cr](X,
+              [Y | Z],
+              [Y | Sm],
+              Gr) :- Cr(Y, X), partition[Cr](X, Z, Sm, Gr).
+partition[Cr](X,
+              [Y | Z],
+              Sm,
+              [Y | Gr]) :- Cr(X, Y), partition[Cr](X, Z, Sm, Gr).
+appfun([], L) :-& L.
+appfun([H | R], L) :-& tup(H | appfun(R, L)).
+rfi-p> compile
+rfi-p> emul
+rfe-p> ori
+[2, 1, 3, 3, 1, 4]
+
+More solutions?  (Y/N) 
+
+unknown
+rfe-p> l
+serialise(L) :- _2 is qsort[before],
+                _4 is pairlists(L, R),
+                _3 is cns(_4, nil),
+                _1 is apply(_2, _3, user),
+                numbered(_1, 1) &
+                R.
+pairlists(_1, _2) :- _1 is cns[X, L],
+                     _2 is cns[Y, R],
+                     _5 is cns[Y, nil],
+                     _3 is cns[X, _5],
+                     _4 is pairlists(L, R) &
+                     cns(_3, _4).
+pairlists(nil, nil) :-& nil.
+before(_1, _2) :- _3 is cns[Y1, nil],
+                  _1 is cns[X1, _3],
+                  _4 is cns[Y2, nil],
+                  _2 is cns[X2, _4],
+                  string<(X1, X2) &
+                  true.
+numbered(_1, N) :- _3 is cns[N, nil],
+                   _2 is cns[X, _3],
+                   _1 is cns[_2, R],
+                   _4 is 1+(N),
+                   numbered(R, _4) &
+                   true.
+numbered(nil, N).
+qsort(Cr, nil) :-& nil.
+qsort(Cr, _1) :- _1 is cns[X, Y],
+                 _2 is partition[Cr],
+                 _6 is cns(Gr, nil),
+                 _5 is cns(Sm, _6),
+                 _4 is cns(Y, _5),
+                 _3 is cns(X, _4),
+                 apply(_2, _3, user),
+                 _9 is qsort[Cr],
+                 _10 is cns(Sm, nil),
+                 _7 is apply(_9, _10, user),
+                 _12 is qsort[Cr],
+                 _13 is cns(Gr, nil),
+                 _11 is apply(_12, _13, user),
+                 _8 is cns(X, _11) &
+                 appfun(_7, _8).
+partition(Cr, X, nil, nil, nil).
+partition(Cr, X, _1, L1, L2) :- _1 is cns[X, Z],
+                                _2 is partition[Cr],
+                                _6 is cns(L2, nil),
+                                _5 is cns(L1, _6),
+                                _4 is cns(Z, _5),
+                                _3 is cns(X, _4),
+                                apply(_2, _3, user) &
+                                true.
+partition(Cr, X, _1, _2, Gr) :- _1 is cns[Y, Z],
+                                _2 is cns[Y, Sm],
+                                _4 is cns(X, nil),
+                                _3 is cns(Y, _4),
+                                apply(Cr, _3, user),
+                                _5 is partition[Cr],
+                                _9 is cns(Gr, nil),
+                                _8 is cns(Sm, _9),
+                                _7 is cns(Z, _8),
+                                _6 is cns(X, _7),
+                                apply(_5, _6, user) &
+                                true.
+partition(Cr, X, _1, Sm, _2) :- _1 is cns[Y, Z],
+                                _2 is cns[Y, Gr],
+                                _4 is cns(Y, nil),
+                                _3 is cns(X, _4),
+                                apply(Cr, _3, user),
+                                _5 is partition[Cr],
+                                _9 is cns(Gr, nil),
+                                _8 is cns(Sm, _9),
+                                _7 is cns(Z, _8),
+                                _6 is cns(X, _7),
+                                apply(_5, _6, user) &
+                                true.
+appfun(nil, L) :-& L.
+appfun(_1, L) :- _1 is cns[H, R], _2 is appfun(R, L) & cns(H, _2).

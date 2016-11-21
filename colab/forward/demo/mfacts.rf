@@ -1,0 +1,10 @@
+(hn (parent a aa))
+(hn (parent a ab))
+(hn (parent aa aaa))
+(hn (parent aa aab))
+(hn (parent aaa aaaa))
+(hn (parent c ca))
+
+;(hn (ancestor _x _y) (parent _x _z) (ancestor _z _y))
+;(hn (ancestor _x _y) (parent _x _y))
+;(hn (query _x) (ancestor aa _x))

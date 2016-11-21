@@ -1,0 +1,668 @@
+;;; Patches for rfi.lsp
+
+
+
+;; A. PROSYN
+;;;;;;;;;;;;
+
+					; File iFace.lsp:  Links the modules Pro2Lisp and Lisp2Pro into rfi.lsp.
+					;                  2 Parts:  - Modified functions from rfi.lsp.
+					;                            - New functions
+					;
+					;                  To use it load first rfi.lsp and then iFace.lsp.
+
+
+					; re-initialize *rfi-readtable* when starting Relfun:
+(setq *rfi-readtable* nil)
+(setq *rfi-prompt* '|rfi-l> |)
+
+
+					; Part 1:  Modified functions  ------------------------------------------------
+
+
+					; Adding command style:
+
+(setq *lisp-extras* nil) ; remove this !!!!
+(setq *lisp-functions* nil) ; remove this !!!!
+
+(defun rfi-init ()
+  (if (streamp *rfi-script-input*) (close *rfi-script-input*))
+  (if (streamp *rfi-script-output*) (close *rfi-script-output*))
+  (setq *rfi-commands* 
+	'(a0 a0ft a0hn az azft azhn builtins compile consult
+	     destroy dynamic emul endscript 
+	     exec extrarg deanon flatten flatter footen footer 
+	     help horizon inter l 
+	     lconsult bye listing listclass listcode lreplace 
+	     ltell m modes more nospy normalize ori 
+	     prelude relationalize rx rxft rxhn replace
+	     script showdepth singlify spy 
+	     static style tell untup version verti
+	     fc-init break ;(Klaus 30.09.1990)
+             indexing    ; INDEXING -- real-fun
+	     asm assem untype uncomma hotrans ; Michael Sintek 18.02.92
+	     unor ; M.S. 28.02.92
+	     unlambda ; M.S. 30.04.92
+	     unmacro ; M.S. 18.05.92
+             ))
+  
+  (setq *rf-print-width*      80)
+  (setq *rfi-standard-output* *standard-output*)
+  (setq *rfi-standard-input*  *standard-input*)
+  (setq *rfi-script-output*   nil)
+  (setq *rfi-script-input*    nil)
+  (rfi-set-interactive-mode)
+  (if (not *rfi-readtable*)
+      (progn (setq *rfi-readtable* (copy-readtable))
+	     (rfi-set-syntax)))
+  (if (not *lisp-functions*)
+      (setq *lisp-functions*  
+	    '(+ - * / 1+ 1- abs rem round sqrt expt log sin cos tan
+		asin acos atan max min first rest last time gensym
+		fw cn tx 
+		rfi-predicates)))
+  (if (not *lisp-predicates*)
+      (setq *lisp-predicates* 
+	    '(< <= = /= > >= string< string<= string= string/= 
+		string> string>= null atom symbolp numberp 
+		integerp plusp minusp
+		))) 
+  (if (not *relfun-extras*)
+      (setq *relfun-extras* ;(Klaus 30.09.1990)
+	    '(atom-e not-atom-e
+		     vari-t-e not-vari-t-e
+		     )))
+  (if (not *lisp-extras*)
+      (setq *lisp-extras*  
+	    '(load break readl relfun rf-print rf-princ rf-terpri rf-fresh-line
+		   rf-pprint pretty-print wait)))
+  (if (not *rfi-ori*)
+      (setq *rfi-ori* '((is t nil))))
+  (if (not *rfi-showdepth*)
+      (setq *rfi-showdepth* 0))
+  (if (not *rfi-machine*)
+      (rfi-set-interpreter-mode))
+  (if (not *rfi-prelude*)
+      (rfi-load-prelude))
+  )
+
+
+(defun rfi-command (userline)
+  (let ((com (car userline)))
+    (cond ((eq com 'a0)
+	   (setq *rfi-database*
+		 (append (cdr userline) *rfi-database*)))
+	  ((eq com 'a0ft)
+	   (setq *rfi-database*
+		 (cons (cons 'ft (cdr userline)) *rfi-database*)))
+	  ((eq com 'a0hn)
+	   (setq *rfi-database*
+		 (cons (cons 'hn (cdr userline)) *rfi-database*)))
+	  ((eq com 'az)
+	   (setq *rfi-database*
+		 (append *rfi-database* (cdr userline))))
+	  ((eq com 'azft)
+	   (setq *rfi-database*
+		 (append *rfi-database* (list (cons 'ft (cdr userline))))))
+	  ((eq com 'azhn)
+	   (setq *rfi-database*
+		 (append *rfi-database* (list (cons 'hn (cdr userline))))))
+	  ((eq com 'version)
+	   (princ *rfi-version*))
+	  ((eq com 'builtins)
+	   (rf-print (cons 'functions *lisp-functions*))
+	   (rf-print (cons 'predicates *lisp-predicates*))
+	   (rf-print (cons 'extras *lisp-extras*)))
+	  ((eq com 'modes)
+	   (rfi-modes userline))
+					; horizontal database transformation. (TK 07.10.1990)
+					; the function NORMALIZE-DATABASE has to be imported from the file NORMALIZER.LISP
+	  ((eq com 'normalize)
+	   (setq *rfi-database* (normalize-database *rfi-database*)))
+	  ((eq com 'horizon)
+	   (setq *rfi-database* (horizon-database *rfi-database*)))
+	  ((eq com 'verti)
+	   (rfi-cmd-compile userline) (gwam.assem))
+	  ((eq com 'compile)
+	   (setq *rfi-database* (horizon-database *rfi-database*))
+	   (rfi-cmd-compile userline) (gwam.assem)) 
+					;userline still ignored in assembling!!!!!
+	  ((eq com 'consult)
+	   (rfi-cmd-consult userline))
+	  ((eq com 'destroy)
+	   (setq *rfi-database* nil))
+	  ((eq com 'dynamic)
+	   (setq *rfi-static* nil))
+	  ((eq com 'emul)
+	   (rfi-cmd-emul))
+	  ;;; command endscript defined in function readl
+	  ((eq com 'exec)
+	   (rfi-cmd-execute userline))
+	  ((eq com 'deanon)
+	   (setq *rfi-database* 
+		 (deanon-database *rfi-database*)))
+	  ((eq com 'flatten)
+	   (setq *rfi-database*
+		 (flatten-database *rfi-database*)))
+	  ((eq com 'flatter)
+	   (setq *rfi-database*
+		 (flatten-struc-database *rfi-database*)))
+	  ((eq com 'extrarg)
+	   (setq *rfi-database*
+		 (extrarg-database *rfi-database*)))
+	  ((eq com 'relationalize)
+	   (setq *rfi-database*
+		 (extrarg-database (flatten-database *rfi-database*))))
+	  ((eq com 'singlify)
+	   (setq *rfi-database*
+		 (singlify-database *rfi-database*)))
+	  ((eq com 'footen)
+	   (setq *rfi-database*
+		 (footen-database *rfi-database*)))
+	  ((eq com 'footer)
+	   (setq *rfi-database*
+		 (footer-database *rfi-database*)))
+	  ((eq com 'help)
+	   (rfi-cmd-help userline))
+	  ((eq com 'inter)
+	   (rfi-cmd-inter))
+	  ((eq com 'prelude)
+	   (rfi-cmd-l (cadr userline) *rfi-prelude*))
+	  ((or (eq com 'l) (eq com 'listing))
+	   (rfi-cmd-l (cadr userline) *rfi-database*))
+	  ((eq com 'lconsult)
+	   (rfi-cmd-lconsult userline))
+	  ((eq com 'listclass)
+	   (rfi-cmd-listclass userline))
+	  ((eq com 'listcode)
+	   (rfi-cmd-listcode userline))
+	  ((eq com 'lreplace)
+	   (rfi-cmd-lreplace userline))
+	  ((eq com 'ltell)
+	   (set (cadr userline) *rfi-database*))
+	  ((or (eq com 'm) (eq com 'more))
+	   (rf-print '|unknown|))
+	  ((eq com 'nospy)
+	   (setq *rfi-spy* nil) (setq *emu-debug* nil))
+	  ((eq com 'rx)
+	   (setq *rfi-database*
+		 (remove (cadr userline) *rfi-database* :test #'equal)))
+	  ((eq com 'rxft)
+	   (setq *rfi-database*
+		 (remove (cons 'ft (cdr userline)) *rfi-database* :test #'equal)))
+	  ((eq com 'rxhn)
+	   (setq *rfi-database*
+		 (remove (cons 'hn (cdr userline)) *rfi-database* :test #'equal)))
+	  ((eq com 'replace)
+	   (rfi-cmd-replace userline))
+	  ((eq com 'script)
+	   (rfi-cmd-startscript userline))
+	  ((eq com 'showdepth)
+	   (rfi-cmd-showdepth userline))
+	  ((eq com 'spy)
+	   (setq *rfi-spy* t) (setq *emu-debug* t))
+	  ((eq com 'static)
+	   (setq *rfi-static* t))
+	  ((eq com 'tell)
+	   (rfi-cmd-tell userline))
+	  ((eq com 'untup)
+	   (setq *rfi-database* (untup-database *rfi-database*)))
+	  ((eq com 'fc-init)
+	   (fc-init userline)) ;(Klaus 30.09.1990)
+	  ((eq com 'break)
+	   (break))
+	  ((eq com 'style) ; Michael Herfert
+	   (rfi-cmd-style userline))
+	  ((eq com 'indexing)
+	   (idx.idx-cmd (cdr userline))) ; INDEXING -- real-fun
+	  ((or (eq com 'assem) (eq com 'asm))
+	   (gwam.assem-cmd (cdr userline))) ; M. Sintek
+	  ((eq com 'untype)
+	   (setq *rfi-database* (untype *rfi-database*))) ; M. Sintek
+	  ((eq com 'uncomma)
+	   (setq *rfi-database* (uncomma *rfi-database*))) ; M. Sintek
+	  ((eq com 'hotrans)
+	   (setq *rfi-database* (hotrans *rfi-database*))) ; M. Sintek
+          ((eq com 'unor)
+           (setq *rfi-database* (unor *rfi-database*))) ; M. Sintek
+          ((eq com 'unlambda)
+           (setq *rfi-database* (unlambda *rfi-database*))) ; M. Sintek
+          ((eq com 'unmacro)
+           (setq *rfi-database* (unmacro *rfi-database*))) ; M. Sintek
+	  )
+    
+					; get new input from user afer a interpreter-command
+    (cond ((and (eq com 'bye) (rfi-cmd-bye))
+	   t)
+	  (t nil))))
+
+
+;; Changing the prompt:
+
+(defun rfi-set-emulator-mode ()
+  (setq *rfi-machine* 'emulator)
+  (rfi-cmd-style (list 'style *style*)))
+
+
+(defun rfi-set-interpreter-mode ()
+  (setq *rfi-machine* 'interpreter)
+  (rfi-cmd-style (list 'style *style*)))
+
+
+
+					; Comment characters are style-dependent:
+
+(defun remove-remarks (x)           ; Remark starts with a ";" or "%"
+  (let* ((begin-of-comment-char (if (eq 'prolog *style*)
+				    #\%
+				  #\; ))
+	 (p (position begin-of-comment-char x)))
+    (if p (subseq x 0 p) x)))
+
+
+					; Default file-extension is style-dependent:
+
+(defun rfi-cmd-consult (userline)
+  (let* ((filename (rfi-extension (cadr userline) (rf-or-rfp))))
+    (if (probe-file filename)
+	(setq *rfi-database* (append *rfi-database* 
+				     (rfi-cmd-consult-1 filename)))
+      (rf-error "(rfi-cmd-consult): " filename " file doesn't exist!"))))
+
+
+(defun rfi-cmd-tell (userline)
+  (let ((filename (rfi-extension (cadr userline) (rf-or-rfp))))
+    (if (probe-file filename)
+	(if (rfi-yes-or-no-p "file already exists - overwrite? ")
+	    (progn (delete-file filename)
+		   (rfi-cmd-tell-1 filename)))
+      (rfi-cmd-tell-1 filename))))
+
+
+(defun rfi-cmd-replace (userline
+                        &aux (filename (rfi-extension (cadr userline) 
+						      (rf-or-rfp) )))
+  (if (probe-file filename)
+      (setq *rfi-database* (rfi-cmd-consult-1 filename))
+    (rf-error "(rfi-cmd-replace): " filename " file doesn't exist!")))
+
+
+(defun read-db-from-file (file)
+  (rf-princ-like-lisp (format nil "~A Reading file \"~A\" .." 
+			      (if (eq *style* 'prolog) "%" ";") file))
+  (if (eq *style* 'prolog)
+      (pro-read-data-base file)        ; returns NIL if error detected
+    (with-open-file (ifile file :direction :input)
+		    (let ((*readtable* *rfi-readtable*))
+		      (do ((clause nil)
+			   (tmpdb nil (cons clause tmpdb)))
+			  ((null (setq clause (read ifile nil nil nil)))
+			   (reverse tmpdb)))))))
+
+
+
+					; The caller of readl detects no difference between the two syntaxes,
+					; because readl always returns an expression in Lisp-like syntax.
+					; This is the most important point to interface pro2lisp.lsp.
+
+(defun readl nil
+					; Reads input from the user.
+					; If prolog-style is active then the input is transformed to 
+					; lisp-syntax.
+  (let ((usercmd nil))
+    (loop
+     (setq usercmd (rf-reader))
+     (cond ((equal usercmd ""))         ; read again
+	   ((eq *style* 'lisp)
+	    (return (transform-string-to-single-lisp-object usercmd)) )
+					; style is prolog:
+	   (t 
+	    (let* ((pair (pro-split-input usercmd))
+		   (rfi-cmd-as-symbol (car pair))
+		   (rest-of-input-as-string (cdr pair))
+		   (rfi-cmd-p (member rfi-cmd-as-symbol
+				      *rfi-commands* 
+				      :test #'equal )) )
+	      (cond ((null pair))  ; scanner signals error, read again
+		    (rfi-cmd-p
+		     (return (handle-rfi-cmd rfi-cmd-as-symbol
+					     rest-of-input-as-string
+					     usercmd )))
+		    ;; transform Prolog-syntax to Lisp-syntax:
+		    (t
+		     (let ((input-as-list (pro-read-goal usercmd)))
+		       (if (not (null input-as-list))  ; error at transform. ?
+			   (return input-as-list) ))))))))))  ; no
+
+
+(defun rf-reader ()
+					; returns a string.
+					; If prolog-style then multiple lines are separated by #\Newline.
+  (do* ((line (rf-readline t) (rf-readline nil))
+	(cmd  line            (if (and (string/= "" cmd)
+				       (eq 'prolog *style*) )
+				  (concatenate 'string 
+					       cmd (string #\Newline) line ) 
+				(concatenate 'string cmd           line) )))
+       ((complete-cmd-p cmd) cmd)))
+
+
+					; In Prolog-style commas and some other characters signal an uncompleted input.
+
+(defun complete-cmd-p (x)
+  (if (eq *style* 'prolog)
+      (and (pro-complete-cmd-p x)
+	   (= (count #\( x) (count #\) x)) )
+    (= (count #\( x) (count #\) x)) ))
+
+
+;; Prolog-people like var-names with underscores (e.g. a_long_name),
+;; but the current version of rfi.lsp when in Lisp-style can not read
+;; the corresponding name (_a_long_name).
+
+(defun rfi-set-syntax nil
+  ;; third arg. of set-macro-character:
+  ;;   nil ==> terminating macro-character
+  ;;   t   ==> non-terminating macro-character
+  (set-macro-character #\_ #'underscore-reader t   *rfi-readtable*)
+  (set-macro-character #\` #'backquote-reader  nil *rfi-readtable*)
+  (set-macro-character #\, #'comma-reader      nil *rfi-readtable*)
+  (set-macro-character #\: #'colon-reader      nil *rfi-readtable*)
+  (set-macro-character #\@ #'ecal-reader       nil *rfi-readtable*)
+					;  (set-macro-character #\! #'cut-reader        nil *rfi-readtable*)
+  (set-macro-character #\| #'bar-reader        nil *rfi-readtable*))
+
+
+					; The following two functions are most important to interface lisp2pro.lsp.
+
+(defun pp (*expr)
+  (if (eq *style* 'prolog)
+      (progn
+	(pro-print *expr)
+	(rf-terpri)
+	t)
+    (progn
+      (pp-init)
+      (pp-expr *expr)
+      (pp-newline)
+      t )))
+
+
+(defun pp-clause (clause)
+  (if (eq *style* 'prolog)
+      (progn
+	(pro-print clause)
+	(rf-terpri)
+	t )
+    (progn
+      (pp-init)
+      (if (and (< (length clause) 3) (pp-fits clause))
+	  (pp-small-clause clause)
+	(pp-big-clause clause))
+      (pp-newline)
+      t )))
+
+; The following modification is not needed to interface Prolog-syntax,
+; but it avoids the double-prompt when starting Relfun.
+
+(defun relfun (&optional *rfi-script-input* (*rfi-input-mode* 'interactive))
+ ; (rfi-init) ; not allowed because of recursive relfun-calls
+ ; in kcl *standard-input* is redirected while loading init.lsp:
+ (setq *rfi-standard-input* *standard-input*)
+ (rf-terpri)
+ ; (read-line)  ; eat the #\Newline --> no double prompt
+ (do* ((leave-relfun nil)
+       (userline (readl)))
+      (leave-relfun)
+  (setq userline           ; execute command/query and bind new input from user
+   (catch :toploop
+    (cond ((rfi-command-p userline)
+           (setq leave-relfun (rfi-command userline))
+           (cond (leave-relfun nil)
+                 ((eq (car userline) 'ori) *rfi-ori*)
+                 (t (readl))))
+          (t
+	   ;;;
+	   ;;; query
+	   ;;;
+	   (setq *rfi-ori* userline)
+	   (if (rfi-interpreter-mode-p)
+                     ;;;
+                     ;;; use interpreter to answer query
+                     ;;; 
+	       (cond ((and-process (deanon-request (if *rfi-static* (flatten-request userline) userline))
+				   '((bottom)) 
+				   (list *rfi-prelude* *rfi-database*)
+				   1
+				   nil))
+		     (t
+		      (rf-print '|unknown|)
+		      (readl)))
+                     ;;;
+                     ;;; use emulator to answer query
+                     ;;; 
+	       (progn (emulate (transform-query-for-emulator userline))
+		      (readl)))
+	   )
+    ))))
+  (if (streamp *rfi-script-input*) (close *rfi-script-input*))
+)
+
+
+(defun read-from-terminal (firsttime)
+  (if firsttime (progn (fresh-line *rfi-standard-output*) 
+		       (princ *rfi-prompt* *rfi-standard-output*))
+                (princ "       ") )   ; continuation indicator
+  (read-line *rfi-standard-input*))
+
+
+
+(defun pretty-print (x)
+  (rf-pprint (mk-inst x))
+  x)
+
+
+; Part 2: New functions  -----------------------------------------------------
+
+
+(defvar *style* 'lisp "dom = {lisp, prolog}")
+
+
+(defun rfi-cmd-style (userline)
+  (let ((error-p nil) )
+    (if (= 2 (length userline))
+	(progn
+	  (case (second userline)
+		(lisp (setq *rfi-prompt* 
+			    (if (eq *rfi-machine* 'interpreter)
+				'|rfi-l> |
+			      '|rfe-l> |))
+		      (setq *style* 'lisp) )
+		(prolog (setq *rfi-prompt* 
+			      (if (eq *rfi-machine* 'interpreter)
+				  '|rfi-p> |
+				'|rfe-p> |))
+			(setq *style* 'prolog) )
+		(t (setq error-p t)) ))
+      (setq error-p t) )
+    (if error-p
+	(progn
+	  (rf-terpri)
+	  (rf-princ-like-lisp "Error. Use:")
+	  (rf-terpri)
+	  (rf-princ-like-lisp "   style lisp")
+	  (rf-terpri)
+	  (rf-princ-like-lisp "or")
+	  (rf-terpri)
+	  (rf-princ-like-lisp "   style prolog")
+	  (rf-terpri) ))))
+
+
+(defun pro-complete-cmd-p (cmd-as-str)
+  ; Commas and some other characters indicate an uncompleted input.
+  (if (= 0 (length cmd-as-str))
+      nil  ; continue reading
+    (do* ((i (1- (length cmd-as-str)) (1- i))
+	  (ch (char cmd-as-str i) (char cmd-as-str i))
+	  (cont-chars (list #\, #\& #\| #\-)) )
+	 ;; find non-whitespace:
+	 ((or (case (char cmd-as-str i)
+		    ((#\Space #\Newline #\Tab)
+		     nil )
+		    (t t) )
+	      (= i 0) )
+	  (not (member ch cont-chars :test #'char=)) ))))
+
+
+
+(defun rfi-cmd-listclass (userline)          
+  (if (emulator-available-p) 
+      (let ((*style* 'lisp))        ; always use Lisp-syntax
+	(list-class (cadr userline)))))
+
+
+
+(defun rfi-cmd-listcode (userline)
+  (if (emulator-available-p) 
+      (let ((*style* 'lisp))        ; always use Lisp-syntax
+	(list-code (cadr userline)))))
+
+
+(defun rf-princ-like-lisp (x)
+  ; prints x using princ, respects script.
+  (if (rfi-script-mode-p)
+      (princ x *rfi-script-output*) )
+  (princ x *rfi-standard-output*) )
+
+
+(defun rf-or-rfp ()
+  ; returns the default file-extension
+  (if (eq 'prolog *style*)
+      ".rfp"
+      ".rf" ))
+
+
+(defun handle-rfi-cmd (cmd-as-symbol rest-of-line-as-string full-line)
+  ;; Returns an rfi-command in Lisp-like syntax.
+  ;; Returns NIL if syntax-error.
+  (let ((error-p nil))
+    (labels
+     ((read-clause ()
+		   (let ((result (pro-read-clause rest-of-line-as-string)))
+		     (setq error-p (null result)) 
+		     result ))
+      (read-goal ()
+		 (let ((result (pro-read-goal rest-of-line-as-string)))
+		   (setq error-p (null result)) 
+		   result )))
+     (let ((result
+	    (case cmd-as-symbol
+		  (a0
+		   (list 'a0 (read-clause)))
+		  (az 
+		   (list 'az (read-clause)))
+		  ((listing l)
+		   (if (string= "" rest-of-line-as-string)
+		       '(listing)
+		     (cons 'listing
+			   (read-goal) )))
+		  (rx
+		   (list 'rx (read-clause)) )
+		  ;; no syntax-transformation is needed, when calling 
+		  ;; these commands:
+		  (( builtins compile consult destroy emul endscript exec
+			      horizon inter lisp listclass listcode lreplace
+			      m more nospy ori replace rf break script 
+			      showdepth spy tell verti)
+		   (transform-string-to-single-lisp-object full-line) )
+		  ;; other rfi-commands (not listed in the RFM-Manual):
+		  (t
+		   (transform-string-to-single-lisp-object full-line) ))))
+       (if error-p	   
+	   nil   
+	 result )))))
+
+
+
+
+
+;; B. Patches for GAMA and horizontal transformations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun horizon-database (db)
+  (footen-database (normalize-database (deanon-database (flatten-struc-database
+(untup-database (uncomma (hotrans (unlambda (unor (unmacro (untype db))))))))))))
+
+
+
+(defun transform-query-for-emulator (userline)
+ (cdr (deanon-clause (flatten-struc-clause (cons 'ft (tuptocons1 (maingen (uncomma/body (hotrans/body (unlambda/body (unor/body (unmacro/body (untype/body userline)))))))))))))
+
+
+(defun uninst-t (x) (and (consp x) (eq 'uninst (car x))))
+(defun uninst-tt (x) (and (uninst-t x) (= 2 (length x))))
+
+
+(defun pp-expr (*expr)
+  (if (consp *expr)
+      (cond ((vari-t *expr)
+             (pp-vari *expr))
+            ((inst-t *expr)
+             (pp-list (cdr *expr) '|`| '||))
+            ((uninst-t *expr)
+             (pp-list (cdr *expr) '|,| '||))
+            ((cut-t *expr)
+             (pp-list (cdr *expr) '|!| '||))
+            ((ecal-t *expr)
+             (pp-list (cdr *expr) '|@| '||))
+            ((is-t *expr)
+             (pp-list *expr '|(| '|)|))
+            (t
+             (pp-list *expr '|(| '|)|)))
+      (pp-prin *expr)))
+
+
+(defun rfi-quasi-atom (a)
+  (or (inst-tt a) (uninst-tt a) (vari-tt a) (cut-tt a) (ecal-tt a) (is-tt a)))
+
+
+(defun comma-reader (stream char)
+  (declare (ignore char))
+  (list 'uninst (read stream t nil t)))
+
+
+(defun read-from-string-std (string)
+  (let ((*readtable* (copy-readtable nil)))
+       (read-from-string string)))
+
+(defun colon-reader (stream char) ; bad hack !!
+  (declare (ignore char))
+  (let ((next-char (read-char stream t nil t)))
+       (cond ((and (graphic-char-p next-char) (char/= next-char #\ ))
+	      (unread-char next-char stream)
+	      (car (multiple-value-list 
+		    (read-from-string-std 
+		     (format nil ":~a" (read stream t nil t))))))
+	     (T '\:))))
+
+
+(defun rf-format (&rest args)
+  (when (rfi-script-mode-p) (apply #'format (cons *rfi-script-output* args)))
+  (apply #'format (cons *rfi-standard-output* args)))
+
+
+; new builtins:
+
+(defun wait (text)
+  (rf-princ text)
+  (read-char))
+
+
+(defun rfi-predicates () ; collect all rfi-database predicate names
+  (remove-duplicates (mapcar #'caadr *rfi-database*)))
+
+
+
+; init
+
+(rfi-init)

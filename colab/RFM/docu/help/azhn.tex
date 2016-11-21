@@ -1,0 +1,16 @@
+\azhn:
+
+Format: \stmt{azhn $<$head$>$ $<$body$1>$ ... $<$body$n>$}
+
+Options: $<$head$>$ the head,\\
+	 $<$body$1>$ ... $<$body$n>$ the bodies of an hn clause.
+
+Effect: The clause 
+        \stmt{(hn $<$head$>$ $<$body1$>$ ... $<$bodyn$>$)} 
+        will be inserted at the
+	end of the (possibly empty) database \stmt{*rfi-database*}.
+	This command is an abbreviation of 
+        \stmt{az (hn $<$head$>$ $<$body1$>$ ... $<$bodyn$>$)}.
+        Not available in P-syntax.
+
+see also: \az, \azft, \consult, \destroy, \replace

@@ -1,0 +1,14 @@
+\stmb{a0}:
+
+Format: \stmt{a0 $<$clause$>$}
+
+Options: $<$clause$>$ a \COLAB{}-clause
+
+Effect: The rule $<$clause$>$ will be inserted in front of one of the (possibly 
+        empty) \FORWARD{} databases \stmt{*rule-database*} (cointaining the bidirectional 
+        rules with tag \stmt{rl} and the forward rules with tag \stmt{up}) or \stmt{*fact-base*}
+        (containing only facts) where the tags \stmt{fact} and \stmt{attrterm} are substituted
+	by the tag \stmt{hn} in order to provide this database for the
+	\RELFUN-Interpeter.
+
+see also: \consult, \destroy, \replace

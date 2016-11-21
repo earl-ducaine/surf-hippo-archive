@@ -1,0 +1,695 @@
+;;;
+;;;  CONTAX representation for the crossword puzzle of 
+;;;
+;;;  Pascal van Hentenryck: Consistency Techniques in Logic Programming, pp. 138-139
+;;;  -------------------------------------------------------------------------------
+;;;
+
+
+(dd word2 ("ci" "id" "in" "ir" "le"))
+(dd word3 ("ain" "ave" "bis" "bol" "cou" "eau" "eta" "feu" "gre" "ils" 
+	   "ios" "les" "lie" "lue" "mer" "nep" "nie" "ohe" "ole" "olt" 
+	   "ost" "oui" "sem" "sic" "tue" "usa" "use"))
+(dd word4 ("ados" "aere" "anel" "apis" "aria" "arno" "bref" "cede" 
+	   "dada" "demi" "eden" "eole" "epte" "etui" "evoe" "feue" 
+	   "ille" "ilot" "isar" "lave" "loge" "nato" "nier" "noel" 
+	   "ouir" "rion" "rode" "rose" "soir" "tera" "trou" "user" "vert"))
+(dd word5 ("butin" "casse" "cirer" "deite" "doter" "eclos" "ecrin" 
+	   "emier" "envol" "eolie" "esope" "etier" "evier" "isole" 
+	   "lieue" "lippe" "mulet" "norme" "ointe" "peler" "pitre" 
+	   "raler" "reins" "seine" "timon" "tirer" "tueur" "tulle" 
+	   "vaine" "valse"))
+(dd word6 ("aleser" "alliee" "attire" "avilir" "aviser" "blonde" "caisse" 
+	   "client" "ecrase" "elever" "lacere" "ratier" "rotule" "tavele" 
+	   "tiroir"))
+(dd word7 ("apivore" "blocage" "caverne" "colibri" "corsets" "coussin" 
+	   "ecuries" "egrisee" "eserine" "etoilee" "initier" "notaire" 
+	   "odieuse" "usuelle" "usurper" "utilise" "voleter"))
+(dd word8 ("cultiver" "ecervele" "enliasse" "etendard" "fraisier" 
+	   "gambader" "levrette" "nidifier" "orienter" "savonner" 
+	   "stimuler"))
+(dd word9 ("attristee" "elevation" "puissante" "tresorier"))
+(dd word10 ("etroitesse" "europeenne" "hesperides" "vilipender"))
+
+(dd word (word2 word3 word4 word5 word6 word7 word8 word9 word10))
+
+(dd position1 (1))
+(dd position2 (2))
+(dd position3 (3))
+(dd position4 (4))
+(dd position5 (5))
+(dd position6 (6))
+(dd position7 (7))
+(dd position8 (8))
+(dd position9 (9))
+(dd position10 (10))
+(dd position (position1 position2 position3 position4 position5 
+	      position6 position7 position8 position9 position10))
+
+(lc sameletter (w1 p1 w2 p2) (word position word position) sameletter-fn)
+
+(lispeval 
+  (defun sameletter-fn (w1 p1 w2 p2)
+    (equal (char w1 (1- p1)) (char w2 (1- p2)))))
+(lispeval (compile 'sameletter-fn))
+
+
+; Woerter der Laenge 2:
+
+(cv W10 hrcl (word2))
+(cv W28 hrcl (word2))
+(cv W70 hrcl (word2))
+(cv W92 hrcl (word2))
+(cv W131 hrcl (word2))
+
+; Woerter der Laenge 3:
+
+(cv W12 hrcl (word3))
+(cv W15 hrcl (word3))
+(cv W30 hrcl (word3))
+(cv W32 hrcl (word3))
+(cv W33 hrcl (word3))
+(cv W38 hrcl (word3))
+(cv W41 hrcl (word3))
+(cv W45 hrcl (word3))
+(cv W49 hrcl (word3))
+(cv W55 hrcl (word3))
+(cv W57 hrcl (word3))
+(cv W60 hrcl (word3))
+(cv W76 hrcl (word3))
+(cv W77 hrcl (word3))
+(cv W81 hrcl (word3))
+(cv W85 hrcl (word3))
+(cv W94 hrcl (word3))
+(cv W95 hrcl (word3))
+(cv W101 hrcl (word3))
+(cv W108 hrcl (word3))
+(cv W122 hrcl (word3))
+(cv W126 hrcl (word3))
+(cv W127 hrcl (word3))
+(cv W129 hrcl (word3))
+(cv W134 hrcl (word3))
+(cv W141 hrcl (word3))
+(cv W142 hrcl (word3))
+
+; Woerter der Laenge 4:
+
+(cv W18 hrcl (word4))
+(cv W22 hrcl (word4))
+(cv W25 hrcl (word4))
+(cv W31 hrcl (word4))
+(cv W34 hrcl (word4))
+(cv W39 hrcl (word4))
+(cv W40 hrcl (word4))
+(cv W43 hrcl (word4))
+(cv W53 hrcl (word4))
+(cv W56 hrcl (word4))
+(cv W62 hrcl (word4))
+(cv W63 hrcl (word4))
+(cv W64 hrcl (word4))
+(cv W68 hrcl (word4))
+(cv W71 hrcl (word4))
+(cv W73 hrcl (word4))
+(cv W75 hrcl (word4))
+(cv W83 hrcl (word4))
+(cv W102 hrcl (word4))
+(cv W105 hrcl (word4))
+(cv W106 hrcl (word4))
+(cv W111 hrcl (word4))
+(cv W113 hrcl (word4))
+(cv W116 hrcl (word4))
+(cv W117 hrcl (word4))
+(cv W121 hrcl (word4))
+(cv W128 hrcl (word4))
+(cv W132 hrcl (word4))
+(cv W137 hrcl (word4))
+(cv W138 hrcl (word4))
+(cv W140 hrcl (word4))
+(cv W145 hrcl (word4))
+(cv W146 hrcl (word4))
+
+; Woerter der Laenge 5:
+
+(cv W3 hrcl (word5))
+(cv W4 hrcl (word5))
+(cv W5 hrcl (word5))
+(cv W9 hrcl (word5))
+(cv W16 hrcl (word5))
+(cv W21 hrcl (word5))
+(cv W23 hrcl (word5))
+(cv W26 hrcl (word5))
+(cv W27 hrcl (word5))
+(cv W44 hrcl (word5))
+(cv W47 hrcl (word5))
+(cv W52 hrcl (word5))
+(cv W65 hrcl (word5))
+(cv W66 hrcl (word5))
+(cv W69 hrcl (word5))
+(cv W72 hrcl (word5))
+(cv W79 hrcl (word5))
+(cv W86 hrcl (word5))
+(cv W87 hrcl (word5))
+(cv W91 hrcl (word5))
+(cv W93 hrcl (word5))
+(cv W98 hrcl (word5))
+(cv W99 hrcl (word5))
+(cv W100 hrcl (word5))
+(cv W107 hrcl (word5))
+(cv W109 hrcl (word5))
+(cv W125 hrcl (word5))
+(cv W130 hrcl (word5))
+(cv W133 hrcl (word5))
+(cv W139 hrcl (word5))
+
+; Woerter der Laenge 6:
+
+(cv W7 hrcl (word6))
+(cv W8 hrcl (word6))
+(cv W11 hrcl (word6))
+(cv W14 hrcl (word6))
+(cv W29 hrcl (word6))
+(cv W48 hrcl (word6))
+(cv W67 hrcl (word6))
+(cv W74 hrcl (word6))
+(cv W82 hrcl (word6))
+(cv W89 hrcl (word6))
+(cv W103 hrcl (word6))
+(cv W120 hrcl (word6))
+(cv W124 hrcl (word6))
+(cv W136 hrcl (word6))
+(cv W143 hrcl (word6))
+
+; Woerter der Laenge 7:
+
+(cv W2 hrcl (word7))
+(cv W37 hrcl (word7))
+(cv W50 hrcl (word7))
+(cv W54 hrcl (word7))
+(cv W59 hrcl (word7))
+(cv W61 hrcl (word7))
+(cv W80 hrcl (word7))
+(cv W84 hrcl (word7))
+(cv W88 hrcl (word7))
+(cv W90 hrcl (word7))
+(cv W96 hrcl (word7))
+(cv W97 hrcl (word7))
+(cv W112 hrcl (word7))
+(cv W114 hrcl (word7))
+(cv W118 hrcl (word7))
+(cv W119 hrcl (word7))
+(cv W123 hrcl (word7))
+
+; Woerter der Laenge 8:
+
+(cv W1 hrcl (word8))
+(cv W6 hrcl (word8))
+(cv W20 hrcl (word8))
+(cv W35 hrcl (word8))
+(cv W36 hrcl (word8))
+(cv W42 hrcl (word8))
+(cv W51 hrcl (word8))
+(cv W110 hrcl (word8))
+(cv W115 hrcl (word8))
+(cv W135 hrcl (word8))
+(cv W144 hrcl (word8))
+
+; Woerter der Laenge 9:
+
+(cv W13 hrcl (word9))
+(cv W17 hrcl (word9))
+(cv W19 hrcl (word9))
+(cv W104 hrcl (word9))
+
+; Woerter der Laenge 10:
+
+(cv W24 hrcl (word10))
+(cv W46 hrcl (word10))
+(cv W58 hrcl (word10))
+(cv W78 hrcl (word10))
+
+; all-different
+; =============
+
+(lc different (x y) (word word) neq)
+
+; Woerter mit 8 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W1 W6 W20 W35 W36 W42 W51 W110 W115 W135 W144) 
+			   :medium) )
+
+; Woerter mit 7 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W2 W37 W50 W54 W59 W61 W80 W84 W88 W90 W96 W97 
+			       W112 W114 W118 W119 W123) 
+			   :medium) )
+
+; Woerter mit 6 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W7 W8 W11 W14 W29 W48 W67 W74 W82 W89 W103
+			       W120 W124 W136 W143) 
+			   :medium) )
+
+; Woerter mit 5 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W3 W4 W5 W9 W16 W21 W23 W26 W27 W44 W47 W52
+			       W65 W66 W69 W72 W79 W86 W87 W91 W93 W98 W99 
+			       W100 W107 W109 W125 W130 W133 W139) 
+			   :medium) )
+
+; Woerter mit 4 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W18 W22 W25 W31 W34 W39 W40 W43 W53 W56 W62
+				W63 W64 W68 W71 W73 W75 W83 W102 W105 W106 
+				W111 W113 W116 W117 W121 W128 W132 W137 W138
+				W140 W145 W146) 
+			   :medium) )
+
+; Woerter mit 3 Buchstaben 
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W12 W15 W30 W32 W33 W38 W41 W45 W49 W55 W57 
+				W60 W76 W77 W81 W85 W94 W95 W101 W108 W122 
+				W126 W127 W129 W134 W141 W142) 
+			   :medium) )
+
+; Woerter mit 2 Buchstaben
+
+(lispeval
+  (contax:connect-pairwise different
+			   (W10 W28 W70 W92 W131) 
+			   :medium) )
+   
+
+(cv pos1 hrcl (position1))
+(cv pos2 hrcl (position2))
+(cv pos3 hrcl (position3))
+(cv pos4 hrcl (position4))
+(cv pos5 hrcl (position5))
+(cv pos6 hrcl (position6))
+(cv pos7 hrcl (position7))
+(cv pos8 hrcl (position8))
+(cv pos9 hrcl (position9))
+(cv pos10 hrcl (position10))
+
+;;  sameletter - Constraints:
+
+(ci c001 hard sameletter W1 pos2 W13 pos2)
+(ci c002 hard sameletter W1 pos4 W19 pos2)
+(ci c003 hard sameletter W1 pos6 W26 pos2)
+(ci c004 hard sameletter W1 pos8 W33 pos2)
+
+(ci c005 hard sameletter W2 pos2 W13 pos4)
+(ci c006 hard sameletter W2 pos4 W19 pos4)
+(ci c007 hard sameletter W2 pos6 W26 pos4)
+
+(ci c008 hard sameletter W3 pos2 W13 pos6)
+(ci c009 hard sameletter W3 pos4 W19 pos6)
+(ci c010 hard sameletter W3 pos5 W24 pos1)
+
+(ci c011 hard sameletter W4 pos2 W13 pos8)
+(ci c012 hard sameletter W4 pos4 W19 pos8)
+(ci c013 hard sameletter W4 pos5 W24 pos3)
+
+(ci c014 hard sameletter W5 pos1 W11 pos2)
+(ci c015 hard sameletter W5 pos3 W17 pos2)
+(ci c016 hard sameletter W5 pos5 W24 pos6)
+
+(ci c017 hard sameletter W6 pos1 W11 pos4)
+(ci c018 hard sameletter W6 pos3 W17 pos4)
+(ci c019 hard sameletter W6 pos4 W20 pos1)
+(ci c020 hard sameletter W6 pos5 W24 pos8)
+(ci c021 hard sameletter W6 pos6 W27 pos1)
+(ci c022 hard sameletter W6 pos8 W35 pos2)
+
+(ci c023 hard sameletter W7 pos1 W11 pos6)
+(ci c024 hard sameletter W7 pos2 W14 pos1)
+(ci c025 hard sameletter W7 pos3 W17 pos6)
+(ci c026 hard sameletter W7 pos4 W20 pos3)
+(ci c027 hard sameletter W7 pos5 W24 pos10)
+(ci c028 hard sameletter W7 pos6 W27 pos3)
+
+(ci c029 hard sameletter W8 pos1 W12 pos1)
+(ci c030 hard sameletter W8 pos2 W14 pos3)
+(ci c031 hard sameletter W8 pos3 W17 pos8)
+(ci c032 hard sameletter W8 pos4 W20 pos5)
+(ci c033 hard sameletter W8 pos5 W25 pos1)
+(ci c034 hard sameletter W8 pos6 W27 pos5)
+
+(ci c035 hard sameletter W9 pos1 W12 pos2)
+(ci c036 hard sameletter W9 pos2 W14 pos4)
+(ci c037 hard sameletter W9 pos3 W17 pos9)
+(ci c038 hard sameletter W9 pos4 W20 pos6)
+(ci c039 hard sameletter W9 pos5 W25 pos2)
+
+(ci c040 hard sameletter W10 pos1 W12 pos3)
+(ci c041 hard sameletter W10 pos2 W14 pos5)
+
+(ci c042 hard sameletter W15 pos1 W14 pos2)
+(ci c043 hard sameletter W15 pos2 W17 pos7)
+(ci c044 hard sameletter W15 pos3 W20 pos4)
+
+(ci c045 hard sameletter W16 pos1 W14 pos6)
+(ci c046 hard sameletter W16 pos3 W20 pos8)
+(ci c047 hard sameletter W16 pos4 W25 pos4)
+(ci c048 hard sameletter W16 pos5 W28 pos2)
+
+(ci c049 hard sameletter W18 pos1 W17 pos5)
+(ci c050 hard sameletter W18 pos2 W20 pos2)
+(ci c051 hard sameletter W18 pos3 W24 pos9)
+(ci c052 hard sameletter W18 pos4 W27 pos2)
+
+(ci c053 hard sameletter W21 pos1 W19 pos7)
+(ci c054 hard sameletter W21 pos2 W24 pos2)
+(ci c055 hard sameletter W21 pos4 W29 pos2)
+(ci c056 hard sameletter W21 pos5 W34 pos3)
+
+(ci c057 hard sameletter W22 pos1 W19 pos9)
+(ci c058 hard sameletter W22 pos2 W24 pos4)
+(ci c059 hard sameletter W22 pos4 W29 pos4)
+
+(ci c060 hard sameletter W23 pos1 W20 pos7)
+(ci c061 hard sameletter W23 pos2 W25 pos3)
+(ci c062 hard sameletter W23 pos3 W28 pos1)
+(ci c063 hard sameletter W23 pos5 W35 pos8)
+
+(ci c064 hard sameletter W30 pos1 W29 pos1)
+(ci c065 hard sameletter W30 pos2 W34 pos2)
+(ci c066 hard sameletter W30 pos3 W43 pos4)
+
+(ci c067 hard sameletter W31 pos1 W29 pos3)
+(ci c068 hard sameletter W31 pos2 W34 pos4)
+(ci c069 hard sameletter W31 pos3 W44 pos1)
+(ci c070 hard sameletter W31 pos4 W49 pos2)
+
+(ci c071 hard sameletter W32 pos1 W29 pos5)
+(ci c072 hard sameletter W32 pos3 W44 pos3)
+
+(ci c073 hard sameletter W36 pos1 W33 pos1)
+(ci c074 hard sameletter W36 pos4 W54 pos1)
+(ci c075 hard sameletter W36 pos6 W65 pos1)
+(ci c076 hard sameletter W36 pos8 W73 pos1)
+
+(ci c077 hard sameletter W37 pos1 W34 pos1)
+(ci c078 hard sameletter W37 pos2 W43 pos3)
+(ci c079 hard sameletter W37 pos4 W54 pos5)
+(ci c080 hard sameletter W37 pos6 W65 pos5)
+(ci c081 hard sameletter W37 pos7 W68 pos1)
+
+(ci c300 hard sameletter W38 pos1 W35 pos1)
+(ci c301 hard sameletter W38 pos2 W44 pos5)
+(ci c302 hard sameletter W38 pos3 W50 pos1)
+
+(ci c303 hard sameletter W39 pos1 W35 pos3)
+(ci c304 hard sameletter W39 pos3 W50 pos3)
+(ci c305 hard sameletter W39 pos4 W56 pos2)
+
+(ci c306 hard sameletter W40 pos1 W35 pos5)
+(ci c307 hard sameletter W40 pos2 W45 pos1)
+(ci c308 hard sameletter W40 pos3 W50 pos5)
+(ci c309 hard sameletter W40 pos4 W56 pos4)
+
+(ci c310 hard sameletter W41 pos1 W35 pos6)
+(ci c311 hard sameletter W41 pos2 W45 pos2)
+(ci c312 hard sameletter W41 pos3 W50 pos6)
+
+(ci c082 hard sameletter W42 pos4 W57 pos1)
+(ci c083 hard sameletter W42 pos5 W62 pos2)
+(ci c084 hard sameletter W42 pos6 W67 pos4)
+(ci c085 hard sameletter W42 pos7 W70 pos2)
+(ci c086 hard sameletter W42 pos8 W75 pos3)
+
+(ci c087 hard sameletter W46 pos1 W33 pos3)
+(ci c088 hard sameletter W46 pos2 W43 pos1)
+(ci c089 hard sameletter W46 pos4 W54 pos3)
+(ci c090 hard sameletter W46 pos6 W65 pos3)
+(ci c091 hard sameletter W46 pos8 W73 pos3)
+(ci c092 hard sameletter W46 pos9 W81 pos2)
+(ci c093 hard sameletter W46 pos10 W86 pos3)
+
+(ci c094 hard sameletter W47 pos1 W44 pos2)
+(ci c095 hard sameletter W47 pos2 W49 pos3)
+(ci c096 hard sameletter W47 pos3 W55 pos1)
+(ci c097 hard sameletter W47 pos4 W61 pos3)
+(ci c098 hard sameletter W47 pos5 W66 pos1)
+
+(ci c099 hard sameletter W48 pos3 W57 pos3)
+(ci c100 hard sameletter W48 pos4 W62 pos4)
+(ci c101 hard sameletter W48 pos5 W67 pos6)
+
+(ci c102 hard sameletter W51 pos1 W49 pos1)
+(ci c103 hard sameletter W51 pos2 W54 pos7)
+(ci c104 hard sameletter W51 pos3 W61 pos1)
+(ci c105 hard sameletter W51 pos5 W68 pos3)
+(ci c106 hard sameletter W51 pos6 W74 pos1)
+(ci c107 hard sameletter W51 pos7 W82 pos2)
+(ci c108 hard sameletter W51 pos8 W87 pos1)
+
+(ci c109 hard sameletter W52 pos1 W50 pos2)
+(ci c110 hard sameletter W52 pos2 W56 pos1)
+(ci c111 hard sameletter W52 pos3 W61 pos7)
+(ci c112 hard sameletter W52 pos4 W66 pos5)
+(ci c113 hard sameletter W52 pos5 W69 pos4)
+
+(ci c114 hard sameletter W53 pos1 W50 pos4)
+(ci c115 hard sameletter W53 pos2 W56 pos3)
+(ci c116 hard sameletter W53 pos4 W67 pos1)
+
+(ci c117 hard sameletter W58 pos1 W55 pos2)
+(ci c118 hard sameletter W58 pos2 W61 pos4)
+(ci c119 hard sameletter W58 pos3 W66 pos2)
+(ci c120 hard sameletter W58 pos4 W69 pos1)
+(ci c121 hard sameletter W58 pos5 W74 pos4)
+(ci c122 hard sameletter W58 pos6 W82 pos5)
+(ci c123 hard sameletter W58 pos7 W87 pos4)
+(ci c124 hard sameletter W58 pos8 W92 pos2)
+(ci c125 hard sameletter W58 pos9 W98 pos2)
+(ci c126 hard sameletter W58 pos10 W104 pos4)
+
+(ci c127 hard sameletter W59 pos1 W55 pos3)
+(ci c128 hard sameletter W59 pos2 W61 pos5)
+(ci c129 hard sameletter W59 pos3 W66 pos3)
+(ci c130 hard sameletter W59 pos4 W69 pos2)
+(ci c131 hard sameletter W59 pos5 W74 pos5)
+(ci c132 hard sameletter W59 pos6 W82 pos6)
+(ci c133 hard sameletter W59 pos7 W87 pos5)
+
+(ci c134 hard sameletter W60 pos1 W57 pos2)
+(ci c135 hard sameletter W60 pos2 W62 pos3)
+(ci c136 hard sameletter W60 pos3 W67 pos5)
+
+(ci c137 hard sameletter W63 pos1 W61 pos6)
+(ci c138 hard sameletter W63 pos2 W66 pos4)
+(ci c139 hard sameletter W63 pos3 W69 pos3)
+(ci c140 hard sameletter W63 pos4 W74 pos6)
+
+(ci c141 hard sameletter W64 pos1 W62 pos1)
+(ci c142 hard sameletter W64 pos2 W67 pos3)
+(ci c143 hard sameletter W64 pos3 W70 pos1)
+(ci c144 hard sameletter W64 pos4 W75 pos2)
+
+(ci c145 hard sameletter W71 pos1 W68 pos4)
+(ci c146 hard sameletter W71 pos2 W74 pos2)
+(ci c147 hard sameletter W71 pos3 W82 pos3)
+(ci c148 hard sameletter W71 pos4 W87 pos2)
+
+(ci c149 hard sameletter W72 pos1 W69 pos5)
+(ci c150 hard sameletter W72 pos3 W83 pos2)
+(ci c151 hard sameletter W72 pos4 W88 pos2)
+(ci c152 hard sameletter W72 pos5 W93 pos3)
+
+(ci c153 hard sameletter W76 pos1 W73 pos2)
+(ci c154 hard sameletter W76 pos2 W81 pos1)
+(ci c155 hard sameletter W76 pos3 W86 pos2)
+
+(ci c156 hard sameletter W77 pos1 W73 pos4)
+(ci c157 hard sameletter W77 pos2 W81 pos3)
+(ci c158 hard sameletter W77 pos3 W86 pos4)
+
+(ci c159 hard sameletter W78 pos1 W74 pos3)
+(ci c160 hard sameletter W78 pos2 W82 pos4)
+(ci c161 hard sameletter W78 pos3 W87 pos3)
+(ci c162 hard sameletter W78 pos4 W92 pos1)
+(ci c163 hard sameletter W78 pos5 W98 pos1)
+(ci c164 hard sameletter W78 pos6 W104 pos3)
+(ci c165 hard sameletter W78 pos7 W108 pos3)
+(ci c166 hard sameletter W78 pos8 W112 pos2)
+(ci c167 hard sameletter W78 pos9 W117 pos3)
+(ci c168 hard sameletter W78 pos10 W124 pos1)
+
+(ci c169 hard sameletter W79 pos1 W75 pos1)
+(ci c170 hard sameletter W79 pos2 W83 pos4)
+(ci c171 hard sameletter W79 pos3 W88 pos4)
+(ci c172 hard sameletter W79 pos4 W93 pos5)
+(ci c173 hard sameletter W79 pos5 W99 pos1)
+
+(ci c174 hard sameletter W80 pos1 W75 pos4)
+(ci c175 hard sameletter W80 pos3 W88 pos7)
+(ci c176 hard sameletter W80 pos4 W94 pos2)
+(ci c177 hard sameletter W80 pos5 W99 pos4)
+(ci c178 hard sameletter W80 pos6 W105 pos3)
+(ci c179 hard sameletter W80 pos7 W109 pos4)
+
+(ci c180 hard sameletter W84 pos1 W83 pos1)
+(ci c181 hard sameletter W84 pos2 W88 pos1)
+(ci c182 hard sameletter W84 pos3 W93 pos2)
+(ci c183 hard sameletter W84 pos4 W98 pos5)
+(ci c184 hard sameletter W84 pos5 W104 pos7)
+(ci c185 hard sameletter W84 pos7 W112 pos6)
+
+(ci c186 hard sameletter W85 pos1 W83 pos3)
+(ci c187 hard sameletter W85 pos2 W88 pos3)
+(ci c188 hard sameletter W85 pos3 W93 pos4)
+
+(ci c189 hard sameletter W89 pos1 W86 pos1)
+(ci c190 hard sameletter W89 pos3 W97 pos1)
+(ci c191 hard sameletter W89 pos5 W107 pos1)
+
+(ci c192 hard sameletter W90 pos1 W86 pos5)
+(ci c193 hard sameletter W90 pos3 W97 pos5)
+(ci c194 hard sameletter W90 pos5 W107 pos5)
+(ci c195 hard sameletter W90 pos6 W111 pos3)
+(ci c196 hard sameletter W90 pos7 W112 pos4)
+
+(ci c197 hard sameletter W91 pos1 W88 pos6)
+(ci c198 hard sameletter W91 pos2 W94 pos1)
+(ci c199 hard sameletter W91 pos3 W99 pos3)
+(ci c200 hard sameletter W91 pos4 W105 pos2)
+(ci c201 hard sameletter W91 pos5 W109 pos3)
+
+(ci c202 hard sameletter W95 pos1 W93 pos1)
+(ci c203 hard sameletter W95 pos2 W98 pos4)
+(ci c204 hard sameletter W95 pos3 W104 pos6)
+
+(ci c205 hard sameletter W96 pos1 W94 pos3)
+(ci c206 hard sameletter W96 pos2 W99 pos5)
+(ci c207 hard sameletter W96 pos3 W105 pos4)
+(ci c208 hard sameletter W96 pos4 W109 pos5)
+(ci c209 hard sameletter W96 pos6 W118 pos7)
+(ci c210 hard sameletter W96 pos7 W125 pos5)
+
+(ci c211 hard sameletter W100 pos1 W97 pos3)
+(ci c212 hard sameletter W100 pos3 W107 pos3)
+(ci c213 hard sameletter W100 pos4 W111 pos1)
+(ci c214 hard sameletter W100 pos5 W116 pos2)
+
+(ci c215 hard sameletter W101 pos1 W97 pos7)
+(ci c216 hard sameletter W101 pos2 W104 pos1)
+(ci c217 hard sameletter W101 pos3 W108 pos1)
+
+(ci c218 hard sameletter W102 pos1 W98 pos3)
+(ci c219 hard sameletter W102 pos2 W104 pos5)
+(ci c220 hard sameletter W102 pos4 W112 pos4)
+
+(ci c221 hard sameletter W103 pos1 W99 pos2)
+(ci c222 hard sameletter W103 pos2 W105 pos1)
+(ci c223 hard sameletter W103 pos3 W109 pos2)
+(ci c224 hard sameletter W103 pos5 W118 pos4)
+(ci c225 hard sameletter W103 pos6 W125 pos2)
+
+(ci c226 hard sameletter W106 pos1 W104 pos2)
+(ci c227 hard sameletter W106 pos2 W108 pos2)
+(ci c228 hard sameletter W106 pos3 W112 pos1)
+(ci c229 hard sameletter W106 pos4 W117 pos2)
+
+(ci c230 hard sameletter W110 pos1 W107 pos4)
+(ci c231 hard sameletter W110 pos2 W111 pos2)
+(ci c232 hard sameletter W110 pos3 W116 pos3)
+(ci c233 hard sameletter W110 pos5 W128 pos4)
+(ci c234 hard sameletter W110 pos6 W135 pos3)
+(ci c235 hard sameletter W110 pos7 W138 pos4)
+(ci c236 hard sameletter W110 pos8 W143 pos3)
+
+(ci c237 hard sameletter W113 pos1 W112 pos3)
+(ci c238 hard sameletter W113 pos2 W117 pos4)
+(ci c239 hard sameletter W113 pos3 W124 pos2)
+(ci c240 hard sameletter W113 pos4 W130 pos1)
+
+(ci c241 hard sameletter W114 pos1 W112 pos5)
+(ci c242 hard sameletter W114 pos3 W124 pos4)
+(ci c243 hard sameletter W114 pos4 W130 pos3)
+(ci c244 hard sameletter W114 pos5 W136 pos2)
+(ci c245 hard sameletter W114 pos7 W144 pos1)
+
+(ci c246 hard sameletter W115 pos1 W112 pos7)
+(ci c247 hard sameletter W115 pos2 W118 pos1)
+(ci c248 hard sameletter W115 pos3 W124 pos6)
+(ci c249 hard sameletter W115 pos4 W130 pos5)
+(ci c250 hard sameletter W115 pos5 W136 pos4)
+(ci c251 hard sameletter W115 pos7 W144 pos3)
+
+(ci c252 hard sameletter W119 pos1 W116 pos1)
+(ci c253 hard sameletter W119 pos3 W128 pos2)
+(ci c254 hard sameletter W119 pos4 W135 pos1)
+(ci c255 hard sameletter W119 pos5 W138 pos2)
+(ci c256 hard sameletter W119 pos6 W143 pos1)
+
+(ci c257 hard sameletter W120 pos1 W117 pos1)
+(ci c258 hard sameletter W120 pos3 W129 pos2)
+(ci c259 hard sameletter W120 pos4 W135 pos6)
+(ci c260 hard sameletter W120 pos5 W139 pos2)
+(ci c261 hard sameletter W120 pos6 W143 pos6)
+
+(ci c262 hard sameletter W121 pos1 W118 pos3)
+(ci c263 hard sameletter W121 pos2 W125 pos1)
+(ci c264 hard sameletter W121 pos4 W136 pos6)
+
+(ci c265 hard sameletter W122 pos1 W118 pos5)
+(ci c266 hard sameletter W122 pos2 W125 pos3)
+(ci c267 hard sameletter W122 pos3 W131 pos1)
+
+(ci c268 hard sameletter W123 pos1 W118 pos6)
+(ci c269 hard sameletter W123 pos2 W125 pos4)
+(ci c270 hard sameletter W123 pos3 W131 pos2)
+(ci c271 hard sameletter W123 pos5 W140 pos3)
+(ci c272 hard sameletter W123 pos6 W144 pos8)
+(ci c273 hard sameletter W123 pos7 W146 pos3)
+
+(ci c274 hard sameletter W126 pos1 W124 pos3)
+(ci c275 hard sameletter W126 pos2 W130 pos2)
+(ci c276 hard sameletter W126 pos3 W136 pos1)
+
+(ci c277 hard sameletter W127 pos1 W124 pos5)
+(ci c278 hard sameletter W127 pos2 W130 pos4)
+(ci c279 hard sameletter W127 pos3 W136 pos3)
+
+(ci c280 hard sameletter W132 pos1 W128 pos3)
+(ci c281 hard sameletter W132 pos2 W135 pos2)
+(ci c282 hard sameletter W132 pos3 W138 pos3)
+(ci c283 hard sameletter W132 pos4 W143 pos2)
+
+(ci c284 hard sameletter W133 pos1 W129 pos1)
+(ci c285 hard sameletter W133 pos2 W135 pos5)
+(ci c286 hard sameletter W133 pos3 W139 pos1)
+(ci c287 hard sameletter W133 pos4 W143 pos5)
+
+(ci c288 hard sameletter W134 pos1 W129 pos3)
+(ci c289 hard sameletter W134 pos2 W135 pos7)
+(ci c290 hard sameletter W134 pos3 W139 pos3)
+ 
+(ci c291 hard sameletter W137 pos1 W135 pos8)
+(ci c292 hard sameletter W137 pos2 W139 pos4)
+(ci c293 hard sameletter W137 pos4 W145 pos2)
+
+(ci c294 hard sameletter W141 pos1 W140 pos1)
+(ci c295 hard sameletter W141 pos2 W144 pos6)
+(ci c296 hard sameletter W141 pos3 W146 pos1)
+
+(ci c297 hard sameletter W142 pos1 W140 pos2)
+(ci c298 hard sameletter W142 pos2 W144 pos7)
+(ci c299 hard sameletter W142 pos3 W146 pos2)
+
+(lispeval (time (setf l (contax:propagate :consistency-mode :global))))
+
+(lispeval l)
+

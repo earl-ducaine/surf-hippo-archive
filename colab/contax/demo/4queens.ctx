@@ -1,0 +1,105 @@
+;;; -*- Mode: LISP; Base: 10 -*-
+;;
+;;  CONTAX example: The famous 4 queens problem
+;;  ===============
+;;
+
+( defun not-diagonal-1-p ( x y )
+  ( and (not (= x ( 1+ y )))
+        (not (= x ( 1- y )))))
+
+( defun not-diagonal-2-p ( x y )
+  ( and (not (= x ( + y 2 )))
+        (not (= x ( - y 2 )))))
+
+( defun not-diagonal-3-p ( x y )
+  ( and (not (= x ( + y 3 )))
+        (not (= x ( - y 3 )))))
+
+(defun not-equal (x y)
+  (not (= x y)))
+
+( compile 'not-diagonal-1-p )
+( compile 'not-diagonal-2-p )
+( compile 'not-diagonal-3-p )
+( compile 'not-equal )
+
+( time 
+
+  ( progn
+
+    ( contax:reset )
+    
+    ( contax:def-concept columns ( 1 2 3 4 ))
+
+    ( contax:def-lisp-constraint not-equal ( x y ) (( columns )( columns ))
+     not-equal )
+
+    ( contax:def-lisp-constraint not-diagonal-1 ( x y ) (( columns )( columns ))
+     not-diagonal-1-p )
+
+    ( contax:def-lisp-constraint not-diagonal-2 ( x y ) (( columns )( columns ))
+     not-diagonal-2-p )
+
+    ( contax:def-lisp-constraint not-diagonal-3 ( x y ) (( columns )( columns ))
+     not-diagonal-3-p )
+
+
+    ( contax:make-variable q1 :domains ( columns ))
+
+    ( contax:make-variable q2 :domains ( columns ))
+
+    ( contax:make-variable q3 :domains ( columns ))
+
+    ( contax:make-variable q4 :domains ( columns ))
+
+
+    ( contax:make-constraint neq12 not-equal :x q1 :y q2 )
+
+    ( contax:make-constraint neq13 not-equal :x q1 :y q3 )
+
+    ( contax:make-constraint neq14 not-equal :x q1 :y q4 )
+
+    ( contax:make-constraint neq23 not-equal :x q2 :y q3 )
+
+    ( contax:make-constraint neq24 not-equal :x q2 :y q4 )
+
+    ( contax:make-constraint neq34 not-equal :x q3 :y q4 )
+
+
+    ( contax:make-constraint ndia12 not-diagonal-1 :x q1 :y q2 )
+
+    ( contax:make-constraint ndia13 not-diagonal-2 :x q1 :y q3 )
+
+    ( contax:make-constraint ndia14 not-diagonal-3 :x q1 :y q4 )
+
+    ( contax:make-constraint ndia23 not-diagonal-1 :x q2 :y q3 )
+
+    ( contax:make-constraint ndia24 not-diagonal-2 :x q2 :y q4 )
+
+    ( contax:make-constraint ndia34 not-diagonal-1 :x q3 :y q4 )
+
+    ; ( contax:init-hac )
+
+    ( contax:propagate :consistency-mode :global )))
+
+#| stats on this example (28-09-92):
+
+Evaluation of (PROGN
+                (CONTAX:RESET)
+                (CONTAX:DEF-CONCEPT COLUMNS #)
+                (CONTAX:DEF-LISP-CONSTRAINT NOT-EQUAL # # NOT-EQUAL)
+                (CONTAX:DEF-LISP-CONSTRAINT NOT-DIAGONAL-1 # # NOT-DIAGONAL-1-P) ...) took 2.33
+8524 seconds of elapsed time including:
+  0.037 seconds processing sequence breaks,
+  0.068 seconds in the storage system (including 0.000 seconds waiting for pages):
+    0.000 seconds processing 0 page faults including 0 fetches,
+    0.046 seconds in creating and destroying pages, and
+    0.022 seconds in miscellaneous storage system tasks.
+39,285 list, 40,200 structure words consed in WORKING-STORAGE-AREA.
+292 structure words consed in COMPILED-FUNCTION-AREA.
+508 list words consed in DEBUG-INFO-AREA.
+284 structure words consed in *FLAVOR-AREA*.
+4 list words consed in SHEET-AREA.
+71 structure words consed in *PRESENTATION-AREA*.
+12 list words consed in *WHO-CALLS-DATABASE-AREA*. |#

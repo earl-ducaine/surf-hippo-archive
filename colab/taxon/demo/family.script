@@ -1,0 +1,591 @@
+;;; Dribble file "family.script" started
+
+T 
+colab,tx> destroy
+clear all the TAXON specific definitions
+
+T 
+colab,tx> spy classify
+trace classify, assert-ind?, concept-closure
+colab,tx> consult family.col
+Consults a database to all known subsystems
+
+ Classify Concept: HUMAN 
+
+ Classify Concept: MAN 
+
+ Classify Concept: WOMAN 
+
+ Classify Concept: FASHIONABLE-WOMAN 
+
+ Classify Concept: PERSON 
+
+ Classify Concept: Restriction-Helper15 
+
+ Classify Concept: PARENT 
+
+ Classify Concept: MOTHER 
+
+ Classify Concept: FATHER 
+
+ Classify Concept: FATHER-OF-SONS 
+
+ Classify Concept: FATHER-OF-DAUGHTERS 
+
+ Classify Concept: FATHER-OF-SONS-AND-DAUGHTERS 
+
+ Classify Concept: FATHER-OF-SONS-ONLY 
+
+ Classify Concept: FATHER-OF-DAUGHTERS-ONLY 
+
+ Classify Concept: Restriction-Helper16 
+
+ Classify Concept: Restriction-Helper17 
+
+ Classify Concept: CHILD 
+
+ Classify Concept: STEPCHILD 
+
+ Classify Concept: GRANDPARENT 
+
+ Classify Concept: GRANDFATHER 
+
+ Classify Concept: GRANDMOTHER 
+
+ Classify Concept: HUSBAND 
+
+ Classify Concept: EMPLOYEE 
+
+ Classify Concept: Restriction-Helper18 
+
+ Classify Concept: UNIVERSITY-EMPLOYEE 
+
+ Classify Concept: Restriction-Helper19 
+
+ Classify Concept: STUDENT 
+
+ Classify Concept: WORKING-STUDENT 
+
+ Classify Concept: POOR-STUDENT 
+
+ Classify Concept: PART-TIME-STUDENT 
+
+ Classify Concept: HAPPY-WORKER 
+
+ Classify Concept: Restriction-Helper20 
+
+ Classify Concept: CLAN 
+
+ Classify Concept: TWO-CLANS 
+
+ Classify Concept: RELATED-CLANS 
+colab,tx> l attr
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Attribute Declarations:
+-----------------------
+ Identifier              Type    Definition 
+
+ NAME                    ATTR   NAME 
+
+ HAS-FATHER              ATTR   HAS-FATHER 
+
+ HAS-MOTHER              ATTR   HAS-MOTHER 
+
+ WORKING-HOURS           ATTR   WORKING-HOURS 
+
+ SALARY                  ATTR   SALARY 
+
+ AGE                     ATTR   AGE 
+
+ MATR-NR                 ATTR   MATR-NR 
+
+ COLOUR-OF-HAIR          ATTR   COLOUR-OF-HAIR 
+
+ HAS-PHYSICAL-FATHER     ATTR   HAS-PHYSICAL-FATHER 
+
+ BOSS                    ATTR   BOSS 
+
+ DEPARTMENT-OF-EMPLOYMENT  ATTR   DEPARTMENT-OF-EMPLOYMENT 
+
+ HAS-PHYSICAL-MOTHER     ATTR   HAS-PHYSICAL-MOTHER 
+
+ COLOUR-OF-DRESS         ATTR   COLOUR-OF-DRESS 
+
+13 attribute declarations
+colab,tx> l role
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Role Declarations:
+------------------
+ Identifier              Type    Definition 
+
+ ONE                     ROLE   ONE 
+
+ TWO                     ROLE   TWO 
+
+ RELATIVE                ROLE   RELATIVE 
+
+ IS-MARRIED-TO           ROLE   IS-MARRIED-TO 
+
+ HAS-CHILD               ROLE   HAS-CHILD 
+
+ MATRICULATION-DEPARTMENT  ROLE   MATRICULATION-DEPARTMENT 
+
+6 role declarations
+colab,tx> l cpred
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Concrete Predicate Definitions:
+-------------------------
+ Identifier              Type    Definition 
+
+ RO                      CPRED   (RO (RO (X) (= X X))) 
+
+ >=1000                  CPRED   (>=1000 (RO (X) (>= X 1000))) 
+
+ >16                     CPRED   (>16 (RO (X) (> X 16))) 
+
+ >18                     CPRED   (>18 (RO (X) (> X 18))) 
+
+ <=300                   CPRED   (<=300 (RO (X) (<= X 300))) 
+
+ =                       CPRED   (= (RO (X Y) (= X Y))) 
+
+6 concrete predicate definitions
+colab,tx> l cfam
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Closed Families of Disjoint Primitives:
+-------------------------
+ Identifier              Type    Definition 
+
+ BEING                   CFAM   Closed Family: BEING 
+Members:      (MALE-HUMAN FEMALE-HUMAN ANIMAL THING IDEA) 
+
+1 closed families
+colab,tx> l ofam
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Open Families of Disjoint Primitives:
+-------------------------
+ Identifier              Type    Definition 
+
+ DEPARTMENT              OFAM   Open Family: DEPARTMENT 
+Members:    (COMPUTER-SCIENCE SPORTS PHILOSOPHY) 
+
+1 open families
+colab,tx> l conc
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Concept Definitions:
+-------------------------
+ Identifier              Type    Definition 
+
+ EMPLOYEE                CONC   (EMPLOYEE (AND PERSON (SOME (SALARY) RO) (SOME (BOSS) PERSON))) 
+
+ WORKING-STUDENT         CONC   (WORKING-STUDENT (AND STUDENT EMPLOYEE)) 
+
+ GRANDPARENT             CONC   (GRANDPARENT (AND PARENT (SOME (HAS-CHILD) PARENT))) 
+
+ GRANDFATHER             CONC   (GRANDFATHER (AND MALE-HUMAN GRANDPARENT)) 
+
+ FATHER                  CONC   (FATHER (AND MALE-HUMAN PARENT)) 
+
+ PERSON                  CONC   (PERSON (AND (OR MALE-HUMAN FEMALE-HUMAN) (SOME (NAME) STRING) (SOME (AGE) >18))) 
+
+ FATHER-OF-SONS          CONC   (FATHER-OF-SONS (AND FATHER (SOME (HAS-CHILD) MALE-HUMAN))) 
+
+ BOTTOM                  CONC   BOTTOM 
+
+ POOR-STUDENT            CONC   (POOR-STUDENT (AND WORKING-STUDENT (FORALL (SALARY) >=1000))) 
+
+ RELATED-CLANS           CONC   (RELATED-CLANS (AND TWO-CLANS (SOME (ONE RELATIVE) (TWO RELATIVE) IN-LOVE))) 
+
+ GRANDMOTHER             CONC   (GRANDMOTHER (AND FEMALE-HUMAN GRANDPARENT)) 
+
+ HAPPY-WORKER            CONC   (HAPPY-WORKER (AND EMPLOYEE (AGREE NIL (BOSS)))) 
+
+ CLAN                    CONC   (CLAN (SOME (RELATIVE) HUMAN)) 
+
+ UNIVERSITY-EMPLOYEE     CONC   (UNIVERSITY-EMPLOYEE (AND EMPLOYEE (SOME (DEPARTMENT-OF-EMPLOYMENT) DEPARTMENT))) 
+
+ PARENT                  CONC   (PARENT (AND HUMAN (SOME (HAS-CHILD) HUMAN))) 
+
+ TWO-CLANS               CONC   (TWO-CLANS (AND (SOME (ONE) CLAN) (SOME (TWO) CLAN))) 
+
+ FATHER-OF-SONS-AND-DAUGHTERS  CONC   (FATHER-OF-SONS-AND-DAUGHTERS (AND FATHER (SOME (HAS-CHILD) MALE-HUMAN) (SOME (HAS-CHILD) FEMALE-HUMAN))) 
+
+ CHILD                   CONC   (CHILD (AND HUMAN (SOME (HAS-FATHER) HUMAN) (SOME (HAS-MOTHER) HUMAN))) 
+
+ PART-TIME-STUDENT       CONC   (PART-TIME-STUDENT (AND WORKING-STUDENT (FORALL (SALARY) <=300))) 
+
+ FATHER-OF-DAUGHTERS     CONC   (FATHER-OF-DAUGHTERS (AND FATHER (SOME (HAS-CHILD) FEMALE-HUMAN))) 
+
+ HUSBAND                 CONC   (HUSBAND (AND MAN (SOME (IS-MARRIED-TO) WOMAN))) 
+
+ STEPCHILD               CONC   (STEPCHILD (AND CHILD (OR (DISAGREE (HAS-FATHER) (HAS-PHYSICAL-FATHER)) (DISAGREE (HAS-MOTHER) (HAS-PHYSICAL-MOTHER))))) 
+
+ MAN                     CONC   (MAN (AND MALE-HUMAN (SOME (AGE) >16))) 
+
+ WOMAN                   CONC   (WOMAN (AND FEMALE-HUMAN (SOME (AGE) >16))) 
+
+ FATHER-OF-DAUGHTERS-ONLY  CONC   (FATHER-OF-DAUGHTERS-ONLY (AND FATHER (FORALL (HAS-CHILD) FEMALE-HUMAN))) 
+
+ FATHER-OF-SONS-ONLY     CONC   (FATHER-OF-SONS-ONLY (AND FATHER (FORALL (HAS-CHILD) MALE-HUMAN))) 
+
+ MOTHER                  CONC   (MOTHER (AND FEMALE-HUMAN PARENT)) 
+
+ TOP                     CONC   TOP 
+
+ FASHIONABLE-WOMAN       CONC   (FASHIONABLE-WOMAN (AND WOMAN (AGREE (COLOUR-OF-HAIR) (COLOUR-OF-DRESS)))) 
+
+ STUDENT                 CONC   (STUDENT (AND PERSON (SOME (MATR-NR) RO) (SOME (MATRICULATION-DEPARTMENT) DEPARTMENT))) 
+
+30 concept definitions
+colab,tx> pphi
+print the computed subsumption hierarchy
+               TOP <=== (STRING) (DATE) (BEING) (DEPARTMENT) (CLAN) (TWO-CLANS)
+            STRING <=== (BOTTOM)
+              DATE <=== (BOTTOM)
+             BEING <=== (ANIMAL) (THING) (IDEA) (HUMAN)
+            ANIMAL <=== (BOTTOM)
+             THING <=== (BOTTOM)
+              IDEA <=== (BOTTOM)
+             HUMAN <=== (FEMALE-HUMAN) (MALE-HUMAN) (PERSON) (PARENT) (CHILD)
+      FEMALE-HUMAN <=== (WOMAN) (MOTHER)
+             WOMAN <=== (FASHIONABLE-WOMAN)
+ FASHIONABLE-WOMAN <=== (BOTTOM)
+            MOTHER <=== (GRANDMOTHER)
+       GRANDMOTHER <=== (BOTTOM)
+        MALE-HUMAN <=== (MAN) (FATHER)
+               MAN <=== (HUSBAND)
+           HUSBAND <=== (BOTTOM)
+            FATHER <=== (FATHER-OF-SONS) (FATHER-OF-DAUGHTERS) (GRANDFATHER)
+    FATHER-OF-SONS <=== (FATHER-OF-SONS-AND-DAUGHTERS) (FATHER-OF-SONS-ONLY)
+FATHER-OF-SONS-AND-DAUGHTERS <=== (BOTTOM)
+FATHER-OF-SONS-ONLY <=== (BOTTOM)
+FATHER-OF-DAUGHTERS <=== (FATHER-OF-SONS-AND-DAUGHTERS) (FATHER-OF-DAUGHTERS-ONLY)
+FATHER-OF-DAUGHTERS-ONLY <=== (BOTTOM)
+       GRANDFATHER <=== (BOTTOM)
+            PERSON <=== (EMPLOYEE) (STUDENT)
+          EMPLOYEE <=== (UNIVERSITY-EMPLOYEE) (WORKING-STUDENT) (HAPPY-WORKER)
+UNIVERSITY-EMPLOYEE <=== (BOTTOM)
+   WORKING-STUDENT <=== (POOR-STUDENT) (PART-TIME-STUDENT)
+      POOR-STUDENT <=== (BOTTOM)
+ PART-TIME-STUDENT <=== (BOTTOM)
+      HAPPY-WORKER <=== (BOTTOM)
+           STUDENT <=== (WORKING-STUDENT)
+            PARENT <=== (MOTHER) (FATHER) (GRANDPARENT)
+       GRANDPARENT <=== (GRANDFATHER) (GRANDMOTHER)
+             CHILD <=== (STEPCHILD)
+         STEPCHILD <=== (BOTTOM)
+        DEPARTMENT <=== (COMPUTER-SCIENCE) (SPORTS) (PHILOSOPHY)
+  COMPUTER-SCIENCE <=== (BOTTOM)
+            SPORTS <=== (BOTTOM)
+        PHILOSOPHY <=== (BOTTOM)
+              CLAN <=== (BOTTOM)
+         TWO-CLANS <=== (RELATED-CLANS)
+     RELATED-CLANS <=== (BOTTOM)
+
+colab,tx> sati? father
+<concept term>; satisfiable ?
+
+T 
+colab,tx> conc test (and father mother)
+define a compound concept
+
+ Classify Concept: TEST 
+
+ TEST new member of equivalence class (BOTTOM) 
+colab,tx> sati? test
+<concept term>; satisfiable ?
+
+NIL 
+colab,tx> ilo father
+<concept>; look-up immediate lowers ( see equi )
+
+(FATHER-OF-SONS FATHER-OF-DAUGHTERS GRANDFATHER) 
+colab,tx> lo father
+all concepts being lower in the subsumption hierarchy than a given concept ( see equi )
+
+((FATHER-OF-SONS-ONLY) (FATHER-OF-SONS) (FATHER-OF-SONS-AND-DAUGHTERS) (FATHER-OF-DAUGHTERS-ONLY) (FATHER-OF-DAUGHTERS) (TEST BOTTOM) (GRANDFATHER) (FATHER)) 
+colab,tx> iup father
+<concept>; look-up immediate uppers ( see equi )
+
+(PARENT MALE-HUMAN) 
+colab,tx> up father
+<concept term>; look-up immediate uppers ( see equi )
+
+((PARENT) (TOP) (BEING) (|Restriction-Helper20| |Restriction-Helper17| |Restriction-Helper16| |Restriction-Helper15| HUMAN) (MALE-HUMAN) (FATHER)) 
+colab,tx> switch draw-all nil
+filtered-graph|reduced-abox|draw-all|draw-bottom|show -- t | nil
+
+NIL 
+colab,tx> up father
+<concept term>; look-up immediate uppers ( see equi )
+
+((PARENT) (TOP) (BEING) (|Restriction-Helper20| |Restriction-Helper17| |Restriction-Helper16| |Restriction-Helper15| HUMAN) (MALE-HUMAN) (FATHER)) 
+colab,tx> equi father
+<concept>; look-up equivalence class of concept (only for classified concepts)
+
+(FATHER) 
+colab,tx> conc p2 (or father mother)
+define a compound concept
+
+ Classify Concept: P2 
+
+ P2 new member of equivalence class (PARENT) 
+colab,tx> equi p2
+<concept>; look-up equivalence class of concept (only for classified concepts)
+
+(P2 PARENT) 
+colab,tx> def p2
+get definition of a TBox object
+
+(CONC (P2 (OR FATHER MOTHER))) 
+colab,tx> lsc
+list separation classes of disjoint primitives
+
+ Classes of disjunct primitive concepts:
+ ---------------------------------------
+ Class                   Type    Members
+
+ DEPARTMENT             OPEN    (COMPUTER-SCIENCE SPORTS PHILOSOPHY)
+ BEING                  CLOSED   (MALE-HUMAN FEMALE-HUMAN ANIMAL THING IDEA)
+ HUMAN                  CLOSED   (MALE-HUMAN FEMALE-HUMAN)
+colab,tx> subs? grandfather father
+Does <concept> subsume <concept> ?
+
+NIL 
+colab,tx> subs? father grandfather
+Does <concept> subsume <concept> ?
+
+T 
+colab,tx> clear-abox
+clear TAXON's ABox (delete individuals and assertions)
+
+#<Hash-Table 12195FE> 
+colab,tx> asse (man ben)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (ben (has-child) hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (man hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> realizei ben
+<individual>; compute realization
+
+(MAN FATHER-OF-SONS) 
+colab,tx> wrealize ben
+compute most specific concepts compatible with <individual>
+
+((STRING) (DATE) (HUSBAND) (UNIVERSITY-EMPLOYEE) (HAPPY-WORKER) (POOR-STUDENT) (PART-TIME-STUDENT) (FATHER-OF-SONS-ONLY) (FATHER-OF-SONS-AND-DAUGHTERS) (GRANDFATHER) (STEPCHILD) (COMPUTER-SCIENCE) (SPORTS) (PHILOSOPHY) (CLAN) (RELATED-CLANS)) 
+colab,tx> asse (hoss (has-child) little-hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (man little-hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> realizei ben
+<individual>; compute realization
+
+(MAN FATHER-OF-SONS GRANDFATHER) 
+colab,tx> realizei hoss
+<individual>; compute realization
+
+(MAN FATHER-OF-SONS) 
+colab,tx> wrealize hoss
+compute most specific concepts compatible with <individual>
+
+((STRING) (DATE) (HUSBAND) (UNIVERSITY-EMPLOYEE) (HAPPY-WORKER) (POOR-STUDENT) (PART-TIME-STUDENT) (FATHER-OF-SONS-ONLY) (FATHER-OF-SONS-AND-DAUGHTERS) (GRANDFATHER) (STEPCHILD) (COMPUTER-SCIENCE) (SPORTS) (PHILOSOPHY) (CLAN) (RELATED-CLANS)) 
+colab,tx> 
+colab,tx>  check-abox
+check A-box for consistency
+
+T 
+colab,tx> asse (little-hoss (age) 12)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (man little-hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> def man
+get definition of a TBox object
+
+(CONC (MAN (AND MALE-HUMAN (SOME (AGE) >16)))) 
+colab,tx> check-abox
+check A-box for consistency
+
+NIL 
+colab,tx> clear-abox
+clear TAXON's ABox (delete individuals and assertions)
+
+#<Hash-Table 121EE46> 
+colab,tx> asse (zorro (boss) hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (zorro equal hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (employee hoss)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> realizei zorro
+<individual>; compute realization
+
+(HAPPY-WORKER) 
+colab,tx> def happy-worker
+get definition of a TBox object
+
+(CONC (HAPPY-WORKER (AND EMPLOYEE (AGREE NIL (BOSS))))) 
+colab,tx> realizei hoss
+<individual>; compute realization
+
+(HAPPY-WORKER) 
+colab,tx> clear-abox
+clear TAXON's ABox (delete individuals and assertions)
+
+#<Hash-Table 121EE46> 
+colab,tx> asse (man romeo)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (woman julia)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (cl1 (relative) romeo)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (cl2 (relative) julia)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (tcl (one) cl1)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (tcl (two) cl2)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx>  realizei tcl
+<individual>; compute realization
+
+(TWO-CLANS) 
+colab,tx> asse (in-love romeo julia)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx>  realizei tcl
+<individual>; compute realization
+
+(RELATED-CLANS) 
+colab,tx> def related-clans
+get definition of a TBox object
+
+(CONC (RELATED-CLANS (AND TWO-CLANS (SOME (ONE RELATIVE) (TWO RELATIVE) IN-LOVE)))) 
+colab,tx> l asse
+prim/sprim/ofam/cfam/sfam/conc/role/attr/asse/cpred/apred; list a part of the TAXON database
+
+Assertions:
+--------------------------------------------------------------------------
+    Type                            :  ABSTRACT-PREDICATE-INSTANTIATION
+     Extern                          :  (IN-LOVE ROMEO JULIA)
+
+--------------------------------------------------------------------------
+
+    Type                            :  ROLE-FILLER-ASSERTION
+     Extern                          :  (TCL (TWO) CL2)
+
+--------------------------------------------------------------------------
+
+    Type                            :  ROLE-FILLER-ASSERTION
+     Extern                          :  (TCL (ONE) CL1)
+
+--------------------------------------------------------------------------
+
+    Type                            :  ROLE-FILLER-ASSERTION
+     Extern                          :  (CL2 (RELATIVE) JULIA)
+
+--------------------------------------------------------------------------
+
+    Type                            :  ROLE-FILLER-ASSERTION
+     Extern                          :  (CL1 (RELATIVE) ROMEO)
+
+--------------------------------------------------------------------------
+
+    Type                            :  MEMBERSHIP-ASSERTION
+     Extern                          :  (WOMAN JULIA)
+
+--------------------------------------------------------------------------
+
+    Type                            :  MEMBERSHIP-ASSERTION
+     Extern                          :  (MAN ROMEO)
+
+--------------------------------------------------------------------------
+
+7 assertions
+colab,tx> clear-abox
+clear TAXON's ABox (delete individuals and assertions)
+
+#<Hash-Table 121EE46> 
+colab,tx>  def stepchild
+get definition of a TBox object
+
+(CONC (STEPCHILD (AND CHILD (OR (DISAGREE (HAS-FATHER) (HAS-PHYSICAL-FATHER)) (DISAGREE (HAS-MOTHER) (HAS-PHYSICAL-MOTHER)))))) 
+colab,tx> asse (man egon)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (egon (has-father) heinz)
+make some A-box assertions (concept ind) (ind role/attr ind)
+T 
+colab,tx> asse (egon (has-physical-father) oskar)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (egon (has-mother) karla)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> realizei egon
+<individual>; compute realization
+
+(MAN) 
+colab,tx> asse (man heinz)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> asse (woman karla)
+make some A-box assertions (concept ind) (ind role/attr ind)
+T 
+colab,tx> realizei egon
+<individual>; compute realization
+
+(MAN CHILD) 
+colab,tx> asse (heinz unequal oskar)
+make some A-box assertions (concept ind) (ind role/attr ind)
+
+T 
+colab,tx> realizei egon
+<individual>; compute realization
+
+(MAN STEPCHILD) 
+colab,tx> lisp (dribble)
+Eval expression
+;;; Dribble file "family.script" finished

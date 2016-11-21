@@ -1,0 +1,6 @@
+(ft (apf nil _l1) `_l1)
+(ft (apf (tup _h | _l1) _l2) (is _t (apf _l1 _l2)) `(tup _h | _t))
+
+(ft (nref (tup)) `(tup))
+(ft (nref (tup _h | _l1)) (apf (nref _l1) `(tup _h)))
+

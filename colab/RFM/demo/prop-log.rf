@@ -1,0 +1,40 @@
+; Propositional Logic
+
+; Definition of not-f.
+(ft (not-f true) false)
+(ft (not-f false) true)
+
+; Definition of and-f
+(ft (and-f _u true) _u)
+(ft (and-f _u false) false)
+
+; Definition of or-f
+(ft (or-f _u false) _u)
+(ft (or-f _u true) true)
+
+; The functions and-f, or-f, not-f describe a logical base.
+
+
+; Composed definitions
+; Nand-f
+
+(ft (nand-f _u _v) (not-f (and-f _u _v)) )
+
+; Nor-f
+
+(ft (nor-f _u _v) (not-f (or-f _u _v)) )
+
+; imp-f
+
+(ft (imp-f _u _v) (or-f (not-f _u) _v))
+
+; Xor-f
+
+(ft (xor-f _u _v) (or-f (and-f (not-f _u) _v) (and-f _u (not-f _v))))
+
+; EQUIV 
+
+(ft (equiv-f _u _v) (not-f (xor-f _u _v)))
+;))
+; End of prop_db
+

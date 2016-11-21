@@ -1,0 +1,378 @@
+>(relfun)
+
+rfi-l> exec sampler/palin
+batchjob executing...
+rfi-l> inter
+rfi-l> style lisp
+rfi-l> replace sampler/palin
+; Reading file "sampler/palin.rf" ..
+rfi-l> style prolog
+rfi-p> l
+palin[Ev, Sf, Rf]([]) :-& Ev.
+palin[Ev, Sf, Rf]([Center]) :-& Sf([Center]).
+palin[Ev, Sf, Rf]([First-and-last | Rest]) :-
+  append(Middle, [First-and-last], Rest) &
+  Rf(palin[Ev, Sf, Rf](Middle)).
+ident(A) :-& A.
+co[C](A) :-& C.
+twice[F](A) :-& F(F(A)).
+palindrome() :-& palin[true, co[true], ident].
+palinclass() :-& palin[even, co[odd], ident].
+palinzoom() :-& palin[[], ident, ident].
+palinlength() :-& palin[0, co[1], twice[add1]].
+append([], X, X).
+append([F | R], X, [F | Y]) :- append(R, X, Y).
+add1(X) :-& 1+(X).
+rfi-p> palindrome()([a,b,X])
+true
+X = a
+rfi-p> m
+unknown
+rfi-p> palindrome()([a,b | X])
+true
+X = [a]
+rfi-p> m
+true
+X = [b, a]
+rfi-p> m
+true
+X = [Center:13, b, a]
+rfi-p> m
+true
+X = [First-and-last:15, First-and-last:15, b, a]
+rfi-p> palinclass()([a])
+odd
+rfi-p> palinclass()([a,b,X,Y])
+even
+X = b
+Y = a
+rfi-p> palinclass()([a,b | X])
+odd
+X = [a]
+rfi-p> m
+even
+X = [b, a]
+rfi-p> m
+odd
+X = [Center:13, b, a]
+rfi-p> palinzoom()([a,b | X])
+[b]
+X = [a]
+rfi-p> hotrans
+rfi-p> l
+palin(Ev, Sf, Rf, []) :-& Ev.
+palin(Ev,
+      Sf,
+      Rf,
+      [Center]) :-& apply(Sf, tup([Center]), user).
+palin(Ev,
+      Sf,
+      Rf,
+      [First-and-last | Rest]) :-
+  append(Middle, [First-and-last], Rest) &
+  apply(Rf, tup(apply(palin[Ev, Sf, Rf], tup(Middle), user)), user).
+ident(A) :-& A.
+co(C, A) :-& C.
+twice(F, A) :-& apply(F, tup(apply(F, tup(A), user)), user).
+palindrome() :-& palin[true, co[true], ident].
+palinclass() :-& palin[even, co[odd], ident].
+palinzoom() :-& palin[[], ident, ident].
+palinlength() :-& palin[0, co[1], twice[add1]].
+append([], X, X).
+append([F | R], X, [F | Y]) :- append(R, X, Y).
+add1(X) :-& 1+(X).
+rfi-p> untup
+rfi-p> l
+palin(Ev, Sf, Rf, nil) :-& Ev.
+palin(Ev,
+      Sf,
+      Rf,
+      cns[Center, nil]) :-& apply(Sf, cns(cns[Center, nil], nil), user).
+palin(Ev,
+      Sf,
+      Rf,
+      cns[First-and-last, Rest]) :-
+  append(Middle, cns[First-and-last, nil], Rest) &
+  apply(Rf, cns(apply(palin[Ev, Sf, Rf], cns(Middle, nil), user), nil), user).
+ident(A) :-& A.
+co(C, A) :-& C.
+twice(F, A) :-& apply(F, cns(apply(F, cns(A, nil), user), nil), user).
+palindrome() :-& palin[true, co[true], ident].
+palinclass() :-& palin[even, co[odd], ident].
+palinzoom() :-& palin[nil, ident, ident].
+palinlength() :-& palin[0, co[1], twice[add1]].
+append(nil, X, X).
+append(cns[F, R], X, cns[F, Y]) :- append(R, X, Y).
+add1(X) :-& 1+(X).
+rfi-p> flatter
+rfi-p> l
+palin(Ev, Sf, Rf, nil) :-& Ev.
+palin(Ev, Sf, Rf, _1) :- _1 is cns[Center, nil],
+                         _3 is cns[Center, nil],
+                         _2 is cns(_3, nil) &
+                         apply(Sf, _2, user).
+palin(Ev, Sf, Rf, _1) :- _1 is cns[First-and-last, Rest],
+                         _2 is cns[First-and-last, nil],
+                         append(Middle, _2, Rest),
+                         _5 is palin[Ev, Sf, Rf],
+                         _6 is cns(Middle, nil),
+                         _4 is apply(_5, _6, user),
+                         _3 is cns(_4, nil) &
+                         apply(Rf, _3, user).
+ident(A) :-& A.
+co(C, A) :-& C.
+twice(F, A) :- _3 is cns(A, nil),
+               _2 is apply(F, _3, user),
+               _1 is cns(_2, nil) &
+               apply(F, _1, user).
+palindrome() :- _1 is co[true] & palin[true, _1, ident].
+palinclass() :- _1 is co[odd] & palin[even, _1, ident].
+palinzoom() :-& palin[nil, ident, ident].
+palinlength() :- _1 is co[1], _2 is twice[add1] & palin[0, _1, _2].
+append(nil, X, X).
+append(_1, X, _2) :- _1 is cns[F, R], _2 is cns[F, Y], append(R, X, Y).
+add1(X) :-& 1+(X).
+rfi-p> footen
+rfi-p> l
+palin(Ev, Sf, Rf, nil) :-& Ev.
+palin(Ev, Sf, Rf, _1) :- _1 is cns[Center, nil],
+                         _3 is cns[Center, nil],
+                         _2 is cns(_3, nil) &
+                         apply(Sf, _2, user).
+palin(Ev, Sf, Rf, _1) :- _1 is cns[First-and-last, Rest],
+                         _2 is cns[First-and-last, nil],
+                         append(Middle, _2, Rest),
+                         _5 is palin[Ev, Sf, Rf],
+                         _6 is cns(Middle, nil),
+                         _4 is apply(_5, _6, user),
+                         _3 is cns(_4, nil) &
+                         apply(Rf, _3, user).
+ident(A) :-& A.
+co(C, A) :-& C.
+twice(F, A) :- _3 is cns(A, nil),
+               _2 is apply(F, _3, user),
+               _1 is cns(_2, nil) &
+               apply(F, _1, user).
+palindrome() :- _1 is co[true] & palin[true, _1, ident].
+palinclass() :- _1 is co[odd] & palin[even, _1, ident].
+palinzoom() :-& palin[nil, ident, ident].
+palinlength() :- _1 is co[1], _2 is twice[add1] & palin[0, _1, _2].
+append(nil, X, X).
+append(_1, X, _2) :- _1 is cns[F, R],
+                     _2 is cns[F, Y],
+                     append(R, X, Y) &
+                     true.
+add1(X) :-& 1+(X).
+rfi-p> verti
+rfi-p> indexing
+indexing on :min-clauses 2 :max-vars 10 :max-depth 3 :max-args 2 :debug off
+rfi-p> listclass twice/2
+((proc
+  twice/2
+  1
+  (indexing)
+  (fun*eva
+   ((_f (1 (1) (4 2))))
+   ((_a (1 (2) (1)))
+    (_3 (2 nil (2)))
+    (_2 (1 nil (1)))
+    (_1 (2 nil (2))) )
+   (chunk
+    ((usrlit
+      (twice (_f (first safe perm)) (_a (first safe temp)))
+      (2 1 (1 2)) )
+     (usrlit (cns (_a (nonfirst safe temp)) nil) (2 1 (2 1))) )
+    (2 nil) )
+   (chunk
+    ((refl-xreg (_3 (first unsafe temp)))
+     (usrlit
+      (apply
+       (_f (nonfirst safe perm))
+       (_3 (nonfirst unsafe temp))
+       user )
+      (3 1 (1 3)) ) )
+    (3 ((_f (1)))) )
+   (chunk
+    ((refl-xreg (_2 (first unsafe temp)))
+     (usrlit (cns (_2 (nonfirst unsafe temp)) nil) (2 1 (2))) )
+    (2 nil) )
+   (chunk
+    ((refl-xreg (_1 (first unsafe temp)))
+     (usrlit
+      (apply
+       (_f (nonfirst safe perm))
+       (_1 (nonfirst unsafe temp))
+       user )
+      (3 0 (1 3)) ) )
+    (3 ((_f (1)))) ) ) ))
+
+rfi-p> listclass append/3
+((proc
+  append/3
+  2
+  (indexing
+   (sblock
+    (rblock
+     (clauses 1 2)
+     (arg 1 (const nil) (struct cns 2))
+     (arg 2 (var x) (var x))
+     (arg 3 (var x) (struct cns 2)) )
+    (seqind
+     (arg 1 (info 2) (const) (struct) (list (clauses 2)) (nil (clauses 1)))
+     (arg
+      3
+      (info 1)
+      (const)
+      (struct)
+      (list
+       (clauses 1 2)
+       (pblock
+        (rblock (clauses 1 2) (arg 2 (var x) (var x)))
+        (1block (clauses 1) (arg 2 (var x)))
+        (1block (clauses 2) (arg 2 (var x))) ) )
+      (nil)
+      (other (clauses 1)) ) )
+    (pblock
+     (rblock (clauses 1 2) (arg 2 (var x) (var x)))
+     (1block (clauses 1) (arg 2 (var x)))
+     (1block (clauses 2) (arg 2 (var x))) ) ) )
+  (rel0
+   nil
+   ((_x (2 (3 2) nil)))
+   (chunk
+    ((usrlit
+      (append
+       nil
+       (_x (first safe temp))
+       (_x (nonfirst safe temp)) )
+      (3 0 (1 2 3)) ))
+    nil ) )
+  (fun*den
+   nil
+   ((_1 (1 (1) nil))
+    (_x (2 (2) (2)))
+    (_2 (3 (3) nil))
+    (_f (4 nil nil))
+    (_r (5 nil (1)))
+    (_y (6 nil (3))) )
+   (chunk
+    ((usrlit
+      (append
+       (_1 (first safe temp))
+       (_x (first safe temp))
+       (_2 (first safe temp)) )
+      (3 0 (1 3)) )
+     (is
+      (_1 (nonfirst safe temp))
+      `(cns (_f (first unsafe temp)) (_r (first unsafe temp))) )
+     (is
+      (_2 (nonfirst safe temp))
+      `(cns (_f (nonfirst global temp)) (_y (first unsafe temp))) )
+     (usrlit
+      (append
+       (_r (nonfirst global temp))
+       (_x (nonfirst safe temp))
+       (_y (nonfirst global temp)) )
+      (3 0 (1 3)) ) )
+    (6 nil) )
+   (chunk (true) (0 nil)) ) ))
+
+rfi-p> listcode twice/2
+((allocate 1)
+ (get_variable_perm 1 1)
+ (get_variable_temp 1 2)
+ (put_nil 2)
+ (call cns/2 1)
+ (get_variable_temp 2 1)
+ (put_value_perm 1 1)
+ (put_constant user 3)
+ (call apply/3 1)
+ (put_nil 2)
+ (call cns/2 1)
+ (get_variable_temp 2 1)
+ (put_value_perm 1 1)
+ (put_constant user 3)
+ (deallocate)
+ (execute apply/3) )
+
+rfi-p> listcode append/3
+((set_index_number 1)
+ (switch_on_term nil nil 2 1 "label8")
+ "label8"
+ (set_index_number 3)
+ (switch_on_term 1 1 "label9" 1 "label9")
+ "label9"
+ (try 1 3)
+ (trust 2 3)
+ 1
+ (get_nil 1)
+ (get_value_temp 2 3)
+ (put_constant true 1)
+ (proceed)
+ 2
+ (allocate 0)
+ (get_list 1)
+ (unify_variable_temp 4)
+ (unify_variable_temp 5)
+ (get_list 3)
+ (unify_value_temp 4)
+ (unify_variable_temp 6)
+ (put_value_temp 5 1)
+ (put_value_temp 6 3)
+ (call append/3 0)
+ (put_constant true 1)
+ (deallocate)
+ (proceed) )
+
+rfi-p> emul
+rfe-p> palindrome()([a,b,X])
+true
+X = a
+
+More solutions?  (Y/N) y
+
+
+unknown
+rfe-p> palindrome()([a,b | X])
+true
+X = [a]
+
+More solutions?  (Y/N) n
+
+rfe-p> style lisp
+rfe-l> replace sampler/palin
+; Reading file "sampler/palin.rf" ..
+rfe-l> style prolog
+rfe-p> inter
+rfi-p> palinzoom()([1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,Z,X9,X8,X7,X6,X5,X4,X3
+,X2,X1,X0,X9,X8,X7,X6,X5,X4,X3,X2,X1])
+[Center:421]
+Z = Center:421
+X9 = 9
+X8 = 8
+X7 = 7
+X6 = 6
+X5 = 5
+X4 = 4
+X3 = 3
+X2 = 2
+X1 = 1
+X0 = 0
+rfi-p> emul
+rfe-p> ori
+[Ny:1207]
+Z = Ny:1207
+X0 = 0
+X9 = 9
+X8 = 8
+X7 = 7
+X6 = 6
+X5 = 5
+X4 = 4
+X3 = 3
+X2 = 2
+X1 = 1
+
+More solutions?  (Y/N) n
+
+batchjob done...

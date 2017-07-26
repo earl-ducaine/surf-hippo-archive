@@ -1,0 +1,9 @@
+alias rm rm
+find . \( -name '.*~' \) -exec rm {} \;
+find . \( -name '.*#' \) -exec rm {} \;
+find . \( -name '*~' \) -exec rm {} \;
+find . \( -name '*#' \) -exec rm {} \;
+find . \( -name '*.sparcf' \) -exec rm {} \;
+find . \( -name '*.fasl' \) -exec rm {} \;
+alias rm rm -i
+

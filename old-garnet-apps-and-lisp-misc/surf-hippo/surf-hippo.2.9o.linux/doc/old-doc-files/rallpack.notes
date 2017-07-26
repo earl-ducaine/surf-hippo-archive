@@ -1,0 +1,30 @@
+notes on rallpacks:
+
+1. Calculate compartmental equivalents with fixed time step - otherwise
+the comparison in runtimes will be meaningless.
+
+
+
+
+
+2. Raw Speed Versus Simulator Speed
+
+raw speed = number of compartments (segments and somas) * number of time steps
+            ------------------------------------------------------------------
+                                  actual run time
+
+
+simulator speed = raw speed * time step
+
+for variable time step =>
+
+simulator speed = raw speed * time step
+
+       number of compartments (segments and somas) * number of time steps     simulation duration
+    =  ------------------------------------------------------------------  *  -------------------
+                                actual run time                               number of time steps
+
+
+       number of compartments (segments and somas) * simulation duration
+    =  ------------------------------------------------------------------
+                                actual run time                          

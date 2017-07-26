@@ -1,0 +1,633 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+A Short Introduction to Lisp
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Introduction
+2. What is Lisp?
+3. The Lisp Command Line
+4. Compiling Versus the Interpreting
+5. List Processing
+6. Nesting
+7. All Those Parentheses!
+8. Getting Help Directly from Lisp: the DESCRIBE and APROPOS Functions
+9. Variables - Specials with Global Values
+10. Loops
+11. Defining Functions
+12. Structures
+13. Variables - Local Bindings
+14. Binding Special Variables Locally
+15. On-line Debugger
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+
+****************************************************************
+****************************************************************
+
+Introduction
+
+****************************************************************
+****************************************************************
+
+This section discusses the most elementary features of Lisp, in particular those necessary or
+especially helpful for understanding Surf-Hippo. There are numerous references on Lisp, the
+standard being "Common Lisp: the Language, 2nd Edition" (aka "CLtL2"), by Guy L.  Steele, Jr. and
+published by Digital Press.
+
+In the Surf-Hippo distribution there are also references in the doc/outside_docs directory,
+including the faq-lisp and Good-Lisp-Style files. The faq-lisp file is especially useful for
+pointers to various on-line and published resources.
+
+****************************************************************
+****************************************************************
+
+What is Lisp?
+
+****************************************************************
+****************************************************************
+
+
+Lisp is a language like C and Pascal, and was originally designed for artificial intelligence
+purposes. However, Lisp is also used for practically every kind of programming domain. For
+example, Surf-Hippo demonstrates that Lisp can be successfully applied to a "hard-core" numerical
+application, with essentially the same efficiency as C or other languages traditionally used in
+this area. While the fundamental data structure in Lisp is the list (the name "Lisp" came from
+"LISt Processing"), a concept which can be exploited quite nicely, it's perfectly possible to
+work with arrays and other data structures where these are more appropriate. In contrast to C,
+which has a very limited syntax, Lisp has a rich number of keywords; one result is that you can
+write code that almost looks like real sentences (see e.g. the LOOP construct). Libraries (in the
+sense used by C) are not required to run a Lisp program and, if you don't need the fastest speed,
+you can use variables without having to declare their types. 
+
+In sum, and in contrast to languages like C, it is very easy to write "quick and dirty" Lisp code
+that may suit an application perfectly well, while it is also possible to write stricter Lisp
+code that fully exploits the processing power of your particular platform.
+
+There are several varieties of Lisp - Surf-Hippo uses a high-quality, "industrial-strength",
+public domain Lisp from Carnegie-Mellon University: CMU Common Lisp (or CMUCL). "Common Lisp"
+means that this Lisp corresponds to the ANSI standard for Common Lisp.
+
+****************************************************************
+****************************************************************
+
+The Lisp Command Line
+
+****************************************************************
+****************************************************************
+
+
+The Lisp command line is like the UNIX command line. There's a prompt and you type in Lisp
+commands that will be processed by the interpreter. The default CMUCL prompt is a star (*). This
+is different from C where you have to compile functions to be able to use them. In Lisp, comment
+lines start with the semi-colon (;).
+
+****************************************************************
+****************************************************************
+
+Compiling Versus the Interpreting
+
+****************************************************************
+****************************************************************
+
+
+A big advantage of Lisp is that you can evaluate the same code either directly by entering the
+code into the interpreter or by compiling the code running the resulting binary. Of course, the
+latter is executed much more efficiently, but for many tasks simply entering non-compiled code
+works fine. For example, running a batch of simulations in the form of a simple loop will run
+more or less the same speed whether the loop is interpreted or compiled.
+
+Another advantage of Lisp is that if you do want to compile something, this may be done
+incrementally - you do not have to recompile the entire system.
+
+
+****************************************************************
+****************************************************************
+
+List Processing
+
+****************************************************************
+****************************************************************
+
+Data structures in Lisp were originally based on lists, and all expressions (called "forms)" that
+Lisp processes or evaluated (e.g. function calls) are in the list format. So, you can have lists
+of floats, lists of strings, lists of structures, etc. The beginning and the end of a list are
+defined by parentheses, and the empty list is equivalent to NIL. A synonym for list is "cons".
+Some examples:
+
+	'()				The empty list.
+	'(1 2 3 4) 			A list of 4 integers.
+	'("sodium" "potassium")		A list of two strings.
+	'(1 "aaa" 2 "b")		A mixed list.
+
+You probably noticed the quote just before the opening parenthesis. It is there to ensure that
+the parenthesis is considered a list and not a function call (see below). A function call itself
+is written as a list whose first element is the name of the function. For example, suppose you
+want to calculate the square root of 2.0. The square root function in Lisp is called SQRT.
+Thus, the explicit command that you would type on the Lisp command line, after the star, to
+calculate the square root of 2.0 is:
+
+	* (sqrt 2.0)
+	1.4142135
+	*
+
+Suppose you want to calculate the sum of 5.2 and 2.7. The operator for addition is the symbol +.
+So, you will type :
+
+ 	* (+ 5.2 2.7)
+	7.9
+	*
+
+Now, we can understand why it is an error to write a list without the quote at the front. If,
+for example, one would write (1 2 3), then the Lisp interpreter would take that as a function
+call for a function called 1, which would produce an error:
+
+	* (1 2 3)
+
+	In: 1 2
+	  (1 2 3)
+	Error: Illegal function call.
+
+So, the correct way to handle the list is to put a quote:
+
+	* '(1 2 3)
+	(1 2 3)
+	*
+
+Here, we typed in a list and the Lisp interpreter simply returned the value of the list, because
+no operation is required in this case.
+
+The backquote character is almost the same, except that any element inside the backquoted list
+that is preceded by a comma will be evaluated. Confusing at first, but quite useful at times.
+
+	* (setq a 101)     ; Set a variable called A to 101.
+	101
+	* '(1 a b)         ; This quoted list is not evaluated.
+	(1 A B)
+	* `(1 a b)         ; The backquote also suppresses evaluation.
+	(1 A B)
+	* `(1 ,a b)        ; But a comma after the backquote causes evaluation of the symbol A as
+        (1 101 B)          ; the previously set variable.
+	* 
+
+Note that SETQ sets (binds) a variable (symbol) to a value.
+
+There are a lot of commands to operate on lists: we can merge them, take parts of them, copy
+them, delete parts of them, make lists of lists, apply an operator to all the elements, etc. Here
+are a few examples:
+
+	* (append '(1 2) '(3 4))	; Merge lists
+	(1 2 3 4)
+	* (car '(1 2 3 4))		; Take the first element
+	1
+	* (cdr '(1 2 3 4))		; Take all elements but the first
+	(2 3 4)
+	. (map 'list 'sqrt '(1.0 2.0 3.0 4.0))		; Apply the SQRT operator
+	(1.0 1.4142135 1.7320508 2.0)	
+
+
+****************************************************************
+****************************************************************
+
+Nesting
+
+****************************************************************
+****************************************************************
+
+
+Lisp allows the nesting of lists. For example:
+
+	* (+ (sqrt 3.0) (+ 2.0 -3.0) (sin (/ pi 4.0)) (log 5.0))
+	3.0485955001730587d0
+	* (append (cdr '(1 2 3)) (cdr '("a" "b" "c")))
+	(2 3 "b" "c")
+
+
+****************************************************************
+****************************************************************
+
+All Those Parentheses!
+
+****************************************************************
+****************************************************************
+
+
+If you examine the source code of Surf-Hippo, non-Lispers usually just see a jungle of
+parentheses. The secret through this mess is two-fold: first, with (a little) experience, the
+parentheses tend to fade into the background. Second, it is much easier to write and evaluate
+Lisp code in an environment that does most of the parentheses work (e.g. nice indenting, matching
+open and closed parentheses) for you. All of our work is done under Emacs (itself written in
+Lisp) which provides both a Lisp-mode for editing, and the ILISP environment for running
+programs. These sorts of tools are really essential for efficient travelling in the Lisp world.
+	
+
+
+****************************************************************
+****************************************************************
+
+Getting Help Directly from Lisp: the DESCRIBE and APROPOS Functions
+
+****************************************************************
+****************************************************************
+
+
+For all objects that you can manipulate in Lisp, whether variables or functions, you can get
+helpful information using the DESCRIBE function. A few examples:
+
+	* (describe 1)
+	It is a composite number.
+
+	* (describe '(1 2 3))
+	(1 2 3) is a CONS.
+
+	* (describe my-vector)
+	#(0.0d0 0.0d0 0.0d0 0.0d0 0.0d0...) is a vector of length 10.
+	It has no fill pointer.
+	Its element type is DOUBLE-FLOAT.
+
+This function is very useful for functions that you have written in the past and you don't really
+remember how you call it:
+
+	* (describe 'my-func)
+	MY-FUNC is an internal symbol in the COMMON-LISP-USER package.
+	Function: #<Interpreted Function MY-FUNC {7025501}>
+	Function arguments:
+	  (X Y)
+	Its defined argument types are:
+	     (T T)
+	Its result type is:
+	     *
+	Its definition is:
+	  (LAMBDA (X Y) (BLOCK MY-FUNC #))
+
+This example may look terrible, but it gets better after some practice. Note that if DESCRIBE was
+called on a symbol that corresponded to a compiled function, the information would include the
+source file for that function. The real usefulness of DESCRIBE appears in neural simulations, for
+example, when you suddenly want to know a very particular parameter of a very particular synapse
+somewhere on your cell, and the documentation/editing functions in Surf-Hippo do not readily give
+you the information you want.
+
+Another useful function is APROPOS, which can help you find references to a given symbol.
+
+	  * (apropos 'markov)
+	  MARKOV
+	  SURF-HIPPO::MARKOV-FLOW-ARRAYS
+	  SURF-HIPPO::BOGUS-INITIALIZE-MARKOV-PARTICLE (defined)
+	  SURF-HIPPO::MARKOV-STATE-VOLTAGE-TRANSITION-FUNCTIONS (defined)
+	  SURF-HIPPO::GET-MARKOV-PARTICLE-P-ARRAY (defined)
+	  SURF-HIPPO::PLOT-MARKOV-STATES
+	  SURF-HIPPO::*MARKOV-TIME-STEP* (defined)
+		  .
+		  .
+		  .
+	  SURF-HIPPO::EVAL-ALL-MARKOV-PARTICLES (defined)
+	  :MARKOV, value: :MARKOV
+	  * 
+
+Of course, each function knows about the other!
+
+	  * (describe 'apropos)
+	  APROPOS is an external symbol in the COMMON-LISP package.
+	  Function: #<Function APROPOS {1212E99}>
+	  Function arguments:
+	    (string &optional package external-only)
+	  Function documentation:
+	    Briefly describe all symbols which contain the specified String.
+	    If Package is supplied then only describe symbols present in
+	    that package.  If External-Only is true then only describe
+	    external symbols in the specified package.
+	  Its declared argument types are:
+	    ((OR BASE-STRING SYMBOL) &OPTIONAL (OR PACKAGE BASE-STRING SYMBOL) T)
+	  Its result type is:
+	    (VALUES)
+	  On Wednesday, 11/2/94 02:57:43 am EST it was compiled from:
+	  target:code/package.lisp
+	    Created: Tuesday, 11/1/94 01:34:59 pm EST
+	    Comment: $Header: package.lisp,v 1.37 94/10/31 04:11:27 ram Exp $
+	  * 
+
+Likwise,
+
+
+	  * (apropos 'describe)
+	  ILISP:ILISP-DESCRIBE (defined)
+	  DEBUG::DESCRIBE-DEBUG-COMMAND (defined)
+	  C::DESCRIBE-BYTE-COMPONENT (defined)
+	  C::DESCRIBE-TN-USE (defined)
+		  .
+		  .
+		  .
+	  COMMON-LISP::DEFAULT-DESCRIBE (defined)
+	  COMMON-LISP::DESCRIBE-FUNCTION-NAME (defined)
+	  DESCRIBE (defined)
+	  * 
+
+
+
+****************************************************************
+****************************************************************
+
+Variables - Specials with Global Values
+
+****************************************************************
+****************************************************************
+
+You can define variables in Lisp, exactly as in other languages. Variables that will be referred
+to at any time while running Lisp (that is, the associated symbol has dynamic scope) are defined
+with the DEFVAR form, and called special variables. The assignment (or binding) of the symbol for
+a special variable to some value sets the global value of that variable. Despite this distinction
+between the terms special and global, we will refer to special variables at various times as
+either special or global. Thus a global variable is a symbol that can be referenced by any
+procedure later on after its definition. Variables that are defined and used locally within a
+form or program construct are described below. According to good Lisp style, almost all the
+global variables in Surf-Hippo begin, and usually end with, an asterisk.
+
+You don't have to declare variable types at the time of definition; the Lisp interpreter will
+automatically handle it when you set a specific value.  Example:
+
+	* (defvar a)
+	A
+	*
+
+Here, we defined a variable called A, and the Lisp interpreter lets you know it has been created
+by echoing the name of the variable. You can now set the value of the variable to anything you
+want, single-float, string, list, array:
+
+	* (setq a 1)
+	1
+
+	* (setq a "erik de schutter")
+	"erik de schutter"
+
+	* (setq a '(1 "bb" (3 4 5) "c"))
+	(1 "bb" (3 4 5) "c")
+
+Here we bound the same variable symbol to a number, a string, and a mixed list, without caring to
+specify the type. This illustrates the flexibility of the language. It makes Lisp a little bit
+slower in this case, but Lisp has other features that allow you, once the code is working, to add
+optimization commands (where of course you specify the types of objects) and to recover the
+efficiency of languages such as C.
+
+Note also in the third binding of A the initial quote for the list causes all elements of
+the list to be interpreted as is, in other words the inner list (3 4 5) is not taken as a
+function call to the function "3".
+
+Note also that if a SETQ form is applied at top-level to a symbol which has not been defined with
+a DEFVAR, Lisp automatically declares that symbol to be a special (global) variable.
+
+
+****************************************************************
+****************************************************************
+
+Loops
+
+****************************************************************
+****************************************************************
+
+
+Loops are extremely important in any kind of programming. Lisp provides the powerful LOOP
+facility, which is equivalent to the for( ..; ..; ..) construct of C, but much easier to use. In
+Lisp, you can control loops by indices, you can loop over the elements of a list, or loop either
+as long as or until a condition is satisfied. You can also use the loop to do specific actions
+and/or to incrementally build a result list. Here are only the most frequently used variations -
+the first example does a particular action at each iteration, the second one builds a list.
+
+	* (loop for i from 1 to 5	; Loop controlled by index i.
+		do (print i))
+	1				; Prints index varying between 1 and 5.
+	2				; These are the side effects.
+	3
+	4
+	5
+	NIL				; Form finally returns Nil because loop defines no return value.
+
+
+	* (loop for val in '(1.0 2.0 3.0)	; Loop over a list.
+		collect	(sqrt val))		
+	(1.0 1.4142135 1.7320508)		; Return value is the collected list.
+	*
+
+
+****************************************************************
+****************************************************************
+
+Defining Functions
+
+****************************************************************
+****************************************************************
+
+
+The construct to define new procedures or functions is the DEFUN form. The simplest layout is as
+follows:
+
+	(defun function-name (arg1 arg2 ...) 
+	   (command-1 ...)
+	   (command-2 ...)
+	   ...
+	)
+
+All Lisp functions can do two things: perform specific actions, and return a result.  The first
+action is called a side effect; this could be printing characters, changing the value of a global
+variable, defining a new array, etc. The return value of a function can be any Lisp object - a
+string, a number, a list, even another function. The following example defines a function, called
+N-RAND, that takes one integer argument, NUM, and returns a list containing exactly NUM random
+numbers between 0.0 and 1.0. In this example no checking is performed on the arguments. The Lisp
+interpreter answers by echoing the name of the new function:
+	
+	* (defun n-rand (num)
+	    (loop for i below num
+		  collect (random 1.0)))			; Function definition
+	N-RAND
+	* (n-rand 5)						; First call
+	(0.008551478 0.5912522 0.4989798 0.18791544 0.28064716)
+	* (n-rand 5)						; Second call
+	(0.6307291 0.9514588 0.5839038 0.3242128 0.5458571)
+	* 
+
+In Lisp, it is possible to define functions with optional arguments; that is, the user will be
+free to provide or not values for some arguments, but the function will know what default values
+it should take. This is done by adding the &OPTIONAL keyword after the obligatory arguments, and
+before the optional ones. The argument name may be followed (within a list form) by the default
+value that the function should use. If there is no default value specified, then the default for
+that argument is NIL:
+
+	* (defun foo (x &optional (y 10))
+	     (+ x y))
+	FOO
+	* (foo 1)		; Use default value of 10 for argument y
+	11
+	* (foo 1 2)		; Everything is provided
+	3
+
+With optional arguments, values supplied in the function call are bound to the function arguments
+in the order in which the optional arguments are listed. Similarly, you can have keyword
+arguments, denoted by &KEY, in which keywords defined in the DEFUN precede the appropriate values
+when the function is subsequently called:
+
+	* (defun foo (x &key (y 10) (z 20)
+	     (+ x y z))
+	FOO
+	* (foo 1 :z 0)		; Use default value of 10 for argument y - note that the keywords
+		                ; (:z) in function calls include a colon.
+
+	11
+	* (foo 1 :z 100 :y 2)	; Everything is provided - note that the keyword args don't have to
+        103                     ; be in the same order as in the original DEFUN.
+	
+
+****************************************************************
+****************************************************************
+
+Structures
+
+****************************************************************
+****************************************************************
+
+Lisp has built-in structures, as in C. These are defined with the DEFSTRUCT keyword, followed by
+the name of the structure, followed by specifications for the different fields (slots) of the
+structure. The following example is taken from Surf-Hippo and shows how the current source
+structure is defined. The fields of the structure can either be defined with simply the slot name
+(ex: name, node-1 and node-2), defined with a default value (ex: cell-element, enabled,
+current-data and resistance), or defined with both a default value and a type specification (ex:
+current-data and resistance):
+
+	(defstruct isource 
+	   name
+	   (cell-element nil)		; What the source is a part of (soma or segment)
+	   (current-data '() :type list)	; used to store simulation data
+	   node-1	
+	   node-2 
+	   (enabled t)			; Source is only considered when this is T
+	   (resistance 0.0 :type single-float)   ; Series resistance, in Mohms.
+	   ....
+	)
+
+Here the DEFSTRUCT form generates a function for creating the structure (MAKE-ISOURCE) as well as
+accessor functions to retrieve and change values in the structure (e.g. ISOURCE-NAME,
+ISOURCE-NODE-1). The various structures in Surf-Hippo are defined in the sys/structures.lisp
+file. Typically, you will never need to define new structures in order to use Surf-Hippo, and in
+fact Surf-Hippo is written so that you never have to deal explicitely with structures or their
+associated accessor functions. In fact, in general it is not a good idea to modify the slots of
+specific structures directly (that is using SETF and the appropriate structure accessor form)
+since the simulator assumes that access to many structure slots are via specific functions which
+in turn take care of necessary side effects. However, since structures are the fundamental data
+structure of all the things that defines a circuit, including the specific elements and the
+element types, it is useful to be aware of the structure concept.
+
+****************************************************************
+****************************************************************
+
+Variables - Local Bindings
+
+****************************************************************
+****************************************************************
+
+It is frequently useful to define temporary, or local, variables within a form (that is, the
+associated symbol has lexical scope). For example, these can be variables local to a function, or
+may contain a complicated mathematical expressions calculated once but used many times within a
+form. The LET form is then used:
+
+	(let ((var-1 value-1)
+	      (var-2 value-2)			; local definition of the variables
+		...
+		)
+	   (command-1 var-1 var-2 ...)		; commands in the LET construct
+	   (command-2 var-1 var-2 ...)		; that use the local variables.
+		...
+	)            				; end of LET construct
+
+A local variable exists only within the LET form within which it is defined - as soon as the LET
+is complete, the variable disappears. Note that the symbols which represent arguments in function
+definitions are local variables, exactly as if they were defined in a LET.
+
+
+****************************************************************
+****************************************************************
+
+Binding Special Variables Locally
+
+****************************************************************
+****************************************************************
+
+There are a variety of special (global) variables that Surf-Hippo uses to define various aspects
+of the simulation environment. Occasionally, it may be useful to evaluate a form within which a
+given global variable is set temporarily to some value, with the original value of the global
+variable restored once the evaluation is done. This temporary binding of a global variable may be
+done by doing a local binding of the symbol to the desired value using the LET form above. For
+example, the global variable *OVERLAY-ALL-PLOTS* (see plotting.doc) determines whether or not old
+data is kept in plot windows when new data is plotted. Regardless of what the current value of
+*OVERLAY-ALL-PLOTS* is, we can temporarily fix this value with a LET assignment:
+
+	  (let (*OVERLAY-ALL-PLOTS*)
+	    (loop for current from 0.0 to 0.5 by 0.1
+		  do (add-pulse-list *isource* (list 10.0 200.0 current))
+		  (goferit)
+		  (setq *OVERLAY-ALL-PLOTS* t)))
+
+Here, the initial assignment *OVERLAY-ALL-PLOTS* is to NIL. That is, the same thing would have
+been accomplished by:
+
+	  (let ((*OVERLAY-ALL-PLOTS* NIL))
+	    (loop for current from 0.0 to 0.5 by 0.1
+		  do (add-pulse-list *isource* (list 10.0 200.0 current))
+		  (goferit)
+		  (setq *OVERLAY-ALL-PLOTS* t)))
+
+In either case, the LOOP iterates over values of a local variable CURRENT (from 0 to 0.5, with
+steps of 0.1), and references this variable as part of the arguments to the function
+ADD-PULSE-LIST (see source.doc). Note that the function LIST returns a list of all of its
+arguments (you could use a backquote here, remembering to include a comma before CURRENT so that
+it would be treated and evaluated as a variable instead of a symbol). Next, the function GOFERIT
+is called (see running.doc or scripts.doc) which runs a simulation. After the simulation is run,
+*OVERLAY-ALL-PLOTS* is set to T, so that subsequent simulations within the LOOP will overlay
+their results over the earlier output. After the LOOP is finished, and thus the LET form, the
+value of *OVERLAY-ALL-PLOTS* will return to whatever it was before the LET.
+
+
+****************************************************************
+****************************************************************
+
+On-line Debugger
+
+****************************************************************
+****************************************************************
+
+Breaking into the debugger can of course occur for a variety of reasons, ranging from syntax
+errors in your code to arithmetic bugs in Surf-Hippo (never!). In general, typing Q or 0 (the
+number zero) to the debugger will return you to the top-level of the interpreter. Sometimes it is
+useful to back up the debugger stack to find legible information indicating where the problem
+lies. Typing H to the debugger will give you more information on your options.
+
+Here is an example:
+
+	  * (/ 1 0)
+	  Arithmetic error DIVISION-BY-ZERO signalled.
+	  Operation was KERNEL::DIVISION, operands (1 0).
+
+	  Restarts:
+	    0: [ABORT] Return to Top-Level.
+
+	  Debug  (type H for help)
+
+	  (KERNEL::INTEGER-/-INTEGER 1 0)
+	  0] 0
+	  * 
+
+
+
+
+

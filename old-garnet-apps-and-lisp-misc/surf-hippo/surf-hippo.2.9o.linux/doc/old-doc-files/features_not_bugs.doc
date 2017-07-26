@@ -1,0 +1,390 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+	FEATURES NOT BUGS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Window Color Allocation Errors
+2. Window Update Errors
+3. GC Announce Window Errors
+4. Not Enough Core Error
+5. Menus and Other Windows Do Not Respond to Mouse
+6. Printing Postscript Files Crash
+7. XLIB Error on Fast Mouse Clicks
+8. Zooming Too Far
+9. Parameter Error Checking
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+Other bugs are noted in various doc files.
+
+
+***************************************************************
+***************************************************************
+
+	Window Color Allocation Errors
+
+***************************************************************
+***************************************************************
+
+
+Sometimes, you may get the following error in the Lisp window:
+
+
+     ALLOC-ERROR in current request  Code 84.0 [AllocColor]
+
+     Restarts:
+       0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (XLIB::X-ERROR XLIB:ALLOC-ERROR
+		    :DISPLAY
+		    #<XLIB:DISPLAY cogni.iaf.cnrs-gif.fr:0 (X11/NeWS - Sun Microsystems Inc. R3000)>
+		    :ERROR-KEY
+		    ...)
+     0] q
+
+
+You may be able to recover by typing "q" to the debugger (as in above
+example). See note below.
+
+
+From the Garnet mailing list:
+
+ With regard to problems with colors:
+
+  I've seen this too.  I assumed something like having too many colors allocated at
+  once is what is being indicated.  I see it in a color chooser application.  Also,
+  if you already have allocated a bunch of colors, (say you have "xv" running
+  concurrently and it's looking at some very multi-colored image), this will tend
+  to happen sooner rather than later.
+
+See note with (defvar *color-library-resolution* 0.02) in ~/surf-hippo/src/gui/colors.lisp.
+
+***************************************************************
+***************************************************************
+
+	Window Update Errors
+
+***************************************************************
+***************************************************************
+
+Another occasional error may look something like this (typically when
+you manipulate windows too quickly):
+
+     Asynchronous ACCESS-ERROR in request 21132 (last request was 21509)  Code 30.0 [ChangeActivePointerGrab]
+
+     Restarts:
+       0: [CONTINUE] Ignore
+       1: [ABORT   ] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (XLIB::READ-ERROR-INPUT
+      #<XLIB:DISPLAY cogni.iaf.cnrs-gif.fr:0 (X11/NeWS - Sun Microsystems Inc. R3000)>
+      21132
+      #S(XLIB::REPLY-BUFFER
+	   :SIZE 32
+	   :IBUF8 #(0 10 82 140 0...)
+	   :NEXT #S(XLIB::REPLY-BUFFER :SIZE 32 :IBUF8 # :NEXT # :DATA-SIZE 32)
+	   :DATA-SIZE 32)
+      (NIL))
+
+     0] 
+
+If you have been running from the interpreter (entering commands
+directly into the Lisp window), then just enter 0 (for Ignore). With
+luck, you can recover from this error gracefully even while running
+Surf-Hippo - try to get back to the Main Menu, and hit Quit. You will
+be in good shape if the quit message appears in the Lisp window:
+
+
+     Do you want to quit LISP? (RETURN for NO, yes/YES for YES): 
+
+     T
+     * 
+
+Now, you can continue Surf-Hippo from where you left off simply by
+entering:
+
+     * (surf)
+
+       ** Surf-Hippo: The MIT CBIP Neuron Simulator (Version x.x) **
+
+
+
+***************************************************************
+***************************************************************
+
+	GC Announce Window Errors
+
+***************************************************************
+***************************************************************
+
+
+During GC (garbage collection) a red message will appear on the screen
+if *USE-GC-ANNOUNCE-WINDOW* is T, NIL being the default. This is convenient,
+but it is also somewhat fragile. If you get something like:
+
+     Warning:
+	(FUNCALL EXTENSIONS:*GC-NOTIFY-BEFORE* COMMON-LISP::PRE-GC-DYN-USAGE) lost:
+
+     Error in function KR::S-VALUE-FN:
+	S-VALUE called with a null schema:  
+	  (slot :STRING, value "GC threshold exceeded with 25,035,016 bytes in use. Commencing GC.").
+     Warning:
+	(FUNCALL EXTENSIONS:*GC-NOTIFY-AFTER* 
+	 COMMON-LISP::POST-GC-DYN-USAGE COMMON-LISP::BYTES-FREED COMMON-LISP::*GC-TRIGGER*) lost:
+
+     Error in function KR::S-VALUE-FN:
+	S-VALUE called with a null schema: 
+	 (slot :STRING, value "GC finished - bytes retained 23,092,624, bytes freed 1,942,392, new-threshold 25,092,624 
+     ").
+
+
+Then turn off the *USE-GC-ANNOUNCE-WINDOW* (-> NIL).
+
+Also, as mentioned in running.doc, for long simulations it is
+recommended that both *USE-GC-ANNOUNCE-WINDOW* and *GC-ANNOUNCE-text*
+be set NIL. It is usually a good idea to keep *BEEP-AFTER-GC* set T so
+that you are assured that the simulation has not crashed.
+
+
+***************************************************************
+***************************************************************
+
+	Not Enough Core Error
+
+***************************************************************
+***************************************************************
+
+If you try to print or save too many windows at once, you may get the following
+error in the Lisp window:
+
+     Error in function #:G27:  Could not fork child process: Not enough core
+
+     Restarts:
+     0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (#:G27)
+     0]
+
+If this happens, just type "q" to get out of the debugger. One
+solution is to write out the .ps file using the menu (i.e. do not
+select the "Print selected windows now?" option), and then print out
+the .ps file from the UNIX shell. In fact, if you get this error, the
+.ps file is probably residing in the specified plot directory, so that
+you can just reference it from the UNIX shell.
+
+
+Some notes on this:
+
+
+Return-Path: <ted@crl.nmsu.edu>
+X400-Received: by /PRMD=cnrs-gif/ADMD=0/C=fr/;
+ Relayed; 27 Oct 94 17:07:56+0000
+X400-Received: by /PRMD=Internet/ADMD= /C=us/;
+ Relayed; 27 Oct 94 10:07:33-0600
+Date: 27 Oct 94 10:07:33-0600
+From: Ted Dunning <ted@crl.nmsu.edu>
+To: lyle@cogni.iaf.cnrs-gif.fr
+Cc: ted@crl.nmsu.edu
+In-Reply-To: <9410272151.AA02185@cogni.iaf.cnrs-gif.fr>
+Subject: sparc 10, 4.1.3 patch recommedations
+
+forking lisp could easily require enough space to completely clone
+lisp (if they use fork instead of vfork).  this would make shell-exec
+very different from running something from the shell.
+
+the other piece of information that might help you is the output of
+/etc/pstat -s when things are not working well.
+
+18788k allocated + 5572k reserved = 24360k used, 177236k available
+
+good luck!
+
+
+
+Return-Path: <ted@crl.nmsu.edu>
+X400-Received: by /PRMD=cnrs-gif/ADMD=0/C=fr/;
+ Relayed; 27 Oct 94 18:57:52+0000
+X400-Received: by /PRMD=Internet/ADMD= /C=us/;
+ Relayed; 27 Oct 94 11:57:34-0600
+Date: 27 Oct 94 11:57:34-0600
+From: Ted Dunning <ted@crl.nmsu.edu>
+To: lyle@cogni.iaf.cnrs-gif.fr
+In-Reply-To: <9410272332.AA02383@cogni.iaf.cnrs-gif.fr>
+Subject: sparc 10, 4.1.3 patch recommedations
+
+   X400-Received: by /PRMD=cicb/ADMD=atlas/C=FR/;
+    Relayed; 27 Oct 94 18:32:57+0100
+   X400-Received: by /PRMD=cnrs-gif/ADMD=0/C=fr/;
+    Relayed; 27 Oct 94 19:32:07-0400
+   Date: 27 Oct 94 19:32:07-0400
+   From: Lyle Borg-Graham <lyle@cogni.iaf.cnrs-gif.fr>
+
+   lisp hasn't crashed at the moment, but:
+
+	lyle@cogni>/etc/pstat -s
+	63676k allocated + 7680k reserved = 71356k used, 32240k available
+						         ^^^^^
+
+
+this means that forking lisp will probably be impossible (you had 18M
+retained, x 2 for new and old help = 36 MB).
+
+if you add 100MB more swap you are likely to be ok.
+
+   wrt the shell-exec, is there a way to avoid the clone with fork and
+   use vfork (I am no Unix hacker!).
+
+no idea.  you might ask cmucl-bugs
+
+
+
+***************************************************************
+***************************************************************
+
+	Menus and Other Windows Do Not Respond to Mouse
+
+***************************************************************
+***************************************************************
+
+
+Make sure that the caps lock key is not ON.
+
+
+
+
+***************************************************************
+***************************************************************
+
+	Printing Postscript Files Crash
+
+***************************************************************
+***************************************************************
+
+There is a problem with the Unix interface that can cause Lisp to 
+crash when printing out more than one .ps file (using the print
+windows menu) - the message:
+
+  Oh no, got a PendingInterrupt while foreign function call was
+  active.
+ 
+will appear in the Lisp window, and Lisp crashes. If this happens, you
+will have to load everything from scratch. To avoid this problem for
+now, the "Put all selected windows together?" option in the "Window
+Printing Options" menu is always set when you request the "Print
+selected windows now?" option, that is multiple selected windows will
+be put into a single .ps file. If you do need to print out several
+windows, either create the .ps files via a single call to the print
+windows menu, and then print out these files from the unix shell
+(independent of CMU Lisp), or print out each window with succesive
+calls to the print windows menu.
+
+The global variable *KILL-MULTIPLE-WINDOW-PRINTING* will prevent
+Surf-Hippo from printing multiple ps files. The default for
+this variable is NIL.
+
+
+
+***************************************************************
+***************************************************************
+
+	XLIB Error on Fast Mouse Clicks
+
+***************************************************************
+***************************************************************
+
+
+
+Sometimes clicking too fast in a window gets an XLIB error, for
+example:
+
+     Asynchronous ACCESS-ERROR in request 2697 (last request was 2705)  Code 30.0 [ChangeActivePointerGrab]
+
+     Restarts:
+     0: [CONTINUE] Ignore
+     1: [ABORT   ] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (XLIB::READ-ERROR-INPUT
+     #<XLIB:DISPLAY substantia-nigra:0 (X11/NeWS - Sun Microsystems Inc. R3000)>
+     2697
+     #S(XLIB::REPLY-BUFFER
+     :SIZE 32
+     :IBUF8 #(0 10 10 137 0...)
+     :NEXT #S(XLIB::REPLY-BUFFER :SIZE 32 :IBUF8 # :NEXT # :DATA-SIZE 32)
+     :DATA-SIZE 32)
+     (NIL))
+     0] q
+     * 
+
+You can generally recover by just quitting from the debugger, as shown
+above. However, if Surf-Hippo is running when this happens, get back
+to the main menu and quit (temporarily) before quitting from the
+debugger. Then, restart Surf-Hippo with (surf).
+
+
+
+
+***************************************************************
+***************************************************************
+
+	Zooming Too Far
+
+***************************************************************
+***************************************************************
+
+If you try to zoom in on too small an area, you may get the following error: 
+
+     Error in function C::DO-CALL:
+	Condition slot is not bound: CONDITIONS::OPERATION
+
+     Restarts:
+       0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (SPARC:SIGFPE-HANDLER #<unavailable-arg>
+			   #<unavailable-arg>
+			   #.(SYSTEM:INT-SAP #xEFFFEC40))
+     0] 
+
+
+Hit q to return to the top-level lisp, and left-mouse over the plot to
+restore the last zoom view. Try the zoom with a larger area. This bug
+should be fixed.
+
+Also, making the plot window larger (e.g. with the window-manager) and
+replotting (right-mouse) can allow a higher zoom.
+
+
+***************************************************************
+***************************************************************
+
+	Parameter Error Checking
+
+***************************************************************
+***************************************************************
+
+There is a *minimum* of error checking of entered parameters,
+particularly in the menus. It is up to the user to infer what are
+reasonable constraints on specific parameters (e.g. non-negative,
+non-zero, negative, etc.). 

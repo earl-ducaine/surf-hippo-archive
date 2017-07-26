@@ -1,0 +1,43 @@
+1/96
+
+The arguments and results of ALPHA-ARRAY, ALPHA (an alias for
+ALPHA-ARRAY) and ALPHA-FUNCTION (all in waveforms.lisp) have changed
+and are not backward compatible. Accordingly, the entries in
+synapse-params.lisp and light-synapse-params.lisp have been changed.
+
+In particular, the default optional arguments for the old
+ALPHA-FUNCTION gave an alpha function with unit area, whereas the
+default value for the key argument :ADJUSTMENT is :NORMALIZE, which
+gives an alpha function of amplitude 1.0. Adding the arguments
+	
+	:ADJUSTMENT :UNIT-AREA 
+
+to old code that calls ALPHA-FUNCTION will update to this change.
+
+-------------------------------------------------------
+
+6/95
+
+*******************************************************
+*******************************************************
+
+	Format For *SOURCE-PULSE-LISTS*
+
+*******************************************************
+*******************************************************
+
+
+The format for *SOURCE-PULSE-LISTS* has changed, so that now you do
+not add the type of the source as a cons at the front of each entry in
+the list. For example, the old format was
+
+	((("Hippo-soma-isrc" . 'isource) (10.0 20.0 2.0) (100.0 110.0 -5.0)))
+
+
+and now this is
+
+
+	(("Hippo-soma-isrc" (10.0 20.0 2.0) (100.0 110.0 -5.0)))
+
+
+This change is necessary for all code.

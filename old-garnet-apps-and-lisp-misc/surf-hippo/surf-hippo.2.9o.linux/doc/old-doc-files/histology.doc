@@ -1,0 +1,404 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		HISTOLOGY GRAPHICS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Basic Interface
+2. Cell 2D Projections
+3. Depth Relations are Not Rendered Faithfully
+4. Hints for Rotating Zoom Views
+5. Window Resizing
+6. Element Visualization - Sources, Channels, Synapses, Branches, Segments
+7. Window Visibility
+8. Functions for Setting Up Graphics W/O Menus
+9. Light Synapse Receptive Field Graphics
+9. Bugs/Features
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+****************************************************************
+****************************************************************
+
+		Basic Interface
+
+****************************************************************
+****************************************************************
+
+
+The main histology graphics menu may be invoked from either the Main
+Menu, by the histology graphics window CONTROL-m option, or by
+invoking the function (HISTOLOGY) at the lisp prompt.
+
+Note that if the cell(s) in a histology window is(are) no longer
+loaded into Surf-Hippo, then modification, selection of cell elements,
+etc, is disabled.
+
+The options in this menu or in its submenus include variations on the
+following:
+
+ "Viewing angle theta (degrees; For retina, 0 is for flat mount; 90 is
+  radial mount)" -> See below.
+
+ "Viewing angle phi (degrees; For retina 0 is flat/radial mount)" ->
+  See below	
+
+ "Drawing scale (microns/pixel):"
+
+ "Method to size the histology window to cells"
+   -> Menu option allows for entering window parameters (see below).
+
+ "Create new histology window?" 
+
+ "Change histology rendering details" -> this brings up a menu which
+  may include the following:
+
+      "Label/Mark all cell nodes?"
+
+      "Label/Mark plotted nodes?" -> This can be used without drawing 
+      the cells to update newly chosen or deleted plotted nodes.
+
+      "Draw/Label sources on cells?"
+
+      "Channel graphics menu"
+
+      "Synapse stimulus/RF graphics menu" 
+
+      "Draw only proximal segments?" -> prompts for the number of 
+      proximal segments out from the soma to draw, for each dendritic 
+      trunk.
+
+      "Modify element graphics"
+
+
+If menu-based window sizing is chosen, then another menu appears with:
+
+ "Center of window along X direction [um]:" 
+ "Center of window along Y direction [um]:"
+ "Histology window width [um]" 
+ "Histology window height [um]"
+
+For mouse and keyboard senstive actions for plot windows, see
+histology-control.doc
+
+
+****************************************************************
+****************************************************************
+
+		Cell 2D Projections
+
+****************************************************************
+****************************************************************
+
+Projecting 3D structures onto the histology window is a two part
+process: The first step is the calculation of the 2D projection of the
+structure, and the second step is the translation of the projection
+within the plane of the display window
+
+The anatomical information for each cell component is referenced to an
+XYZ coordinate system, with an implicit origin at (0,0,0). In this
+discussion we shall refer to the viewing plane as the X'Y' plane. The
+default orientation of this plane is such that X->X' and Y->Y'. The
+orientation of this XYZ system with respect a given brain structure is
+arbitrary, but as a general rule the typical anatomic/experimental
+view is corresponds to the default X'Y' projection. Typically, this
+means that Z is taken as the depth within tissue, oriented with
+respect to 2-dimensional sheets in brain. For example with retina, the
+XY plane is congruent with the plane of the retina, with the Z axis
+aligned along the radial dimension (for example, Z=0 at the ILM and
+increasing in the distal direction). Thus the default orientation of
+the X'Y' viewing plane corresponds to the retinal whole mount
+configuration, or retinotopic orientation. For flattened cortex, the
+XY plane is congruent with the surface of the brain, and the Z axis
+crosses the cortical layers. For cortical and hippocampal slice
+preparations, the XY plane is in the plane of the slice, since the
+slice is typically viewed "en-face".  This is also the system for
+cortical neurons that are typically viewed perpendicular to the
+cortical surface.
+
+Two dimensional projections onto the X'Y' viewing plane are taken as
+follows.  Assume that the XYZ coordinates are placed with the XZ plane
+in the horizontal direction, with the Z axis emerging from the page
+and the X axis pointing to the right in the plane of the page. The Y
+axis points up in the plane of the page.  Start with THETA = PHI = 0,
+where the X'Y' viewing plane is congruent with the XY plane. As the
+X'Y' plane is rotated about the Y' axis (now = Y axis), the azimuth
+angle PHI is the angle between the X and X' axises. Next, the X'Y'
+plane is rotated around the X' axis, and the elevation angle THETA is
+the angle between the Y and Y' axises. When a structure is drawn, the
+THETA and PHI values for the appropriate window are used to generate
+the 2D representation of each element in the structure.
+
+Subsequent translation of the cell drawing in the viewing plane with
+respect to the histology window is done via the XY (really X'Y')
+center parameter menu described above. Rotation of the projected
+image, per se, is not implemented.
+
+If either the viewing theta or phi is non-zero, the viewing angles
+will be displayed in the lower right corner. This label may be removed
+(or added to) via the (Control-t) text command described above.
+
+****************************************************************
+****************************************************************
+
+      Depth Relations are Not Rendered Faithfully
+
+****************************************************************
+****************************************************************
+
+As a compromise to efficiency, there is no attempt to maintain depth
+relationships between overlapping sections of the dendritic tree or
+soma. For example, when two sections of the tree with two different
+color overlap, the choice of which section is drawn "in front of" the
+other is arbitrary. Somas are drawn either completely behind or
+completely in front of the dendritic trees, selectable from the
+Histology Menu, or not at all (also selectable from the Histology
+Menu).
+
+****************************************************************
+****************************************************************
+
+              Hints for Rotating Zoom Views
+
+****************************************************************
+****************************************************************
+
+If you want to look at a zoomed view from a different angle (theta,
+phi), then bring up the Histology menu on the zoom window, specify the
+desired angles, and make sure to click the "Fix" or "Menu" option for
+"Method to size the histology window to cells".
+
+
+****************************************************************
+****************************************************************
+
+		Window Resizing
+
+****************************************************************
+****************************************************************
+
+The current code does an incomplete job in sizing the graphics window
+properly, especially with respect to visualization of light stimulus
+or synapse receptive fields.  Typically, though, use of the "Fix" or
+"Menu" options, instead of the "Automatic" option in the Drawing Menu
+will give you enough freedom to fix the picture. If the automatic
+window scaling is inappropriate you can adjust the size of the window
+by the following steps:
+
+	1. Resize the window with the mouse and the X window manager.
+	The graphics will not readjust to this resizing, so you have
+	to judge what the correct size will be.
+
+	2. Invoke the Cell Drawing menu (from Surf-Hippo Main Menu, or
+	CONTROL-m on the graphics window).
+
+	3. Choose option "Fix" for "Method to size histology window to
+	cells" and hit "OK".
+
+	6. The histology will now be redrawn centered on the
+	resized window.
+
+If an histology window is resized with the window manager, various
+graphics (including the highlighting of selected cell segments or
+somas) will be incorrect until the cell(s) are redrawn as just
+described.
+
+The maximum size of a histology window is 90% of the screen width and height - thus
+if the chosen scale is too large then the cell drawing may be cut off.
+
+*******************************************************************
+*******************************************************************
+
+   Element Visualization - Sources, Channels, Synapses, Branches
+
+*******************************************************************
+*******************************************************************
+
+Circuit elements can be highlighted on the histology rendering by
+choosing the appropriate options in the menus. For channels and
+synapses, different color markers may be assigned to different channel
+or synapse types (via "Change Histology Rendering Details" option).
+
+With the "Mark specific branches" option in the histology rendering
+details, specific branches may be marked along their length with
+different colors. If you have chosen a segment prior to calling the
+Histology Menu, then the Mark Specific Branches option will default to
+the branch associated with that segment.
+
+You can also assign colors to specific segments with the following
+function:
+
+	color-segment SEGMENT COLOR
+
+where COLOR can be: 'RED, 'GREEN, 'BLUE, 'YELLOW, 'ORANGE, 'CYAN,
+'PURPLE, 'BLACK, or 'WHITE. For example:
+
+	(COLOR-SEGMENT 54 'orange)
+
+or
+	
+	(loop for segment in (segments-to-soma 234) do (COLOR-SEGMENT segment 'green))
+
+
+******************************************
+******************************************
+
+Light Synapse Receptive Field Graphics
+
+******************************************
+******************************************
+
+The receptive fields for light synapses can be drawn in perspective by the
+appropriate selection in the Synapse Stimulus/RF Graphics submenu of the Drawing
+menu. The receptive field graphics shapes are determined by various simple
+approximations of the 'SPATIAL-RF-FUNCTION component of the synapse type parameters
+(see GET-SPATIAL-RF-ARRAY in synapse.lisp). Connection lines are drawn from the
+synapse to its RF, at a height that can be specific to the synapse type (default
+100.0 um). The style of these lines is determined by the global variables:
+
+	*SYN-RF-CONNECTION-DASH* (default '(10 10), see linestyles.doc for options)
+ 
+	*SYN-RF-CONNECTION-THICKNESS* (default 0, see linestyles.doc for options)
+
+	*SYN-RF-CONNECTION-SHADING* (default 100, see linestyles.doc for options)
+
+These may also be set from the histology submenus. The color of the synapse marker
+on the soma or segment is also the color used for the RF, with a shading given by
+the global variable *SYN-RF-SHAPE-SHADING* (in percent, default 25). If
+*SYN-RF-SHAPE-SHADING* is 0, then only the outline of the RF is drawn.
+
+See the description of SET-TYPE-GRAPHICS below.
+
+Synapse stimuli are drawn either behind or in front of the cell drawing, according to
+the global variable *WHERE-SYNAPSE-STIMULUS-GOES* (:BACK or :FRONT). This may also be
+set in the synapse graphics menu for the current graphics window.
+
+******************************************
+******************************************
+
+	Window Visibility
+
+******************************************
+******************************************
+
+Normally, output windows (plotting and histology) will be
+automatically deiconified, raised and made visible when needed. For
+automatic runs, it sometimes convenient to suppress the showing of
+output so that you can do something else with the computer. Setting
+the following global variables (all of whom have a default value of T)
+may then help (surf-hippo/src/sys/windows-hack.lisp):
+
+	*RAISE-OUTPUT-WINDOWS*
+	*DEICONIFY-OUTPUT-WINDOWS*
+	*UPDATE-OUTPUT-WINDOWS*
+	*SHOW-OUTPUT-WINDOWS*
+
+
+******************************************************************************
+******************************************************************************
+
+	Functions for Setting Up Graphics W/O Menus
+
+******************************************************************************
+******************************************************************************
+
+
+(in cell-graphics.lisp)
+
+
+	set-type-graphics TYPE VALUE &optional (PARAMETER 'COLOR) (WIN *STANDARD-GRAPHICS-OUTPUT*)
+
+SET-TYPE-GRAPHICS Sets graphic qualities for element types (e.g. channels and synapses),
+and specifically enables the graphics of the type, e.g.:
+
+     (SET-TYPE-graphics 'DR-HH 'cyan) 
+
+or
+
+     (SET-TYPE-graphics 'DR-HH 'cyan 'color)
+
+For colors, possible colors include: 'RED, 'GREEN, 'BLUE, 'YELLOW, 'ORANGE, 'CYAN, 'PURPLE, 'BLACK, 'WHITE.
+Valid PARAMETER arguments include 'COLOR, and 'HEIGHT (for light synapse rf plotting).
+
+
+	set-misc-histo-slots &key (WIN *STANDARD-GRAPHICS-OUTPUT*)
+		                  (SCALE 3.0)
+				  (PHI-DEG 0.0)
+				  (THETA-DEG 0.0)
+				  (DRAW-AXONS T))	      
+
+
+SET-MISC-HISTO-SLOTS is used for setting some basic graphics parameters without using the menus. e.g.
+
+         (SET-MISC-HISTO-SLOTS :scale 3.0 :phi-deg 90.0 :DRAW-AXONS nil)
+
+
+Angle args are in degrees, and scale arg is in microns/pixel.
+
+
+
+
+
+******************************************
+******************************************
+
+	Bugs/Features
+
+******************************************
+******************************************
+
+
+See also the PLOTTING.DOC file.
+
+If you try to draw too big a picture, you may get the following: 
+
+
+     DRAWABLE-ERROR in current request  Code 14.0 [GetGeometry] ID #xA0008D
+
+     Restarts:
+       0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (XLIB::X-ERROR XLIB:DRAWABLE-ERROR :DISPLAY
+	 #<XLIB:DISPLAY cogni.iaf.cnrs-gif.fr:0 
+		(X11/NeWS - Sun Microsystems Inc. R3000)> :ERROR-KEY ...)
+     0] 
+
+     DRAWABLE-ERROR in current request  Code 14.0 [GetGeometry] ID #xA0008D
+
+     Restarts:
+       0: [ABORT] Return to debug level 1.
+       1:         Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (XLIB::X-ERROR XLIB:DRAWABLE-ERROR :DISPLAY 
+	 #<XLIB:DISPLAY cogni.iaf.cnrs-gif.fr:0
+		(X11/NeWS - Sun Microsystems Inc. R3000)> :ERROR-KEY ...)
+     0]] q
+     * 
+
+
+This could happen, for example, when the 
+
+	"Size histology window to cells" 
+
+option is marked T for a 
+
+	"Drawing scale (microns/pixel):" 
+
+value that is too small.

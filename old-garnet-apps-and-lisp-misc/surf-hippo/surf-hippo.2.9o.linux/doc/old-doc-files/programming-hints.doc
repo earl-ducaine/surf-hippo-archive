@@ -1,0 +1,288 @@
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+	      Programming Hints
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+Random material on compiling, programming, and such.
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+			Table of Contents
+
+1. Compiling Individual Source Directories
+2. File Compiling Dependencies
+3. Profiling Overflow
+4. Defining New Variables or Functions
+5. Structure Slot Access
+6. Memory Diagnostics - Useful Functions
+7. Accessing Unix Environment Variables - A Few Common Pathnames 
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+******************************************
+******************************************
+Compiling Individual Source Directories
+******************************************
+******************************************
+
+
+Loading surf-hippo/loaders/main-compiler by default compiles all the
+directories under surf-hippo/src. Loading the following files
+restricts the compile to specific directories:
+
+
+     surf-hippo/loaders/compile-cmucl-fixes.lisp
+     surf-hippo/loaders/compile-development.lisp
+     surf-hippo/loaders/compile-garnet-fixes.lis
+     surf-hippo/loaders/compile-gui.isp		
+     surf-hippo/loaders/compile-gui.lisp	
+     surf-hippo/loaders/compile-hippocampus.lisp
+     surf-hippo/loaders/compile-parameters.lisp	
+     surf-hippo/loaders/compile-rabbit.lisp	
+     surf-hippo/loaders/compile-roylance-clmath.lisp
+     surf-hippo/loaders/compile-sys.lisp	
+
+
+
+*******************************************
+*******************************************
+
+File Compiling Dependencies
+
+*******************************************
+*******************************************
+
+There are three reasons that one file may depend (require) the prior
+compilation of another file - either the other file defines a
+structure (only sys/structures.lisp), defines a macro, or defines an
+inlined function. The various xx-loader files take into account the
+most typical examples of the first and second case, e.g.
+sys-loader.lisp forces a compile of all the source files if either
+structures.lisp or structure-macros.lisp has been changed. On the
+other hand, it is the responsibility of the user to make sure that any
+other dependencies are respected when recompiling Surf-Hippo.
+
+
+*******************************************
+*******************************************
+Profiling Overflow
+*******************************************
+*******************************************
+
+Trying to profile code after a long session can sometimes give the
+following error:
+
+	  (progn (profile::unprofile)
+	  (profile:profile convert-data-time-lists)
+	  (time (ELEMENT-spike-times *soma*))
+	  (profile:report-time)(profile::unprofile))
+	  Compiling LAMBDA (PROFILE::NAME PROFILE::CALLERS-P): 
+	  Compiling Top-Level Form: 
+	  Compiling LAMBDA NIL: 
+	  Compiling Top-Level Form: 
+
+	  Type-error in KERNEL::OBJECT-NOT-TYPE-ERROR-HANDLER:
+	  671398848 is not of type (UNSIGNED-BYTE 29)
+
+	  Restarts:
+
+	  0: [ABORT] Return to Top-Level.
+
+	  Debug  (type H for help)
+
+	  ("LAMBDA (PROFILE::NAME PROFILE::CALLERS-P)"
+	  (-70.0 -70.0 -69.94982 -69.91509 -69.871124 ...)
+	  (0.0 1.4930964e-5 5.033907 10.000012 10.0021105 ...) 0.1 2359472 ...)
+	  Source: (- (PROFILE::TOTAL-CONSING) PROFILE::START-CONSED)
+	  0] 
+
+
+The solution is to reset the gc count -
+
+	(setq lisp::*total-bytes-consed* 0)
+
+
+
+
+*********************************************
+*********************************************
+	Defining New Variables or Functions
+*********************************************
+*********************************************
+
+When defining your own variables or functions, it is a good idea to
+make sure that Surf-Hippo does not already use the symbol that you
+want. The easiest way to check this by hand is to use DESCRIBE, e.g.:
+
+
+* (describe 'surf)
+SURF is an external symbol in the SURF-HIPPO package.
+Function: #<Function SURF {23E36A1}>
+Function arguments:
+  (&optional circuit (automatic *automatic-run*) (load-only *load-only*)
+   (keep-track-of-time-for-auto-run nil))
+Its defined argument types are:
+  (&OPTIONAL T T T T)
+Its result type is:
+  (MEMBER NIL T)
+On Monday, 1/29/96 05:10:36 pm EST it was compiled from:
+/home/lyle/surf-hippo/src/sys/sim.lisp
+  Created: Saturday, 1/27/96 04:55:00 pm EST
+* (describe 'user-stop-time)
+USER-STOP-TIME is an internal symbol in the SURF-HIPPO package.
+It is a special variable; its value is 200.0.
+   200.0 is a SINGLE-FLOAT.
+Special documentation:
+  The time to end the simulation, in milliseconds.
+* (describe 'cons)
+CONS is an external symbol in the COMMON-LISP package.
+Function: #<Function CONS {1248819}>
+Function arguments:
+  (se1 se2)
+Function documentation:
+  Returns a list with se1 as the car and se2 as the cdr.
+Its declared argument types are:
+  (T T)
+Its result type is:
+  CONS
+On Wednesday, 11/2/94 02:20:25 am EST it was compiled from:
+target:code/list.lisp
+  Created: Tuesday, 11/1/94 01:34:44 pm EST
+  Comment: $Header: list.lisp,v 1.18 94/10/31 04:11:27 ram Exp $
+* (describe 'foo)
+FOO is an internal symbol in the SURF-HIPPO package.
+* 
+
+In these examples, the symbol 'SURF has been used to reference a
+function (which does not necessarily preclude its use as a global
+variable), and the symbol 'USER-STOP-TIME is used as a special
+variable (which as well does not necessarily preclude its use as a
+function). The symbol 'CONS, of course, is defined as a function in
+the COMMON-LISP package. 'FOO, however, is not used by Surf-Hippo, so
+it would be safe to use it for something new.
+
+Note that you must use the single quote to denote a symbol.
+
+
+*********************************************
+*********************************************
+	Structure Slot Access
+*********************************************
+*********************************************
+
+Most lisp code, for example files which define various circuits and
+elements, may be loaded into successive versions of Surf-Hippo without
+problem and without recompilation. The main exception to this is when
+code makes direct references to structure slots via accessor
+functions. For example:
+
+	(setf (channel-gbar-ref (element "Hippo-soma-NA1") 0.1))
+
+CHANNEL-GBAR-REF is an accessor for CHANNEL structures, created with
+the DEFSTRUCT form. If your code uses structure accessors, then the
+code must be recompiled before loading into a new version of
+Surf-Hippo.
+
+In general, we have included enough ways to access structure slots so
+that this mechanism is more or less transparent. These functions
+should be used in lieu of direct reference to structure slots in your
+code.
+
+
+*********************************************
+*********************************************
+Memory Diagnostics - Useful Functions
+*********************************************
+*********************************************
+
+
+	(vm::instance-usage :dynamic :top-n nil)
+
+INSTANCE-USAGE is an external symbol in the SPARC package.
+Function: #<Function SPARC:INSTANCE-USAGE {12FB6E1}>
+Function arguments:
+  (space &key (top-n 15))
+Function documentation:
+  Print a breakdown by instance type of all the instances allocated in
+  Space.  If TOP-N is true, print only information for the the TOP-N types with
+  largest usage.
+Its defined argument types are:
+  ((MEMBER :STATIC :DYNAMIC :READ-ONLY) &KEY (:TOP-N (OR FIXNUM NULL)))
+Its result type is:
+  (VALUES)
+On Wednesday, 11/2/94 02:41:34 am EST it was compiled from:
+target:code/room.lisp
+  Created: Tuesday, 11/1/94 01:35:35 pm EST
+  Comment: $Header: room.lisp,v 1.24 94/10/31 04:11:27 ram Exp $
+
+
+*********************************************
+*********************************************
+Accessing Unix Environment Variables - 
+     A Few Common Pathnames 
+*********************************************
+*********************************************
+
+
+From Lisp you can access environment variables via the global
+association list variable
+
+	LISP::*ENVIRONMENT-LIST*
+
+For example, 
+
+	  * lisp::*environment-list*
+	  ((:XNLSPATH . "/home/netscape/nls/") (:XKEYSYMDB . "/home/netscape/XKeysymDB")
+	   (:XKEYSYMB . "/lib/X11/XKeysymDB") (:XINITRC . "/home/lyle/.xinitrc")
+	   (:XFILESEARCHPATH . "/usr/local/lib/X11/%T/%N%S:/usr/openwin/lib/%T/%N%S")
+	   (:WMGR_ENV_PLACEHOLDER . "/dev/win3")
+	   (:WINDOW_TTYPARMS
+	    . "2,23557,13,13,127,21,216,3,28,17,19,4,-1,26,25,18,15,23,22")
+	   (:WINDOW_PARENT . "/dev/win0")
+		  .
+		  .
+		  .
+	   (:BSTINPUTS . ".:/giga/lib/texmf/bibtex/bst")
+	   (:BIBINPUTS . ".:/giga/lib/texmf/bibtex/bib") (:ARCH . "sun4"))
+	  *
+
+Thus, to get the value of SURFHOME, you would use
+
+	  * (cdr (assoc :SURFHOME lisp::*environment-list*))
+	  "/home/lyle/surf-hippo/"
+	  * 
+
+Note that the global variable *SURFDIR* is set to the path for
+SURFHOME already -
+
+	  * *SURFDIR*
+	  "/home/lyle/surf-hippo/"
+	  * 
+
+There are a few globals like this -
+
+	  * *Surf-user-dir*
+	  "/home/lyle/surf-hippo//"
+	  * *circuit-directory*
+	  "/home/lyle/surf-hippo//circuits/"
+	  * *data-directory*
+	  "/home/lyle/surf-hippo//data/"
+	  * *plot-directory*
+	  "/home/lyle/surf-hippo//plot/"
+	  * 
+
+
+The double slashes ("//") are no problem - they are interpreted as a
+single "/".
+
+
+
+

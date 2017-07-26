@@ -1,0 +1,29 @@
+
+************************************************
+************************************************
+
+	Current Status
+
+************************************************
+************************************************
+
+Last update: 8/16/96
+
+
+This file lists the parts of Surf-Hippo that are in current use, thus
+fairly well debugged. The status of other components may or may not be
+questionable - for specific questions email lyle@ai.mit.edu.
+
+
+
+Manipulation of dendritic trees
+Current and voltage sources
+Voltage dependent channels
+Concentration dependent channels
+Concentration integrators
+Voltage-controlled and autonomous synapses
+Light synapses (not completely debugged)
+Axons
+Multiple cells
+Pumps (limited)
+Buffers (limited)

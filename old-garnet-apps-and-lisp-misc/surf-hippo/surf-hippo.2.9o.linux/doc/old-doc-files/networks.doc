@@ -1,0 +1,19 @@
+****************************************************
+****************************************************
+
+    Some Notes On Multiple Cell Simulations
+
+****************************************************
+****************************************************
+
+
+See synapse.doc, axon.doc
+
+Look at TWO-HIPPOS and THREE-HIPPOS in surf-hippo/src/hippocampus/hippos.lisp for
+simple examples.
+
+
+
+
+The variable *ADD-CELL-NAME-TO-SEGS*, when T, is useful with multiple
+cells so that each segment gets the cell name prepended on its name.

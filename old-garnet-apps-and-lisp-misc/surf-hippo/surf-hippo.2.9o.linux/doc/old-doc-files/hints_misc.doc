@@ -1,0 +1,361 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+			RANDOM HINTS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Choosing Parameters for Numerical Integration
+2. Naming Cells And Their Components
+3. Initialize or Not When Loading New Circuit
+4. Saving Cell Geometries
+5. Plot Resolution
+6. Setting Node Initial Voltages
+7. Handy Global Variables
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+***************************************************************
+***************************************************************
+
+
+*************************************************************************
+*************************************************************************
+
+	Choosing Parameters for Numerical Integration
+
+*************************************************************************
+*************************************************************************
+
+Try initial simulations (current clamp) with weak numerical constraints,
+for example start with a (large) fixed time step (e.g. 100 microseconds).
+The default values for the numerical method parameters are rather strict,
+with the aim of assuring very good accuracy.
+
+Often, a fairly weak relative voltage error (the global variable
+*ABSOLUTE-VOLTAGE-ERROR*), for example on the order of 0.1mV, will give
+a good tradeoff between speed and accuracy. Sometimes, though, a
+too-large jump may be taken because of a very small 2nd derivative,
+even with non-linear elements. The symptom for this is an "unexpected"
+discontinuity in the voltage trace (obviously there is no strict
+criterium for this). In this case, the glitch may disappear with a
+small adjustment of *ABSOLUTE-VOLTAGE-ERROR* (either an increase or a
+decrease).
+
+Voltage clamp (particularly with non-ideal voltage sources)
+simulations tend to be much more sensitive to the resolution of the
+numerical method. For example, under voltage clamp fixed time step
+integrations may be very susceptible to oscillations.  These may only
+be visible if the plot resolution is taken at every time step - see
+the section on Plot Resolution. For example, if the plot resolution is
+at the default 2 time steps per plot sample, then it may appear that
+the clamp is "drifting" instead of oscillating. For circuits with
+voltage clamp(s) it is best to use variable time steps, and to try
+various error criteria to check for the convergence of the simulation
+(e.g. setting *ABSOLUTE-VOLTAGE-ERROR* for the LTE-based time step from
+0.1mV to 0.001mV or less).
+
+*************************************************************************
+*************************************************************************
+
+	Naming Cells And Their Components
+
+*************************************************************************
+*************************************************************************
+
+
+The structure of the simulator is such that names of certain classes of
+objects, specifically cells, somas, segments, and all meta "X-type"
+classes must have unique names. Also in general problems are avoided
+if all other objects have unique names as well.
+
+The root of this is with the name of the cell(s). When writing a
+function or a file to create a cell, 
+a "good" (i.e. unused) name for the cell may be found at the beginning by the
+function:
+
+	check-cell-name NAME &key (AUTOMATIC-NAME-FIXING t)
+
+This returns a string which is the original NAME argument is there is
+no cell already defined with that name. Otherwise, the function
+appends "-i", where i is an integer, to NAME in order to find a new
+name. If AUTOMATIC-NAME-FIXING is nil, then a menu prompt is used to
+approve the new name.
+
+For example:
+
+      (defun test-cell ()
+       (let* ((cell-name (check-cell-name "Test-cell"))
+	      (cell (create-cell cell-name))
+	      (soma (create-soma cell-name)))
+
+      ;; Code that can explicitly access the CELL-NAME, CELL and SOMA local variables.
+
+         (....)
+
+      ))
+
+In fact, by default the CREATE-CELL function runs CHECK-CELL-NAME (see
+cell.lisp). Thus, here is a more compact version (e.g. if you don't
+need to access the cell directly later in the function):
+
+      (defun test-cell ()
+       (let ((soma (create-soma (create-cell "Test-cell"))))
+
+      ;; Code that can explicitly access the SOMA local variable.
+      
+         (....)
+
+      ))
+
+
+In this case, note that the CREATE-CELL function returns the created
+cell structure. The actual name of the created cell, because of the
+call to CHECK-CELL-NAME in CREATE-CELL, may be changed from the
+original "Test-cell" string. Note as well that CREATE-SOMA requires at
+least a single cell or cell name argument (see soma.lisp).
+
+All this means that in most cases, even with mulitple invocations of
+the same cell circuit description, a unique cell name will be generated.
+
+All of this is useful is you want to be able to add cell definitions
+together without taking care beforehand that the cell definitions all
+refer to unique names.
+
+For objects that are added to a cell's membrane (channels, synapses,
+sources, etc.) the name of a given object is partly derived from the
+cell element that will receive the object. Therefore, if all the cell
+elements (somas and segments) have unique names, then the rest of the
+circuit objects will have unique names. Likewise, for both somas and
+segments, the name of their cell may be incorporated into the element
+name - in the case of segments when the global variable
+*ADD-CELL-NAME-TO-SEGS* is T. To help ensure that this incorporation
+is done when necessary (e.g. for unique element names) when there is
+more than one cell in the circuit, the following steps are taken by
+the simulator when new cells are read in and created.
+
+Another feature to ensure good names for segments is also accomplished
+within CREATE-CELL. If this function creates and assigns a new name to
+the new cell, then the assumption is that this current cell is a copy
+of another cell, and the function automatically sets
+*ADD-CELL-NAME-TO-SEGS*. Subsequent calls to CREATE-SEGMENT then add
+the cell name to the segment name if the cell name is not at the
+beginning of the supplied segment name.
+
+This procedure is not foolproof, since it is possible, for example,
+for two entirely different cell descriptions to use the same segment
+name. Thus the safest procedure is to always set
+*ADD-CELL-NAME-TO-SEGS* when mulitple cell circuits are constructed.
+This option appears in the circuit loading menus for convenience.
+
+If you do try to load a circuit that will use an already assigned
+name, you will get an error similar to this:
+
+	  Reading in circuit CA1-MAX-RED...
+	  ; Loading #p"/home/lyle/surf-hippo/anatomy/c12861.ca1.sparcf".
+
+	  Error in function TRANSLATE-NTSCABLE-LIST:
+	     create-segment: segment ca1_1-1-3  already defined, ignoring
+
+	  Restarts:
+	    0: [CONTINUE] continue
+	    1: [ABORT   ] Return to Top-Level.
+
+	  Debug  (type H for help)
+
+	  (TRANSLATE-NTSCABLE-LIST <Soma ca1-soma>)
+	  Source: 
+	  ; File: /home/lyle/surf-hippo/src/development/ntscable.lisp
+	  (CREATE-SEGMENT (CONSTRUCT-NTS-SEGMENT-NAME (NTH 0 SEGMENT-LIST))
+                (COND (SOMA-PROXIMAL-LOCATION-AND-DIAMETER #) 
+		(BP-PROXIMAL-LOCATION-NAME BP-PROXIMAL-LOCATION-NAME) 
+		(T #)) CELL-NAME :RELATIVE-LOCATION ...)
+	  0] q
+	  * (surf)
+
+A solution is to type "Q" as above, and restart (surf). Reload the
+circuit, but this time set *ADD-CELL-NAME-TO-SEGS* to T via the
+loading menu. See also discussion below re *ADD-CELL-NAME-TO-SEGS-FOR-TREE-DUMP*.
+
+*************************************************************************
+*************************************************************************
+
+	Initialize or Not When Loading New Circuit
+
+*************************************************************************
+*************************************************************************
+
+The global variable *INITIALIZE-BEFORE-NEXT-CIRCUIT* may be set NIL if
+you want to add subsequent circuits without erasing already loaded
+circuits. This is handled automatically if you use the menus for
+loading.
+
+Therefore, if you are loading multiple circuit definitions with a
+script, then be sure to execute
+
+	(setq *INITIALIZE-BEFORE-NEXT-CIRCUIT* t)
+
+before loading the first circuit, and
+
+	(setq *INITIALIZE-BEFORE-NEXT-CIRCUIT* nil)
+
+after loading the first circuit.
+
+
+*************************************************************************
+*************************************************************************
+
+	Saving Cell Geometries
+
+*************************************************************************
+*************************************************************************
+
+In some cases, for example after consolidating a cell's dendritic
+tree, it is useful to save the new geometry. This may be done with the
+functions:
+
+
+(in trees.lisp)
+
+
+	dump-tree-menu
+
+	dump-tree-list &optional CELL
+
+where CELL is either a cell structure or the name of a cell. These
+functions write loadable Lisp files that define functions that which
+recreate the cell when loaded. Thus, the following procedure could be
+used:
+
+
+	  1. Load original cell (Overall parameters, Load circuit menus).
+
+	  2. Consolidate cell geometry (Edit circuit elements - Examine/modify
+	  distribution of electrotonic lengths menus).
+
+	  3. Rename cell and/or cell type (Edit circuit elements - Edit names of
+	  circuit objects menus).
+
+	  4. Dump transformed cell geometry to file (Information output - Dump
+	  cell geometry to file menus).
+
+	  5. Load geometry file, which in turn defines (and puts in the compiled
+	  circuit catalog) a circuit function for that new geometry (Overall
+	  parameters, Load Lisp file menus).
+
+	  6. Load the new circuit function to recreate the transformed cell
+	  (Overall parameters, Load circuit menus).
+
+
+Note that the saved geometry files will only reproduce the cell
+geometry and the basic cell type parameters. Cell elements such as
+channels etc will have to be added either with the menus, or the
+geometry files may be edited before loading, or the files loaded as
+part of another script file.
+
+Also, this method preserves segment :CYTOPLASMIC-RESISTIVITY-COEFF
+values that are not equal to 1.0. This is important for dendritic
+trees that have been consolidated as described in
+tree-consolidation.doc.
+
+To ensure that the saved file has unique segment names, the following
+variable is default T:
+
+	*ADD-CELL-NAME-TO-SEGS-FOR-TREE-DUMP*
+
+This may be changed in the menu that prompts for dumping the tree.
+
+
+See also tree-consolidation.doc, scripts.doc, circuits.doc,
+
+
+
+
+*************************************************************************
+*************************************************************************
+
+   		Plot Resolution
+
+*************************************************************************
+*************************************************************************
+
+
+The default plot resolution, (the sample grid of computed time steps for
+producing plot data), is one plot point for every two time steps. In
+general, the fewer points plotted the faster the plotting and the less
+data that needs to be stored for later use. This value is determined by
+the global variable *SAVE-DATA-AT-STEP (default 2). In some cases, it may
+be important to verify that the integration is not oscillating with a
+period of 2 time steps. It will then be necessary to set
+*SAVE-DATA-AT-STEP to 1 to observe the oscillation, and not just the
+"envelope". *SAVE-DATA-AT-STEP may also be done with the plot parameters
+menu.
+
+
+For simulations with a wide range of time scales, and in particular
+the possibility of abrupt changes in the time step, it is a good idea
+to set *SAVE-DATA-AT-STEP to 1. Otherwise, it is possible to miss key
+transition points.
+
+
+*************************************************************************
+*************************************************************************
+
+		Setting Node Initial Voltages
+
+*************************************************************************
+*************************************************************************
+
+
+When the global variable *USE-INIT-VALUE-LIST* [default NIL] is set,
+then at the beginning of a simulation the voltages of nodes who are
+referenced in the global variable *INIT-VALUE-LIST* are set to the
+voltages in this list.
+
+The format of *INIT-VALUE-LIST* is
+
+	((NODE-1 value) (NODE-2 value) ... (NODE-N value))
+
+where each NODE-X is either a node or an element (soma or segment,
+name or structure). The function
+
+	set-*init-value-list*
+
+automatically sets this list to include all of the circuit nodes with
+their current voltages. Calling SET-*INIT-VALUE-LIST*, and setting
+*USE-INIT-VALUE-LIST* may be done with the "Overall Parameters ..."
+menu called from the main menu. This mechanism is useful for imposing
+a "steady-state" condition on the circuit.
+
+*************************************************************************
+*************************************************************************
+
+ Handy Global Variables
+
+*************************************************************************
+*************************************************************************
+
+
+Each of these global variables point to the most recent created
+instance of the given type:
+
+	*SOMA*
+	*CELL*
+	*CELL-TYPE*
+	*VSOURCE*
+	*ISOURCE*
+
+If the element referenced by one of these variables is erased
+(destroyed), then the variable is updated to the next most recently
+created instance.

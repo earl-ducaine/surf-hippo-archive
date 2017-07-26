@@ -1,0 +1,369 @@
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+Problems and Miscellaneous Simulation Issues
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+This file describes some of more common problems you can encounter
+with the simulator. Additional information may be found in the 
+features_not_bugs.doc file.
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+			Table of Contents
+
+
+1. Landing in the Debugger
+2. Stuck Windows
+3. Getting Stuck During the Integration
+4. Typical Error Messages
+5. Some Bugs
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+
+
+****************************************************************
+****************************************************************
+
+	Landing in the Debugger
+
+
+****************************************************************
+****************************************************************
+
+
+If for some reason you land in the debugger, follow the debugger
+directions to abort (e.g. enter "q"), and from the top level prompt
+run
+
+   lisp-prompt> (surf) 
+
+again. If you landed in the debugger for some unacceptable/unknown
+reason, please send a bug report.
+
+
+
+****************************************************************
+****************************************************************
+
+	Stuck Windows
+
+****************************************************************
+****************************************************************
+
+DO NOT destroy any Surf-Hippo windows with the X window manager. 
+
+
+
+
+If you need to destroy a Surf-Hippo window, and Control "d" doesn't
+work (see below), then from Lisp run the function:
+
+   lisp-prompt> (clean-windows)
+
+which will give a menu for destroying the current windows. This
+function will also free up "stuck" windows if there was a bug during
+the execution of some window menu operations. If this doesn't work, try:
+
+   lisp-prompt> (mdw)
+
+which stands for Mouse Destroy Window. A more drastic approach is:
+
+   lisp-prompt> (caows)
+
+which stands for Clear All Output Windows (but this will not get rid
+of menus - for this use (MDW)).
+
+Manually clearing menus or other windows may be necessary, for
+example, when there are active menus visible, but some error has
+caused an exit from the local menu interaction loop. The symptom for
+this is a non-responsive "OK" button: clicking here does not remove
+the menu, and the following message appears in the Lisp window:
+
+   WARNING: Interaction-Complete called but not inside Wait-Interaction-Complete
+
+It is possible that neither of these techniques will work, and you
+just get more debugger messages, e.g.:
+
+     Click or Type on any object or window...
+     in Window #k<KR-DEBUG:*MENU-WIN*-45463>, :LEFTDOWN at x=306, y=84:
+
+     Warning in Destroy: aggregate '#k<KR-DEBUG:AGGREGATE-45464>' has no parent,
+	     is in window '#k<KR-DEBUG:*MENU-WIN*-45463>', but is not that window's:aggregate.
+
+
+     Error in function CHECK-SLOT-TYPE:
+	bad KR type: value *DESTROYED*(was #k<KR-DEBUG:AGGREGATE-45464>),
+
+etc. If worse comes to worse, go to the Lisp top level, iconify (and
+ignore) the bad windows with the X window manager, and keep going. You
+will have to restart Lisp to get rid of the bad windows.
+
+
+
+	  GC Announcements
+
+
+  (setq *USE-GC-ANNOUNCE-WINDOW* nil) <- default
+
+  (setq *GC-ANNOUNCE-text* nil)  <- default
+
+If the *USE-GC-ANNOUNCE-WINDOW* flag and *GC-ANNOUNCE-text* are T,
+then during GC a red message will appear on the screen.  For long
+simulations, it is recommended that these be set to NIL.
+
+
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+	      Getting Stuck During the Integration
+
+****************************************************************
+****************************************************************
+
+
+
+It is possible that the integration will either be very slow, or
+actually get stuck, depending on circuit parameters. This should only
+happen for "unrealistic" values. As explained in numerical.doc,
+normally a message will appear if the integration get really stuck,
+e.g.:
+
+   Integration stuck at time 4.353ms [internal integer time step = 2]. 
+   Try either increasing the error criteria *ABSOLUTE-VOLTAGE-ERROR*,
+   which is now 0.001, or reducing the simulation duration.
+
+Otherwise, if you suspect that Surf-Hippo has gotten a little choked,
+try getting into the debugger with C-c C-c, and then seeing what the
+value of the global variable *REAL-TIME* is. If *REAL-TIME* indicates
+something is wrong, then Restart the debugger with an ABORT signal
+(enter 0 or q). You can then restart with (surf).  Otherwise, if you
+want to continue the simulation, just enter the CONTINUE command to
+the debugger (1):
+			    .        
+			    .        
+			    .        
+
+	    Starting transient solution
+
+Enter C-c C-c ->
+
+	    Interrupted at #x2016B4.
+
+	    Restarts:
+	      0: [CONTINUE] Return from BREAK.
+	      1: [ABORT   ] Return to Top-Level.
+
+	    Debug  (type H for help)
+
+	    (UNIX::SIGINT-HANDLER #<unavailable-arg>
+				#<unavailable-arg> #.(SYSTEM:INT-SAP #xEFFFECB0))
+	    0] *real-time*
+Too small!  0.10192788
+	    0] q
+	    * (surf)
+
+	     ** Surf-Hippo: The MIT CBIP Neuron Simulator (Version 2.0) **
+
+			    .        
+			    .        
+			    .        
+
+
+
+****************************************************************
+****************************************************************
+
+		     Typical Error Messages
+
+****************************************************************
+****************************************************************
+
+If a variable whose type is declared is assigned a value of the wrong
+type (for example in a user-defined circuit or script file), then you
+will get an error (though not exclusively from this cause) that looks
+something like this:
+
+     Error in function UNIX::SIGBUS-HANDLER:  Bus Error at #x180B8C88.
+
+     Restarts:
+       0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (UNIX::SIGBUS-HANDLER #<unavailable-arg> #<unavailable-arg> #.(SYSTEM:INT-SAP #xEFFFECC8))
+     0] q
+     *
+
+Usually it can be difficult to track down the offensive value with
+the debugger. Check variable values that you have explicitly
+changed/set, and check their types by either looking in the
+surf-hippo/src/sys/declare.lisp file (which has most, but not all,
+variable definitions), or by using the DESCRIBE function.
+
+For example, the above error would be generated if we evaluated
+
+	* (setq user-stop-time 1400)
+	* 1400
+
+and then ran the simulation. If we examine this variable with DESCRIBE:
+
+ 	* (describe 'user-stop-time)
+	USER-STOP-TIME is an internal symbol in the SURF-HIPPO package.
+	It is a special variable; its value is 1400.0.
+	   1400.0 is a SINGLE-FLOAT.
+	Its declared type is SINGLE-FLOAT.
+	Special documentation:
+	  The time to end the simulation, in milliseconds.
+
+which tells us that the code *expects* this to be a single-float, and
+thus will choke it the type of USER-STOP-TIME is otherwise. Note the
+quote in front of USER-STOP-TIME when it is the argument to the
+DESCRIBE function. Otherwise DESCRIBE will evaluate the argument, and
+then describe the result of the evaluation:
+
+	* (setq user-stop-time 1400)
+	* 1400
+	* (describe user-stop-time)
+	It is a composite number.
+
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+			Some Bugs
+
+****************************************************************
+****************************************************************
+
+
+REPEAT: CMU Lisp is not bullet-proof. Critical results should be saved
+at reasonable (roughly hourly?) intervals.
+
+
+1. If you get somthing similar to the following message:
+
+
+     segv_handler: mmap: Not enough memory
+
+
+     segv_handler: mmap: Not enough memory
+     segv_handler: No mapping fault: 0x19a40004
+     segv_handler: Recursive no mapping fault (stack overflow?)
+
+
+your LISP session is lost. If this occurs consistently, please send us
+a note.
+
+With major LISP crashes (e.g. segment violations), killing the LISP
+job and restarting may not make things hunky-dory: you may need to
+boot the machine. It appears that these crashes somehow corrupt the
+file system. Probably there is a less drastic technique for recovery.
+
+Sometimes you will get a segmentation violation that will nonetheless
+put you back into LISP (via quitting the debugger). In this case, it
+is best to save everything and reload the system.
+
+2. X notes:
+
+If menus or other graphics do not display on your screen, and there
+are no error messages printed in the Lisp window, then a probable
+cause is that the X display environment variable is pointing somewhere
+else. Use the printenv unix command to check it:
+
+	unix-prompt> printenv DISPLAY
+	cogni.iaf.cnrs-gif.fr:0.0
+	unix-prompt>
+
+Contrary to the Garnet README file, I have had problems (at least
+under OpenWindows) if the DISPLAY environment variable is set to
+":0.0" or "unix:0.0". Rather, it appears that the DISPLAY variable
+must include the machine name, i.e.:
+
+	DISPLAY=cogni.iaf.cnrs-gif.fr:0.0
+
+as if the machine running Garnet and the display machine are
+different. In my .openwin-init file I have the following lines:
+
+		.
+		.
+		.
+
+	# Start clients on screen 0
+	#
+	#SETDISPLAYSCREEN 0
+	xhost `hostname`
+	DISPLAY=`hostname`:0.0
+
+		.
+		.
+		.
+
+
+
+3. With large simulations, or after long sessions, CMUCL may break
+into the monitor (typically during GC), with a message like:
+
+	GC lossage.  No transport function for object 0x191d36bf
+	LDB monitor
+	ldb>
+
+You may be able to keep going by typing
+
+	ldb> exit
+
+Otherwise, you have to
+
+	ldb> quit
+
+and restart Lisp.
+
+
+4. Sometimes the system bugs during the initial loading, with cryptic
+error messages such as:
+
+		.
+		.
+		.
+
+     Loading Surf-Hippo Roylance-Clmath...
+
+     Argument X is not a REAL: NIL.
+
+     Restarts:
+       0: [CONTINUE] Return NIL from load of #p"roylance-clmath-src:roylance-clmath-loader".
+       1:            Return NIL from load of "/home/lyle/surf-hippo/surf-hippo-loader".
+       2:            Return NIL from load of "/home/lyle/surf-hippo/main-loader".
+       3:            Return NIL from load of "/home/lyle/surf-hippo/main-compiler".
+       4: [ABORT   ] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (KERNEL:TWO-ARG-> NIL 3045846332)
+     0] 
+
+
+In this case, all that you should do is quit the debugger and Lisp,
+and start again:
+
+     (KERNEL:TWO-ARG-> NIL 3045846332)
+     0] q
+     * (quit)
+

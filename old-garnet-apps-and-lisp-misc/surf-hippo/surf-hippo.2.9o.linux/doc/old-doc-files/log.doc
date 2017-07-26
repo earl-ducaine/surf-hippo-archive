@@ -1,0 +1,24 @@
+
+***************************************************************
+***************************************************************
+
+	LOG FILES
+
+***************************************************************
+***************************************************************
+
+
+Every time a simulation is run, if the global variable *WRITE-LOG-FILE* is T (default), a
+file named LOG-DIRECTORY/X_Y_Z.log is referenced, created if it does not exist, and
+appended with a short summary of the simulation. LOG-DIRECTORY is given by the global
+variable *SURF-USER-DIR* (default is the value of the UNIX environment variables
+SURFUSERHOME or SURFHOME) concatenated with "/logs/", and X_Y_Z is the day_month_year. For
+example, if $SURFHOME was the reference directory, then a log file could be called
+surf-hippo/logs/8_2_95.log.
+
+The purpose of these files is to provide a convenient editable record of all simulations
+run. If the current log file is edited, however, be sure that the simulator does not
+overwrite the file while you are editing it. These files are similar to .info files, with
+the difference being that these files are always written (according to *WRITE-LOG-FILE*),
+and that this format can be more convenient for keeping a running commentary of a series
+of simulations.

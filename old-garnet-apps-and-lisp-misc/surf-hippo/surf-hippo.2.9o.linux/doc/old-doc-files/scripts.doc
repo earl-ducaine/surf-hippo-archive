@@ -1,0 +1,324 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+         Scripts - Searching Parameter Spaces
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+1. Introduction
+2. Functions to Modify Element Parameters
+3. The SET-CELL-TYPE-PARAM Function
+4. Changing Soma or Segment Dimensions
+5. Suppressing Plot Output
+6. Plot Elements Utilities
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+See also circuits.doc
+
+***************************************************************
+***************************************************************
+
+
+
+***************************************************************
+***************************************************************
+
+	Introduction
+
+***************************************************************
+***************************************************************
+
+
+For loops with many iterations, it is a good idea to disable the GC announcements by
+setting both *USE-GC-ANNOUNCE-WINDOW* and *GC-ANNOUNCE-TEXT* to NIL (the default). It
+is usually a good idea to keep *BEEP-AFTER-GC* set T so that you are assured that the
+simulation has not crashed. Otherwise, the window system tends to hang. If you want a
+record of the GC statistics intermingled with other program output in the LISP
+interpreter window, then set both *PRINT-OUT-GC* and *GC-ANNOUNCE-TEXT* to T.
+
+For running a series of simulations, for example to explore some parameter space, it
+is useful to enter a looping form directly to the Lisp interpreter. There are a few
+options for loading/modifying/running circuits in this way:
+
+
+
+		* Method A *
+
+1. Load in the circuit via the menus, then quit back to the interpreter.
+
+2. Run loop with calls such as SET-CELL-TYPE-PARAM or (setq *SOURCE-PULSE-LISTS* ...)
+to modify the circuit properties.
+
+3. Call GOFERIT in the inner loop to run the simulation.
+
+
+
+		* Method B *
+
+1. Load in the circuit (function) via a call to SURFLOAD with its argument
+set to the function name (symbol), or a quoted lambda list.
+
+2. Run loop with calls such as SET-CELL-TYPE-PARAM or (setq *SOURCE-PULSE-LISTS* ...)
+to modify the circuit properties.
+
+3. Call GOFERIT in the inner loop, 
+
+
+
+		* Method C *
+
+1a. Define the circuit with a series of function calls and/or calls to
+READ-IN-CIRCUIT with the filename argument. These functions must be
+preceded by a call to INITIALIZE-GLOBALS-FOR-CIRCUIT:
+
+     Necessary -> (initialize-globals-for-circuit)
+
+		/ (setq *plot-soma-nodes* '("Hippo-soma"))
+	       |  (HIPPO "Hippo" :dendrite-diameter dend-diam
+    Circuit    |	    :dendrite-length dend-length
+    Definition |	    :total-segs (/ dend-length 50)
+    Functions  |	    :r-cyto r-cyto :active nil
+	       |	    :r-mem r-mem)
+	       |
+	       |                 .
+	       |                 .
+	       |                 .
+	       |
+	       |  (set-cell-type-param "Hippo" 'soma-resistivity r-mem-soma)
+	       |  (let ((*isource-electrode-resistance* 0.0))
+	       |     (add-isource "Hippo-soma"))
+		\ (read-in-circuit "/home/lyle/surf-hippo/anatomy/douglas-martin/j43d.sparcf" "j43d")
+
+1b. Load the circuit with a (single) call to SURFLOAD (see circuits.doc
+or menus.lisp). This is similiar to the sequence above, but does not
+require the explicit call to INITIALIZE-GLOBALS-FOR-CIRCUIT.
+
+These versions have the advantage that the loading functions can be
+placed in an inner loop, e.g. for when you want to reload the circuit
+(perhaps because the geometry changes) in the inner loop.
+
+Add calls such as SET-CELL-TYPE-PARAM (see below) or (setq
+*SOURCE-PULSE-LISTS* ...) to modify the circuit properties.
+
+2. Call GOFERIT in the inner loop.
+
+
+Some amplification on the automatic run simulation functions:
+
+	goferit
+
+This function runs the simluation automatically, without keeping track
+of the simulation (run) time.
+
+	gotimed
+
+This function runs the simluation automatically, but keeps track of
+the simulation (run) time.
+
+
+
+******************************************************************************
+******************************************************************************
+
+	Functions to Modify Element Parameters
+
+******************************************************************************
+******************************************************************************
+
+In general, any slot of an element structure may be SETF'd as needed -
+the structures.lisp file holds all the element structures and
+documentation of each slot.  However, it is usually more convenient to
+use various functions specialized to modify slots, which in particular
+may take care of some non-obvious bookeeping. These functions include:
+
+
+	set-element-type-param TYPE PARAM &optional VALUE UPDATE
+
+	set-element-absolute-gbar-ref ELEMENT GBAR-REF
+
+	set-element-density ELEMENT DENSITY
+
+	set-cell-type-param TYPE PARAM &optional VALUE UPDATE
+
+The first three functions are described in membrane_elements.doc.
+SET-CELL-TYPE-PARAM is described below. It is also strongly
+recommended that structure slots *not* be referenced directly in your
+code, since this makes upward compatibility of the code to later
+revisions of Surf-Hippo more problematic.
+
+******************************************************************************
+******************************************************************************
+
+		The SET-CELL-TYPE-PARAM Function
+
+******************************************************************************
+******************************************************************************
+
+
+	set-cell-type-param ELEMENT PARAM &optional VALUE UPDATE
+
+
+When VALUE is a number sets the PARAM of cell type associated with
+ELEMENT, otherwise returns the current value of the parameter. PARAM
+can be one of the following symbols (the symbols in the same line are
+equivalent):
+
+     RM or MEMBRANE-RESISTIVITY (ohms-cm2) -> sets both soma and the dendritic values
+     RMDEND or DENDRITE-RESISTIVITY (ohms-cm2) -> sets only dendritic values
+     RMSOMA or SOMA-RESISTIVITY (ohms-cm2)
+     SOMA-SHUNT (ohms)
+     VL or V-LEAK (mV)
+     SVL or SOMA-V-LEAK (mV)
+     RM or MEMBRANE-RESISTIVITY (ohms-cm2)
+     DVL or DENDRITE-V-LEAK (mV)
+     SPCAPSOMA or SOMA-SPECIFIC-CAPACITANCE (uF/cm2)
+     SPCAPDEN or DENDRITE-SPECIFIC-CAPACITANCE (uF/cm2)
+     CM, SPCAP or SPECIFIC-CAPACITANCE or MEMBRANE-CAPACITANCE (uF/cm2)
+     RI or CYTOPLASMIC-RESISTIVITY (ohms-cm)
+
+If either SPECIFIC-CAPACITANCE or MEMBRANE-CAPACITANCE is specified,
+this value is assigned to both the somatic and dendritic slots.
+Likewise, if either VL or V-LEAK is specifiec, then this value is
+assigned to both the :SOMA-V-LEAK and :DENDRITE-V-LEAK slots.
+
+Note that the cell type parameters will not be propagated to the
+segments and soma until PROCESS-CIRCUIT-STRUCTURE [for the first time
+on a new circuit] or SET-CIRCUIT-ELEMENTS-PARAMETERS is run - the
+optional UPDATE flag will cause SET-CIRCUIT-ELEMENTS-PARAMETERS to be
+called after the parameter value is changed.
+
+******************************************************************************
+******************************************************************************
+
+	Changing Soma or Segment Dimensions
+
+******************************************************************************
+******************************************************************************
+
+
+If the dimensions of a soma or a segment are changed, then the function
+
+	SET-ELEMENT-MEMBRANE-PARAMETERS ELEMENT
+
+where ELEMENT is either the soma or segment, will update the
+appropriate membrane elements to reflect the new dimensions, but not
+the geometry of the circuit. Note that if the dimensions of a soma is
+changed with the menus, then this is update is done automatically.
+
+A complete revision of all circuit properties, including cell
+geometry, is done by calling
+
+	(process-circuit-structure T)
+
+It is not usually necessary to call this function explicitly.
+
+******************************************************************************
+******************************************************************************
+
+	Suppressing Plot Output
+
+******************************************************************************
+******************************************************************************
+
+For multiple runs for which either some on-line analysis is the goal,
+or where data is to be saved for each run, then it may be useful to
+suppress plot output by setting the global variable
+*PLOT-STANDARD-WINDOWS* to NIL, eg.:
+
+	(setq *plot-standard-windows* nil)
+
+Note that this will *not* prevent the specified plotted variables from
+being accumulated (which is necessary for any output); this will only
+prevent the actual plot generation.
+
+
+
+******************************************************************************
+******************************************************************************
+
+	Plot Elements Utilities
+
+******************************************************************************
+******************************************************************************
+
+
+Information about which elements to plot and the correct data type are
+kept in a set of string list global variables (e.g. *PLOT-NODES*,
+*PLOT-CHANNEL-CONDUCTANCES*), which contain element names. These lists
+may be edited explicitly, or you may use the ENABLE-ELEMENT-PLOT
+function (in element_functions.lisp) -
+
+	enable-element-plot ELEMENT &optional DATA-TYPE TYPE
+
+There is also 
+
+	disable-element-plot ELEMENT &optional DATA-TYPE TYPE
+
+These functions are described in analysis.doc.
+
+
+
+In plot.lisp the function
+
+	plot-all-somas
+
+is a convenience to plot all the soma voltages in the circuit. The
+definition of this function is simply:
+
+	(defun plot-all-somas ()
+	  (setq *plot-soma-nodes* (namelist-of-all-things 'soma)))
+
+
+******************************************************************************
+******************************************************************************
+
+		Examples
+
+
+******************************************************************************
+******************************************************************************
+
+Here is a simple loop that delivers a series of current steps (start
+time 50.0 ms, stop time 1050.0 ms), and plots the results to distinct
+windows, each of which will show a comment indicating the level of the
+current clamp. This loop assumes that a circuit is loaded with (at
+least) one current source (the last created current source is
+referenced by the variable *ISOURCE*). The local (within the LET form)
+binding of the variables *CREATE-NEW-SIMULATION-PLOTS* and
+*SIMULATION-PLOT-WINDOW-COMMENT* insure that later simulations will
+not inherit values for these variables during the loop.
+
+
+  (loop for current from 0.0 to 3.0 by 0.25 do    ; Current is in nA.
+	  (add-pulse-list *isource* (list 50.0 1050.0 current))
+	  (let ((*CREATE-NEW-SIMULATION-PLOTS* t)
+		(*simulation-plot-window-comment* (format nil "~anA step" current)))
+	    (gotimed)))
+	
+Note that the pulse list argument to ADD-PULSE-LIST is constructed
+with the LIST function, since the value of the current is given by the
+local variable CURRENT. If that value was a constant, then the shorter
+quoted list form could have been used (e.g. '((50.0 1050.0 1.2)).
+
+CC-STEPS (protocols.lisp) is a function which does more or less the
+same thing as the loop above:
+
+	cc-steps START-CURRENT STOP-CURRENT STEP
+			       &key (ISOURCE *ISOURCE*)
+			       (CURRENT-START-TIME 10.0)
+			       (CURRENT-STOP-TIME (* 0.9 USER-STOP-TIME))
+			       INDIVIDUAL-PLOTS
+			       (OVERLAY-PLOTS T)
+			       (INCLUDE-COMMENT T))
+
+
+The START-CURRENT, STOP-CURRENT and STEP arguments are in nAs, and the
+time arguments are in ms.

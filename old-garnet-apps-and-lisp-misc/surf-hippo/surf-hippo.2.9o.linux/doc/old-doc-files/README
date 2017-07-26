@@ -1,0 +1,81 @@
+This directory includes older doc files, most of which have been
+incorporated into the User Manual, may be found in the old-doc-files
+directory.  
+
+     running.doc                Gets you up and running
+
+     problems-and-misc.doc      Typical error messages, bugs and other problems
+
+     current-status.doc         Summary of tested components
+
+     lisp-intro.doc             A brief intro to Lisp by Nicolas Gazeres that highlights
+		                issues relevant to Surf-Hippo.
+ 
+     circuits.doc		Describes various ways to define cell models
+
+     membrane_elements.doc      Some notes relevant to all types of circuit elements.
+     element-type-libraries.doc
+
+     element-data.doc           Basic concepts for element data format and manipulation.
+
+     scripts.doc		More on defining circuits, especially for parameter runs.
+
+     anatomy.doc		Describes converting anatomy files for
+				Surf-Hippo using the ntscable program
+
+     analysis.doc		Some methods for examining simulation output
+
+     channel.doc		Discussion of channels
+     synapse.doc		Discussion of synapses
+     axon.doc			Discussion of axons
+     source.doc			Discussion of sources
+     markov-particles.doc
+
+     biophysics.doc		Miscellaneous notes on biophysics for
+				the simulations
+
+     tree-consolidation.doc	Describing an algorithm for reducing
+				dendritic trees
+
+
+     plotting.doc		How to manipulate data plots
+     plotting-control.doc
+
+     histology.doc		How to manipulate 3d histology graphics
+     histology-control.doc
+
+     info-windows.doc		How to manipulate information output
+
+     files.doc			Notes on simulation output files
+
+     hacks.doc			A few miscellaneous function pointers
+
+     programming-hints.doc      A few suggestions on general
+                                programming issues
+
+     hints_misc.doc		A few miscellaneous suggestions,
+				including information on saving cell 
+				descriptions (geometries)
+
+     numerical.doc		How the simulator works, more or less
+
+     misc_biophysics_references.doc   Some miscellaneous reference data 
+
+     data-folder.doc		A way to store and manipulate simulation results
+				during the lisp session
+
+     printing.doc		Notes on window hardcopy
+
+     tracer.doc	                A system for entering scanned data.
+
+     more-installation.doc      Some notes for more complicated installations
+
+     glossary.doc (incomplete)
+     networks.doc (incomplete)
+     concentration.doc (incomplete)
+
+And of course:
+
+     features_not_bugs.doc
+
+Other doc files may also be added to this list.

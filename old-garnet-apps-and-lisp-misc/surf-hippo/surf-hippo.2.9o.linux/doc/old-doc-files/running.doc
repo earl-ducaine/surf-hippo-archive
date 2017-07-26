@@ -1,0 +1,605 @@
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+	      Running Surf-Hippo, An Introduction
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+This file describes the basics for running the SURF-HIPPO Neuron
+Simulator, primarily with menus.
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+			Table of Contents
+
+1. First Things First
+2. Running Surf-Hippo From The Menus
+3. Result Output
+4. Circuits
+5. Element Library Parameters
+6. Quitting Lisp
+7. Killing Beeps and Elapsed Time Window
+8. Interrupting The Simulation
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+		  First Things First
+
+****************************************************************
+****************************************************************
+
+
+
+So, Lisp is running, and Surf-Hippo has been loaded. If not, refer to
+the README file in the top surf-hippo/ directory. 
+
+
+** FIRST - Surf-Hippo Menus vs. the Top-Level LISP Interpreter: **
+
+An important concept is that Surf-Hippo may be run either via a menu
+system (Main Menu loop), by directly entering commands (Lisp
+functions) into the Lisp window (interpreter), or with a combination
+of the two modes, switching back and forth as needed. Note that in
+general, there is no loss of "state" when switching between the modes,
+until you load in a new circuit.
+
+This file mainly describes using Surf-Hippo with the menu interface.
+If you want to run the simulator in interpretive mode, then the Main
+Menu loop (invoked by the function SURF) must *not* be running. You
+can tell that the Main Menu loop is running when one of the simulation
+menus is visible. In general, these menus are distinct from the menus
+associated with the plot or histology windows. During a simulation
+run, you cannot interact with the program until either the simulation
+is complete or you break into the execution (see "Interrupting The
+Simulation") To get out of the Main Menu loop, get back to the Main
+Menu and click on OK without selecting any other options. To restart
+the Main Menu loop, enter (SURF) to the top-level prompt.
+
+To run simulations with the menu interface turned off, either:
+ 
+ a] Use the function (GOFERIT) if a circuit is loaded (see sim.lisp 
+    and scripts.doc).
+
+ b] Run SURF after setting the global variable *AUTOMATIC-RUN* to T.
+
+In general, running Surf-Hippo in interpretive mode is most useful for
+parametric simulations (see the surf-hippo/scripts/ directory and
+scripts.doc).
+
+Miniature Lisp Lesson - Throughout the Surf-Hippo documentation, the
+following terms will refer to the same thing:
+
+ Lisp window or Lisp interpreter or Lisp Listener (TM LispM)
+
+All of these terms refer to a text window that the Lisp process uses
+as standard output and input, and that displays some sort of:
+
+   lisp-prompt> 
+
+Strictly speaking, when you enter commands directly to Lisp, you are
+communicating with the Lisp interpreter via the appropriate window,
+e.g. a terminal window, an Ilisp emacs buffer, etc. Lisp functions
+(which include all Surf-Hippo functions) have the general format of:
+
+	(function-name arg0 arg1 ...)
+
+where there may be an arbitrary number of arguments. The parentheses
+encapsulate the function and its arguments, so that when you enter a
+function to the interpreter, the format is something like:
+
+   lisp-prompt> (surf t nil t)  
+
+
+
+
+** SECOND - Windows, Menus, and Beeps: **
+
+Menu interactions and window refreshing are sometimes cranky. The most
+annoying characteristic is garbage collection ("GC'ing" - a fact of
+life with Lisp). When the system does not respond, it is probably
+GC'ing. After a GC is complete, there will be two beeps. Setting the
+*BEEP-AFTER-GC* flag to NIL will kill this. On the other hand, for
+long simulations, an occasional "BEEP BEEP" lets you know that LISP
+hasn't punted (see also scripts.doc).
+
+There is also a *BEEP-AFTER-SURF* flag, which can be set as desired.
+
+If a menu or other window appears blank, try to refresh the window by 
+
+	1. Hitting "r" or "R" with the mouse over the window
+
+	2. Resizing the window with the window manager (for example, 
+	clicking on a corner and moving it with the mouse). 
+
+	3. Using the refresh option of your window manager.
+
+This behavior is apparently related to CMUCL. It may be worse if you
+are running from an X terminal.
+
+If something is actively running in Lisp (e.g. a simulation), then the
+Surf-Hippo windows will be "dead" - for example, if you have a plot or
+histology window that is covered and then uncovered during a
+simulation, the window will be blank until the simulation is finished.
+This annoyance can be circumvented by interrupting the Lisp process:
+see the "Interrupting The Simulation" section below.
+
+Do not use the X window manager to destroy any Surf-Hippo windows:
+this will probably crash the Lisp and perhaps the machine. For data
+and histology windows - 
+
+ CONTROL-d will destroy the selected window (after prompting for
+ verification).
+
+If the menus do not respond to the mouse, make sure that the Caps Lock
+key is OFF. Some menus are undersized so that buttons overlap - in
+this case it is helpful to resize the window with the mouse to avoid
+setting the wrong button.
+
+In case of problems, check the features_not_bugs.doc file, or the Bugs
+section in many of the doc files.
+
+If there are a lot of output windows, and the menu(s) is(are) buried,
+hitting CONTROL-q over any plot or histology window will deiconify and
+raise any active menus.
+
+
+
+ THIRD - Help!:
+
+For HELP on plot or histology windows, type "h" with the mouse over
+the window in question. From the Main Menu, choosing Surf-Hippo Help
+will print this file out to an Information window.
+
+
+
+
+
+ FINALLY: 
+
+The following shorthand describes a sequence of menu invocations:
+[Start Menu Title: <Menu entry to activate in Start Menu> 
+<Menu entry to activate in the following menu> ...[Final Menu Title]]
+
+Otherwise [Menu Title] refers to a specific menu, and <Menu Entry>
+refers to a specific menu entry which should be activated, deactivated
+etc.
+
+To exit any menu: Click the "OK" button. 
+
+
+For typical error messages, bugs and other problems, see the
+problems-and-misc.doc and features_not_bugs.doc files.
+
+
+****************************************************************
+****************************************************************
+
+	       Running Surf-Hippo From The Menus
+
+****************************************************************
+****************************************************************
+
+
+Once Surf-Hippo is loaded, run the program:
+
+   lisp-prompt> (surf)
+
+    ** Surf-Hippo: The MIT CBIP Neuron Simulator (Version X.X) **
+
+
+Note that command names entered into Lisp are case-insensitive.
+Running (SURF) from the USER package also changes the global variable
+*PACKAGE* to the SURF package. In a fresh Lisp environment always
+execute the function (SURF) or (START) first to set things up
+properly.
+
+The "Main Simulation Menu" will appear: when no circuit is loaded,
+this menu is the first of a sequence of menus for entering in a
+circuit description. If no menu appears, a possibility is that your X
+display environment variable is pointing to another screen (see the X
+notes section under Some Bugs, below). Start out by simulating a
+hippocampal action potential with the compiled function WORKING-HPC
+(in surf-hippo/src/hippocampus/working-hpc.lisp). The following sequence
+assumes that you are starting Surf-Hippo from scratch:
+
+ [Main Simulation Menu]
+	Click ON <Modify overall simulation/circuit parameters>
+	Click the "OK" button
+ [More simulation parameters]
+	<Specify circuit function/file> should be ON
+	Click the "OK" button
+
+ [Circuit definition is a:]
+	Click on <Compiled Function from Catalog>
+	Click the "OK" button
+ [Compiled Circuit Catalog]
+	Click on WORKING-HPC
+	Click the "OK" button
+
+	*Or*
+
+ [Circuit definition is a:]
+	Click on <Compiled Function>
+	Click the "OK" button
+ [Compiled circuit specification]
+	Enter the string "working-hpc" for the circuit function 
+        (do not include the quotes). The text entry windows are almost
+	like emacs:
+	C-a moves the cursor to the beginning of the window
+	C-e moves the cursor to the end of the window
+	C-f moves the cursor one step forward
+	C-b moves the cursor one step backward
+	C-d deletes the character in front of the cursor
+	The "Delete" key deletes the character in back of the cursor
+	"Return" or click another button (including the "OK") to enter the text
+	When done, click the "OK" button
+
+
+
+The Lisp window will show something like:
+
+ Reading in circuit WORKING-HPC...
+ Locating segments...
+
+
+And the [Main Simulation Menu] will reappear, now with the loaded
+circuit displayed in the menu title. To draw the cell,
+
+        Click ON <Modify histology drawing parameters>
+	Click the "OK" button
+  [Setting Up Cell Drawing]
+        Click ON <Draw Cells Now?>
+	Click the "OK" button
+
+
+
+After the Histology window appears, the [Main Simulation Menu] will
+reappear. Click "OK" to return to the Lisp command line.
+The following message will then appear in the LISP window:
+
+  Do you want to quit LISP? (RETURN for NO, yes/YES for YES): 
+
+Answering in the affirmative will close LISP elegantly.
+
+Now set up the plotting and stimulus. You can do this by
+point-and-clicking on the histology, or from the main menu, but for
+now, enter the following from the command line:
+
+     * (add-isource *soma*)
+     <Current Source HPC-soma-isrc>
+     * (add-pulse-list *isource* '(10 25 1))
+     NIL
+     * (setq user-stop-time 100)
+     100
+     * (enable-element-plot *soma*)
+     NIL
+     * (enable-element-plot *isource*)
+     NIL
+
+
+Now go back to the menus:
+
+     * (surf)
+
+And
+        Click ON <Run simulation (immediately)>
+	Click the "OK" button
+
+and the simulation will run and data will be plotted.  The loaded
+circuit may be modified wherever you want with the appropriate menus,
+clicking the "OK" button when done with each menu. If adding new
+current or voltage sources, make sure to click on "Modify clamp
+stimulus" when the menu comes up. You will then be prompted to enter
+pulse parameters for each of the sources that have been added to the
+circuit.
+
+Elements, including sources, channels, and synapses, may be added to
+the cell(s) by choosing locations from a histology window (LEFT
+mouse), and then bringing up an add element menu for the chosen
+location (CONTROL-SHIFT-LEFT mouse).
+
+When the simulation is complete, various plotting windows will appear.
+This can be also changed with the menus [Main Simulation Menu: <Modify
+plot parameters> <Modify plotted elements>...]). See the
+surf-hippo/doc/plotting.doc.
+
+The "Main Simulation Menu" will reappear next. The main menu has a
+"Specify immediate information output" option. This is a convenient
+place to save (archive) the results of important simulations to files.
+Simulations may be repeated on the loaded cell description, or a new
+circuit may be specified. When tired, click on "OK" in the "Main
+Simulation Menu" without selecting any other options. 
+
+
+To quit LISP, you can answer affirmatively when exiting the menus,as
+above. Alternatively, the function:
+
+   lisp-prompt> (quit)
+
+can be used. If this doesn't work (i.e. puts you into the Debugger),
+try:
+
+   lisp-prompt> (system::quit)
+
+
+
+
+****************************************************************
+****************************************************************
+
+			 Result Output
+
+****************************************************************
+****************************************************************
+
+Unless the global variable *KILL-ALL-OUTPUT* is T [default NIL], at
+the beginning and end of each simulation, various circuit and
+simulation information maybe printed out to either the Lisp Listener
+(default), a special Information Window, or a file.  The general level
+of detail of this information is determined by the global variable
+
+	*SIMULATION-PRINT-DETAIL*
+
+which may be set to :NONE, :TERSE, :MEDIUM, :FULL, :FULL_WITH_SEGMENTS
+[default :MEDIUM].
+
+The destination of this information may be set in [Main Simulation
+Menu: <Modify overall simulation parameters> <Specify information
+output parameters> [Simulation Info]]. If a file from a previous
+simulation has been written, then the name of this file will appear in
+the main menu title. 
+
+The advantage of output to the Lisp window is efficiency, and if this is
+ILisp or other editor-based window, then the output can be readily
+edited. The advantage of the Information Window is that this can be
+hardcopied in the same manner as the Plotting windows. From within the
+Information Window:
+
+ Control "p" will prompt for printing the selected window (and the
+ others). 
+
+The Info windows scroll, and may be resized by hand. Printing an
+Information Window will result in an image (or image .ps file) that
+includes only the part of the window that is visible on the screen. If
+part of the information is not visible, and you want a complete
+record, then select the output to information file option.
+
+You can also generate immediate information output either via the
+"Immediate information output" or "Print out basic info" options from
+the Main Menu (see surf-hippo/doc/info-windows.doc). The latter choice
+prints out a simple summary of the circuit to the Lisp window, and is
+convenient for quick checks of the circuit. Note that the time printed
+out and the simulation name is only changed when a simulation is
+actually run.
+
+When the global variable *DOCUMENTED-USER-VARIABLES* is set to a list
+of symbols, the PRINT-CIRCUIT function will print out the symbols
+and their values at the beginning of simulations, and as part of info
+files written by the simulator. This is useful when you have defined
+your own set of variables and you wish to have an automatic
+documentation of their values. For example, if the user set 
+
+ (setq *DOCUMENTED-USER-VARIABLES* '(NEURONS-PER-LAYER *somatic-cxns* 
+                                          maximum-glutamatergic-density)
+
+then the simulation information might include
+
+	NEURONS-PER-LAYER = 103
+	*somatic-cxns* = 4
+	maximum-glutamatergic-density = 2093
+
+depending on whatever value these variables happened to have. Note
+that *DOCUMENTED-USER-VARIABLES* is cleared when a new circuit is
+loaded.
+
+If the global variable *DOCUMENT-ALL-NEW-VARIABLES* is T [default
+NIL], PRINT-CIRCUIT will print out *any* variables that were defined
+after the initialization of Surf-Hippo in the SURF package or in
+*DOCUMENTED-USER-VARIABLES*.
+
+
+
+For file documentation, see surf-hippo/doc/files.doc.
+
+Note that *KILL-ALL-OUTPUT* will also suppress data plotting and
+automatic data file writing.
+
+****************************************************************
+****************************************************************
+
+			    Circuits
+
+****************************************************************
+****************************************************************
+
+Circuits are defined by either compiled functions, files (see
+surf-hippo/doc/circuits.doc), or compiled functions which reference
+(that is load) files. Try simulating the circuit file
+"file-hippo.lisp" in the surf-hippo/circuits/ directory. In general, a
+complicated cell should be put into a DEFUN form and compiled from
+Lisp, or the file that defines the cell should be compiled and the
+resulting .sparcf (binary) version loaded when loading the circuit.
+
+Compiled function names may be entered in mixed case (e.g.
+"working-hpc", "WORKING-hpc", "working-HPC", etc.), while for file
+names case matters. For example, for the circuit file
+surf-hippo/circuits/light-hippo, the file name must be entered as
+"light-hippo", not "Light-Hippo" or "LIGHT-HIPPO", etc.  Full lambda
+list function specifications can also be specified for the circuit,
+e.g. '(hippo "Test Cell"), as long as the function arguments are
+strings or bound symbols.
+
+If you enter in a function name that does not exist, the following
+error will be generated:
+
+     Reading in circuit bad-function-name...
+
+     Error in KERNEL:%COERCE-TO-FUNCTION:  the function BAD-FUNCTION-NAME is undefined.
+
+     Restarts:
+       0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (KERNEL:%COERCE-TO-FUNCTION BAD-FUNCTION-NAME)
+     0] 
+
+If this happens, simply enter Q or 0 (ABORT) to the debugger, and then
+enter (surf) to start things off again.
+
+To see a moderately complicated simulation, try the compiled function
+STAR-AMACRINE-DS that is automatically loaded into Surf-Hippo (defined
+in surf-hippo/src/rabbit/star-amacrine-functions.lisp). For cells
+with complete detailed anatomy, try loading files from the
+surf-hippo/anatomy/ directory. For information about how these sorts
+of circuit files are made, see the anatomy.doc file. See the
+circuits.doc file for more information on building and adding to
+circuits.
+
+
+****************************************************************
+****************************************************************
+
+	Element Library Parameters
+
+****************************************************************
+****************************************************************
+
+Parameters for specific membrane element models (channels, synapses,
+etc.) are generally found in the surf-hippo/src/parameters/ directory.
+Many of these parameters are taken from other published models. There
+are no guarentees on the correctness of any of the parameters listed
+here; thus the original references should always be checked. On the
+other hand *numerous* errors in the originals have been found - see
+comments in the various parameter files. The general concepts behind
+element parameter libraries are described in the
+element-type-libraries.doc file. 
+
+****************************************************************
+****************************************************************
+
+	    Quitting Lisp
+
+****************************************************************
+****************************************************************
+
+
+As mentioned, to quit Lisp elegantly,
+
+   lisp-prompt> (quit)  
+
+or
+
+   lisp-prompt> (system::quit)
+
+C-c C-c (from ILISP) will usually interrupt Surf-Hippo, and put you
+into the debugger. Avoid doing this in the middle of a GC, however,
+because sometimes this can cause things to hang. Alternatively (from
+ILISP), M-x panic-lisp, followed by C-c C-c, may be necessary.
+
+
+****************************************************************
+****************************************************************
+
+             Killing Beeps and Elapsed Time Window
+
+****************************************************************
+****************************************************************
+
+As desired, enter the following form(s) at the Lisp prompt (or in a
+script file):
+
+  (setq *BEEP-AFTER-GC* nil)
+
+  (setq *BEEP-AFTER-SURF* nil)
+
+It is usually a good idea to keep *BEEP-AFTER-GC* set T so that you
+are assured that the simulation has not crashed.
+
+During a simulation a timer window will appear. However, if you are
+running a lot of rapid simulations, it is important to disable this
+indicator by
+
+   (setq *show-time-remaining* nil)
+
+Otherwise, the frequent refreshing of this window may hangs things up.
+
+
+****************************************************************
+****************************************************************
+
+		  Interrupting The Simulation
+
+****************************************************************
+****************************************************************
+
+It is often useful, especially for long simulations, to check things
+out in the middle, or to gain access to (or perhaps simply refresh)
+the output windows. As above, you can BREAK into the running
+simulation by typing C-c C-c into the Lisp window. If desired, from
+the Lisp debugger, enter the function (SIMULATION-OUTPUT) to see the
+result obtained so far. Type 0 to the debugger to resume the
+simulation. For example:
+
+
+			    .        
+			    .        
+			    .        
+
+	    Starting transient solution
+
+Enter C-c C-c ->
+
+     Interrupted at #x716DEB8.
+
+     Restarts:
+       0: [CONTINUE] Return from BREAK.
+       1:            Return NIL from load of "/home/lyle/surf-hippo/src/visual/j43ds.lisp".
+       2: [ABORT   ] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (UNIX::SIGINT-HANDLER #<unavailable-arg> #<unavailable-arg> #.(SYSTEM:INT-SAP #xEFFFEC68))
+     0] (SIMULATION-OUTPUT)
+     Total time points/iterations 13180/20379
+
+     Simulation duration: 200.0 ms
+     Node j43d-soma average =  -3.783 mV (ref -70.0) 
+     Node 11-5-6 average =  -3.846 mV (ref -70.0) 
+     Node 11-5-16 average =  -3.929 mV (ref -70.0) 
+     Node 11-5-26 average =  -3.909 mV (ref -70.0) 
+     Node 11-5-36 average =  -3.833 mV (ref -70.0) 
+     Node 11-5-46 average =  -3.73 mV (ref -70.0) 
+     File /home/lyle/surf-hippo/data/j43d-11-5/11_12_1994/j43d-11-5-731552.info written
+     Done.
+
+     NIL
+     0] 0
+
+Simulation continues ...
+
+
+
+
+
+
+
+
+
+

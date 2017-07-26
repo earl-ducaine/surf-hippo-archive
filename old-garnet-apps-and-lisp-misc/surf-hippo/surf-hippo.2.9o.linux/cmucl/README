@@ -1,0 +1,11 @@
+The lisp executables in this directory are specific to machine
+architectures and operating systems, as is the associated image file
+(in the top-level directory). The executable actually used is
+specified in the surf-hippo script in the top-level surf-hippo
+directory, e.g.:
+
+  #!/bin/sh
+
+  cd $SURFHOME
+  lisp=cmucl/cmucl18a-sunos.4.1.3
+  exec $lisp "$@" -core image -eval '(load "loaders/initial-message.lisp" :verbose nil)' 

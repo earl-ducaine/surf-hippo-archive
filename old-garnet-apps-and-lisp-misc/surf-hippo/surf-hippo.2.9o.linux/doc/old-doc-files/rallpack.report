@@ -1,0 +1,236 @@
+
+
+PRELIMINARY VERSION - NOT COMPLETE
+
+
+Rallpack report for surf-hippo version 2.0    juillet 1994
+
+#############################################################################
+
+Each test measures 3 aspects of the simulator :
+Speed
+Accuracy
+Memory use.
+
+Definitions :
+	Simulation run time= Time in seconds to run model.
+	Timestep= simulation output sampling interval.
+		(normally identical to internal simulation clock, unless
+		specifically stated otherwise).
+        Raw Speed=
+		Number of compartments * Number of steps / simulation run time.
+	Peak speed= Best value of raw speed attained for simulator.
+	Simulation speed =
+		Number of compartments * simulated time/simulation run time
+		= raw speed * timestep.
+        Accuracy= The average for the first and last compartments, of normalized
+                rms difference between 'correct' and simulated curves, as
+                measured by the 'rms' program for Rallpacks 1 and 2, and the
+		'srms' program for Rallpack 3
+	Asysmptotic accuracy= Limiting (best) accuracy achieved as timesteps
+		are decreased.
+	Semi-accurate timestep= Timestep at which error is <= twice the
+		asymptotic accuracy.
+	Setup time= time to load the simulator and model into memory.
+        Base memory= Memory used to load the simulator.
+        Model memory= Additional memory used when the model has been loaded
+                and run.
+        Model size= Number of compartments in model.
+        Model memory per compartment = Model memory/Model size
+	Compartment equivalents= Ratio of CPU time spent on specified model
+		component to time spent on single nonbranching compartment.
+
+
+
+
+
+#############################################################################
+
+General report.
+
+Peak speed 		 	,000 steps/sec
+Compartment equivalents		1 : 1 : 0.5
+Asymptotic accuracy		%
+Semi-accurate timestep		 usec.
+Hardware information		Sun sparc 10; Sun OS 4.1; 26 MIPS.
+Simulation setup time		 sec.
+Base memory			 Meg
+Integration method		Hines
+
+#############################################################################
+
+Specific reports.
+
+=============================================================================
+
+Results for rallpack 1 using Surf-hippo version 2.0
+
+Peak speed/model size	: 38K for >= 1000 compartments.
+Asymptotic accuracy	: %
+Semi-accurate timestep	: usec
+Hardware information	: Sun sparc 10; Sun OS 4.1; 26 MIPS
+Setup time              :  sec
+Integration method      : Hines
+Compartment equivalents : Not Applicable.
+
+=============================================================================
+Detailed report
+
+1	Accuracy vs Timestep.
+2	Accuracy vs Simulation Speed.
+
+Timestep (usec)		Simulation Speed	Accuracy (% error)
+	10			0.54			0.004 %
+	50			2.23			0.027 %
+	100			4.58			0.055 %			
+	500			23.17			0.26 %
+	1000			45.79			0.52 %
+	5000			221.24			2.2 %	
+	10000			409.84			9.4 %
+
+	variable		21.20			0.036 %
+  with defaults parameters
+
+(Model size = 1000 compartments)
+
+
+3       Raw Speed vs Model size.
+4       Memory/compt vs Model size
+
+time-step = 0.05 ms (fix) number step = 5000
+	 or variable number step =~ 540
+
+Raw Speed		  run-time (sec) 	Model Memory per compt	Size 		
+(ncompts * steps/sec)				(Bytes/compt)		(compartments)
+  	fix	variable   fix	variable
+	1347	432        3.71   1.17	       		nc		1
+        11547   10540      4.33   0.5 			nc		10
+        35945   36598      13.91  11.47 		nc		100
+        45812	42060      109.1  12.91       		nc	        1000
+        46836	44056      213.5  24.65        		nc      	2000
+        46063 	45341	   434.1  48.08 		nc     		4000
+	46242	45083	   865.0  97.42 		nc		8000
+	45703	44274	   1094	  124.0			nc		10000
+
+ time-step = 0.05 
+
+=============================================================================
+				RALLPACK 2
+=============================================================================
+
+Results for rallpack 2 using surf-hippo version 2.0
+
+Peak speak/model size	: 
+Asymptotic accuracy	: 
+Semi-accurate timestep	: 
+Hardware information	: 
+Setup time              : 
+Integration method      : 
+Compartment equivalents : 
+
+=============================================================================
+
+Detailed report
+
+1	Accuracy vs Timestep.
+2	Accuracy vs Simulation Speed.
+Timestep (usec)		Simulation speed	Accuracy (% error)
+	1			0.041		0.001 %   (after 1 -> 50)
+	10			0.41		0.00055 % (after 10 ->50)
+	50			2		0.001 %
+	100			4.14		0.005 %
+	500			20.42		0.042 %
+	1000			40.65		0.057 %
+	5000			196.85		0.155 %
+	10000			367.65		3.44  %
+
+	variable 		19.84		0.002 %
+(Model size = 1023 compartments)
+
+Time-step = 0.05 and variable 
+
+Raw Speed/compt vs Model size.
+Raw Speed		  run-time		compt Size 	Branching depth
+(ncompts * steps/sec)					(compartments)
+
+	Fix 	Var 	fix 	Var 	
+	1373	1186	3.64	0.43	 	1		1			
+	3947	2322	3.8	0.44		3		2	
+	7231	7610	4.84	0.47		7		3
+	15463	13909	4.85	0.55		15		4
+	23736	21958	6.53	0.72		31		5
+	32846	17984	9.59	1.79		63		6
+        34305   33110   18.51   1.96	       	127             7
+	37085	36500	34.38	3.57		255		8
+	39538	39089	64.62	6.68		511		9
+	40969	40586	124.85	12.88		1023		10
+	40716	40464	251.37	25.85		2047            11
+	40008	39789	511.77	52.59		4095		12
+	39708	39524	1031.4	105.9		8191		13
+
+=============================================================================
+		   		RALLPACK 3
+=============================================================================
+
+Results for rallpack 3 using Surf-Hippo version 2.0
+
+Peak speed/model size	:
+Asymptotic accuracy	:
+Semi-accurate timestep	:
+Hardware information 	:
+Setup time		:
+Integration method	:
+Compartment equivalents : 
+
+=============================================================================
+Detailed report.
+
+1	Accuracy vs Timestep.
+2	Accuracy vs Simulation Speed.
+Timestep (usec)		Simulation Speed	Accuracy (% error)
+	10			
+	50			0.69			0.9 %
+	100			1.39			1.96 %
+	500			6.94			10.70 %
+	1000			14.05			29.75 %
+	5000 			68.3			nd %
+	10000 			123.76			nd %
+
+	variable		0.57			0.63 %			 
+(Model size = 1000 compartments)
+
+
+3	Raw Speed vs Model size.
+4	Model memory per compartment vs Model size
+
+fix time step = 50 us			
+
+Raw Speed/compt vs Model size.
+Raw Speed		  run-time		compt Size 	
+(ncompts * steps/sec)				(compartments)
+
+	Fix 	Var 	fix 	Var 					
+	796	659	6.2	2.7		1
+	6944	4593	7.2	15.0		10
+	15197	12359	32.9	49.0		100
+	15678	11984	318.9	505.9		1000
+	15037	11751	665.9	1030.6		2000				
+	
+	12551		1930.0		4000
+				
+
+
+	
+=============================================================================
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,945 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		SYNAPSES
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Controlling Synapse Activation - Classes of Synapse Types
+2. Creating Synapses and Synapse Types
+3. Synapse Presynaptic Cell Elements 
+4. ADD-SYNAPSE-TO-CELLS Function
+5. Synapse Maximum Conductance
+6. Static Voltage Dependence of Synaptic Conductances
+7. Inheritance Of Synapse Types
+8. Derivation of Synapse Conductance Waveforms for
+   Non-V-Dependent-Channel Type Synapses - Linear and Non-Linear Stages
+9. Light Driven Synapses - Spatial RF Location:
+   Relationship between Light Stimulus and Synapses
+10. Light Driven Synapses - Spatial RF Function
+11. Light Driven Synapses - Spatial RF Location:
+    Relationship between Moving Light Stimulus and Synapses
+12. Light Driven Synapses - Spatial RF Location:
+    Relationship between Apparent Motion Light Stimulus and Synapses
+13. Light Driven Synapses - Stimulus Visualization
+14. Fast Light-Driven Synapse Convolutions
+15. Q_10's For Synapses
+16. Gap Junctions
+17. Specifying Light Stimulus Parameters in Files
+18. Miscellaneous - Controlling Synapse Setups, etc.
+19. Specifying Trigger Times (Events or Delays) for Auto Synapses
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+This file describes the synapse model.
+
+
+***************************************************************
+***************************************************************
+
+	Controlling Synapse Activation - Classes of Synapse Types
+
+***************************************************************
+***************************************************************
+
+The fundamental difference between different classes of synapse types is how
+class is controlled. The options, specified by the synapse type slot :CONTROL,
+are as follows:
+
+LIGHT - The conductance waveform for each synapse is precalculated before the
+simulation: the synapse spatial receptive field is integrated over the
+simulation time with a (2D) spatio-temporal pattern of "light" projected onto a
+specified anatomical plane, the result of which is convolved with the synapse
+type's impulse response and then passed through a non-linearity explicitly
+associated with the impulse response. If specified, there can be an additional
+(linear) convolution step.
+
+CHANNEL - The synaptic conductance, calculated during the simulation, is
+modelled as a voltage and/or concentration dependent channel, where the
+reference node for the voltage/concentrations controlling the channel is
+specified by the :PRE-SYNAPTIC-NODE slot of the synapse.
+
+VOLTAGE - The synaptic conductance, calculated during the simulation,
+is derived from summing delayed copies of a reference conductance
+waveform (defined for the synapse type). Additional copies are
+included in the summation (triggered) when the voltage at the
+:PRE-SYNAPTIC-NODE slot of the synapse satisfies the conditions
+specified for the synapse type. The pre-synaptic node may refer to any
+segment, soma, or axon.
+
+AUTO - The synaptic conductance, calculated during the simulation, is derived
+from summing delayed copies of a reference conductance waveform (defined for
+the synapse type). Additional copies are included in the summation (triggered)
+at time points stored in the :EVENT-TIMES slot of the synapse.
+
+TONIC - The synaptic conductance is constant for the entire simulation.
+
+The control method for a given synaptic type is included in the list that defines the type
+parameters, e.g. -
+
+	(control . voltage)
+
+There is a :EVENT-TIMES slot (default 0.0) that is associated with each synapse.
+For autonomous synapses, the synapse type waveform is applied with a delay
+according to this slot, i.e. it is added to the delays in :EVENT-TIMES. For voltage
+synapses, the times of the trigger events are further delayed by this value.
+For light dependent synapses, the precalulated conductance waveform is time
+shifted by this value.
+
+To reiterate:
+
+1. Evaluation of light-controlled synapses 
+
+     The conductance waveform, except for possible static conductance
+     non-linearity, is computed before simulation:
+
+         Integrate spatial receptive field of synapse with the pattern of
+         light over the duration of the simulation
+
+         Convolve result of spatial integration with linear impulse response
+         of synapse type
+
+         Pass result of convolution through non-linearity associated with
+         impulse response (default is a threshold @ 0, i.e. half-wave
+         rectification).
+
+         If specified, convolve waveform again with a 2nd linear impulse response
+         associated with synapse type
+
+         Store resulting waveform for use during simulation
+
+     If the global variable *REUSE-SYNAPSE-WAVEFORMS is T and the simulation
+     duration is unchanged and there was a prior simulation that computed the
+     light inputs, then the results of the last simulation's convolution(s)
+     are reused.
+
+     During simulation, use waveform (shifted by the delay for each synapse) for conductance
+     reference at each time step, after passing through (additional) static
+     non-linearity (if definded for this synapse type) 
+
+     Result is multiplied by the :GBAR of the synapse and this is used as
+     current value of synaptic conductance 
+
+
+2. Evaluation of channel-controlled synapses
+
+     Evaluate channel conductance like a regular channel, with the
+     controlling voltage and/or concentrations taken from the pre-synaptic
+     element
+
+     Pass result through static non-linearity, if it exists for this
+     synapse type
+
+     Result is multiplied by the :GBAR of the synapse and this is used as
+     current value of synaptic conductance 
+
+
+3. Evaluation of voltage-controlled synapses
+
+     Look at pre-synaptic element voltage (segment, soma, or axon) 
+
+     Trigger conditions satisfied?
+
+     Add new trigger time (plus delay for each synapse) to list of trigger times
+
+     Loop over all trigger times, summing appropriately shifted values of
+     reference conductance waveform
+
+     Pass result of summation through static non-linearity, if it exists
+     for this synapse type
+
+     Result is multiplied by the :GBAR of the synapse and this is used as
+     current value of synaptic conductance 
+
+
+4. Evaluation of auto-controlled synapses
+
+     At each time step during simulation, if time corresponds to one of
+     the delay times for a given synapse, add new trigger time (plus delay  
+     for each synapse)to list of trigger times
+
+     Loop over all trigger times, summing appropriately shifted values of
+     conductance template
+
+     Pass result of summation through static non-linearity, if it exists
+     for this synapse type
+
+     Result is multiplied by the :GBAR of the synapse and this is used as
+     current value of synaptic conductance 
+
+
+
+5. Evaluation of tonic-controlled synapses
+
+     The synapse conductance is constant, taken from the :GBAR of the synapse.
+
+****************************************************************
+****************************************************************
+
+Creating Synapses and Synapse Types
+
+****************************************************************
+****************************************************************
+
+The basic function to create a synapse is:
+
+  create-synapse CELL-ELEMENT-OR-NAME SYNAPSE-TYPE-SYMBOL
+	&optional PRE-SYNAPTIC-CELL-ELEMENT-OR-NAME
+
+The SYNAPSE-TYPE-SYMBOL argument references a type description defined with the macro
+SYNAPSE-TYPE-DEF - see the files synapse-params.lisp and light-synapse-params.lisp. The format
+for each entry in the synapse type parameters association list, as shown in these two files, is:
+
+ (type (parameter-1 . value)(parameter-2 . value)(parameter-3 . value) ... )
+
+where the TYPE symbol is that used in the call to CREATE-SYNAPSE. 
+
+To add another synapse type to the current library, use the SYNAPSE-TYPE-DEF macro, as done
+below. The ordering of the parameters in each type's list is not important. The "." in each
+parameter sub-list is important, since these lists are interpreted as association lists. The
+impulse functions must return a one dimensional list or array. If there are no arguments to the
+specified impulse function, then do not include an entry for IMPULSE-FUNCTION-ARGS to the
+synapse type list.
+
+The waveform definition in the parameter list requires a form that returns either a list or an
+array of numbers. The function SEQUENCE-TO-FLOAT-ARRAY is used internally to convert this
+sequence to the proper format for the actual execution.
+
+****************************************************************
+****************************************************************
+
+Synapse Presynaptic Cell Elements 
+
+****************************************************************
+****************************************************************
+
+Synapse types driven by CHANNEL or VOLTAGE require a presynaptic element for their control, which
+can be either an AXON, SOMA, or SEGMENT. Thus, these types of synapses may only be defined AFTER
+their presynaptic elements are defined. For example, this would mean that in a circuit with
+multiple interconnected cells, the cells would have to be defined first (with the appropriate
+functions that generate cell segments and somas, e.g. CREATE-TREE, etc.), and the synapses
+added afterwards.
+
+Specifically, the PRE-SYNAPTIC-CELL-ELEMENT-OR-NAME optional argument to CREATE-SYNAPSE must be
+supplied for CHANNEL or VOLTAGE-controlled synapse types - if you try to create a synapse whose
+type controlled by VOLTAGE or CHANNEL, and a pre-synaptic element is not specified, or does not
+exist, then an error is flagged, e.g.:
+
+  Warning:  
+    CREATE-SYNAPSE: Synapse Syn-Hippo-soma-FAST-EX must have complete presynaptic info
+
+    ** Restarting from Top Level **
+
+See the TWO-HIPPOS and THREE-HIPPOS examples in hippocampus/hippos.lisp.
+
+It may be convenient to incorporate the pre-synaptic element creation within the call to
+CREATE-SYNAPSE. For example:
+
+ (create-synapse "CA1-12-ap18" 'fast-ex (create-axon "CA1-203-soma" 'SIMPLE-FAST))
+
+In this example, a FAST-EX type synapse is added to a cell element whose name is "CA1-12-ap18"
+(assume that this type of synapse requires a presynaptic element). The embedded call to CREATE-AXON
+returns a SIMPLE-FAST type axon that originates in the cell element whose name is "CA1-203-soma".
+
+When a pre-synaptic element is an axon, the CREATE-SYNAPSE function automatically assigns the
+created synapse to the axon so that the axon may be drawn properly from origin to its post-synaptic
+destination.
+
+Auto synapses may have a pre-synaptic element defined for them, which may in turn be incorporated
+in their name. However, in these cases there is no functional significance for the pre-synaptic
+element.
+
+****************************************************************
+****************************************************************
+
+ADD-SYNAPSE-TO-CELLS Function
+
+****************************************************************
+****************************************************************
+
+For synapses without pre-synaptic nodes, a convenient method for adding synapses to cells is
+with the ADD-SYNAPSE-TO-CELLS function (synapse.lisp):
+
+  add-synapse-to-cells CELL-NAMES TYPE-SYMBOL &optional (SOMA-ONLY t) [Function]
+
+
+This function adds synapses of type given by the TYPE-SYMBOL argument to cells in CELL-NAMES.
+An optional argument (default 100) specifies the percentage of (randomly distributed) nodes
+that should get the synapse.  If the optional SOMA-ONLY argument is missing or NIL, then the
+synapse are added to all the segments and the somas of the cells listed in cell-names.
+
+For example, the following lines could be part of a cell file that is loaded entoto:
+
+
+	(read-in-circuit (concatenate 'string (cdr (assoc :SURFHOME lisp::*environment-list*))
+			   "anatomy/j43d.sparcf"))
+
+	(add-synapse-to-cells  `("j43d" ) 'NMDA-AUTO-BERNANDER 100)
+
+
+On the other hand, suppose a cell has been loaded, and you are back talking directly to the
+Lisp interpreter. The same function would be used:
+
+	lisp-prompt> (add-synapse-to-cells  `("j43d" ) 'NMDA-AUTO-BERNANDER 100)
+
+
+
+***************************************************************
+***************************************************************
+
+	Synapse Maximum Conductance
+
+***************************************************************
+***************************************************************
+
+See membrane_elements.doc
+
+***************************************************************
+***************************************************************
+
+	Static Voltage Dependence of Synaptic Conductances
+
+***************************************************************
+***************************************************************
+
+The conductance of a synapse can also be dependent on the current voltage of the post-synaptic
+node, as described in membrane_elements.doc.
+
+Note that this non-linear step can be used for any type of synapse, and is conceptually but not
+mathematically distinct from the non-linearity possible after the (first) linear convolution
+step for light controlled synapses.
+
+***************************************************************
+***************************************************************
+
+	Inheritance Of Synapse Types
+
+***************************************************************
+***************************************************************
+
+Synapse types may defined in reference to another by including a PARENT-TYPE entry in the type
+parameter list. For example:
+
+ (synapse-type-def '(nmda
+	 (parent-type . fast-ex)
+	 (static-voltage-dependence . (sigmoid-array -50.0 0.5 -100 50 0.1))))
+
+Here, the synapse type NMDA is identical to the FAST-EX type (which must have its own entry
+stored using SYNAPSE-TYPE-DEF), with the additional parameter STATIC-VOLTAGE-DEPENDENCE.
+This process can have an arbitrary number of levels.
+
+***************************************************************
+***************************************************************
+
+Derivation of Synapse Conductance Waveforms for Non-V-Dependent-Channel
+Type Synapses - Linear and Non-Linear Stages
+
+***************************************************************
+***************************************************************
+
+As mentioned above, synapses may be driven by some event or controlling variable, that in turn
+either initiates the application of a canned waveform or a waveform created by the convolution
+of the synapse type's impulse response with the driving event. For light-driven synapses, the
+convolution(s) of the light stimulus and the impulse response(s) is computed before the
+simulation integration. The parameters of the impulse response are given as the
+IMPULSE-FUNCTION-ARGS entry in the appropriate type parameter list stored with SYNAPSE-TYPE-DEF
+(see synapse-params.lisp). For example, one synapse type parameter list stored with
+SYNAPSE-TYPE-DEF may be:
+
+ '(LIGHT-EX-1
+	(GBAR-DENSITY . 10.0)
+	(E-REV . 0.0)
+	(CONTROL . LIGHT)
+	(IMPULSE-FUNCTION-ARGS . (DOUBLE-ALPHA 10 60 1)))
+
+Here, the list (DOUBLE-ALPHA 10 60 1) is used to obtain the impulse response for synapse type
+LIGHT-EX-1, by evaluating as follows (e.g. by CREATE-SYNAPSE-TYPE in synapse.lisp):
+
+ (setf (synapse-type-parameters type)
+       (acons 'IMPULSE 
+               (eval (cdr (assoc 'IMPULSE-FUNCTION type-parameters)))
+               (synapse-type-parameters type)))
+
+The function to be evaluated is DOUBLE-ALPHA (waveforms.lisp), applied to the arguments 10, 60,
+and 1. Any function which returns a 1-d sequence (list or array) of numbers may be used here, with the
+appropriate arguments. The parameters of the impulse function may be edited with the menus
+[Main Simulation Menu: <Modify cell types, sources, channels or synapses> <Modify the
+synapses><Modify parameters of synapse types>...<Edit impulse response or event waveform>]. The
+waveforms/impulse responses may also be plotted here, or from the <Modify the synapses> option.
+
+If the impulse/waveform function is compiled with a documentation string (see the DEFUN form
+for DOUBLE-ALPHA as an example), then this string will be displayed in the menus for editing
+the function arguments.
+
+The conductance waveforms for light-driven synapse types are derived from the convolution of
+the light stimulus (integrated over the spatial RF of the synapse) and the impulse response of
+the type (see below).
+
+The result of this convolution may be passed through a nonlinearity, given by the
+
+   (IMPULSE-NONLINEARITY . :RECTIFICATION)
+
+or
+
+   (IMPULSE-NONLINEARITY . :THRESHOLD)
+   (IMPULSE-NONLINEARITY-PARAMETERS . 0.2)
+
+entries in the SYNAPSE-TYPE-DEF parameter list argument. If not specified (e.g. not explicitly
+NIL), then the nonlinearity is a threshold at 0. The possible functions and their parameters may
+be found in the DEFUN of CONVOLVE-INPUT-ARRAY (macros.lisp).
+
+If there is a
+
+   (LINEAR-IMPULSE-FUNCTION . (ALPHA 20))
+
+entry in the SYNAPSE-TYPE-DEF parameter list argument, then the result of the first (possibly
+non-linear) convolution is then convolved again with a function specified by the
+LINEAR-IMPULSE-FUNCTION entry. The output of this second convolution is *not* passed through a
+subsequent nonlinearity at this point (but may be during the simulation if a "static
+non-linearity" as described previously is specified).
+
+The concatenation of the linear convolution with a static nonlinearity is useful for smoothing the
+rectification (half-wave for ON or OFF synapse, full-wave for ON-OFF synapses) typically observed
+for light-driven synapses.
+
+(See the functions NONLINEARITY and CONVOLVE-INPUT-ARRAY in waveforms.lisp)
+
+For synapse types that reference a canonical response waveform, the time base of the waveform is
+given in the WAVEFORM-TIME-INTERVAL entry in appropriate type parameter list stored with
+SYNAPSE-TYPE-DEF. For example:
+
+ '(AUTO-INHIBITORY
+	(GBAR-DENSITY . 1000.0)
+	(E-REV . -70.0)
+	(CONTROL . AUTO)
+	(WAVEFORM-FUNCTION-ARGS . (ALPHA-ARRAY 10 1 T 0.2))
+	(WAVEFORM-TIME-INTERVAL . 0.2))
+
+Depending on the function referenced in WAVEFORM-FUNCTION-ARGS, the WAVEFORM-TIME-INTERVAL
+(always in milliseconds) must be consistent with the arguments to the waveform generating
+function. In the example above, the function ALPHA-ARRAY has an (optional) fourth argument
+which specifies the step size, relative to the first tau argument, of the returned array. As
+long as the step size and the WAVEFORM-TIME-INTERVAL are the same, then the tau specified will
+be evaluated during the simulation as being in units of milliseconds.
+
+As above for the impulse function waveforms, the entry in the type parameter list for
+WAVEFORM-FUNCTION-ARGS must be a function which returns a list or array of numbers. Note that
+in both cases, the sequences are converted to arrays when the synapse type is created.
+
+**********************************************************************************
+**********************************************************************************
+
+Light Driven Synapses - Spatial RF Location:
+
+	Relationship between Light Stimulus and Synapses
+
+**********************************************************************************
+**********************************************************************************
+
+
+For light-driven synapses, the projection of the light (defined according to an XY coordinate
+system) is mapped onto a 2D projection of the cells. From the histology.doc file:
+
+     The anatomical information for each cell component is referenced to an XYZ
+     coordinate system, with an implicit origin at (0,0,0). The viewing plane
+     is referred to as the X'Y' plane, and the default orientation of this
+     plane is such that X->X' and Y->Y'. The orientation of the XYZ system with
+     respect a given brain structure is arbitrary, but as a general rule is
+     taken so that the typical anatomic/experimental view is reflected in the
+     default X'Y' projection.  Typically, this means that Z is taken as the
+     depth within tissue, oriented with respect to 2-dimensional sheets in
+     brain. I.e. for retina, the XY plane is congruent with the plane of the
+     retina, with the Z axis aligned along the radial dimension (Z=0 at the ILM
+     [for example] and increasing in the distal direction).  This means that
+     the default X'Y' orientation corresponds to the retinal whole mount, or
+     retinotopic orientation. For flattened cortex, the XY plane is congruent
+     with the surface of the brain. For hippocampal slice, the XY plane is in
+     the plane of the slice, since the slice is typically viewed "en-face".
+     This is also the system for cortical neurons that are typically viewed
+     perpendicular to the cortical surface.
+
+Thus, the light XY is mapped to the cell's XY (eg for retina or flattened cortex) or to the
+cell's XZ (eg for cortical neurons in radial mount). This mapping is determined by the global
+variable *LIGHT-STIMULUS-PLANE*, which would have the value :XY in the former case, and :XZ in
+the latter.
+
+For mapping the light XY plane to the cell XZ plane, the projection of the anatomical view
+is taken "from the top". This means that the [X,Y] for the light goes to [X,-Z] for the
+cell. 
+
+The location of a synapse's receptive field in the plane of the stimulus can be either the
+physical location of the synapse (default), or an arbitrary location set earlier. The former
+case is analogous to a retinotopic mapping, that is the light stimulus is mapped directly onto
+the geometry of the tissue. Note that for a synapse on a segment, the location is given by the
+DISTAL node of the segment.
+
+If the receptive field center (x or y) of a given synapse is not to be taken from the physical
+location of the synapse, then the association list in the :SYNAPSE-PARAMETERS slot of the
+synapse structure must include the entry
+
+	(LIGHT-INPUT-X . 30.5)
+
+for defining the X location of the RF center, and/or
+
+	(LIGHT-INPUT-Y . 230.0)
+
+for defining the Y location of the RF center. Both of these parameters are taken in the
+light stimulus plane.
+
+If these slots are set for a given synapse, the function GENERATE-LIGHT-INPUT-ARRAY uses
+the values for determining the RF location; otherwise the physical location of the synapse
+is used. For example (from GENERATE-LIGHT-INPUT-ARRAY, where SYN-PARAMETERS is taken from
+the :SYNAPSE-PARAMETERS slot of a synapse):
+
+
+  (if (assoc 'LIGHT-input-x syn-parameters)
+      (coerce (cdr (assoc 'LIGHT-input-x syn-parameters)) 'single-float)
+      (+ (first (node-absolute-location (synapse-node syn)))
+	 (* light-input-offset-distance 
+	    (cos light-input-offset-angle))))
+
+   -->	syn-rf-center-x
+
+The local variables LIGHT-INPUT-OFFSET-DISTANCE and LIGHT-INPUT-OFFSET-ANGLE referenced
+above are taken from the appropriate synapse type, if defined (otherwise they are taken as
+0):
+
+  (if (assoc 'LIGHT-OFFSET-DISTANCE type-parameters)
+      (coerce (cdr (assoc 'LIGHT-OFFSET-DISTANCE type-parameters)) 'single-float)
+      0.0))
+
+   --> light-input-offset-distance
+
+	 
+  (if (assoc 'LIGHT-OFFSET-ANGLE type-parameters)
+      (coerce (cdr (assoc 'LIGHT-OFFSET-ANGLE type-parameters)) 'single-float)
+      0.0))
+
+   --> light-input-offset-angle
+
+For explicit mapping of a synapse's RF center, use the functions
+
+	set-synapse-rf-center-x SYNAPSE RF-CENTER-X
+
+	set-synapse-rf-center-y SYNAPSE RF-CENTER-Y
+
+where SYNAPSE is either a synapse structure or a synapse name.
+
+For example, the function
+
+   (MAP-LIGHT-INPUTS &KEY (X-MAX 500) (X-MIN -500) (Y-MAX 500) (Y-MIN -500) 
+			  TYPE-NAME (USE-MENUS T))
+
+uses SET-SYNAPSE-RF-CENTER-X and SET-SYNAPSE-RF-CENTER-Y to randomly map the receptive field
+centers of all the synapses of a given type (or types, if chosen with the menus) over a
+rectangular area defined by the X-MAX, X-MIN, Y-MAX, and Y-MIN arguments.
+
+See histology.doc for notes on visualization of the receptive field centers.
+
+**********************************************************************************
+**********************************************************************************
+
+Light Driven Synapses - Spatial RF Function
+
+**********************************************************************************
+**********************************************************************************
+
+The IMPULSE and SPATIAL-RF array entries are computed in the setup sequence, according to the
+appropriate parameters. The SPATIAL-RF-FUNCTION-ARGS entry, for light-dependent synapses,
+specifies a function which returns a 2-D array that defines the spatial receptive field. If
+this entry does not exist for a light-dependent synapse, then the spatial receptive field is a
+2D impulse. For the args to GAUSSIAN-RF, see the funspec. If the ADJUST-TO-RF-AREA entry is NIL
+or missing, then the spatial integration is done without compensating for the support of the of
+the SPATIAL RF 2-D array. Otherwise, the integration is multiplied by the area of the support.
+The first case is used, for example, when the 2-D array sums up to 1.0 or 0.0 (e.g. if you have
+a DOG RF, and the keyword :TOTAL-VOL 0 is included so that the array has zero overall weight).
+
+Spatial integration of over each synapse RF is done for the entire duration of the simulation.
+For times prior to and after the stimulus duration, then the integration is over a constant
+light level set by the global variable *LIGHT-BACKGROUND*. Thus, L(t), the light input at time t for
+a synapse with a receptive field RF(x,y), is given by integrating over the support of RF():
+
+	RF(x,y) * [*LIGHT-BACKGROUND*  +  *LIGHT-STIMULUS-STRENGTH* x Stimulus(x,y,t)]
+
+where Stimulus(x,y,t) is non-zero for t between *LIGHT-STIMULUS-START-TIME and before
+*LIGHT-STIMULUS-STOP-TIME. In general the function Stimulus(x,y,t) ranges between 0.0 and 1.0.
+For example, when *LIGHT-STIMULUS is set to :ON-SPOT, then 
+
+	Stimulus(x,y,t) = 0.0 before and after the stimulus "on" time, or outside the spot region
+	                = 1.0 during the stimulus "on" time and inside the spot region
+
+Conversely, when *LIGHT-STIMULUS is set to :OFF-SPOT, then 
+
+	Stimulus(x,y,t) = 0.0 before and after the stimulus "on" time, or outside the spot region
+	                = -1.0 during the stimulus "on" time and inside the spot region
+
+The convention for OFF type stimuli (0.0 when not present, -1.0 when present) is the same for
+:OFF-MOVING-BAR, :OFF-MOVING-SPOT, and :OFF-BAR. In these cases, the values of
+*LIGHT-BACKGROUND* and *LIGHT-STIMULUS-STRENGTH* have to be chosen to get the final desired
+light waveform.
+
+As discussed above, the waveform L(t) is then convolved with the synapse type's impulse
+response, and the result passed through a non-linearity explicitly associated with the impulse
+response. Again, if specified, there can be an additional (linear) convolution step. Finally,
+the resulting waveform is multiplyed by the synapse :GBAR value during the simulation to obtain
+the final value of the synaptic conductance.
+
+**********************************************************************************
+**********************************************************************************
+
+Light Driven Synapses - Spatial RF Location:
+
+	Relationship between Moving Light Stimulus and Synapses
+
+**********************************************************************************
+**********************************************************************************
+
+Light stimulus motion is defined with respect to stimulus frame (referred to above by
+*LIGHT-STIMULUS-PLANE*). The origin of the stimulus frame is shifted with respect to the
+anatomical 2d coordinate frame by *LIGHT-START-POSITION-X and *LIGHT-START-POSITION-Y
+(microns). Further, the stimulus frame is rotated around its origin counter clockwise by
+*LIGHT-THETA (in radians). Thus, to translate
+from anatomical (2D) coordinates (XY) and stimulus frame coordinates (X'Y'):
+
+     X = (X' * cos[*LIGHT-THETA] - Y' * sin[*LIGHT-THETA]) - *LIGHT-START-POSITION-X
+     Y = (X' * sin[*LIGHT-THETA] + Y' * cos[*LIGHT-THETA]) - *LIGHT-START-POSITION-Y
+
+     X' = (X - *LIGHT-START-POSITION-X) * cos[*LIGHT-THETA] 
+	     + (Y' - *LIGHT-START-POSITION-Y) * sin[*LIGHT-THETA]
+     Y' = (*LIGHT-START-POSITION-X - X) * sin[*LIGHT-THETA] 
+	     + (Y' - *LIGHT-START-POSITION-Y) * cos[*LIGHT-THETA]
+
+The straight line trajectory for moving bars and spots is along the positive(negative) Y' axis
+when *LIGHT-DIRECTION is T(NIL), and the trajectory begins at (X'Y')=(0,0).  Bar stimuli are
+defined such that they are oriented with their length parallel to the X' axis and the width
+parallel to the Y' axis.
+
+**********************************************************************************
+**********************************************************************************
+
+Light Driven Synapses - Spatial RF Location:
+
+	Relationship between Apparent Motion Light Stimulus and Synapses
+
+**********************************************************************************
+**********************************************************************************
+
+As above with regular motion, apparent motion stimulus parameters are defined with respect to
+stimulus frame (referred to above by *LIGHT-STIMULUS-PLANE*) - the origin of the stimulus
+frame is shifted with respect to the anatomical 2d coordinate frame by
+*LIGHT-START-POSITION-X and *LIGHT-START-POSITION-Y (microns) and the stimulus frame is then
+rotated around its origin counter clockwise by *LIGHT-THETA (radians). The global variables
+*BAR-A-POSITION-X, *BAR-A-POSITION-Y, *BAR-B-POSITION-X, and *BAR-B-POSITION-Y determine the
+final positions of the A and B bars in the shifted and rotated stimulus frame. As with single
+bar stimuli, the length and width of the bars are taken as the dimensions along the stimulus
+frame X' and Y' axes, respectively.
+
+
+**********************************************************************************
+**********************************************************************************
+
+Light Driven Synapses - Stimulus Visualization
+
+*********************************************************************************
+*********************************************************************************
+
+In all cases, it is a good idea to check stimulus parameters by seeing how they are rendered
+with the histology graphics.
+
+
+*********************************************************************************
+*********************************************************************************
+
+Fast Light-Driven Synapse Convolutions
+
+*********************************************************************************
+*********************************************************************************
+
+The first step for the pre-simulation calculation of light-driven synaptic inputs is the
+spatio-temporal integration of the stimulus over the duration of the simulation with the
+spatial receptive field of each synapse. This step yields a one-dimensional light input waveform
+that will then be passed through the linear and non-linear stages of the synapse type impulse
+response as described above.
+
+If the global variable *COMPUTE-ALL-LIGHT-INPUTS* is T, then the processing of the light input
+waveform is done explicitly for every synapse. However, when *COMPUTE-ALL-LIGHT-INPUTS* is NIL
+(default), when the first synapse is processed its light input waveform is stored with the
+synapse type information. When the next synapse of the same type is processed, the light input
+waveform for this synapse is compared with the previously stored light input waveform. If the
+two waveforms are identical, given a scale factor and a shift for synapse types with no
+non-linear stage, and given a shift for those types with a non-linear stage, then the synapse
+input is not processed further, but rather a reference to the earlier computed light input
+waveform is stored.  Otherwise, the new light input waveform is stored with the type as was
+done for the first synapse, and the final conductance waveform is computed. These steps of
+partial evaluation of the synapse input and subsequent comparison with earlier computed light
+input waveforms is repeated for the remaining synapses. Thus during the simulation run, the
+conductance input for each synapse is taken from a waveform that was either computed
+especially for that synapse, or from a waveform that is from a synapse whose light input
+waveform has the same time course (and magnitude for nonlinear synapse types), with the final
+conductance waveform shifted and scaled appropriately.
+
+The motivation for this algorithm is to avoid unnecessary convolution of the light input
+waveform with synapse impulse responses prior to simulations.
+
+Associated with this method is the global variable *SYNAPSE-NAMES-TO-DO-FIRST. This variable
+is a list of either synapse names or node names, and the conductance waveforms for the
+synapses that correspond to these references are computed first. In this way, you can choose
+synapses who will have the longest responses, thereby reducing the number of reference
+waveforms that must be stored in order to account for all synapse responses. This variable is
+also set via the histology element menu.
+
+If the light stimulus is a flashing spot which covers the receptive fields of all the
+synapses, then a similar short cut may be used in convolving the synaptic waveforms prior to
+the simulation. This short cut exploits the fact that for this stimulus the synaptic waveforms
+of synapses of the same type will be identical. This option may be enabled by choosing the "Do
+Fast Rf Spot (TM) convolution for full field spot" in the "Parameters For SPOT Stimulus" menu.
+*FAST-FULL-FIELD-SPOT is the global variable which enables this
+feature.
+
+
+
+
+**********************************************************************************
+**********************************************************************************
+
+	Q_10's For Synapses
+
+**********************************************************************************
+**********************************************************************************
+
+The Q_10 for synaptic conductance (not kinetics) is defined identically as that for channels
+(see channel.doc).
+
+***************************************************************
+***************************************************************
+
+	Gap Junctions
+
+***************************************************************
+***************************************************************
+
+(NOT ENABLED YET)
+
+A gap junction between nodes i and j is modelled as a reciprocal pair of channels with an
+identical voltage and time independent conductance, one for each node. In addition, the
+reversal potential for the channel in node i is given by the voltage at node j, and vica-versa.
+This should work since the voltage used for the reversal potential will be out of step with the
+evaluation time. In other words, there will always be a non-zero delay for signal propagation
+through the gap junction.
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Specifying Light Stimulus Parameters in Files
+
+*********************************************************************************
+*********************************************************************************
+
+Light stimulus parameters may be defined in files by setting the appropriate
+global variables. For example, a 50 by 500 um bar moving from left to right at 2 um/millisecond,
+starting at position X = -300um, Y = 0um at time = 0 would be set up by the
+following variable settings:
+
+     (setq
+	*enable-light* t
+	*light-speed 2.0
+        *bar-length 500.0 *bar-width 50.0 *light-stimulus :on-moving-bar
+	*light-theta (/ pi-single 2)  ;; Use pi-single since we need a single float
+	*light-direction nil   ; => movement is opposite to *light-theta
+	*light-stimulus-start-time 0.0	;Time to start bar moving, milliseconds
+	*light-stimulus-stop-time 100000.0 ; this is just larger than the simulation time
+	*light-start-position-x -300.0	;Point of center of stimulus at *motion-start-time in microns
+	*light-start-position-y 0.0)
+
+
+
+The options for the *LIGHT-STIMULUS include:
+
+     :APPARENT-MOTION
+     :ON-MOVING-BAR
+     :OFF-MOVING-BAR
+     :MOVING-SPOT
+     :ON-SPOT
+     :OFF-SPOT
+     :ON-BAR
+     :OFF-BAR
+     :ANNULUS
+
+Associated parameters include:
+
+	*enable-light*                T or NIL - when nil, light synapses are not evaluated
+
+	*light-stimulus-start-time	milliseconds
+	*light-stimulus-stop-time
+
+	*light-stimulus-strength*	arbitrary units (default 1)
+	*light-background*          Light background level in arbitrary units (default 0)
+
+
+	Center of stimulus at *MOTION-START-TIME (also for static stimuli) -
+
+	*light-start-position-x		um
+	*light-start-position-y		um
+
+
+	*light-theta            Orientation of stimulus (and its trajectory if
+				moving), with 0 being vertical up - in radians
+
+	*light-stimulus-plane* - :XY for retina, :XZ for radial mount cortical cells.
+
+
+
+For motion stimuli:
+
+	*light-speed		Microns per millisecond
+
+	*light-direction        T (nil) => movement is in the direction of / opposite to *light-theta
+
+	*motion-start-time	Time to start moving, milliseconds
+
+For bars:
+
+	*bar-width 	um
+	*bar-length	um
+
+For an aperture:
+
+	*use-aperture
+
+	*aperture-radius	um
+	*aperture-center-x	um
+	*aperture-center-y	um
+
+For apparent motion stimulus:
+
+	*bar-a-width 	um
+	*bar-a-length 
+	*bar-a-position-x
+	*bar-a-position-y
+	*bar-b-width 
+	*bar-b-length 
+	*bar-b-position-x
+	*bar-b-position-y
+
+	*bar-a-start-time	milliseconds
+	*bar-a-stop-time  
+	*bar-b-start-time
+	*bar-b-stop-time
+
+
+	*bar-a-intensity	arbitrary units (default 1)
+	*bar-b-intensity
+
+
+For spots:
+
+	*spot-outside-diameter	um
+	*spot-inside-diameter	um
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Miscellaneous - Controlling Synapse Setups, etc.
+
+*********************************************************************************
+*********************************************************************************
+
+
+For all synapse types, the boolean variable 
+
+	*ENABLE-SYNAPSES*
+
+allows the evaluation of synapses during the simulation.
+
+
+Synapses of each control are setup prior to each simulation according
+to the following global variables:
+
+	*SETUP-VOLTAGE-SYNAPSES*
+	*SETUP-LIGHT-SYNAPSES*
+	*SETUP-AUTO-SYNAPSES*
+	*SETUP-TONIC-SYNAPSES*
+
+The default for each of these is T. However, if there is no change in
+the synapses of a given control type (i.e. deletions, creationgs, blocking, timing, or
+stimuli) then the corresponding flag may be set NIL to speed things
+up. On the other hand, there is NO automatic checking to see that in
+fact there is no change with a given group of synapses; therefore it
+is the responsibility of the user to set these flags appropriately.
+
+
+******
+
+To plot the impulse responses of the synapses, use the function (PLOT-SYNAPSE-IMPULSE), or use
+the menus (see above).
+
+
+To plot the light input to light controlled synapses, use:
+
+	plot-light-input &optional SYNS
+
+where SYNS is a synapse name or pointer, or a list of names or pointers. When SYNS is not
+supplied, then a menu prompts for the plotted synapses.
+
+
+******
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Specifying Trigger Times (Events or Delays) for Auto Synapses
+
+*********************************************************************************
+*********************************************************************************
+
+The event times for autonomous synapses (the :EVENT-TIMES slot, which is a list of
+single-float times in milliseconds) can be set directly using the function
+
+	set-syn-delays SYNAPSE DELAYS
+
+where SYNAPSE is a synapse structure or the name of a synapse, and DELAYS is a
+list of numbers. An error is signaled if SYNAPSE is not an autonomous synapse.
+
+Delays may also be set with the menu called by 
+
+	edit-synapse-delays SYNAPSE
+
+This function is accessible from the main menu sequence.
+
+
+Other functions of interest in synapse.lisp are
+
+	print-synapse-events &optional (OUTPUT-STREAM *OUTPUT-STREAM) TYPE
+
+	histogram-synapse-events &key (BINS 10) MIN-TIME TYPE SYN MAX-TIME
+
+
+
+When the global variable *PRINT-SYNAPSE-TOTAL-EVENTS* is T, then
+
+	print-synapse-total-events &optional (OUTPUT-STREAM *OUTPUT-STREAM) 
+
+is called at the end of the simulation, printing out the total number
+of events of all the voltage and autonomous controlled synapses.
+
+
+When the global variable *PRINT-SYNAPSE-EVENT-TIMES* is T, then
+
+	print-synapse-event-times (&optional (OUTPUT-STREAM *OUTPUT-STREAM)
+
+is called at the end of the simulation, printing out the individual
+events of all the voltage and autonomous controlled synapses.

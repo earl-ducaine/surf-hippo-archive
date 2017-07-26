@@ -1,0 +1,674 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		Various Hacks
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Element Identification Functions
+2. Anatomical Distance Functions
+3. Branch-Related Functions
+4. Moving Cells
+5. Tree-Related Functions
+6. Overall Cell, Cable and Linear Parameters
+7. Editing of Individual Elements
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+
+
+
+**************************************************************
+**************************************************************
+
+	Element Identification Functions
+
+**************************************************************
+**************************************************************
+
+
+(in element_functions.lisp)
+ 
+	element ELT-OR-NAME
+
+
+Takes either a structure or a structure name and returns a structure. In the latter
+case, since the mapping is not necessarily unique, then the ranking of possible
+structure types to match is given by *object-hash-table-symbols*:
+
+ (NODE-HASH-TABLE CELL-HASH-TABLE CELL-TYPE-HASH-TABLE SOMA-HASH-TABLE
+  SEGMENT-HASH-TABLE CHANNEL-HASH-TABLE CHANNEL-TYPE-HASH-TABLE
+  PARTICLE-HASH-TABLE PARTICLE-TYPE-HASH-TABLE CONC-INT-HASH-TABLE
+  CONC-PARTICLE-HASH-TABLE CONC-PARTICLE-TYPE-HASH-TABLE SYNAPSE-HASH-TABLE
+  SYNAPSE-TYPE-HASH-TABLE AXON-HASH-TABLE AXON-TYPE-HASH-TABLE
+  VSOURCE-HASH-TABLE ISOURCE-HASH-TABLE)
+
+This function is very convenient for getting a circuit element structure when you may
+want to arbitrarily use the name of the structure or the structure itself. Many of the
+functions that refer to some circuit element use this function so that name strings or
+structures may be used interchangebly as arguments.
+
+If the ELT-OR-NAME argument is a name, this may be either a string or a symbol -
+symbols are converted to strings by the function since all structure names are
+strings.
+
+The ELEMENT function is basic to the Surf-Hippo system, and is used by many other
+functions to allow various ways of referencing circuit elements. Thus ELEMENT is
+used whenever a function allows an argument to either be a pointer to an element
+(structure) or the name of that element (structure).
+
+
+
+	element-cell-element ELEMENT
+
+Given an element or the name of an element, returns the soma or
+segment that the element is a part of, e.g.
+
+	* (element-cell-element "Syn-11-6-17-AUTO-FAST-EX")
+	<Segment 11-6-17: proximal node 11-6-16, distal node 11-6-17>
+	* 
+
+
+
+
+	element-cell ELEMENT
+
+Given an element or the name of an element, returns the cell that the
+element is a part of, e.g. 
+
+	* (element-cell "Syn-11-6-17-AUTO-FAST-EX")
+	<Cell j43d: type V1-pyramidal>
+	* 
+
+
+
+
+	list-of-all-things ELEMENT-TYPE &optional CELL
+
+Given an element type, returns a list of all the elements of that
+type, e.g.
+
+     * (list-of-all-things 'channel)
+     (<Channel Hippo-3-soma-NA3: type NA3> <Channel Hippo-3-soma-NA2: type NA2>
+      <Channel Hippo-3-soma-NA1: type NA1> <Channel Hippo-2-soma-NA3: type NA3>
+      <Channel Hippo-2-soma-NA2: type NA2> <Channel Hippo-2-soma-NA1: type NA1>
+      <Channel Hippo-1-soma-NA3: type NA3> <Channel Hippo-1-soma-NA2: type NA2>
+      <Channel Hippo-1-soma-NA1: type NA1> <Channel Hippo-3-soma-DR: type DR>
+      <Channel Hippo-2-soma-DR: type DR> <Channel Hippo-1-soma-DR: type DR>
+      <Channel Hippo-3-soma-AHP: type AHP> <Channel Hippo-2-soma-AHP: type AHP>
+      <Channel Hippo-1-soma-AHP: type AHP> <Channel Hippo-3-soma-A: type A>
+      <Channel Hippo-2-soma-A: type A> <Channel Hippo-1-soma-A: type A>
+      <Channel Hippo-3-soma-C: type C> <Channel Hippo-3-soma-CA: type CA>
+      <Channel Hippo-2-soma-C: type C> <Channel Hippo-2-soma-CA: type CA>
+      <Channel Hippo-1-soma-C: type C> <Channel Hippo-1-soma-CA: type CA>
+      <Channel Hippo-3-soma-M: type M> <Channel Hippo-2-soma-M: type M>
+      <Channel Hippo-1-soma-M: type M>)
+     * 
+
+     * (list-of-all-things 'channel-type)
+     (<Channel type A> <Channel type C> <Channel type DR> <Channel type M>
+      <Channel type AHP> <Channel type CA> <Channel type NA1> <Channel type NA2>
+      <Channel type NA3>)
+ 
+
+Alternatively, there are functions which, for a function name XX, invoke:
+
+	(list-of-all-things 'XX)
+
+including,
+
+
+	synapses
+	channels
+	synapse-types
+	channels-types
+	particles
+	conc-particles
+	particle-types
+	conc-particle-types
+	cells
+	cell-types
+	axons
+	axon-types
+	segments
+	somas
+	isources
+	vsources
+
+For example,
+
+	  * (conc-particle-types)
+	  (<Concentration Particle Type CW> <Concentration Particle Type AHPW>)
+
+
+	  * (conc-particles)
+	  (<Concentration Particle Hippo-2-soma-AHP-AHPW: type AHPW>
+	   <Concentration Particle Hippo-3-soma-AHP-AHPW: type AHPW>
+	   <Concentration Particle Hippo-1-soma-AHP-AHPW: type AHPW>
+	   <Concentration Particle Hippo-3-soma-C-CW: type CW>
+	   <Concentration Particle Hippo-2-soma-C-CW: type CW>
+	   <Concentration Particle Hippo-1-soma-C-CW: type CW>)
+	  * 
+
+
+
+
+
+	namelist-of-all-things ELEMENT-TYPE
+
+Given an element type, returns a list of the names (strings) of all the elements of
+that type:
+
+     * (namelist-of-all-things 'channel)
+
+     ("Hippo-3-soma-NA3" "Hippo-3-soma-NA2" "Hippo-3-soma-NA1" "Hippo-2-soma-NA3"
+      "Hippo-2-soma-NA2" "Hippo-2-soma-NA1" "Hippo-1-soma-NA3" "Hippo-1-soma-NA2"
+      "Hippo-1-soma-NA1" "Hippo-3-soma-DR" "Hippo-2-soma-DR" "Hippo-1-soma-DR"
+      "Hippo-3-soma-AHP" "Hippo-2-soma-AHP" "Hippo-1-soma-AHP" "Hippo-3-soma-A"
+      "Hippo-2-soma-A" "Hippo-1-soma-A" "Hippo-3-soma-C" "Hippo-3-soma-CA"
+      "Hippo-2-soma-C" "Hippo-2-soma-CA" "Hippo-1-soma-C" "Hippo-1-soma-CA"
+      "Hippo-3-soma-M" "Hippo-2-soma-M" "Hippo-1-soma-M")
+     * 
+
+ 
+
+
+	elements-of-type TYPE
+
+TYPE may be a label or pointer to a cell-type, axon-type,
+channel-type, pump-type, buffer-type, synapse-type, particle-type,
+conc-particle-type, or conc-int-type. Returns a list of all the
+elements of the TYPE in the circuit, e.g.:
+
+     * (elements-of-type 'NA-4STATE-EXP-GEN)
+     (<Channel 119-NA-4STATE-EXP-GEN: type NA-4STATE-EXP-GEN>
+      <Channel 59-NA-4STATE-EXP-GEN: type NA-4STATE-EXP-GEN>
+      <Channel 118-NA-4STATE-EXP-GEN: type NA-4STATE-EXP-GEN>
+			     .
+			     .
+			     .
+      <Channel 17-NA-4STATE-EXP-GEN: type NA-4STATE-EXP-GEN>
+      <Channel 11-NA-4STATE-EXP-GEN: type NA-4STATE-EXP-GEN>)
+     * 
+
+
+
+
+
+
+	cell-elements &OPTIONAL (cells (CELLS))
+
+
+Returns a list of all segments and somas associated with the cell or cells in CELLS (can be a
+single cell or a list) [default all cells in circuit].
+
+
+	somas-and-segments &OPTIONAL (cells (CELLS)) select-plotted (only-segments t) (only-somas nil)
+	                             only-connected
+
+
+Returns a list of all segments and somas associated with the cell or cells in CELLS (can be a single
+cell or a list) [default all cells in circuit]. Additional optional arguments are self-explanatory.
+
+
+
+
+**************************************************************
+**************************************************************
+
+	Anatomical Distance Functions
+
+**************************************************************
+**************************************************************
+
+(in element_functions.lisp)
+
+Note that the reference point for a segment is the location of its distal node.
+
+
+	as-the-crow-flies ELEMENT-OR-VECTOR-1 ELEMENT-OR-VECTOR-2
+
+Returns the straight line distance between two elements, two explicit
+locations, of the combination, in microns. Elements can be either
+elements or names of elements, and explicit locations are lists of 3
+numbers (X Y Z), e.g.
+
+	* (AS-THE-CROW-FLIES '(200 -300 50) "Hippo-5")
+	1514.1003
+
+
+
+	distance-to-soma ELEMENT
+
+DISTANCE-TO-SOMA Given an element or the name of an element, returns the
+distance along the tree to the soma in microns. 
+
+For example:
+
+	* (distance-to-soma "Hippo-3")
+	* 720.0
+
+
+
+
+	neighbors TARGET RADIUS
+
+NEIGHBORS can be called on a soma, cell, segment, channel, particle, conc-particle,
+axon, or synapse TARGET, with the resulting list being composed of the same type of
+elements as the TARGET which lie at most RADIUS microns away from the TARGET.
+
+For example:
+
+     * (neighbors "1-1-38" 20.0)
+     (<Segment 1-1-39: proximal node 1-1-38, distal node 1-1-39>
+      <Segment 1-1-38: proximal node 1-1-37, distal node 1-1-38>
+      <Segment 1-1-35: proximal node 1-1-34, distal node 1-1-35>
+      <Segment 1-1-34: proximal node 1-1-33, distal node 1-1-34>
+      <Segment 1-1-37: proximal node 1-1-36, distal node 1-1-37>
+      <Segment 1-1-36: proximal node 1-1-35, distal node 1-1-36>
+      <Segment 1-1-41: proximal node 1-1-40, distal node 1-1-41>
+      <Segment 1-1-40: proximal node 1-1-39, distal node 1-1-40>)
+     * 
+
+
+	distals-farther-than DISTAL-BORDER &optional (ELEMENT-TYPE 'SEGMENT)
+
+Returns all elements of type ELEMENT-TYPE that are further from the soma than DISTAL-BORDER
+(microns).
+
+
+	proximals-within PROXIMAL-BORDER &optional (ELEMENT-TYPE 'SEGMENT)
+
+Returns all elements of type ELEMENT-TYPE that are closer to the soma than PROXIMAL-BORDER
+(microns).
+
+
+
+**************************************************************
+**************************************************************
+
+	Branch-Related Functions
+
+**************************************************************
+**************************************************************
+
+A branch is defined as a set of singly connected segments whose proximal and distal
+ends are nodes with either more than 2 segments, or are a termination (soma or distal
+tip) point. The name of a branch is the name of its proximal segment.
+
+
+(in element_functions.lisp)
+
+
+	identify-branch SEGMENT
+
+Given a segment or segment name, returns the branch (list of segments) that the segment
+is a part of. For example:
+
+     * (identify-branch  "Hippo-2")
+     (<Segment Hippo-5: proximal node Hippo-4, distal node Hippo-5>
+      <Segment Hippo-4: proximal node Hippo-3, distal node Hippo-4>
+      <Segment Hippo-3: proximal node Hippo-2, distal node Hippo-3>
+      <Segment Hippo-2: proximal node Hippo-1, distal node Hippo-2>
+      <Segment Hippo-1: proximal node Hippo-soma, distal node Hippo-1>)
+     * 
+
+
+(in hacks.lisp)
+
+
+	 get-branch-ends SEGMENT-OR-BRANCH-NAME
+
+Returns a list of the names of the proximal and distal segments of the branch referenced by
+SEGMENT-OR-BRANCH-NAME. For example:
+
+
+     * (get-branch-ends "Hippo-2")
+       ("Hippo-1" "Hippo-5")
+     * 
+
+
+
+
+	 get-branch-elements BRANCH-NAME ELEMENT-TYPE &optional TOTAL-SEGMENTS
+	 get-branch-element-names BRANCH-NAME ELEMENT-TYPE &optional TOTAL-SEGMENTS
+
+GET-BRANCH-ELEMENTS and GET-BRANCH-ELEMENT-NAMES return a list of elements or element
+names, respectively, of type ELEMENT-TYPE from the branch identified by BRANCH-NAME. If
+the TOTAL-SEGMENTS is included (should be a number), then elements are chosen from a
+total of (approximately) TOTAL-SEGMENTS segments, evenly distributed along the branch.
+Note that the order of the elements in the list corresponds to the order of the
+segments in the branch, that is from proximal to distal. For example,
+
+
+	(GET-BRANCH-ELEMENT-NAMES "11-5" 'segment 5)
+
+will get the names of (approximately) 5 evenly distributed segments from branch "11-5".
+
+
+
+
+
+	get-branch-synapses-of-type BRANCH-NAME SYNAPSE-TYPE-NAME &optional TOTAL-SEGMENTS
+	get-branch-synapse-names-of-type BRANCH-NAME SYNAPSE-TYPE-NAME &optional TOTAL-SEGMENTS
+
+	get-branch-channels-of-type BRANCH-NAME CHANNEL-TYPE-NAME &optional TOTAL-SEGMENTS
+	get-branch-channel-names-of-type BRANCH-NAME CHANNEL-TYPE-NAME &optional TOTAL-SEGMENTS
+
+
+For example:
+
+	(GET-BRANCH-SYNAPSES-OF-TYPE "11-5" "AUTO-INH")
+
+will return all the synapses of type AUTO-INH along the branch "11-5",
+from proximal to distal.
+
+
+**************************************************************
+**************************************************************
+
+	Moving Cells
+
+**************************************************************
+**************************************************************
+
+(in cell.lisp)
+
+
+
+	move-cell CELL NEW-ORIGIN
+
+	shift-cell CELL &key (X-SHIFT 0.0) (Y-SHIFT 0.0) (Z-SHIFT 0.0))
+
+
+These functions allow moving a CELL (referenced by either the cell or the name of the
+cell) relatively (SHIFT-CELL) or absolutely (MOVE-CELL).
+
+
+**************************************************************
+**************************************************************
+
+	Tree-Related Functions
+
+**************************************************************
+**************************************************************
+
+
+	warp-cell CELL &key (X-FACTOR 1.0) (Y-FACTOR 1.0) (Z-FACTOR 1.0)
+
+
+Multiplies the relative location vector of each node of CELL by the appropriate key
+arguments, and then calls PROCESS-CIRCUIT-STRUCTURE to reevaluate the segment
+dimensions and electrical parameters.
+
+
+
+	segments-out SEGMENT &optional (SEGMENT-SKIP 0) PREVIOUS-SEGS
+
+Given a SEGMENT, returns a list of all the segments moving distally, skipping by
+SEGMENT-SKIP. If a loop is encountered (a segment distal to SEGMENT is found in the
+optional argument PREVIOUS-SEGS, which is used on recursive calls to SEGMENTS-OUT),
+then an error is signaled.
+
+
+	segments-in SEGMENT &optional (SEGMENT-SKIP 0)
+
+Given a SEGMENT, returns an inclusive list of all the segments on the path to the
+soma, skipping by SEGMENT-SKIP.
+
+
+	loop-check &optional EXCLUDE-SEGMENTS
+
+LOOP-CHECK Find any loops in the circuit trees by sucessive calls to SEGMENTS-OUT.
+If a loop is found, then SEGMENTS-OUT signals an error.
+
+
+	distal-segments ELEMENT
+
+DISTAL-SEGMENTS Returns a list of all the segments directly attached to the distal
+node of segment associated with ELEMENT, or the trunk segments if ELEMENT is
+associated with the soma.
+
+
+
+	proximals &optional (ELEMENT-TYPE 'SEGMENT) (PROXIMAL-DISTAL-DISTANCE-CUTOFF 0.5) CELL
+	
+	distals &optional (ELEMENT-TYPE 'SEGMENT) (PROXIMAL-DISTAL-DISTANCE-CUTOFF 0.5) CELL
+
+These functions return lists of elements, according to the specified ELEMENT-TYPE,
+that are either proximal or distal on the dendritic tree with respect to whether
+their distance to the soma (along the most direct path on the tree) is less than or
+greater than, respectively, the longest path in the tree times the
+PROXIMAL-DISTAL-DISTANCE-CUTOFF coefficient. If CELL is included, then the returned
+elements are only from that cell; otherwise elements are returned from all cells in
+the current circuit.
+
+
+	soma-segments &optional SOMA
+
+Returns a list of the segments connected to SOMA. If SOMA not supplied, references the
+first soma created in the current circuit.
+
+	find-trunk-segment SEGMENT
+
+Given a segment or a segment name, returns the associated proximal
+segment that abuts onto the soma.
+
+
+
+	segment-param-distribution PARAMETER &key BIN-WIDTH (WIDTH 800) (HEIGHT 400) CELL
+
+Generates a histogram of the distribution of various segment parameters for the
+segments of CELL, if included, or all the segments in the current circuit, if CELL is
+not specified. These parameters include:
+
+	'distance   - Segment to soma distance along the dendritic path
+	'diameter
+	'length
+
+For example,
+
+	(SEGMENT-PARAM-DISTRIBUTION 'distance :bin-width 20)
+
+These histograms may be modified somewhat with the histogram menu (Control-m with
+the mouse over the histogram window).
+
+
+
+	set-proximal-thetas SEG &optional (TOTAL-FAN-ANGLE 30.0) (SPREADMOREDISTAL 0)
+
+For spreading out a branch. Fans out segments working outward from SEG
+by distal recursion to the end of the associated branchs, such that
+the total fan angle at each branch point is equal to TOTAL-FAN-ANGLE +
+(/ SPREADMOREDISTAL #segments-to-soma).
+
+
+	element-cloud REFERENCE-ELEMENT CLOUD-RADIUS &optional RESTRICT-TO-REFERENCE-ELEMENT-CELL
+
+Returns a list of segments and or somas who are within a radius of CLOUD-RADIUS microns from
+REFERENCE-ELEMENT (which can be any cell or membrane element). If
+RESTRICT-TO-REFERENCE-ELEMENT-CELL is T, then the returned somas/segments are constrained to be
+from the same cell as the REFERENCE-ELEMENT.
+
+
+**************************************************************
+**************************************************************
+
+	Overall Cell, Cable and Linear Parameters
+
+**************************************************************
+**************************************************************
+
+In cable.lisp there are a variety of functions for evaluating common cell and cable
+parameters and various linear parameters of cells.
+
+
+
+	cell-area &optional CELL
+
+Returns the total membrane area of CELL in square microns. If CELL not supplied, uses
+the first cell created in the current circuit.
+
+
+	tree-area &optional CELL
+
+Returns the area in square microns of the dendritic (and axonal) tree attached to the
+soma of CELL. If CELL not supplied, uses the first cell created in the current
+circuit.
+
+
+	tree-length &optional CELL
+
+Returns the total length in microns of the dendritic (and axonal) tree attached to
+the soma of CELL. If CELL not supplied, uses the first cell created in the current
+circuit.
+
+
+
+	cell-cap &optional CELL (EXCLUDE-ELECTRODES t)
+
+CELL-CAP returns the total capacitance of the CELL in nF. If CELL not supplied, uses
+the first cell created in the current circuit. When EXCLUDE-ELECTRODES is T, any
+contribution by attached electrodes will be ignored.
+
+
+
+	lambda-cable R-I R-M A-UM
+
+
+LAMBDA-CABLE returns cable electrotonic space constant in cm. Intracellular
+resistivity R-I is in ohm*cm, membrane resistivity R-M is in ohm*cm*cm, and cable
+radius A-UM is in microns.
+
+
+
+	length-from-lambda R-I R-M A-UM L
+
+LENGTH-FROM-LAMBDA returns cable length in um given intracellular resistivity R-I
+(ohm*cm), membrane resistivity R-M (ohm*cm*cm), cable radius A-UM (microns), and
+electrotonic length L (dimensionless!).
+
+
+
+	segment-electrotonic-length SEG
+
+SEGMENT-ELECTROTONIC-LENGTH returns electrotonic length of segment SEG.
+
+
+
+	electrotonic-length LENGTH DIAMETER
+	                    CELL-TYPE-CYTOPLASMIC-RESISTIVITY 
+	                    CYTOPLASMIC-RESISTIVITY-COEFF
+			    CELL-TYPE-MEMBRANE-RESISTIVITY
+
+ELECTROTONIC-LENGTH returns electrotonic length of segment given explicit parameters
+LENGTH (uM), DIAMETER (uM), CELL-TYPE-CYTOPLASMIC-RESISTIVITY (ohms cm),
+CYTOPLASMIC-RESISTIVITY-COEFF (dimensionless), and CELL-TYPE-MEMBRANE-RESISTIVITY
+(ohms cm cm).
+
+
+
+	g-inf-in R-I R-M A-UM
+
+G-INF-IN returns the input conductance of semi-infinite cable, in uS. Intracellular
+resistivity R-I is in ohm*cm, membrane resistivity R-M is in ohm*cm*cm, and cable
+radius A-UM is in microns.
+
+
+
+	z-cable-in R-I R-M A-UM L-UM &optional (G-END 0.0)
+
+Z-CABLE-IN returns input resistance (Mohms) to sealed-end (open circuit) cable of
+length L-UM (microns). Intracellular resistivity R-I is in ohm*cm, membrane
+resistivity R-M is in ohm*cm*cm, and cable radius A-UM is in microns. Optional G-END
+is in uS.
+
+
+
+	z-cable-in-seg SEGMENT
+
+Z-CABLE-IN-SEG returns input resistance (Mohms) of SEGMENT, taking into account the
+tree distal to the segment, using the cable parameters.
+
+
+
+	z-cable-in-cell &optional CELL Z-TREE
+
+Z-CABLE-IN-CELL returns input resistance (Mohms) of cell, using the cable parameters
+for the dendritic tree if Z-TREE is not supplied.  Otherwise, the input resistance is
+calculated from the soma resistance and the Z-TREE argument (Mohms). If CELL not
+supplied, uses the first cell created in the current circuit.
+
+
+	z-tree-cable-in-cell &optional CELL INCLUDE-VIRTUAL-SOMA
+
+
+Z-TREE-CABLE-IN-CELL returns input resistance (Mohms) of dendritic tree of CELL,
+using the cable parameters. If no tree, returns NIL. If CELL not supplied, uses the
+first cell created in the current circuit. If INCLUDE-VIRTUAL-SOMA is T, include
+any segments assigned to the soma.
+
+
+
+	z-discrete-in-cell &optional CELL Z-TREE
+
+Z-DISCRETE-IN-CELL returns input resistance (Mohms) of cell, using the compartmental
+network parameters. If CELL not supplied, uses the first cell created in the current
+circuit.
+
+
+	z-tree-discrete-in-cell &optional CELL INCLUDE-VIRTUAL-SOMA
+
+Z-TREE-DISCRETE-IN-CELL returns input resistance (Mohms) of dendritic tree of CELL,
+using the compartmental network parameters. If no tree, returns NIL. If CELL not
+supplied, uses the first cell created in the current circuit. If INCLUDE-VIRTUAL-SOMA is T, include
+any segments assigned to the soma.
+
+
+	g-element CELL-ELEMENT G-DENSITY
+
+G-ELEMENT returns the absolute conductance of CELL-ELEMENT in uS. G-DENSITY is in pS
+per square micron.
+
+The overall input impedance of loaded cells is computed in the normal course of a
+simulation. When the following flags are true, the calculation of the dendritic tree
+input impedance stores local values of the input impedance in each segment. In most
+cases, this is unnecessary.
+
+	*STORE-SEGMENT-Z-CABLE-IN*  [default NIL]
+	*STORE-SEGMENT-Z-DISCRETE-IN* [default NIL]
+
+**************************************************************
+**************************************************************
+
+	Editing of Individual Elements
+
+**************************************************************
+**************************************************************
+
+Some types of elements (e.g. somas, segments, channels, channel types,
+synapses, synapse types, etc.) may be edited directly with explicit
+calls to:
+
+	edit-element ELEMENT &optional TYPE
+
+for example,
+
+	(EDIT-ELEMENT "Hippo-1" 'segment) 
+
+or via the histology window menus (select soma or segment first with
+mouse LEFT and then the menu for the chosen element with
+SHIFT-CONTROL-LEFT).
+
+

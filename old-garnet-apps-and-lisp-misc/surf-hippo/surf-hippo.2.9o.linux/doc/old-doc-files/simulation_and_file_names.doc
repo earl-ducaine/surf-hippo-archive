@@ -1,0 +1,95 @@
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+                 Simulation Names - Time Stamps
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+Simulation names (the global variable *SIMULATION-NAME*) are
+automatically generated or updated whenever a new simulation is run
+(for example, if using the menu interface, whenever "Run simulation
+(immediately)" is chosen from the main menu), as follows:
+
+  (setq *time-stamp (round (/ (- (get-universal-time) *universal-time-conversion-factor*) 1d1)))
+
+  (setq *simulation-name* (format nil "~a-~a" *circuit* *time-stamp)))
+
+With the above assignment, the time stamp changes every 10 seconds.
+The function DECODE-TIME-STAMP will decode the *TIME-STAMP component
+of a simulation name.
+
+ (defun decode-time-stamp (&optional (time-stamp *time-stamp) (output-stream t))
+   (system::format-universal-time output-stream) (+ (truncate (* 10 time-stamp))
+						  *universal-time-conversion-factor*))
+
+*UNIVERSAL-TIME-CONVERSION-FACTOR* is used to reduce the length of the
+integer returned by GET-UNIVERSAL-TIME, since we don't need dates
+previous to 1994.
+
+The circuit name (the global variable *CIRCUIT*) is determined by one
+of several ways, in descending priority: [1] set to the first argument
+to the SURF function (if included); [2] set to a function name that
+defines the circuit (specified in the circuit loading menu, or when
+the global variable *INPUT-IS-FUNCTION is T); [3] set to the filename of
+the file that defines the circuit (specified in the circuit loading
+menu, or when the global variable *INPUT-IS-FUNCTION is NIL).
+
+
+
+
+
+
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+	FILE NAMES
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+In general, output filenames (plots, data, etc.) are constructed from
+the current time stamp and, if *INCLUDE-SIMULATION-NAME-IN-FILENAMES*
+is T, the *SIMULATION-NAME*. This makes it convenient to keep track of
+simulation records. The time stamp mechanism described above is
+designed to generate a unique name for each simulation (as long as
+they occur at least 10 seconds apart). Also, the file writing
+functions will typically reference sub directories whose names are
+constructed from the circuit name and the date, for example (if
+*INCLUDE-SIMULATION-NAME-IN-FILENAMES* is T):
+
+    ~/surf-hippo/data/star-amacrine-3/3_29_1994/star-amacrine-3-297395627.dat
+
+or if *INCLUDE-SIMULATION-NAME-IN-FILENAMES* is NIL:
+
+   ~/surf-hippo/data/star-amacrine-3/3_29_1994/297395627.dat
+
+However, postscript filenames are generally derived from the title of
+the window that is being printed, so you must take care that this
+forms a legal (to Unix) filename.
+
+There is also a global variable *MAXIMUM-PS-FILENAME-LENGTH* (in
+src/gui/window-hack.lisp, default 32), which we added after some
+problems with VMS server based printers.
+
+It is also possible that a filename, for example derived from a window
+title, will result in a file that is successfully written, but not
+printed (assuming that printing was requested). This may not generate
+an error message, so it is important to verify that a given file is
+actually printed. If there is problems, one solution is to change the
+filename and print the file from the UNIX shell.
+
+For the moment, any automatically generated filename with a leading
+"_" or "-" has these characters removed. This is done in the function
+MAKE-NICE-FILENAME (src/gui/windows-hack.lisp).

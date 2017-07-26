@@ -1,0 +1,292 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+                Plot Data and Plotting Windows
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+See also plot-hack.lisp and plot.lisp in the surf-hippo/src/gui/ and
+surf-hippo/src/sys/ directories, respectively, and data-folder.doc and
+analysis.doc in the surf-hippo/doc directory.
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Basic Interface
+2. Data Axes
+3. Waterfall Plots
+4. Log Plots
+5. Trace Ordering and Number per Plot
+6. Window Visibility
+7. Window Layout
+8. Miscellaneous
+9. Hints
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+****************************************************************
+****************************************************************
+
+		Basic Interface
+
+****************************************************************
+****************************************************************
+
+Many plot parameters may be set in the "Setting Up Plot Parameters"
+menu (choose "Modify plot parameters" from the Surf-Hippo main menu).
+
+Simulation data is saved onto lists every *SAVE-DATA-AT-STEP time
+steps (default 2, ie. data is saved every other time step). This
+global variable may be set in the "Setting Up Some More Plot
+Parameters" menu (choose "Change some more plot details?" in the
+"Setting Up Plot Parameters" menu), or in the "Modify Simulator Global
+Variables" menu.  See also hints_misc.doc.
+
+The data in a given plot is organized as a group of sets of traces,
+where each set is typically from a different simulation run. The
+default operation for plotting is that if the current plotting windows
+are to be reused, then the results from a new simulation replace the
+old data.
+
+When a new circuit is loaded, or if the global variable
+*CREATE-NEW-PLOT-WINDOWS* is T, then plot output will go to new
+windows, preserving any previous ones. A new window will also be
+created if an existing window to which the data would have been
+presented has been locked (CONTROL-L).
+
+OVERLAYING DATA: 
+
+If *CREATE-NEW-PLOT-WINDOWS* in NIL and the global variable
+*OVERLAY-ALL-PLOTS* is T (default nil), then new data is drawn over
+the old data, and the data is added to the plot windows.  As a result
+subsequent zooming or unzooming applies to all the overlaid data. If
+the global variable *ACCOMODATE-ALL-OVERLAYS* is set (directly or via
+the "Setting Up Plot Parameters" menu), then the coordinates of the
+overlaid windows will be adjusted so that all overlaid data will be
+contained within the windows.
+
+If the variable *PRESERVE-PLOT-LAYOUT* is set (default nil), then any
+new data sent to a plot window will be displayed without changing the
+scaling of the window.
+
+For mouse and keyboard senstive actions for plot windows, see the
+plotting-control.doc file.
+
+
+Re-Sizing Windows:
+
+After a plot window is resized with the window manager and mouse, the
+data can be redrawn with the CONTROL-RIGHT (replot) command, which
+will restore the original plot parameters. Otherwise, call up the main
+plot window menu with CONTROL-m and hit OK. This will make sure that
+the plot parameters are maintained from the previous window sizing.
+
+
+Data can be directly written to Lisp files via the plotting menu
+(click on "More").
+
+****************************************************************
+****************************************************************
+
+		Data Axes
+
+****************************************************************
+****************************************************************
+
+Axes may be standard (abscissa and ordinate extending over the entire
+plot) or simple (horizontal and vertical bars, lengths according to
+the specified axes' increments, and located according to the plotting
+menu, default upper right hand corner). The simple type is more
+commonly used for displaying physiological data.
+
+
+****************************************************************
+****************************************************************
+
+		Waterfall Plots
+
+****************************************************************
+****************************************************************
+
+Waterfall plots may be generated with the plot window menu ("Edit
+miscellaneous parameters" option). The scale bar lengths in waterfall
+plot mode are set by the X and Y axis intervals. Offsets between the
+trace are set by the menu. Trace labels may be placed in the upper
+left corner, or adjacent to each trace on the right.
+
+You may need to experiment a bit with various plot window parameters
+to get the proper layout. With the plot menu you can specify automatic
+waterfall layout, which may be satisfactory in some cases. In this
+case, some relevant global variables include:
+
+	*default-y-plot-top-gap-extra-waterfall* - integer, in pixels
+	*x-trace-offset* - float, in units of the data
+	*x-plot-left-gap-waterfall  - integer, in pixels
+	*auto-waterfall-y-trace-overlap* - between 0.0 and 1.0
+
+
+Note that zooming does not work with waterfall plots. Also, the
+absolute coordinate values from the center mouse will be relative to
+the the first trace in the plot - the dy/dx values will be unchanged
+from the conventional plot.
+
+****************************************************************
+****************************************************************
+
+		Log Plots
+
+****************************************************************
+****************************************************************
+
+Using the plot window menu, either the X or Y axes may be plotted on a
+logarithmic scale, with either the natural (E) base or other as
+specified. If an attempt is made to take the logarithm of an
+non-positive number, then an error is signaled, and you have the
+option of specifying an appropriate offset that allows the log.
+
+The log operation is only applied to the data within the range
+specified by the X and Y minimum and maximum parameters (if defined).
+
+****************************************************************
+****************************************************************
+
+	 Trace Ordering and Number per Plot
+
+****************************************************************
+****************************************************************
+
+The order of the traces in a plot is determined by the order of the
+data and label arguments to functions PLOT-TIMED-DATA or PLOT-XY-DATA.
+Refer to the function documentation in src/gui/plot-hack.lisp for more
+information, or analysis.doc.  The order of the traces may also be set
+via the plotting menu sequence.
+
+The global variable *TRACES-PER-PLOT (default value 6) constrains the
+number of traces per plot window. If set to 0, then there will be no
+limit to the number of traces per plot. May be set with the top level
+plot parameters menus.
+
+
+****************************************************************
+****************************************************************
+
+		Window Visibility
+
+****************************************************************
+****************************************************************
+
+Normally, output windows (plotting and histology) will be
+automatically deiconified, raised and made visible when needed. For
+automatic runs, it sometimes convenient to suppress the showing of
+output so that you can do something else with the computer. Setting
+the following global variables (all of whom have a default value of T)
+may then help (surf-hippo/src/gui/windows-hack.lisp):
+
+	*RAISE-OUTPUT-WINDOWS*
+	*DEICONIFY-OUTPUT-WINDOWS*
+	*UPDATE-OUTPUT-WINDOWS*
+	*SHOW-OUTPUT-WINDOWS*
+
+
+****************************************************************
+****************************************************************
+
+	Window Layout
+
+****************************************************************
+****************************************************************
+
+In the default case, the plotting functions arrange the layout of the
+plot window in a reasonable way, generally maximizing the available
+space and allowing room for labels, etc. For various reasons, it may
+be preferable to set constraints on the layout. The gaps between the
+area in which the data appears and the window borders may be set with
+the following key arguments to PLOT-TIMED-DATA, PLOT-POINTS,
+PLOT-SCATTER, and PLOT-XY-DATA:
+
+	:UPDATE-FIXED-GAP-PARAMETERS
+
+	:USE-FIXED-TOP-GAP
+	:FIXED-TOP-GAP     [default 0 pixels]
+
+	:USE-FIXED-BOTTOM-GAP
+	:FIXED-BOTTOM-GAP  [default 0 pixels]
+
+	:USE-FIXED-RIGHT-GAP
+	:FIXED-RIGHT-GAP   [default 0 pixels]
+
+	:USE-FIXED-LEFT-GAP
+	:FIXED-LEFT-GAP    [default 0 pixels]
+
+The fixed gaps may be negative.
+
+The keyword :UPDATE-FIXED-GAP-PARAMETERS must be T in order for the
+other arguments to be considered. These parameters may also be set via
+the plot window menus, specifically from the main plot menu choose -
+
+	More
+         .
+         .
+         .
+	Overlay and layout specifications...
+         .
+         .
+         .
+	Edit space around plot
+
+Alternatively, each plot window has slots that will add a number of
+pixels to the automatic layout gaps, if the associated gap constraint
+listed above is not used:
+
+	:x-plot-right-gap-extra
+	:x-plot-left-gap-extra
+	:y-plot-top-gap-extra
+
+These slots (which must be integers) are not set via plotting function
+arguments, but may be set with the same menu as the hard gap
+definitions.
+
+
+For automatic tiling of graphics windows, try the following function:
+
+	arrange-windows &optional (WINDOWS-PER-ROW 2) WINS USE-MENU 
+
+This function may also be called from the print window menu.
+
+****************************************************************
+****************************************************************
+
+	Miscellaneous
+
+****************************************************************
+****************************************************************
+
+For REFRESH-ALL-PLOTS, the optional GRID argument can be :DRAW, :ERASE
+or nil (don't change). These functions operate on :STANDARD-PLOT
+windows (e.g. those produced by PLOT-TIMED-DATA, PLOT-XY-DATA,
+PLOT-SCATTER, PLOT-POINTS).
+
+	refresh-all-plots &optional GRID
+
+	refresh-plot WIN &optional GRID
+
+
+****************************************************************
+****************************************************************
+
+	Hints
+
+****************************************************************
+****************************************************************
+
+Sometimes, axis limits or tick marks aren't quite right because of
+quantization error in the calculations for laying out the plot. Try
+twiddling various layout/axis parameters (e.g. changing a "maximum
+value" from 2.0 to 2.000001) to correct this.

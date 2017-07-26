@@ -1,0 +1,34 @@
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Sample code for emacs configuration, to be added (for example) to
+;; your .emacs file.
+;;
+;; This example assumes that Surf-Hippo is installed in the directory
+;; "/home/surf-hippo/".
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Ilisp loading
+;;
+;; This is to load the Ilisp provided with Surf-Hippo. This may not be
+;; necessary on your system.
+
+(setq load-path (cons (expand-file-name "/home/surf-hippo/misc/ilisp/") load-path))
+(load "/home/surf-hippo/misc/ilisp/ilisp.el")
+
+
+;; CMUCL/Surf-Hippo Ilisp definitions
+     
+(autoload 'cmulisp "ilisp" "Inferior CMU Common LISP." t)
+(defdialect surf-hippo "CMU Common LISP with Surf-Hippo" cmulisp)
+(provide 'ilisp-surf-hippo)
+(autoload 'surf-hippo "ilisp" "Inferior CMU Common LISP with Surf-Hippo." t)
+(setq surf-hippo-program "/home/surf-hippo/surf-hippo")
+
+
+
+
+
+

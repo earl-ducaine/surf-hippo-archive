@@ -1,0 +1,80 @@
+*** Quick Summary of Surf-Hippo Installation ***
+
+More complete installation instructions are in the
+surf-hippo/doc/installation directory.
+
+If the binary is availble for your machine, the simplest way to use
+Surf-Hippo is to get the latest distribution along with the compiled
+Lisp image (this large tar file includes the machine architecture and
+OS as part of its name).
+
+Once this file is uncompressed and untarred at your site, under a
+directory called "surf-hippo" (for example) create a SURFHOME
+environment variable, pointing to the top level Surf-Hippo
+directory. For example, if using bash:
+
+	UNIX-prompt>export SURFHOME="wherever_you_have_installed_it"
+	UNIX-prompt>export SURFUSERHOME="a_dir_you_can_write_to"
+
+Or, if using csh:
+
+	UNIX-prompt>setenv SURFHOME wherever_you_have_installed_it
+	UNIX-prompt>setenv SURFUSERHOME a_dir_you_can_write_to
+
+If these variables are not set, they will default to a directory named
+"surf-hippo" under your home directory. Edit the surf-hippo executable
+command script out of the Surf-Hippo directory to point to the proper
+executable lisp file for your machine. You can then execute this
+command script directly:
+
+         UNIX-prompt>$SURFHOME/surf-hippo
+
+If you have Emacs on your machine, and ILisp (comes with v.19 of
+Emacs, otherwise is included in the Surf-Hippo distribution), then set
+up a "surf-hippo" ILisp command in your Emacs setup file (e.g. .emacs)
+to point to the SURF-HIPPO image -
+
+  (autoload 'cmulisp "ilisp" "Inferior CMU Common LISP." t)
+  (defdialect surf-hippo "CMU Common LISP" cmulisp)
+  (setq surf-hippo-program "/home/lyle/surf-hippo/surf-hippo") <----- Edit this line
+
+If you are running Xemacs, you may have to alter these
+initializations. Then, to run Surf-Hippo under ILisp, use the
+following command under Emacs:
+
+        M-x surf-hippo 
+
+Note that ILisp is much more convenient for maneuvering around the
+LISP environment than running directly from the shell. 
+
+The Vx.x.bugs.doc file, if it exists, has some comments on last minute
+bugs, and should be copied into the surf-hippo/lib directory as
+"patches.lisp" (this file will then be loaded automatically by
+Surf-Hippo).
+
+The versions of Surf-Hippo in this directory are beta releases, and
+not all functions are enabled or debugged. However, the functions
+described in the doc directory files should work without major
+problems. Any suggestions/bug-reports with respect to the beta
+releases will be greatly appreciated.
+
+Feb 9, 1999 ** ILISP bug report **
+
+  A modified version of ilcompat.el is now in the surf-hippo/ilisp
+  directory, which seems to work when emacs-version is "20.3.1" (for
+  example, Red Hat Linux release 5.2 (Apollo) Kernel 2.2.0 on an
+  i586). You may try replacing the original ilisp/ilcompat.el file with
+  this one if there are problems.
+
+Thanks for your interest,
+
+Lyle Borg-Graham
+Unite de Neurosciences Integratives et Computationnelles
+Institut Federatif de Neurobiologie Alfred Fessard
+CNRS
+Gif-sur-Yvette, FRANCE
+lyle@cogni.iaf.cnrs-gif.fr
+
+
+
+

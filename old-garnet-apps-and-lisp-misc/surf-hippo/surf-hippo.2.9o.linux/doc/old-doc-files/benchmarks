@@ -1,0 +1,154 @@
+
+
+
+****************************************
+************** BENCHMARKS **************
+****************************************
+
+
+
+Version 1.1 - 2/25/93
+
+Circuit: STAR-AMACRINE-3
+
+NIGRA (sparc IPC, 48MB):
+
+Evaluation took:
+  43.99 seconds of real time
+  33.94 seconds of user run time
+  0.6 seconds of system run time
+  0 page faults and
+  394496 bytes consed.
+Total time points/iterations 819/932
+Simulation duration: 300.0 ms
+Node DS-tip-soma integral =  6523.0615 [mV-mS for voltages]
+Node 223222B integral =  2940.321 [mV-mS for voltages]
+Node 32211 integral =  4979.2383 [mV-mS for voltages]
+Node 2212212 integral =  3741.8374 [mV-mS for voltages]
+
+
+
+FOVEA-CENTRALIS (sparc IPX):
+
+
+Evaluation took:
+  21.94 seconds of real time
+  21.49 seconds of user run time
+  0.23 seconds of system run time
+  1 page fault and
+  394456 bytes consed.
+Total time points/iterations 819/932
+Simulation duration: 300.0 ms
+Node DS-tip-soma integral =  6523.0615 [mV-mS for voltages]
+Node 223222B integral =  2940.321 [mV-mS for voltages]
+Node 32211 integral =  4979.2383 [mV-mS for voltages]
+Node 2212212 integral =  3741.8374 [mV-mS for voltages]
+Done.
+
+
+PEDUNCLE (sparc 10, 96MB):
+
+
+Evaluation took:
+  13.14 seconds of real time
+  12.85 seconds of user run time
+  0.02 seconds of system run time
+  0 page faults and
+  394456 bytes consed.
+Total time points/iterations 819/932
+Simulation duration: 300.0 ms
+Node DS-tip-soma integral =  6523.0615 [mV-mS for voltages]
+Node 223222B integral =  2940.321 [mV-mS for voltages]
+Node 32211 integral =  4979.2383 [mV-mS for voltages]
+Node 2212212 integral =  3741.8374 [mV-mS for voltages]
+
+
+
+1/1/94: The definition for the function STAR-AMACRINE-3 has changed a
+bit, so the simulation results are not the same. However, the basic
+simulation of a light bar sweeping across the entire cell over 300
+milliseconds, and the cell definition, are essentially unchanged.
+Thus, the performance figures are comparable.
+
+
+Version 2.0 - 5/25/94
+
+Circuit: STAR-AMACRINE-3
+
+COGNI (sparc 10, 96MB):
+
+Evaluation took:
+  8.12 seconds of real time
+  8.06 seconds of user run time
+  0.03 seconds of system run time
+  0 page faults and
+  375352 bytes consed.
+Total time points/iterations 647/661
+Simulation duration: 300.0 ms
+Node DS-tip-soma average =  6.631 mV
+Node 223222B average =  6.12 mV
+Node 32211 average =  14.83 mV
+Node 2212212 average =  6.555 mV
+
+
+
+
+version 2.5 - COGNI (sparc 10, 96MB):
+
+************************************
+ Friday, 2/2/96 04:52:00 pm EST   User: lyle
+************************************
+Simulation 'STAR-AMACRINE-DS-4598672' [Compiled function: STAR-AMACRINE-DS]
+
+1 cell type, 1 cell, 194 nodes. Temperature 27.0 degrees(C). 300.0 ms simulation.
+There is 1 soma, 5 channel types, 5 channels, 
+9 voltage-dep particle types, 9 voltage-dep particles, 
+2 synapse types, 386 synapses, 
+and 193 segments.
+
+  Cell-type star-amacrine:
+  Rm 40000.0, Rm-sm 40000.0 (ohm-cm2), Ra 200.0 ohm-cm, Cm-sm 0.7, Cm-den 0.7 (uF/cm2) 
+  E-soma-leak -70.0 mV, E-dendrite-leak -70.0 mV 
+  E-Na 64.0 mV, E-K -95.0 mV, E-Ca 110.0 mV, E-Cl -90.0 mV
+  Rabbit ACh starburst cell (cell 7) (about 1.25 mm from streak) of Tauchi and Masland (1984).~%
+
+  Synapse Type L-IN-1:  Light-dep, Impulse Function ALPHA    Nonlinearity: THRESHOLD
+    Light Spatial RF is 2D Impulse
+  Synapse Type L-EX-FAC:  Light-dep, Impulse Function DOUBLE-ALPHA [tau1: 10msec, tau2: 40msec, Proportion: 0.9]
+    Nonlinearity: THRESHOLD
+    Light Spatial RF is 2D Impulse
+
+  Channel Type A: [Part-Types: AX AY]
+  Channel Type DR: [Part-Types: DRX DRY]
+  Channel Type NA3: [Part-Types: M3 H3]
+  Channel Type NA2: [Part-Types: M2]
+  Channel Type NA1: [Part-Types: M1 H1]
+
+Light stimulus is a ON-MOVING-BAR, strength 1.0
+  Start time: 0.0 ms at (X=-300.0 um, Y=0.0 um), Stop time: 100000.0 ms (Light input @ t=0 holds for all t<0)
+Stimulus trajectory orientation (width axis) 90.0 degrees
+  Bar width 50.0 uM, length 500.0 uM.
+  Speed 2.0 uM/mS, opposite direction of orientation.
+193 active L-IN-1 synapses
+193 active L-EX-FAC synapses
+386 total active synapses.
+Total gbar of synapse type L-IN-1 (-> cell type star-amacrine): 5.431uS
+Total gbar of synapse type L-EX-FAC (-> cell type star-amacrine): 0.272uS
+
+Starting transient solution
+Evaluation took:
+  8.55 seconds of real time
+  8.22 seconds of user run time
+  0.32 seconds of system run time
+  [Run times include 1.51 seconds GC run time]
+  0 page faults and
+  228720 bytes consed.
+300 ms simulation (713/807 time points/iterations)
+Numerical Details:
+ LTE/variable step: USER-MAX-STEP = 0.5, USER-MIN-STEP = 0.0
+ *RELATIVE-VOLTAGE-ERROR = 0.25, *PICK-TIME-STEP-FUDGE = 0.95
+ *RELATIVE-PARTICLE-ERROR* = 0.01
+ *ESTIMATE-PARTICLE-ERROR-WITH-FULL-TIME-STEP* = T
+Voltage lte estimate set step 701 times
+Particle lte estimate set step 105 times
+Particle lookup precision: 0.1mV [interpolation OFF]

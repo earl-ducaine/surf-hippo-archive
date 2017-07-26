@@ -1,0 +1,175 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+	More Installation Notes
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+See also programming-hints.doc
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Image Saving Notes
+2. ILISP Notes
+3. GARNET Notes
+4. UNIX Environment Variables Notes
+5. Other Customizations
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Image Saving Notes
+
+*********************************************************************************
+*********************************************************************************
+
+If you want to save a new image from lisp, use the command
+
+  lisp-prompt> (opal:make-image "full-image-pathname")
+
+If you want to use the surf-hippo/surf-hippo command to run the image, then
+the image filename should be "/whatever/surf-hippo/imagename", where
+/whatever/ is the full directory name where Surf-Hippo is stored, and
+"imagename" is used in the surf-hippo/surf-hippo executable file:
+
+  cd $SURFHOME
+  exec $CMUCLLIB/../bin/lisp "$@" -core $SURFHOME/image -eval '(load "messages/initial-message.lisp" :verbose nil) 
+
+The supplied version of surf-hippo/surf-hippo assumes that the image file is
+in surf-hippo/image.
+
+If you want to do a recompile of all changed files, and save the resulting image, load:
+
+	$SURHOME/loaders/image-maker
+
+Note that this stores (overwrites) the resulting image as the file surf-hippo/image.
+
+*********************************************************************************
+*********************************************************************************
+
+	ILISP Notes
+ 
+*********************************************************************************
+*********************************************************************************
+
+If your emacs doesn't run ILISP automatically, then something like
+the following should be in your emacs setup file (e.g. ~/.emacs).
+
+  (setq load-path (cons (expand-file-name "/usr/local/lib/emacs/lisp.local/ilisp-5.3/") load-path))
+  (load "/usr/local/lib/emacs/lisp.local/ilisp-5.3/ilisp.el")
+
+If you want to run CMUCL from ILISP, set up an ILISP command to point to
+wherever the lisp is -
+
+  (setq cmulisp-program "/home/cbcl/lyle/cmu-17c/bin/lisp")
+
+
+*********************************************************************************
+*********************************************************************************
+
+	GARNET Notes
+
+*********************************************************************************
+*********************************************************************************
+
+If you are going to install Garnet, use the following settings for
+the load variables (edit the garnet-loader.lisp file as explained in
+garnetx.x_README file):
+
+     (unless (boundp '*Garnet-Going-To-Compile*)
+       (defvar load-utils-p T)
+       (defvar load-kr-p T)
+       (defvar load-opal-p T)
+       (defvar load-inter-p T)
+       (defvar load-multifont-p NIL)
+       (defvar load-gesture-p NIL)
+       (defvar load-ps-p T)
+       (defvar load-aggregadgets-p T)
+       (defvar load-aggregraphs-p NIL)
+       (defvar load-debug-p #+garnet-debug T #-garnet-debug NIL)
+       (defvar load-gadgets-p t)
+       (defvar load-demos-p NIL)
+       (defvar load-lapidary-p NIL)
+       (defvar load-gilt-p NIL)
+       (defvar load-c32-p NIL))
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	UNIX Environment Variables Notes
+
+*********************************************************************************
+*********************************************************************************
+
+For running LISP and GARNET explicitely, set the CMUCLLIB and
+GARNETHOME environment variables in your .cshrc file, for example:
+
+	setenv CMUCLLIB /home/lisp/cmu-17f/lib/
+
+	setenv GARNETHOME ~lyle/systems/garnet/
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Other Customizations
+
+*********************************************************************************
+*********************************************************************************
+
+
+In the file surf-hippo/loaders/surf-hippo-loader.lisp the startup functions START
+(which leaves you talking to the Lisp interpreter) and SURF (which starts the
+menus) call INIT-SURF-DIRECTORIES which sets the program directories
+according to the environment variables SURFHOME, possibly SURFUSERHOME, and
+as a last resort, by HOME. If you want the Surf-Hippo code and your data
+(input and output) files to reside on different directories, edit the
+following lines (marked with a "->") in surf-hippo-loader.lisp:
+
+
+     (defun init-surf-directories ()
+       (in-package "SURF")
+       (setq *Surfdir*
+	     (if (assoc :SURFHOME lisp::*environment-list*)
+		 (cdr (assoc :SURFHOME lisp::*environment-list*))
+		 (concatenate 'string (cdr (assoc :HOME lisp::*environment-list*)) "/surf-hippo")))
+       (surf::create-path *surfdir*)
+       (setq *Surf-user-dir*
+	     (if (assoc :SURFUSERHOME lisp::*environment-list*)
+		 (concatenate 'string (cdr (assoc :SURFUSERHOME lisp::*environment-list*)) "/")
+		 *Surfdir*))  
+       (surf::create-path *surf-user-dir*)
+->     (setq surf::*circuit-directory* (concatenate 'string *Surf-User-Dir* "circuits/"))
+       (wh::create-path surf::*circuit-directory*)
+->     (setq surf::*data-directory* (concatenate 'string *Surf-User-Dir* "data/"))
+       (wh::create-path surf::*data-directory*)
+->     (setq wh::*plot-directory* (concatenate 'string *Surf-User-Dir* "plot/"))
+       (wh::create-path wh::*plot-directory*)
+       (setq surf::*use-gc-announce-window* t) ; problems with save-image version.
+       )	
+
+
+For example, you could change
+
+    (setq surf::*circuit-directory* (concatenate 'string *Surfdir* "circuits/"))
+
+to
+
+    (setq surf::*circuit-directory* "/home/jobobo/surf-hippo-input/my-circuits")
+
+

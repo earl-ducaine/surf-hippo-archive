@@ -1,0 +1,28 @@
+*************************************
+*************************************
+
+Tracing Images System
+
+*************************************
+*************************************
+
+Data scanned from other sources can be loaded into the Surf-Hippo
+system, calibrated and hand traced with the following steps.
+
+
+1. Original image -> scanned into xbm (X11 bitmap) format file "foo.xbm"
+
+2. Run 
+	(show-scanned-image "foo.xbm") <- Normally use the full pathname
+
+Calibration steps include setting the Y and X magnitudes, and then the
+absolute placement of the trace via defining the XY origin.
+
+Control-M produces a menu for scanned image windows.
+
+
+3.  Use the function
+
+	grab-and-store-plot-data &optional FILENAME
+
+to store the data to file.

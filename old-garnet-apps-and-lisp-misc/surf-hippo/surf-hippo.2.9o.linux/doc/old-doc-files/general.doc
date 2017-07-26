@@ -1,0 +1,62 @@
+
+	Why Lisp can be a Nice Choice
+
+The Lisp process is convenient since typically errors wind up in the
+debugger, which also typically may be elegantly exited without losing
+state. As shown in several examples in the doc files, simulations may
+be restarted after hitting the debugger by simple quitting the
+debugger and reexecuting the (surf) top level function.
+
+
+==============================================================
+
+
+	Structure Parts  - Slot or Parameter A-list	
+
+The structures that comprise the circuit elements are defined in
+src/sys/structures.lisp, with the parts of a given structure often
+specified by structure slot names. Every type of structure also has a
+:PARAMETERS slot, which may contain a list of information formatted in
+what is know as an association list, or a-list. In general, structure
+information that must be accessed most efficiently is assigned to a
+specific slot (for example a node voltage, or particle state).
+Otherwise, the advantage of storing information in the :PARAMETERS
+a-list is flexibility - a particular entry need not be defined
+(compiled) beforehand.
+
+For convenience, the following function will either access or add to an element's
+structure :PARAMETERS a-list -
+
+	element-parameter ELEMENT PARAMETER &optional VALUE
+
+For example, assume that 'LAYER-VI-PYRAMID is the name of a cell type,
+
+	(element-parameter 'layer-VI-pyramid 'animal 'rat)
+
+adds   
+
+  (ANIMAL . RAT)
+
+to the association list stored in the :parameters structure slot of
+<Cell Type layer-VI-pyramid>.
+
+	(cell-type-parameters <Cell Type layer-VI-pyramid>)
+ 
+
+Likewise,
+
+	(element-parameter 'layer-VI-pyramid 'animal)
+
+will give
+
+	RAT
+
+The main caveat to using the :PARAMETERS slot is that the simulator
+already uses certain key words. To avoid problems, it is best to
+invent key words with some certainty that they are not already used.
+One method is to frame your keywords with asterisks - you can assume
+that Surf-Hippo will never use this format. For example -
+
+	(element-parameter 'layer-VI-pyramid '*animal* 'rat)
+
+

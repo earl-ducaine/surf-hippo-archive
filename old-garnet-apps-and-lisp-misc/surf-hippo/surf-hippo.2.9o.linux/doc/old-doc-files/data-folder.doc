@@ -1,0 +1,27 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+		Data Folder
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+The Data Folder allows the storage of (plotted) simulation variables
+immediately after a simulation run (from the main menu, select the
+"Immediate information output" option). This folder keeps track of the
+simulation names and time bases, so that later on the traces may be
+replotted with reference to their original simulation name (from the
+main menu, select the "Edit plot parameters" option). This is
+convenient, for example, for comparing various traces after several
+simulations. For plotting, data in the folder may be organized
+according to the simulation run or according to the type of data
+(determined by the units of the data, e.g. mV).
+
+
+
+If the variable *STORE-PLOT-RESULTS-TO-FOLDER* is set, then all the
+plotted traces will be stored automatically to the data folder after
+each simulation run.

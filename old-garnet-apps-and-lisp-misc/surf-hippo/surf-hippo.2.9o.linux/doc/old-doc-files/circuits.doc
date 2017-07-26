@@ -1,0 +1,404 @@
+************************************************************************
+************************************************************************
+************************************************************************
+
+         Circuit Definitions - Functions and Files
+
+************************************************************************
+************************************************************************
+************************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+			Table of Contents
+
+1. What Makes A Circuit
+2. Zero Length Segments in Trees
+3. Adding membrane elements to cell segments and somas
+4. There Is More Than One Way To Load A Cell
+5. Menu Entry of Circuit Functions
+6. Two Circuit Elements May Not Have The Same Name
+7. Recommended Strategy for Defining Cells
+8. Adding Channels
+9. The Necessary Functions Surrounding Circuit Loading
+10. Adding or Subtracting Cells, Somas or Segments to a Loaded Circuit
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+
+****************************************************************
+****************************************************************
+
+		What Makes A Circuit
+
+****************************************************************
+****************************************************************
+
+See also scripts.doc
+
+A "circuit" is the electrical/chemical representation that define the
+differential equations simulated by the program. Normally, a circuit
+describes one or more neurons, each of which has a soma, and, perhaps, a
+dendritic tree consisting of compartments called segments. A variety of
+membrane elements may be included with any of these anatomical elements
+(somas or segments).
+
+Circuit are defined by either (compiled) functions or files which contain
+calls to appropriate LISP functions. Executing a circuit function or
+loading a circuit file are options given by the circuit input menu
+sequence. In the latter case, the menu presents a circuit file browser,
+with which you can move around the directory tree to locate and load the
+desired file.
+
+The basic geometry of a cell or cells is created either with appropriate
+calls to cell element creation functions, or by loading in a converted
+anatomy file (anatomy.doc). The basic functions for creating the elements
+of a cell are:
+
+	CREATE-CELL-TYPE -> cell-type
+
+	CREATE-CELL -> cell
+
+	CREATE-SOMA -> soma
+
+	CREATE-SEGMENT -> segment(s)
+
+	CREATE-TREE or MAKE-SOMA-SEGMENT-CHAIN -> dendritic tree (interconnected segments)
+
+At minimum, a circuit definition must include an explicit or implicit call
+to CREATE-SOMA [soma.lisp]. Cell types and cells may be explicitly defined
+with calls to CREATE-CELL-TYPE and CREATE-CELL [cell.lisp], and dendrite
+geometries may be defined with calls, for example, to CREATE-TREE or
+MAKE-SOMA-SEGMENT-CHAIN [trees.lisp].
+
+***************************************************************************
+***************************************************************************
+
+	Zero Length Segments in Trees
+
+***************************************************************************
+***************************************************************************
+
+If the tree definition parameters given to CREATE-TREE specify a segment of
+zero length, then that segment is not included in the final tree. During
+the processing of the cell geometry, a message will appear that you can
+refer to later in order to modify the original parameters, if desired:
+
+     Reading in circuit CELLULE2...
+     Destroying zero length segment BAS4-3
+     Destroying zero length segment BAS3-3
+     Locating segments...
+
+***************************************************************************
+***************************************************************************
+
+	Adding Membrane Elements to Cell Segments and Somas
+
+***************************************************************************
+***************************************************************************
+
+
+Cell elements may be added with functions such as ADD-CHANNEL-TO-LOCATIONS,
+CREATE-CHANNELS [channel.lisp], ADD-SYNAPSE-TO-LOCATIONS, CREATE-SYNAPSES
+[synapse.lisp], ADD-ISOURCE and ADD-VSOURCE [source.lisp]. Once a cell type
+is created, then its parameters may be edited with calls to
+SET-CELL-TYPE-PARAM [cell.lisp].
+
+A very easy way to modify loaded circuits is with the histology windows
+(see histology.doc) - cell segments or somas may be selected with the mouse
+and various membrane elements may be added/deleted/edited as desired.
+
+
+***************************************************************************
+***************************************************************************
+
+	There Is More Than One Way To Load A Cell
+
+***************************************************************************
+***************************************************************************
+
+
+For loading cell defined with anatomy files (see anatomy.doc) it may be
+convenient to write circuit functions or files which themselves read in the
+appropriate cell anatomy file, using the function READ-IN-CIRCUIT with the
+optional circuit pathname argument, and then set up parameters, add
+elements, etc. that are specific to a given experiment. For example, a
+complete circuit function could be:
+
+     (defun adp-c12861 ()
+       (read-in-circuit "/home/lyle/surf-hippo/anatomy/misc/c12861.ca1.sparcf")
+       (add-isource "c12861-soma)
+       (setq *SOURCE-PULSE-LISTS* 
+	     '(("c12861-soma-isrc" (1.0 2.9 1.0) (2.9 3.30 -1.2))))
+       (setq *plot-soma-nodes* '("c12861-soma"))
+       (setq *pwl-isource-di-dt 10.0) ;make the current source a little sluggish.
+       (setq user-stop-time 12.0)
+       (setq *ABSOLUTE-VOLTAGE-ERROR* 0.001) ; we want high resolution for these traces.
+       (set-cell-type-param "CA1" 'soma-resistivity 10000.0)
+       (set-cell-type-param "CA1" 'dendrite-resistivity 20000.0)
+       (set-cell-type-param "CA1" 'cytoplasmic-resistivity 550.0))
+
+Here, the call to READ-IN-CIRCUIT loads a compiled circuit anatomy file
+that was generated by ntscable and then edited to set the cell type and
+name to "CA1" and "c12861", respectively. Files generated by ntscable and
+then loaded by READ-IN-CIRCUIT (or by the input circuit menu) create cell
+soma(s) whose names are the concatenation of the cell name and "-soma".
+Thus, in this case a soma named "c12861-soma" is created.  The function
+ADD-ISOURCE or ADD-VSOURCE creates a current or voltage source (here
+current) whose name is the concatenation of the cell element name (here
+"c12861-soma") and either "-isrc" or "-vsrc". The current source waveform
+is defined by the setq of *SOURCE-PULSE-LISTS* (see source.lisp, basics.doc
+and source.doc), and the plot data by the setq of *PLOT-SOMA-NODES* (see
+basics.doc and declare.lisp). The various calls to SET-CELL-TYPE-PARAM set
+the cell type parameters as shown. Definitions of other global variables
+may be found in declare.lisp.
+
+Of course, the same thing could be accomplished by writing a file that
+has the following lines:
+
+       (read-in-circuit "/home/lyle/surf-hippo/anatomy/misc/c12861.ca1.sparcf")
+       (add-isource "c12861-soma"
+       (setq *SOURCE-PULSE-LISTS* 
+	     '(("c12861-soma-isrc" (1.0 2.9 1.0) (2.9 3.30 -1.2))))
+       (setq *plot-soma-nodes* '("c12861-soma"))
+       (setq *pwl-isource-di-dt 10.0) ;make the current source a little sluggish.
+       (setq user-stop-time 12.0)
+       (setq *ABSOLUTE-VOLTAGE-ERROR* 0.001) ; we want high resolution for these traces.
+       (set-cell-type-param "CA1" 'soma-resistivity 10000.0)
+       (set-cell-type-param "CA1" 'dendrite-resistivity 20000.0)
+       (set-cell-type-param "CA1" 'cytoplasmic-resistivity 550.0)
+
+Reading in this file (via the circuit loading menu with the circuit file
+browser), would be the same as calling the function ADP-C12861 defined
+above.
+
+The function SURFLOAD may also be used to load in circuits when you are not
+necessarily going to use the menus (which make sure that various
+initialization take place). This function tries to figure out what the
+CIRCUIT argument refers to - that is to either a file name or a compiled
+function. The variables *CIRCUIT-SOURCE*, *CIRCUIT-FILENAME* and *CIRCUIT*
+are set accordingly, and the circuit is loaded.  If the CIRCUIT argument
+refers to a compiled function, then CIRCUIT can be either a symbol, a
+string, or a quoted lambda list whose CAR (first element) is a compiled
+function symbol.  If the CIRCUIT argument refers to a file, then CIRCUIT
+may be either a string with the complete pathname or a file in the
+*CIRCUIT-DIRECTORY* directory (default is surf-hippo/circuits/).
+
+
+
+
+***************************************************************************
+***************************************************************************
+
+		Menu Entry of Circuit Functions
+
+***************************************************************************
+***************************************************************************
+
+A circuit function may be loaded from the load circuit menu sequence by
+either typing in the name or choosing a name that has been added to the
+circuit function catalog, *CIRCUIT-FUNCTIONS*. For example, suppose that
+you include in your system loading sequence a file that defines a circuit
+function:
+
+	  (defun interneuron-234 ()
+	    (create-cell-type "interneuron-234" ....)
+		  .
+		  .
+		  .
+	  )
+
+
+If your load files include the statement:
+
+	(push 'interneuron-234 *circuit-functions*)
+
+or
+
+	(push "interneuron-234" *circuit-functions*)
+
+then the circuit loading menu will include this choice. Multiple functions
+may be selected from this menu, and all will be loaded to make up the
+simulated circuit. In this case, an additional menu will appear that asks
+for a name of the new circuit.
+
+Note that the same thing may be achieved by defining a function which then
+calls the composite circuit functions. For example, suppose that the
+following functions have been defined and listed in *CIRCUIT-FUNCTIONS*:
+
+   (STAR-AMACRINE-DS N120-MAX-RED THREE-HIPPOS DEAD-HIPPO WORKING-HPC)
+
+In the menu, clicking on STAR-AMACRINE-3 and TWO-HIPPOS will load those two
+functions and the simulated circuit will be made up of both. On the other
+hand, you could:
+
+	  (defun star-dead ()
+	    (STAR-AMACRINE-3)
+	    (DEAD-HIPPO))
+
+Loading STAR-DEAD by itself will do the same thing.
+
+If a circuit function to be loaded is typed in, then the function name is
+also added to the function catalog (for the current session only).
+
+***************************************************************************
+***************************************************************************
+
+	Two Circuit Elements May Not Have The Same Name
+
+***************************************************************************
+***************************************************************************
+
+Whether as part of the same cell, or in different cells, no two circuit
+elements may have the same name. The easiest away to avoid this between
+cells is to make sure that each cell has a unique name.  For example, if
+two HIPPO based functions are clicked in the circuit catalog function menu,
+an error occurs as soon as the second incarnation of the HIPPO cell is
+loaded:
+
+
+     Reading in circuits DEAD-HIPPO_BASIC-HIPPO...
+
+
+     Error in function HIPPO:
+	create-soma: soma Hippo-soma  already defined, ignoring
+
+     Restarts:
+       0: [CONTINUE] continue
+       1: [ABORT   ] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (HIPPO "Hippo" :SYNAPSE-TYPES NIL :SYNAPSE-SEGS ...)
+     Source: 
+     ; File: /home/lyle/surf-hippo/src/hippocampus/hippos.lisp
+     (CREATE-SOMA CELL-NAME SOMA-DIAMETER)
+     0] q
+
+Here, the solution would be to explicitly define a new function that calls
+the two desired cell functions, with, however, unique cell names associated
+with each:
+
+	(defun dead-basic-hippos ()
+	  (dead-hippo "Dead-Hippo")
+	  (working-hpc))
+
+In the case of adding identical elements (e.g. synapses or axons) to the
+same circuit segment or soma, there is an algorithm for generating unique
+names. See membrane_elements.doc.
+
+
+***************************************************************************
+***************************************************************************
+
+	Recommended Strategy for Defining Cells
+
+***************************************************************************
+***************************************************************************
+
+The safe way to build a cell is to *first* create the cell with the
+CREATE-CELL function, and then use the returned cell object (or the name of
+the returned cell object) as the cell reference for subsequent cells to
+CREATE-SOMA and CREATE-SEGMENT (or CREATE-TREE, etc.). In this way, if the
+cell building code is used as part of a multiple cell circuit (even when
+the multiple cells are copies of the same cell structure, that is each
+reuse the same code), if a call to CREATE-CELL requires an automatic
+modification of the requested name, then the later calls to the other cell
+elements will still have a target cell to work with.
+
+This can be done by locally binding the created cell to a local variable,
+and then passing that local variable to subsequent functions, e.g.
+
+
+     (let ((cell (create-cell SOME-CELL-NAME-STRING ... other args)))
+       (create-soma cell)
+       (create-tree cell tree-list ....)
+		     .
+		     .
+		     .
+     )
+
+
+Or, the call to CREATE-CELL (and other calls) can be directly embedded
+in later functions, e.g.
+
+     (create-tree
+      (soma-cell (create-soma (create-cell SOME-CELL-NAME-STRING ... other args)))
+      tree-list ....)
+
+
+***************************************************************************
+***************************************************************************
+
+	The Necessary Functions Surrounding Circuit Loading
+
+***************************************************************************
+***************************************************************************
+
+See also scripts.doc.
+
+(The following is automatically handled when loading cells with the menu.)
+
+For the complete loading and setting up of a circuit, the (possible
+multiple) invocation of the function READ-IN-CIRCUIT must be framed by the
+functions INITIALIZE-GLOBALS-FOR-CIRCUIT and PROCESS-CIRCUIT-STRUCTURE.
+INITIALIZE-GLOBALS-FOR-CIRCUIT clears everything for a new circuit, and
+PROCESS-CIRCUIT-STRUCTURE does all the necessary bookeeping after the
+circuit has been defined. If READ-IN-CIRCUIT is used to load a file, or if
+circuit functions which just define the various circuit elements are
+called, *and* the code is NOT going to be loaded via the circuit menu, then
+these functions must be bracketed by INITIALIZE-GLOBALS-FOR-CIRCUIT and
+PROCESS-CIRCUIT-STRUCTURE. Alternatively, as described above, the function
+SURFLOAD will do the entire job. The main reason to use explicit calls of
+the functions INITIALIZE-GLOBALS-FOR-CIRCUIT and PROCESS-CIRCUIT-STRUCTURE
+is for circuits comprised of more than one file load (best done with
+READ-IN-CIRCUIT) and/or function calls, for example, these two code
+fragments set up more or less similar circuits:
+
+
+     (initialize-globals-for-circuit)
+     (setq *add-cell-name-to-segs* t)
+     ;; Create two j43d cells.
+     (loop for i from -2 to 2 by 4
+	   for name in '(a b) do
+	   (read-in-circuit "/home/lyle/surf-hippo/anatomy/douglas-martin/j43d.sparcf"
+			    (format nil "j43d-~A" name)
+			    (list (* i 100.0) 0.0 0.0)))
+     ;; Add a passive hippocampal cell in the middle.
+     (dead-hippo)
+     (process-circuit-structure)
+
+
+
+     (let ((*add-cell-name-to-segs* t))
+       (initialize-globals-for-circuit)
+       ;; Add a passive hippocampal cell in the middle.
+       (dead-hippo)	
+       ;; Create a small network of j43d cells.
+       (loop for x from -2 to 2 by 2 do
+	     (loop for z from -2 to 2 by 2 do
+		   (read-in-circuit "/home/lyle/surf-hippo/anatomy/douglas-martin/j43d.sparcf"
+				    (format nil "j43d-~d~d" (+ 2 x)(+ 2 z))
+				    (list (* x 200.0) 0.0 (* z 200.0)))))
+       (process-circuit-structure))
+
+  
+
+
+***************************************************************************
+***************************************************************************
+
+  Adding or Subtracting Cells, Somas or Segments to a Loaded Circuit
+
+***************************************************************************
+***************************************************************************
+
+Cells, somas or segments may be added to a loaded circuit if desired.
+However, the function
+
+	(process-circuit-structure t)
+
+must be run after the new elements are created to complete their
+initialization. The optional T argument makes sure that the circuit is
+"reprocessed" even though a valid circuit is currently in place.

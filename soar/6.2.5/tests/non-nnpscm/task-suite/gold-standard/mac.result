@@ -1,0 +1,1570 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/missionaries/mac.soar
+************************
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (missionaries-and-cannibals)
+     2:    S: S1 
+     3:    ==>G: G2 (operator tie)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O10 (evaluate-object O1 (move1))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (missionaries-and-cannibals)
+     9:          S: D3 
+    10:          O: C2 (move1)
+  APPLIED C2: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-1
+Building justification-2
+  Evaluation of O1 (move1) is failure
+    11:       O: O9 (evaluate-object O2 (move2))
+    12:       ==>G: G4 (operator no-change)
+    13:          P: P1 (missionaries-and-cannibals)
+    14:          S: D5 
+    15:          O: C4 (move2)
+  APPLIED C4: move2(missionary,missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-3
+Building justification-4
+Building justification-5
+Building justification-6
+  Evaluation of O2 (move2) is failure
+    16:       O: O8 (evaluate-object O3 (move1))
+    17:       ==>G: G5 (operator no-change)
+    18:          P: P1 (missionaries-and-cannibals)
+    19:          S: D7 
+    20:          O: C6 (move1)
+  APPLIED C6: move1(cannibal,left,right)
+    21:          ==>G: G6 (state no-change)
+    22:             ==>G: G7 (goal no-change)
+Building justification-7
+Building justification-8
+Building justification-9
+Building justification-10
+Building justification-11
+Building justification-12
+Building justification-13
+Building justification-14
+Building justification-15
+Building justification-16
+  Evaluation of O3 (move1) is failure
+    23:       O: O7 (evaluate-object O4 (move2))
+    24:       ==>G: G8 (operator no-change)
+    25:          P: P1 (missionaries-and-cannibals)
+    26:          S: D9 
+    27:          O: C8 (move2)
+  APPLIED C8: move2(cannibal,cannibal,left,right)
+    28:          O: O36 (move1)
+  APPLIED O36: move1(cannibal,right,left)
+    29:          ==>G: G9 (operator tie)
+    30:             P: P3 (selection)
+    31:             S: S7 
+    32:             O: O45 (evaluate-object O37 (move2))
+    33:             ==>G: G10 (operator no-change)
+    34:                P: P1 (missionaries-and-cannibals)
+    35:                S: D11 
+    36:                O: C10 (move2)
+  APPLIED C10: move2(cannibal,cannibal,left,right)
+    37:                O: O52 (move1)
+  APPLIED O52: move1(cannibal,right,left)
+    38:                ==>G: G11 (operator tie)
+    39:                   P: P4 (selection)
+    40:                   S: S9 
+    41:                   O: O59 (evaluate-object O54 (move11))
+    42:                   ==>G: G12 (operator no-change)
+    43:                      P: P1 (missionaries-and-cannibals)
+    44:                      S: D13 
+    45:                      O: C12 (move11)
+  APPLIED C12: move11(missionary,cannibal,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-17
+Building justification-18
+  Evaluation of O54 (move11) is failure
+    46:                   O: O58 (evaluate-object O55 (move1))
+    47:                   ==>G: G13 (operator no-change)
+    48:                      P: P1 (missionaries-and-cannibals)
+    49:                      S: D15 
+    50:                      O: C14 (move1)
+  APPLIED C14: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-19
+Building justification-20
+Building justification-21
+Building justification-22
+  Evaluation of O55 (move1) is failure
+    51:                O: O56 (move2)
+  APPLIED O56: move2(missionary,missionary,left,right)
+    52:                ==>G: G14 (operator tie)
+    53:                   P: P5 (selection)
+    54:                   S: S12 
+    55:                   O: O84 (evaluate-object O77 (move1))
+    56:                   ==>G: G15 (operator no-change)
+    57:                      P: P1 (missionaries-and-cannibals)
+    58:                      S: D17 
+    59:                      O: C16 (move1)
+  APPLIED C16: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-23
+Building justification-24
+  Evaluation of O77 (move1) is failure
+    60:                   O: O83 (evaluate-object O78 (move11))
+    61:                   ==>G: G16 (operator no-change)
+    62:                      P: P1 (missionaries-and-cannibals)
+    63:                      S: D19 
+    64:                      O: C18 (move11)
+  APPLIED C18: move11(missionary,cannibal,right,left)
+    65:                      ==>G: G17 (operator tie)
+    66:                         P: P6 (selection)
+    67:                         S: S15 
+    68:                         O: O107 (evaluate-object O99 (move2))
+    69:                         ==>G: G18 (operator no-change)
+    70:                            P: P1 (missionaries-and-cannibals)
+    71:                            S: D21 
+    72:                            O: C20 (move2)
+  APPLIED C20: move2(missionary,missionary,left,right)
+    73:                            ==>G: G19 (operator tie)
+    74:                               P: P7 (selection)
+    75:                               S: S17 
+    76:                               O: O119 (evaluate-object O114 (move1))
+    77:                               ==>G: G20 (operator no-change)
+    78:                                  P: P1 (missionaries-and-cannibals)
+    79:                                  S: D23 
+    80:                                  O: C22 (move1)
+  APPLIED C22: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-25
+Building justification-26
+  Evaluation of O114 (move1) is failure
+    81:                               O: O118 (evaluate-object O115 (move11))
+    82:                               ==>G: G21 (operator no-change)
+    83:                                  P: P1 (missionaries-and-cannibals)
+    84:                                  S: D25 
+    85:                                  O: C24 (move11)
+  APPLIED C24: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-27
+Building justification-28
+Building justification-29
+Building justification-30
+  Evaluation of O115 (move11) is failure
+    86:                            O: O116 (move1)
+  APPLIED O116: move1(cannibal,right,left)
+    87:                            O: O136 (move2)
+  APPLIED O136: move2(cannibal,cannibal,left,right)
+    88:                            ==>G: G22 (operator tie)
+    89:                               P: P8 (selection)
+    90:                               S: S20 
+    91:                               O: O146 (evaluate-object O139 (move1))
+    92:                               ==>G: G23 (operator no-change)
+    93:                                  P: P1 (missionaries-and-cannibals)
+    94:                                  S: D27 
+    95:                                  O: C26 (move1)
+  APPLIED C26: move1(cannibal,right,left)
+    96:                                  O: O152 (move2)
+  APPLIED O152: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-31
+Building justification-32
+Building justification-33
+Building justification-34
+  Evaluation of O139 (move1) is success
+Building justification-35
+  Evaluation of O99 (move2) is partial-success
+    97:                      O: O99 (move2)
+  APPLIED O99: move2(missionary,missionary,left,right)
+    98:                      ==>G: G24 (operator tie)
+    99:                         P: P9 (selection)
+   100:                         S: S22 
+   101:                         O: O165 (evaluate-object O160 (move1))
+   102:                         ==>G: G25 (operator no-change)
+   103:                            P: P1 (missionaries-and-cannibals)
+   104:                            S: D29 
+   105:                            O: C28 (move1)
+  APPLIED C28: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-36
+Building justification-37
+  Evaluation of O160 (move1) is failure
+   106:                         O: O164 (evaluate-object O161 (move11))
+   107:                         ==>G: G26 (operator no-change)
+   108:                            P: P1 (missionaries-and-cannibals)
+   109:                            S: D31 
+   110:                            O: C30 (move11)
+  APPLIED C30: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-38
+Building justification-39
+Building justification-40
+Building justification-41
+  Evaluation of O161 (move11) is failure
+   111:                      O: O162 (move1)
+  APPLIED O162: move1(cannibal,right,left)
+   112:                      O: O182 (move2)
+  APPLIED O182: move2(cannibal,cannibal,left,right)
+   113:                      ==>G: G27 (operator tie)
+   114:                         P: P10 (selection)
+   115:                         S: S25 
+   116:                         O: O192 (evaluate-object O185 (move1))
+   117:                         ==>G: G28 (operator no-change)
+   118:                            P: P1 (missionaries-and-cannibals)
+   119:                            S: D33 
+   120:                            O: C32 (move1)
+  APPLIED C32: move1(cannibal,right,left)
+   121:                            O: O198 (move2)
+  APPLIED O198: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-42
+Building justification-43
+Building justification-44
+Building justification-45
+  Evaluation of O185 (move1) is success
+Building justification-46
+  Evaluation of O78 (move11) is partial-success
+   122:                O: O78 (move11)
+  APPLIED O78: move11(missionary,cannibal,right,left)
+   123:                ==>G: G29 (operator tie)
+   124:                   P: P11 (selection)
+   125:                   S: S27 
+   126:                   O: O213 (evaluate-object O205 (move2))
+   127:                   ==>G: G30 (operator no-change)
+   128:                      P: P1 (missionaries-and-cannibals)
+   129:                      S: D35 
+   130:                      O: C34 (move2)
+  APPLIED C34: move2(missionary,missionary,left,right)
+   131:                      ==>G: G31 (operator tie)
+   132:                         P: P12 (selection)
+   133:                         S: S29 
+   134:                         O: O225 (evaluate-object O220 (move1))
+   135:                         ==>G: G32 (operator no-change)
+   136:                            P: P1 (missionaries-and-cannibals)
+   137:                            S: D37 
+   138:                            O: C36 (move1)
+  APPLIED C36: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-47
+Building justification-48
+  Evaluation of O220 (move1) is failure
+   139:                         O: O224 (evaluate-object O221 (move11))
+   140:                         ==>G: G33 (operator no-change)
+   141:                            P: P1 (missionaries-and-cannibals)
+   142:                            S: D39 
+   143:                            O: C38 (move11)
+  APPLIED C38: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-49
+Building justification-50
+Building justification-51
+Building justification-52
+  Evaluation of O221 (move11) is failure
+   144:                      O: O222 (move1)
+  APPLIED O222: move1(cannibal,right,left)
+   145:                      O: O242 (move2)
+  APPLIED O242: move2(cannibal,cannibal,left,right)
+   146:                      ==>G: G34 (operator tie)
+   147:                         P: P13 (selection)
+   148:                         S: S32 
+   149:                         O: O252 (evaluate-object O245 (move1))
+   150:                         ==>G: G35 (operator no-change)
+   151:                            P: P1 (missionaries-and-cannibals)
+   152:                            S: D41 
+   153:                            O: C40 (move1)
+  APPLIED C40: move1(cannibal,right,left)
+   154:                            O: O258 (move2)
+  APPLIED O258: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-53
+Building justification-54
+Building justification-55
+Building justification-56
+  Evaluation of O245 (move1) is success
+Building justification-57
+  Evaluation of O205 (move2) is partial-success
+   155:                O: O205 (move2)
+  APPLIED O205: move2(missionary,missionary,left,right)
+   156:                ==>G: G36 (operator tie)
+   157:                   P: P14 (selection)
+   158:                   S: S34 
+   159:                   O: O271 (evaluate-object O266 (move1))
+   160:                   ==>G: G37 (operator no-change)
+   161:                      P: P1 (missionaries-and-cannibals)
+   162:                      S: D43 
+   163:                      O: C42 (move1)
+  APPLIED C42: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-58
+Building justification-59
+  Evaluation of O266 (move1) is failure
+   164:                   O: O270 (evaluate-object O267 (move11))
+   165:                   ==>G: G38 (operator no-change)
+   166:                      P: P1 (missionaries-and-cannibals)
+   167:                      S: D45 
+   168:                      O: C44 (move11)
+  APPLIED C44: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-60
+Building justification-61
+Building justification-62
+Building justification-63
+  Evaluation of O267 (move11) is failure
+   169:                O: O268 (move1)
+  APPLIED O268: move1(cannibal,right,left)
+   170:                O: O288 (move2)
+  APPLIED O288: move2(cannibal,cannibal,left,right)
+   171:                ==>G: G39 (operator tie)
+   172:                   P: P15 (selection)
+   173:                   S: S37 
+   174:                   O: O298 (evaluate-object O291 (move1))
+   175:                   ==>G: G40 (operator no-change)
+   176:                      P: P1 (missionaries-and-cannibals)
+   177:                      S: D47 
+   178:                      O: C46 (move1)
+  APPLIED C46: move1(cannibal,right,left)
+   179:                      O: O304 (move2)
+  APPLIED O304: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-64
+Building justification-65
+Building justification-66
+Building justification-67
+  Evaluation of O291 (move1) is success
+Building justification-68
+  Evaluation of O37 (move2) is partial-success
+   180:          O: O37 (move2)
+  APPLIED O37: move2(cannibal,cannibal,left,right)
+   181:          O: O312 (move1)
+  APPLIED O312: move1(cannibal,right,left)
+   182:          ==>G: G41 (operator tie)
+   183:             P: P16 (selection)
+   184:             S: S39 
+   185:             O: O319 (evaluate-object O314 (move11))
+   186:             ==>G: G42 (operator no-change)
+   187:                P: P1 (missionaries-and-cannibals)
+   188:                S: D49 
+   189:                O: C48 (move11)
+  APPLIED C48: move11(missionary,cannibal,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-69
+Building justification-70
+  Evaluation of O314 (move11) is failure
+   190:             O: O318 (evaluate-object O315 (move1))
+   191:             ==>G: G43 (operator no-change)
+   192:                P: P1 (missionaries-and-cannibals)
+   193:                S: D51 
+   194:                O: C50 (move1)
+  APPLIED C50: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-71
+Building justification-72
+Building justification-73
+Building justification-74
+  Evaluation of O315 (move1) is failure
+   195:          O: O316 (move2)
+  APPLIED O316: move2(missionary,missionary,left,right)
+   196:          ==>G: G44 (operator tie)
+   197:             P: P17 (selection)
+   198:             S: S42 
+   199:             O: O344 (evaluate-object O337 (move1))
+   200:             ==>G: G45 (operator no-change)
+   201:                P: P1 (missionaries-and-cannibals)
+   202:                S: D53 
+   203:                O: C52 (move1)
+  APPLIED C52: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-75
+Building justification-76
+  Evaluation of O337 (move1) is failure
+   204:             O: O343 (evaluate-object O338 (move11))
+   205:             ==>G: G46 (operator no-change)
+   206:                P: P1 (missionaries-and-cannibals)
+   207:                S: D55 
+   208:                O: C54 (move11)
+  APPLIED C54: move11(missionary,cannibal,right,left)
+   209:                ==>G: G47 (operator tie)
+   210:                   P: P18 (selection)
+   211:                   S: S45 
+   212:                   O: O367 (evaluate-object O359 (move2))
+   213:                   ==>G: G48 (operator no-change)
+   214:                      P: P1 (missionaries-and-cannibals)
+   215:                      S: D57 
+   216:                      O: C56 (move2)
+  APPLIED C56: move2(missionary,missionary,left,right)
+   217:                      ==>G: G49 (operator tie)
+   218:                         P: P19 (selection)
+   219:                         S: S47 
+   220:                         O: O379 (evaluate-object O374 (move1))
+   221:                         ==>G: G50 (operator no-change)
+   222:                            P: P1 (missionaries-and-cannibals)
+   223:                            S: D59 
+   224:                            O: C58 (move1)
+  APPLIED C58: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-77
+Building justification-78
+  Evaluation of O374 (move1) is failure
+   225:                         O: O378 (evaluate-object O375 (move11))
+   226:                         ==>G: G51 (operator no-change)
+   227:                            P: P1 (missionaries-and-cannibals)
+   228:                            S: D61 
+   229:                            O: C60 (move11)
+  APPLIED C60: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-79
+Building justification-80
+Building justification-81
+Building justification-82
+  Evaluation of O375 (move11) is failure
+   230:                      O: O376 (move1)
+  APPLIED O376: move1(cannibal,right,left)
+   231:                      O: O396 (move2)
+  APPLIED O396: move2(cannibal,cannibal,left,right)
+   232:                      ==>G: G52 (operator tie)
+   233:                         P: P20 (selection)
+   234:                         S: S50 
+   235:                         O: O406 (evaluate-object O399 (move1))
+   236:                         ==>G: G53 (operator no-change)
+   237:                            P: P1 (missionaries-and-cannibals)
+   238:                            S: D63 
+   239:                            O: C62 (move1)
+  APPLIED C62: move1(cannibal,right,left)
+   240:                            O: O412 (move2)
+  APPLIED O412: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-83
+Building justification-84
+Building justification-85
+Building justification-86
+  Evaluation of O399 (move1) is success
+Building justification-87
+  Evaluation of O359 (move2) is partial-success
+   241:                O: O359 (move2)
+  APPLIED O359: move2(missionary,missionary,left,right)
+   242:                ==>G: G54 (operator tie)
+   243:                   P: P21 (selection)
+   244:                   S: S52 
+   245:                   O: O425 (evaluate-object O420 (move1))
+   246:                   ==>G: G55 (operator no-change)
+   247:                      P: P1 (missionaries-and-cannibals)
+   248:                      S: D65 
+   249:                      O: C64 (move1)
+  APPLIED C64: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-88
+Building justification-89
+  Evaluation of O420 (move1) is failure
+   250:                   O: O424 (evaluate-object O421 (move11))
+   251:                   ==>G: G56 (operator no-change)
+   252:                      P: P1 (missionaries-and-cannibals)
+   253:                      S: D67 
+   254:                      O: C66 (move11)
+  APPLIED C66: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-90
+Building justification-91
+Building justification-92
+Building justification-93
+  Evaluation of O421 (move11) is failure
+   255:                O: O422 (move1)
+  APPLIED O422: move1(cannibal,right,left)
+   256:                O: O442 (move2)
+  APPLIED O442: move2(cannibal,cannibal,left,right)
+   257:                ==>G: G57 (operator tie)
+   258:                   P: P22 (selection)
+   259:                   S: S55 
+   260:                   O: O452 (evaluate-object O445 (move1))
+   261:                   ==>G: G58 (operator no-change)
+   262:                      P: P1 (missionaries-and-cannibals)
+   263:                      S: D69 
+   264:                      O: C68 (move1)
+  APPLIED C68: move1(cannibal,right,left)
+   265:                      O: O458 (move2)
+  APPLIED O458: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-94
+Building justification-95
+Building justification-96
+Building justification-97
+  Evaluation of O445 (move1) is success
+Building justification-98
+  Evaluation of O338 (move11) is partial-success
+   266:          O: O338 (move11)
+  APPLIED O338: move11(missionary,cannibal,right,left)
+   267:          ==>G: G59 (operator tie)
+   268:             P: P23 (selection)
+   269:             S: S57 
+   270:             O: O473 (evaluate-object O465 (move2))
+   271:             ==>G: G60 (operator no-change)
+   272:                P: P1 (missionaries-and-cannibals)
+   273:                S: D71 
+   274:                O: C70 (move2)
+  APPLIED C70: move2(missionary,missionary,left,right)
+   275:                ==>G: G61 (operator tie)
+   276:                   P: P24 (selection)
+   277:                   S: S59 
+   278:                   O: O485 (evaluate-object O480 (move1))
+   279:                   ==>G: G62 (operator no-change)
+   280:                      P: P1 (missionaries-and-cannibals)
+   281:                      S: D73 
+   282:                      O: C72 (move1)
+  APPLIED C72: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-99
+Building justification-100
+  Evaluation of O480 (move1) is failure
+   283:                   O: O484 (evaluate-object O481 (move11))
+   284:                   ==>G: G63 (operator no-change)
+   285:                      P: P1 (missionaries-and-cannibals)
+   286:                      S: D75 
+   287:                      O: C74 (move11)
+  APPLIED C74: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-101
+Building justification-102
+Building justification-103
+Building justification-104
+  Evaluation of O481 (move11) is failure
+   288:                O: O482 (move1)
+  APPLIED O482: move1(cannibal,right,left)
+   289:                O: O502 (move2)
+  APPLIED O502: move2(cannibal,cannibal,left,right)
+   290:                ==>G: G64 (operator tie)
+   291:                   P: P25 (selection)
+   292:                   S: S62 
+   293:                   O: O512 (evaluate-object O505 (move1))
+   294:                   ==>G: G65 (operator no-change)
+   295:                      P: P1 (missionaries-and-cannibals)
+   296:                      S: D77 
+   297:                      O: C76 (move1)
+  APPLIED C76: move1(cannibal,right,left)
+   298:                      O: O518 (move2)
+  APPLIED O518: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-105
+Building justification-106
+Building justification-107
+Building justification-108
+  Evaluation of O505 (move1) is success
+Building justification-109
+  Evaluation of O465 (move2) is partial-success
+   299:          O: O465 (move2)
+  APPLIED O465: move2(missionary,missionary,left,right)
+   300:          ==>G: G66 (operator tie)
+   301:             P: P26 (selection)
+   302:             S: S64 
+   303:             O: O531 (evaluate-object O526 (move1))
+   304:             ==>G: G67 (operator no-change)
+   305:                P: P1 (missionaries-and-cannibals)
+   306:                S: D79 
+   307:                O: C78 (move1)
+  APPLIED C78: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-110
+Building justification-111
+  Evaluation of O526 (move1) is failure
+   308:             O: O530 (evaluate-object O527 (move11))
+   309:             ==>G: G68 (operator no-change)
+   310:                P: P1 (missionaries-and-cannibals)
+   311:                S: D81 
+   312:                O: C80 (move11)
+  APPLIED C80: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-112
+Building justification-113
+Building justification-114
+Building justification-115
+  Evaluation of O527 (move11) is failure
+   313:          O: O528 (move1)
+  APPLIED O528: move1(cannibal,right,left)
+   314:          O: O548 (move2)
+  APPLIED O548: move2(cannibal,cannibal,left,right)
+   315:          ==>G: G69 (operator tie)
+   316:             P: P27 (selection)
+   317:             S: S67 
+   318:             O: O558 (evaluate-object O551 (move1))
+   319:             ==>G: G70 (operator no-change)
+   320:                P: P1 (missionaries-and-cannibals)
+   321:                S: D83 
+   322:                O: C82 (move1)
+  APPLIED C82: move1(cannibal,right,left)
+   323:                O: O564 (move2)
+  APPLIED O564: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-116
+Building justification-117
+Building justification-118
+Building justification-119
+  Evaluation of O551 (move1) is success
+Building justification-120
+  Evaluation of O4 (move2) is partial-success
+   324:    O: O4 (move2)
+  APPLIED O4: move2(cannibal,cannibal,left,right)
+   325:    O: O572 (move1)
+  APPLIED O572: move1(cannibal,right,left)
+   326:    ==>G: G71 (operator tie)
+   327:       P: P28 (selection)
+   328:       S: S69 
+   329:       O: O581 (evaluate-object O573 (move2))
+   330:       ==>G: G72 (operator no-change)
+   331:          P: P1 (missionaries-and-cannibals)
+   332:          S: D85 
+   333:          O: C84 (move2)
+  APPLIED C84: move2(cannibal,cannibal,left,right)
+   334:          O: O588 (move1)
+  APPLIED O588: move1(cannibal,right,left)
+   335:          ==>G: G73 (operator tie)
+   336:             P: P29 (selection)
+   337:             S: S71 
+   338:             O: O595 (evaluate-object O590 (move11))
+   339:             ==>G: G74 (operator no-change)
+   340:                P: P1 (missionaries-and-cannibals)
+   341:                S: D87 
+   342:                O: C86 (move11)
+  APPLIED C86: move11(missionary,cannibal,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-121
+Building justification-122
+  Evaluation of O590 (move11) is failure
+   343:             O: O594 (evaluate-object O591 (move1))
+   344:             ==>G: G75 (operator no-change)
+   345:                P: P1 (missionaries-and-cannibals)
+   346:                S: D89 
+   347:                O: C88 (move1)
+  APPLIED C88: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-123
+Building justification-124
+Building justification-125
+Building justification-126
+  Evaluation of O591 (move1) is failure
+   348:          O: O592 (move2)
+  APPLIED O592: move2(missionary,missionary,left,right)
+   349:          ==>G: G76 (operator tie)
+   350:             P: P30 (selection)
+   351:             S: S74 
+   352:             O: O620 (evaluate-object O613 (move1))
+   353:             ==>G: G77 (operator no-change)
+   354:                P: P1 (missionaries-and-cannibals)
+   355:                S: D91 
+   356:                O: C90 (move1)
+  APPLIED C90: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-127
+Building justification-128
+  Evaluation of O613 (move1) is failure
+   357:             O: O619 (evaluate-object O614 (move11))
+   358:             ==>G: G78 (operator no-change)
+   359:                P: P1 (missionaries-and-cannibals)
+   360:                S: D93 
+   361:                O: C92 (move11)
+  APPLIED C92: move11(missionary,cannibal,right,left)
+   362:                ==>G: G79 (operator tie)
+   363:                   P: P31 (selection)
+   364:                   S: S77 
+   365:                   O: O643 (evaluate-object O635 (move2))
+   366:                   ==>G: G80 (operator no-change)
+   367:                      P: P1 (missionaries-and-cannibals)
+   368:                      S: D95 
+   369:                      O: C94 (move2)
+  APPLIED C94: move2(missionary,missionary,left,right)
+   370:                      ==>G: G81 (operator tie)
+   371:                         P: P32 (selection)
+   372:                         S: S79 
+   373:                         O: O655 (evaluate-object O650 (move1))
+   374:                         ==>G: G82 (operator no-change)
+   375:                            P: P1 (missionaries-and-cannibals)
+   376:                            S: D97 
+   377:                            O: C96 (move1)
+  APPLIED C96: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-129
+Building justification-130
+  Evaluation of O650 (move1) is failure
+   378:                         O: O654 (evaluate-object O651 (move11))
+   379:                         ==>G: G83 (operator no-change)
+   380:                            P: P1 (missionaries-and-cannibals)
+   381:                            S: D99 
+   382:                            O: C98 (move11)
+  APPLIED C98: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-131
+Building justification-132
+Building justification-133
+Building justification-134
+  Evaluation of O651 (move11) is failure
+   383:                      O: O652 (move1)
+  APPLIED O652: move1(cannibal,right,left)
+   384:                      O: O672 (move2)
+  APPLIED O672: move2(cannibal,cannibal,left,right)
+   385:                      ==>G: G84 (operator tie)
+   386:                         P: P33 (selection)
+   387:                         S: S82 
+   388:                         O: O682 (evaluate-object O675 (move1))
+   389:                         ==>G: G85 (operator no-change)
+   390:                            P: P1 (missionaries-and-cannibals)
+   391:                            S: D101 
+   392:                            O: C100 (move1)
+  APPLIED C100: move1(cannibal,right,left)
+   393:                            O: O688 (move2)
+  APPLIED O688: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-135
+Building justification-136
+Building justification-137
+Building justification-138
+  Evaluation of O675 (move1) is success
+Building justification-139
+  Evaluation of O635 (move2) is partial-success
+   394:                O: O635 (move2)
+  APPLIED O635: move2(missionary,missionary,left,right)
+   395:                ==>G: G86 (operator tie)
+   396:                   P: P34 (selection)
+   397:                   S: S84 
+   398:                   O: O701 (evaluate-object O696 (move1))
+   399:                   ==>G: G87 (operator no-change)
+   400:                      P: P1 (missionaries-and-cannibals)
+   401:                      S: D103 
+   402:                      O: C102 (move1)
+  APPLIED C102: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-140
+Building justification-141
+  Evaluation of O696 (move1) is failure
+   403:                   O: O700 (evaluate-object O697 (move11))
+   404:                   ==>G: G88 (operator no-change)
+   405:                      P: P1 (missionaries-and-cannibals)
+   406:                      S: D105 
+   407:                      O: C104 (move11)
+  APPLIED C104: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-142
+Building justification-143
+Building justification-144
+Building justification-145
+  Evaluation of O697 (move11) is failure
+   408:                O: O698 (move1)
+  APPLIED O698: move1(cannibal,right,left)
+   409:                O: O718 (move2)
+  APPLIED O718: move2(cannibal,cannibal,left,right)
+   410:                ==>G: G89 (operator tie)
+   411:                   P: P35 (selection)
+   412:                   S: S87 
+   413:                   O: O728 (evaluate-object O721 (move1))
+   414:                   ==>G: G90 (operator no-change)
+   415:                      P: P1 (missionaries-and-cannibals)
+   416:                      S: D107 
+   417:                      O: C106 (move1)
+  APPLIED C106: move1(cannibal,right,left)
+   418:                      O: O734 (move2)
+  APPLIED O734: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-146
+Building justification-147
+Building justification-148
+Building justification-149
+  Evaluation of O721 (move1) is success
+Building justification-150
+  Evaluation of O614 (move11) is partial-success
+   419:          O: O614 (move11)
+  APPLIED O614: move11(missionary,cannibal,right,left)
+   420:          ==>G: G91 (operator tie)
+   421:             P: P36 (selection)
+   422:             S: S89 
+   423:             O: O749 (evaluate-object O741 (move2))
+   424:             ==>G: G92 (operator no-change)
+   425:                P: P1 (missionaries-and-cannibals)
+   426:                S: D109 
+   427:                O: C108 (move2)
+  APPLIED C108: move2(missionary,missionary,left,right)
+   428:                ==>G: G93 (operator tie)
+   429:                   P: P37 (selection)
+   430:                   S: S91 
+   431:                   O: O761 (evaluate-object O756 (move1))
+   432:                   ==>G: G94 (operator no-change)
+   433:                      P: P1 (missionaries-and-cannibals)
+   434:                      S: D111 
+   435:                      O: C110 (move1)
+  APPLIED C110: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-151
+Building justification-152
+  Evaluation of O756 (move1) is failure
+   436:                   O: O760 (evaluate-object O757 (move11))
+   437:                   ==>G: G95 (operator no-change)
+   438:                      P: P1 (missionaries-and-cannibals)
+   439:                      S: D113 
+   440:                      O: C112 (move11)
+  APPLIED C112: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-153
+Building justification-154
+Building justification-155
+Building justification-156
+  Evaluation of O757 (move11) is failure
+   441:                O: O758 (move1)
+  APPLIED O758: move1(cannibal,right,left)
+   442:                O: O778 (move2)
+  APPLIED O778: move2(cannibal,cannibal,left,right)
+   443:                ==>G: G96 (operator tie)
+   444:                   P: P38 (selection)
+   445:                   S: S94 
+   446:                   O: O788 (evaluate-object O781 (move1))
+   447:                   ==>G: G97 (operator no-change)
+   448:                      P: P1 (missionaries-and-cannibals)
+   449:                      S: D115 
+   450:                      O: C114 (move1)
+  APPLIED C114: move1(cannibal,right,left)
+   451:                      O: O794 (move2)
+  APPLIED O794: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-157
+Building justification-158
+Building justification-159
+Building justification-160
+  Evaluation of O781 (move1) is success
+Building justification-161
+  Evaluation of O741 (move2) is partial-success
+   452:          O: O741 (move2)
+  APPLIED O741: move2(missionary,missionary,left,right)
+   453:          ==>G: G98 (operator tie)
+   454:             P: P39 (selection)
+   455:             S: S96 
+   456:             O: O807 (evaluate-object O802 (move1))
+   457:             ==>G: G99 (operator no-change)
+   458:                P: P1 (missionaries-and-cannibals)
+   459:                S: D117 
+   460:                O: C116 (move1)
+  APPLIED C116: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-162
+Building justification-163
+  Evaluation of O802 (move1) is failure
+   461:             O: O806 (evaluate-object O803 (move11))
+   462:             ==>G: G100 (operator no-change)
+   463:                P: P1 (missionaries-and-cannibals)
+   464:                S: D119 
+   465:                O: C118 (move11)
+  APPLIED C118: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-164
+Building justification-165
+Building justification-166
+Building justification-167
+  Evaluation of O803 (move11) is failure
+   466:          O: O804 (move1)
+  APPLIED O804: move1(cannibal,right,left)
+   467:          O: O824 (move2)
+  APPLIED O824: move2(cannibal,cannibal,left,right)
+   468:          ==>G: G101 (operator tie)
+   469:             P: P40 (selection)
+   470:             S: S99 
+   471:             O: O834 (evaluate-object O827 (move1))
+   472:             ==>G: G102 (operator no-change)
+   473:                P: P1 (missionaries-and-cannibals)
+   474:                S: D121 
+   475:                O: C120 (move1)
+  APPLIED C120: move1(cannibal,right,left)
+   476:                O: O840 (move2)
+  APPLIED O840: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-168
+Building justification-169
+Building justification-170
+Building justification-171
+  Evaluation of O827 (move1) is success
+Building justification-172
+  Evaluation of O573 (move2) is partial-success
+   477:    O: O573 (move2)
+  APPLIED O573: move2(cannibal,cannibal,left,right)
+   478:    O: O848 (move1)
+  APPLIED O848: move1(cannibal,right,left)
+   479:    ==>G: G103 (operator tie)
+   480:       P: P41 (selection)
+   481:       S: S101 
+   482:       O: O855 (evaluate-object O850 (move11))
+   483:       ==>G: G104 (operator no-change)
+   484:          P: P1 (missionaries-and-cannibals)
+   485:          S: D123 
+   486:          O: C122 (move11)
+  APPLIED C122: move11(missionary,cannibal,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-173
+Building justification-174
+  Evaluation of O850 (move11) is failure
+   487:       O: O854 (evaluate-object O851 (move1))
+   488:       ==>G: G105 (operator no-change)
+   489:          P: P1 (missionaries-and-cannibals)
+   490:          S: D125 
+   491:          O: C124 (move1)
+  APPLIED C124: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building justification-175
+Building justification-176
+Building justification-177
+Building justification-178
+  Evaluation of O851 (move1) is failure
+   492:    O: O852 (move2)
+  APPLIED O852: move2(missionary,missionary,left,right)
+   493:    ==>G: G106 (operator tie)
+   494:       P: P42 (selection)
+   495:       S: S104 
+   496:       O: O880 (evaluate-object O873 (move1))
+   497:       ==>G: G107 (operator no-change)
+   498:          P: P1 (missionaries-and-cannibals)
+   499:          S: D127 
+   500:          O: C126 (move1)
+  APPLIED C126: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-179
+Building justification-180
+  Evaluation of O873 (move1) is failure
+   501:       O: O879 (evaluate-object O874 (move11))
+   502:       ==>G: G108 (operator no-change)
+   503:          P: P1 (missionaries-and-cannibals)
+   504:          S: D129 
+   505:          O: C128 (move11)
+  APPLIED C128: move11(missionary,cannibal,right,left)
+   506:          ==>G: G109 (operator tie)
+   507:             P: P43 (selection)
+   508:             S: S107 
+   509:             O: O903 (evaluate-object O895 (move2))
+   510:             ==>G: G110 (operator no-change)
+   511:                P: P1 (missionaries-and-cannibals)
+   512:                S: D131 
+   513:                O: C130 (move2)
+  APPLIED C130: move2(missionary,missionary,left,right)
+   514:                ==>G: G111 (operator tie)
+   515:                   P: P44 (selection)
+   516:                   S: S109 
+   517:                   O: O915 (evaluate-object O910 (move1))
+   518:                   ==>G: G112 (operator no-change)
+   519:                      P: P1 (missionaries-and-cannibals)
+   520:                      S: D133 
+   521:                      O: C132 (move1)
+  APPLIED C132: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-181
+Building justification-182
+  Evaluation of O910 (move1) is failure
+   522:                   O: O914 (evaluate-object O911 (move11))
+   523:                   ==>G: G113 (operator no-change)
+   524:                      P: P1 (missionaries-and-cannibals)
+   525:                      S: D135 
+   526:                      O: C134 (move11)
+  APPLIED C134: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-183
+Building justification-184
+Building justification-185
+Building justification-186
+  Evaluation of O911 (move11) is failure
+   527:                O: O912 (move1)
+  APPLIED O912: move1(cannibal,right,left)
+   528:                O: O932 (move2)
+  APPLIED O932: move2(cannibal,cannibal,left,right)
+   529:                ==>G: G114 (operator tie)
+   530:                   P: P45 (selection)
+   531:                   S: S112 
+   532:                   O: O942 (evaluate-object O935 (move1))
+   533:                   ==>G: G115 (operator no-change)
+   534:                      P: P1 (missionaries-and-cannibals)
+   535:                      S: D137 
+   536:                      O: C136 (move1)
+  APPLIED C136: move1(cannibal,right,left)
+   537:                      O: O948 (move2)
+  APPLIED O948: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-187
+Building justification-188
+Building justification-189
+Building justification-190
+  Evaluation of O935 (move1) is success
+Building justification-191
+  Evaluation of O895 (move2) is partial-success
+   538:          O: O895 (move2)
+  APPLIED O895: move2(missionary,missionary,left,right)
+   539:          ==>G: G116 (operator tie)
+   540:             P: P46 (selection)
+   541:             S: S114 
+   542:             O: O961 (evaluate-object O956 (move1))
+   543:             ==>G: G117 (operator no-change)
+   544:                P: P1 (missionaries-and-cannibals)
+   545:                S: D139 
+   546:                O: C138 (move1)
+  APPLIED C138: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-192
+Building justification-193
+  Evaluation of O956 (move1) is failure
+   547:             O: O960 (evaluate-object O957 (move11))
+   548:             ==>G: G118 (operator no-change)
+   549:                P: P1 (missionaries-and-cannibals)
+   550:                S: D141 
+   551:                O: C140 (move11)
+  APPLIED C140: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-194
+Building justification-195
+Building justification-196
+Building justification-197
+  Evaluation of O957 (move11) is failure
+   552:          O: O958 (move1)
+  APPLIED O958: move1(cannibal,right,left)
+   553:          O: O978 (move2)
+  APPLIED O978: move2(cannibal,cannibal,left,right)
+   554:          ==>G: G119 (operator tie)
+   555:             P: P47 (selection)
+   556:             S: S117 
+   557:             O: O988 (evaluate-object O981 (move1))
+   558:             ==>G: G120 (operator no-change)
+   559:                P: P1 (missionaries-and-cannibals)
+   560:                S: D143 
+   561:                O: C142 (move1)
+  APPLIED C142: move1(cannibal,right,left)
+   562:                O: O994 (move2)
+  APPLIED O994: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-198
+Building justification-199
+Building justification-200
+Building justification-201
+  Evaluation of O981 (move1) is success
+Building justification-202
+  Evaluation of O874 (move11) is partial-success
+   563:    O: O874 (move11)
+  APPLIED O874: move11(missionary,cannibal,right,left)
+   564:    ==>G: G121 (operator tie)
+   565:       P: P48 (selection)
+   566:       S: S119 
+   567:       O: O1009 (evaluate-object O1001 (move2))
+   568:       ==>G: G122 (operator no-change)
+   569:          P: P1 (missionaries-and-cannibals)
+   570:          S: D145 
+   571:          O: C144 (move2)
+  APPLIED C144: move2(missionary,missionary,left,right)
+   572:          ==>G: G123 (operator tie)
+   573:             P: P49 (selection)
+   574:             S: S121 
+   575:             O: O1021 (evaluate-object O1016 (move1))
+   576:             ==>G: G124 (operator no-change)
+   577:                P: P1 (missionaries-and-cannibals)
+   578:                S: D147 
+   579:                O: C146 (move1)
+  APPLIED C146: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-203
+Building justification-204
+  Evaluation of O1016 (move1) is failure
+   580:             O: O1020 (evaluate-object O1017 (move11))
+   581:             ==>G: G125 (operator no-change)
+   582:                P: P1 (missionaries-and-cannibals)
+   583:                S: D149 
+   584:                O: C148 (move11)
+  APPLIED C148: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-205
+Building justification-206
+Building justification-207
+Building justification-208
+  Evaluation of O1017 (move11) is failure
+   585:          O: O1018 (move1)
+  APPLIED O1018: move1(cannibal,right,left)
+   586:          O: O1038 (move2)
+  APPLIED O1038: move2(cannibal,cannibal,left,right)
+   587:          ==>G: G126 (operator tie)
+   588:             P: P50 (selection)
+   589:             S: S124 
+   590:             O: O1048 (evaluate-object O1041 (move1))
+   591:             ==>G: G127 (operator no-change)
+   592:                P: P1 (missionaries-and-cannibals)
+   593:                S: D151 
+   594:                O: C150 (move1)
+  APPLIED C150: move1(cannibal,right,left)
+   595:                O: O1054 (move2)
+  APPLIED O1054: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-209
+Building justification-210
+Building justification-211
+Building justification-212
+  Evaluation of O1041 (move1) is success
+Building justification-213
+  Evaluation of O1001 (move2) is partial-success
+   596:    O: O1001 (move2)
+  APPLIED O1001: move2(missionary,missionary,left,right)
+   597:    ==>G: G128 (operator tie)
+   598:       P: P51 (selection)
+   599:       S: S126 
+   600:       O: O1067 (evaluate-object O1062 (move1))
+   601:       ==>G: G129 (operator no-change)
+   602:          P: P1 (missionaries-and-cannibals)
+   603:          S: D153 
+   604:          O: C152 (move1)
+  APPLIED C152: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-214
+Building justification-215
+  Evaluation of O1062 (move1) is failure
+   605:       O: O1066 (evaluate-object O1063 (move11))
+   606:       ==>G: G130 (operator no-change)
+   607:          P: P1 (missionaries-and-cannibals)
+   608:          S: D155 
+   609:          O: C154 (move11)
+  APPLIED C154: move11(missionary,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building justification-216
+Building justification-217
+Building justification-218
+Building justification-219
+  Evaluation of O1063 (move11) is failure
+   610:    O: O1064 (move1)
+  APPLIED O1064: move1(cannibal,right,left)
+   611:    O: O1084 (move2)
+  APPLIED O1084: move2(cannibal,cannibal,left,right)
+   612:    ==>G: G131 (operator tie)
+   613:       P: P52 (selection)
+   614:       S: S129 
+   615:       O: O1094 (evaluate-object O1087 (move1))
+   616:       ==>G: G132 (operator no-change)
+   617:          P: P1 (missionaries-and-cannibals)
+   618:          S: D157 
+   619:          O: C156 (move1)
+  APPLIED C156: move1(cannibal,right,left)
+   620:          O: O1100 (move2)
+  APPLIED O1100: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building justification-220
+Building justification-221
+  Evaluation of O1087 (move1) is success
+   621:    O: O1087 (move1)
+  APPLIED O1087: move1(cannibal,right,left)
+   622:    O: O1107 (move2)
+  APPLIED O1107: move2(cannibal,cannibal,left,right)
+  Goal missionaries-and-cannibals succeeded. 
+ goal missionaries-and-cannibals achieved 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (missionaries-and-cannibals)
+     2:    S: S1 
+     3:    ==>G: G2 (operator tie)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O10 (evaluate-object O1 (move1))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (missionaries-and-cannibals)
+     9:          S: D3 
+    10:          O: C2 (move1)
+  APPLIED C2: move1(missionary,left,right)
+  Goal implement-evaluate-object failed. 
+Building chunk-1
+Building chunk-2
+  Evaluation of O1 (move1) is failure
+    11:       O: O9 (evaluate-object O2 (move2))
+    12:       ==>G: G4 (operator no-change)
+    13:          P: P1 (missionaries-and-cannibals)
+    14:          S: D5 
+Firing chunk-2
+    15:          O: C4 (move2)
+  APPLIED C4: move2(missionary,missionary,left,right)
+Retracting chunk-2
+
+  Goal implement-evaluate-object failed. 
+Building chunk-3
+Building chunk-4
+Building chunk-5
+Building chunk-6
+  Evaluation of O2 (move2) is failure
+    16:       O: O8 (evaluate-object O3 (move1))
+    17:       ==>G: G5 (operator no-change)
+    18:          P: P1 (missionaries-and-cannibals)
+    19:          S: D7 
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+    20:          O: C6 (move1)
+  APPLIED C6: move1(cannibal,left,right)
+Retracting chunk-2
+Retracting chunk-4
+Retracting chunk-5
+Retracting chunk-6
+    21:          ==>G: G6 (state no-change)
+    22:             ==>G: G7 (goal no-change)
+Building justification-222
+Building justification-223
+Building justification-224
+Building justification-225
+Building justification-226
+Building justification-227
+Building justification-228
+Building justification-229
+Building justification-230
+Building justification-231
+  Evaluation of O3 (move1) is failure
+    23:       O: O7 (evaluate-object O4 (move2))
+    24:       ==>G: G8 (operator no-change)
+    25:          P: P1 (missionaries-and-cannibals)
+    26:          S: D9 
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+    27:          O: C8 (move2)
+  APPLIED C8: move2(cannibal,cannibal,left,right)
+Retracting chunk-2
+Retracting chunk-4
+Retracting chunk-5
+Retracting chunk-6
+    28:          O: O36 (move1)
+  APPLIED O36: move1(cannibal,right,left)
+Firing chunk-4
+    29:          ==>G: G9 (operator tie)
+    30:             P: P3 (selection)
+    31:             S: S7 
+    32:             O: O44 (evaluate-object O37 (move2))
+    33:             ==>G: G10 (operator no-change)
+    34:                P: P1 (missionaries-and-cannibals)
+    35:                S: D11 
+Firing chunk-4
+    36:                O: C10 (move2)
+  APPLIED C10: move2(cannibal,cannibal,left,right)
+Retracting chunk-4
+    37:                O: O51 (move1)
+  APPLIED O51: move1(cannibal,right,left)
+    38:                ==>G: G11 (operator tie)
+    39:                   P: P4 (selection)
+    40:                   S: S9 
+    41:                   O: O58 (evaluate-object O53 (move11))
+    42:                   ==>G: G12 (operator no-change)
+    43:                      P: P1 (missionaries-and-cannibals)
+    44:                      S: D13 
+    45:                      O: C12 (move11)
+  APPLIED C12: move11(missionary,cannibal,left,right)
+  Goal implement-evaluate-object failed. 
+Building chunk-7
+Building chunk-8
+  Evaluation of O53 (move11) is failure
+    46:                   O: O57 (evaluate-object O54 (move1))
+    47:                   ==>G: G13 (operator no-change)
+    48:                      P: P1 (missionaries-and-cannibals)
+    49:                      S: D15 
+Firing chunk-8
+    50:                      O: C14 (move1)
+  APPLIED C14: move1(missionary,left,right)
+Retracting chunk-8
+
+  Goal implement-evaluate-object failed. 
+Building chunk-9
+Building chunk-10
+Building chunk-11
+Building chunk-12
+  Evaluation of O54 (move1) is failure
+    51:                O: O55 (move2)
+  APPLIED O55: move2(missionary,missionary,left,right)
+Retracting chunk-8
+Retracting chunk-10
+Retracting chunk-11
+Retracting chunk-12
+    52:                ==>G: G14 (operator tie)
+    53:                   P: P5 (selection)
+    54:                   S: S12 
+    55:                   O: O83 (evaluate-object O76 (move1))
+    56:                   ==>G: G15 (operator no-change)
+    57:                      P: P1 (missionaries-and-cannibals)
+    58:                      S: D17 
+    59:                      O: C16 (move1)
+  APPLIED C16: move1(missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building chunk-13
+Building chunk-14
+  Evaluation of O76 (move1) is failure
+    60:                   O: O82 (evaluate-object O77 (move11))
+    61:                   ==>G: G16 (operator no-change)
+    62:                      P: P1 (missionaries-and-cannibals)
+    63:                      S: D19 
+Firing chunk-14
+    64:                      O: C18 (move11)
+  APPLIED C18: move11(missionary,cannibal,right,left)
+Retracting chunk-14
+Firing chunk-14
+    65:                      ==>G: G17 (operator tie)
+    66:                         P: P6 (selection)
+    67:                         S: S15 
+    68:                         O: O105 (evaluate-object O98 (move2))
+    69:                         ==>G: G18 (operator no-change)
+    70:                            P: P1 (missionaries-and-cannibals)
+    71:                            S: D21 
+Firing chunk-14
+    72:                            O: C20 (move2)
+  APPLIED C20: move2(missionary,missionary,left,right)
+Retracting chunk-14
+Firing chunk-11
+Firing chunk-12
+Firing chunk-10
+Firing chunk-8
+    73:                            O: O114 (move1)
+  APPLIED O114: move1(cannibal,right,left)
+Retracting chunk-12
+Retracting chunk-8
+Retracting chunk-10
+Retracting chunk-11
+    74:                            O: O115 (move2)
+  APPLIED O115: move2(cannibal,cannibal,left,right)
+Firing chunk-4
+    75:                            ==>G: G19 (operator tie)
+    76:                               P: P7 (selection)
+    77:                               S: S17 
+    78:                               O: O124 (evaluate-object O118 (move1))
+    79:                               ==>G: G20 (operator no-change)
+    80:                                  P: P1 (missionaries-and-cannibals)
+    81:                                  S: D23 
+Firing chunk-4
+    82:                                  O: C22 (move1)
+  APPLIED C22: move1(cannibal,right,left)
+Retracting chunk-4
+    83:                                  O: O130 (move2)
+  APPLIED O130: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building chunk-15
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+Building chunk-16
+Building chunk-17
+Building chunk-18
+  Evaluation of O118 (move1) is success
+Building chunk-19
+  Evaluation of O98 (move2) is partial-success
+    84:                      O: O98 (move2)
+  APPLIED O98: move2(missionary,missionary,left,right)
+Retracting chunk-14
+Retracting chunk-19
+Firing chunk-11
+Firing chunk-12
+Firing chunk-10
+Firing chunk-8
+    85:                      O: O140 (move1)
+  APPLIED O140: move1(cannibal,right,left)
+Retracting chunk-12
+Retracting chunk-8
+Retracting chunk-10
+Retracting chunk-11
+    86:                      O: O141 (move2)
+  APPLIED O141: move2(cannibal,cannibal,left,right)
+Firing chunk-18
+Firing chunk-4
+    87:                      O: O144 (move1)
+  APPLIED O144: move1(cannibal,right,left)
+Retracting chunk-4
+Retracting chunk-18
+    88:                      O: O148 (move2)
+  APPLIED O148: move2(cannibal,cannibal,left,right)
+  Goal implement-evaluate-object succeeded. 
+Building chunk-20
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+Building chunk-21
+Building chunk-22
+Building chunk-23
+  Evaluation of O77 (move11) is success
+Building chunk-24
+  Evaluation of O37 (move2) is partial-success
+    89:          O: O37 (move2)
+  APPLIED O37: move2(cannibal,cannibal,left,right)
+Retracting chunk-4
+Retracting chunk-24
+    90:          O: O156 (move1)
+  APPLIED O156: move1(cannibal,right,left)
+Firing chunk-8
+Firing chunk-10
+Firing chunk-11
+Firing chunk-12
+    91:          O: O160 (move2)
+  APPLIED O160: move2(missionary,missionary,left,right)
+Retracting chunk-12
+Retracting chunk-11
+Retracting chunk-10
+Retracting chunk-8
+Firing chunk-14
+Firing chunk-21
+Building chunk-25
+Firing chunk-23
+Building chunk-26
+  Evaluation of O4 (move2) is partial-success
+    92:    O: O4 (move2)
+  APPLIED O4: move2(cannibal,cannibal,left,right)
+Retracting chunk-2
+Retracting chunk-4
+Retracting chunk-5
+Retracting chunk-6
+Retracting chunk-26
+    93:    O: O167 (move1)
+  APPLIED O167: move1(cannibal,right,left)
+Firing chunk-24
+Firing chunk-4
+    94:    O: O168 (move2)
+  APPLIED O168: move2(cannibal,cannibal,left,right)
+Retracting chunk-4
+Retracting chunk-24
+    95:    O: O174 (move1)
+  APPLIED O174: move1(cannibal,right,left)
+Firing chunk-8
+Firing chunk-10
+Firing chunk-11
+Firing chunk-12
+    96:    O: O178 (move2)
+  APPLIED O178: move2(missionary,missionary,left,right)
+Retracting chunk-12
+Retracting chunk-11
+Retracting chunk-10
+Retracting chunk-8
+Firing chunk-14
+Firing chunk-23
+    97:    O: O181 (move11)
+  APPLIED O181: move11(missionary,cannibal,right,left)
+Retracting chunk-23
+Retracting chunk-14
+Firing chunk-19
+Firing chunk-14
+    98:    O: O184 (move2)
+  APPLIED O184: move2(missionary,missionary,left,right)
+Retracting chunk-14
+Retracting chunk-19
+Firing chunk-11
+Firing chunk-12
+Firing chunk-10
+Firing chunk-8
+    99:    O: O192 (move1)
+  APPLIED O192: move1(cannibal,right,left)
+Retracting chunk-8
+Retracting chunk-10
+Retracting chunk-12
+Retracting chunk-11
+   100:    O: O193 (move2)
+  APPLIED O193: move2(cannibal,cannibal,left,right)
+Firing chunk-18
+Firing chunk-4
+   101:    O: O196 (move1)
+  APPLIED O196: move1(cannibal,right,left)
+Retracting chunk-4
+Retracting chunk-18
+   102:    O: O200 (move2)
+  APPLIED O200: move2(cannibal,cannibal,left,right)
+  Goal missionaries-and-cannibals succeeded. 
+ goal missionaries-and-cannibals achieved 
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (missionaries-and-cannibals)
+     2:    S: S1 
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+Firing chunk-26
+     3:    O: O4 (move2)
+  APPLIED O4: move2(cannibal,cannibal,left,right)
+Retracting chunk-4
+Retracting chunk-6
+Retracting chunk-5
+Retracting chunk-2
+Retracting chunk-26
+     4:    O: O7 (move1)
+  APPLIED O7: move1(cannibal,right,left)
+Firing chunk-24
+Firing chunk-4
+     5:    O: O8 (move2)
+  APPLIED O8: move2(cannibal,cannibal,left,right)
+Retracting chunk-4
+Retracting chunk-24
+     6:    O: O14 (move1)
+  APPLIED O14: move1(cannibal,right,left)
+Firing chunk-8
+Firing chunk-10
+Firing chunk-11
+Firing chunk-12
+     7:    O: O18 (move2)
+  APPLIED O18: move2(missionary,missionary,left,right)
+Retracting chunk-12
+Retracting chunk-11
+Retracting chunk-10
+Retracting chunk-8
+Firing chunk-14
+Firing chunk-23
+     8:    O: O21 (move11)
+  APPLIED O21: move11(missionary,cannibal,right,left)
+Retracting chunk-23
+Retracting chunk-14
+Firing chunk-19
+Firing chunk-14
+     9:    O: O24 (move2)
+  APPLIED O24: move2(missionary,missionary,left,right)
+Retracting chunk-14
+Retracting chunk-19
+Firing chunk-11
+Firing chunk-12
+Firing chunk-10
+Firing chunk-8
+    10:    O: O32 (move1)
+  APPLIED O32: move1(cannibal,right,left)
+Retracting chunk-8
+Retracting chunk-10
+Retracting chunk-12
+Retracting chunk-11
+    11:    O: O33 (move2)
+  APPLIED O33: move2(cannibal,cannibal,left,right)
+Firing chunk-18
+Firing chunk-4
+    12:    O: O36 (move1)
+  APPLIED O36: move1(cannibal,right,left)
+Retracting chunk-4
+Retracting chunk-18
+    13:    O: O40 (move2)
+  APPLIED O40: move2(cannibal,cannibal,left,right)
+  Goal missionaries-and-cannibals succeeded. 
+ goal missionaries-and-cannibals achieved 
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+
+System halted.
+
+Soar> 

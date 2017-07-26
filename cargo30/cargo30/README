@@ -1,0 +1,221 @@
+CarGo 3.0 is copyright (c) 1994 by Peter Dudey Drake.
+Permission is granted to distribute and use CarGo under the GNU public
+license.
+
+
+To use CarGo:
+
+1)  Do any configuration/porting necessary for your system.  To wit:
+
+	a)  Put instructions for loading Garnet into garnet.sys.lisp.
+	If you don't know about Garnet, see comp.windows.garnet.
+
+	b)  Make changes as appropriate below:
+
+	LUCID COMMON LISP
+	No other changes should be necessary.  I wrote this in LCL.
+
+	CLISP
+	You'll need to change all of the .lisp files to .lsp.
+	In the *-package.lsp files, change "LUCID-COMMON-LISP" to
+	"COMMON-LISP".
+	When loading those package files, you'll get a "continuable
+	error" because CLISP's "LISP" and "COMMON LISP" packages share
+	a function.  Type "continue", and pick the latter package when
+	given a choice.
+
+	RUNNING WITHOUT GRAPHICS
+	You can turn the graphics on or off on the fly by loading
+	gui.lisp or gui.no-graphics.lisp, respectively.  However, if
+	you're doing a long learning run or somesuch, and memory is
+	tight, you may also want to avoid loading Garnet.  To do this,
+	Comment out the first two lines from cargo.sys.lisp, and don't
+	:use the "KR" and "OPAL" packages in gui-package.lisp.  (The
+	files to be altered are nice and short, and you don't have to
+	recompile anything.
+	
+I'll try to make this less heinous in version 3.1.  If you have any
+problems, or can provide steps for converting to some other Lisp,
+please email me at dudeyp@research.cs.orst.edu.
+
+2)  Compile the following files:
+
+utils.lisp
+gui.lisp
+board.lisp
+
+3)  Load cargo.sys.lisp
+
+4)  (in-package "CARGO")
+
+5)  (play-go)
+
+
+Be sure to check out the documentation in the functions and macros.
+See cargo.sys.lisp for instructions on running CarGo without graphics
+(for long learning runs -- it's about 50 times faster!)
+
+
+The functions exported by gui.lisp and board.lisp are explained below.
+
+
+GUI.LISP
+========
+
+CLEAR-BOARD &optional lines fancy title new-window
+
+Creates a new window if necessary (or if new-window is non-NIL), or
+uses the selected window.  A clean board is set up in that window, and
+the window is returned.
+
+The default values for the parameters are:
+
+lines:	Same as the last window cleared or selected, or 19 if there is
+no such window.
+
+fancy (indices and handicap points are added if this is non-NIL):
+Same as last window, or T if there is none.
+
+title:  Same as last window, or "CarGo 3.0"
+
+new-window:  NIL, but becomes T if lines or fancy differ from the
+current window, or there is no current window.
+
+For example:
+
+(clear-board)
+done before anything else, draws and returns a window with a 19x19
+fancy board with the title "CarGo 3.0".  If there is a selected
+window, it clears out all stones and labels in that window.
+
+(clear-board 13 NIL "Foo" T)
+produces a new window containing a non-fancy 13x13 board, with the
+title "Foo".
+
+Try resizing the windows!
+
+
+KILL-GRAPHICS &rest windows
+
+Destroys the specified windows.  If no arguments are given, all
+windows are destroyed.
+
+To specify a window, use the value returned by clear-board.
+
+
+SELECT-WINDOW window
+
+Selects WINDOW for input and output.  WINDOW should be the result of a
+call to clear-board.
+
+'Nuff said.
+
+
+SET-STONES &rest stones
+
+Sets colors and labels on zero or more stones.
+
+Each stone should be of the form ((column . row) color label), where:
+column and row are 1-based
+color can be
+	:black, :white, :gray, :light-gray, or :dark-gray
+	NIL (no stone)
+	T (leave current stone)
+label can be
+	NIL (no label)
+	T (leave current label)
+	a string (place string on stone or point)
+	:previous (restore the last label that was removed)
+
+For example, try:
+(set-stones '((3 . 2) :black "A")
+	    '((5 . 3) :white)
+            '((7 . 1) NIL "23"))
+
+
+MESSAGE format-string &rest args
+
+Prints a message in the message window, creating the window if
+necessary.
+
+For example:
+
+(message "Howdy!")
+
+(message "The stone at ~a,~a is dead." column row)
+
+
+BEEP
+
+Beeps.  This is in the GUI package because the command for doing it is
+liable to be platform-dependent.
+
+
+
+Mouse clicks and key-presses in board windows are handled by
+cargo:handle-event.
+
+
+BOARD.LISP
+==========
+
+IN-ATARI-P chain
+
+Returns T iff CHAIN has exactly one liberty.
+
+
+SUICIDAL-P location
+
+Returns T iff LOCATION is a suicidal move for *CURRENT-PLAYER*.
+
+
+LEGAL-P location
+
+Returns T iff LOCATION is a legal move for *CURRENT-PLAYER* (under Ing
+rules).
+
+
+PLAY-AT location
+
+Plays a stone for *CURRENT-PLAYER* at LOCATION.  Assumes the move is
+legal.
+
+
+PASS
+
+Makes a pass move.
+
+
+REMOVE-DOOMED-CHAIN location
+
+Removes the chain of stones including LOCATION.  Assumes there is such
+a chain.
+
+
+HANDLE-EVENT event location
+
+Takes an action appropriate to user input.  This should be called by
+the event loop in the GUI package.
+
+
+COUNT-SCORE
+
+Counts the score, assuming everything on the board is alive.  Returns
+black score - white score.
+
+This also draws some nifty shaded circles to indicate territory.
+
+
+PLAY-GO &optional lines
+
+Sets up and begins a game of Go.
+
+This will return NIL, but the game is afoot, due to the Garnet event
+loop.  Make some moves!
+
+The default value for lines is the size of the current *BOARD*, or 19
+if there is none.
+
+
+Please send any bug reports, comments, or questions to
+dudeyp@research.cs.orst.edu.

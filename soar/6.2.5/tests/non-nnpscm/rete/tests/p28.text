@@ -1,0 +1,57 @@
+(sp p28
+   (goal <g> ^a <a>)
+  -{(goal <g> ^b {<q> > <a>})
+    (goal <g> ^c < <q>)
+    (goal <g> ^d <= <a>)}
+-->)
+
+run 1
+add-wme g1 ^a 1
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^a 1
+ms
+add-wme g1 ^b 2
+ms
+add-wme g1 ^c 0
+ms
+add-wme g1 ^d 1
+ms
+remove-wme 11
+ms
+run 1
+add-wme g1 ^b 1
+ms
+remove-wme 14
+ms
+add-wme g1 ^b 3
+ms
+run 1
+remove-wme 15
+ms
+run 1
+add-wme g1 ^b 4
+ms
+run 1
+remove-wme 12
+ms
+run 1
+add-wme g1 ^c 4
+ms
+remove-wme 17
+ms
+add-wme g1 ^c 2
+ms
+run 1
+remove-wme 13
+ms
+run 1
+add-wme g1 ^d 5
+ms
+remove-wme 19
+ms
+add-wme g1 ^d 0
+ms

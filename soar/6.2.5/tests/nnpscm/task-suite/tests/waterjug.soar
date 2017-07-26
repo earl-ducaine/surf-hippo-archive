@@ -1,0 +1,11 @@
+;; $Id: waterjug.soar,v 1.4 1994/12/06 22:04:53 rempel Exp $
+(user-select first)
+(load "../../../default/nnpscm/default.soar")
+(load "../../../examples/nnpscm/waterjug/waterjug.soar")
+(learn off)
+(run)
+(learn on)
+(init-soar)
+(run)
+(init-soar)
+(run)

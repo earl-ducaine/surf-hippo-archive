@@ -1,0 +1,43 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Soar> *
+Soar> 
+Soar> *
+Soar> 
+Soar> 
+     0: ==>G: G1 
+  Impasse for P1 ^world type: tie
+     1:    P: P2 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O1 (wait)
+     4:    O: O1 (wait)
+     5:    O: O1 (wait)
+     6:    O: O1 (wait)
+     7:    O: O1 (wait)
+     8:    O: O1 (wait)
+     9:    O: O1 (wait)
+    10:    O: O1 (wait)
+
+Soar> 
+Soar> 

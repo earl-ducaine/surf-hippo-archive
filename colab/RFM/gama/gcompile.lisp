@@ -1,7 +1,0 @@
-(compile-file "/home/sintek/RFM/gama/gaux.lsp")
-(compile-file "/home/sintek/RFM/gama/gcla.lsp")
-(compile-file "/home/sintek/RFM/gama/gmem.lsp")
-(compile-file "/home/sintek/RFM/gama/gmht.lsp")
-(compile-file "/home/sintek/RFM/gama/gasm.lsp")
-(compile-file "/home/sintek/RFM/gama/ginit.lsp")
-(compile-file "/home/sintek/RFM/gama/gwam.lsp")

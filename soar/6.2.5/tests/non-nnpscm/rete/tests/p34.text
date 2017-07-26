@@ -1,0 +1,13 @@
+(sp p34
+   (goal <a> ^a a)
+   (<a> ^b <b>)
+   (<a> ^c <b>)
+-->)
+
+run 1
+add-wme g1 ^a a
+ms
+add-wme g1 ^b b
+ms
+add-wme g1 ^c b
+ms

@@ -1,0 +1,108 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/physics/physics.soar
+#********************************
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (solve-problem)
+     2:    S: S1 
+     3:    O: Q3 (find-average-velocity)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P1 (solve-problem)
+     6:       S: S1 
+     7:       O: Q4 (find-distance)
+     8:       ==>G: G3 (operator no-change)
+     9:          P: P1 (solve-problem)
+    10:          S: S1 
+    11:          O: Q8 (use-equation)
+    12:          ==>G: G4 (operator no-change)
+    13:             P: P2 (use-equation)
+    14:             S: S4 
+    15:             O: Q11 (vuat)
+    16:             O: Q10 (suat)
+Building justification-1
+Building justification-2
+Building justification-3
+    17:          O: Q14 (draw-graph)
+Building justification-4
+Building justification-5
+ Distance is  51.  and average velocity is  8.5 
+ 
+ goal solve-physics-problem achieved 
+  Goal solve-physics-problem succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (solve-problem)
+     2:    S: S1 
+     3:    O: Q3 (find-average-velocity)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P1 (solve-problem)
+     6:       S: S1 
+     7:       O: Q4 (find-distance)
+     8:       ==>G: G3 (operator no-change)
+     9:          P: P1 (solve-problem)
+    10:          S: S1 
+    11:          O: Q8 (use-equation)
+    12:          ==>G: G4 (operator no-change)
+    13:             P: P2 (use-equation)
+    14:             S: S4 
+    15:             O: Q11 (vuat)
+    16:             O: Q10 (suat)
+Building chunk-1
+Building chunk-2
+Building chunk-3
+    17:          O: Q14 (draw-graph)
+Building chunk-4
+Building chunk-5
+ Distance is  51.  and average velocity is  8.5 
+ 
+ goal solve-physics-problem achieved 
+  Goal solve-physics-problem succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (solve-problem)
+     2:    S: S1 
+     3:    O: Q3 (find-average-velocity)
+Firing chunk-3
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P1 (solve-problem)
+     6:       S: S1 
+     7:       O: Q5 (draw-graph)
+Building chunk-6
+ Distance is  51.  and average velocity is  8.5 
+ 
+ goal solve-physics-problem achieved 
+  Goal solve-physics-problem succeeded. 
+System halted.
+
+Soar> 

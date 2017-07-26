@@ -1,0 +1,18 @@
+load ../../../default/nnpscm/default.soar
+load ../../../examples/nnpscm/towers-of-hanoi/towers-of-hanoi.soar
+load ../../../examples/nnpscm/towers-of-hanoi/probs/prob.3d.2
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/towers-of-hanoi/probs/prob.4d.1
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/towers-of-hanoi/probs/prob.5d.1
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/towers-of-hanoi/probs/prob.5d.2
+run
+list-chunks
+

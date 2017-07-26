@@ -1,0 +1,11 @@
+(load "../../../default/nnpscm/default.soar")
+(load "../../../examples/nnpscm/kab/kab.soar")
+;
+; Keys-and-Boxes doesn't work well with learning off.  It generates 600K
+; of output.  Hence we only run it with learning on.
+;
+(learn on)
+(init-soar)
+(run)
+(init-soar)
+(run)

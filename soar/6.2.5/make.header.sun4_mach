@@ -1,0 +1,11 @@
+# $Id: make.header.sun4_mach,v 1.4 1994/06/08 21:45:29 portelli Exp $
+#
+# SUN Sparc 1, Mach,  w/ gcc:
+
+CC         = gcc
+CFLAGS     = -O -ansi -DUSE_STDARGS -fpcc-struct-return -DUNIX
+EXTRA_LIBS =
+RANLIB     = ranlib
+
+MACHINE_DEP_DIR = sun4_mach
+

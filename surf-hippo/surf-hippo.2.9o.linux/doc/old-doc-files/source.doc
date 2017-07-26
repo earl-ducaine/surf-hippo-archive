@@ -1,0 +1,651 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+      CURRENT AND VOLTAGE SOURCES - 
+	
+	CURRENT AND VOLTAGE CLAMP SIMULATIONS
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Adding and Editing Sources
+2. Current and Voltage Source Driving Functions
+3. Specifying Pulse Sequences and Pulse Trains
+4. Specifying Waveforms
+5. EDIT-SOURCE-STIMULUS, ADD-PULSE-LIST and ADD-WAVEFORM Functions
+6. Source Resistance - Ideal Voltage Sources
+7. Sources May Be Disabled
+8. Voltage Source Current Data
+9. Stability of Voltage Sources
+10. Electrode Model
+11. Some Examples
+12. Adding a Constant Current Source to Somas or Segments
+13. The Voltage Recorded at Current Source Nodes: Bridge Balance
+    and Internal Source Resistance
+14. Steady State Voltage Clamp at the Soma
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+
+****************************************************************
+****************************************************************
+
+	    Adding Sources
+
+****************************************************************
+****************************************************************
+
+Sources may be added with the histology window menus, or by calling the functions ADD-ISOURCE or
+ADD-VSOURCE (source.lisp):
+
+	add-isource CELL-ELEMENT-OR-NAME &optional NAME
+
+	add-vsource CELL-ELEMENT-OR-NAME &optional NAME (IDEAL T)
+
+For example:
+
+	(add-isource "Hippo-soma")
+
+	or
+
+	(add-vsource "Hippo-soma")
+
+If the optional name argument is not supplied, the name of the source is the node name
+concatenated with either "isrc" or "vsrc", as appropriate.
+
+A more detailed method is to use the functions CREATE-PWL-ISOURCE or CREATE-PWL-VSOURCE (in
+isource.lisp and vsource.lisp, respectively):
+
+	create-pwl-isource CELL-ELEMENT &key (WAVEFORM-TIME-INTERVAL 0.20) WAVEFORM NAME
+					ENABLE-PULSE-TRAIN
+					(ENABLE-INDIVIDUAL-PULSES T)
+					PULSE-TRAIN-ARGS
+					PULSE-LIST
+					(USE-PULSE-LIST T)
+					WAVEFORM-ARGS
+
+
+	create-pwl-vsource CELL-ELEMENT &key (WAVEFORM-TIME-INTERVAL 0.20) WAVEFORM NAME
+					ENABLE-PULSE-TRAIN IDEAL
+					(ENABLE-INDIVIDUAL-PULSES T)
+					PULSE-TRAIN-ARGS
+					PULSE-LIST
+					(USE-PULSE-LIST T)
+					WAVEFORM-ARGS
+
+In these functions, if both a WAVEFORM sequence and WAVEFORM-ARGS are included, then WAVEFORM-ARGS
+is ignored.
+
+A given circuit element may have more than one current source (with different names), but only one
+voltage source (even though the voltage source has a non-zero source impedance).
+
+
+For editing properties of individual sources,
+
+	edit-source SOURCE
+
+where SOURCE is either a voltage or current source, or the name of one.
+
+For convenience, the most recently created current source or voltage source is assigned to the
+global variables *ISOURCE* and *VSOURCE*, respectively. In other words,
+
+	*ISOURCE* = (car (isources))
+
+	*VSOURCE* = (car (vsources))
+
+*****************************************************************
+*****************************************************************
+
+    Current and Voltage Source Driving Functions
+
+*****************************************************************
+*****************************************************************
+
+Current and voltage sources generate piece-wise linear waveforms which are derived either from
+user-specified pulse sequences or from a full waveform array assigned to the source. In the latter
+case, the values in the array may be filled from a choice of various canonical functions or with
+an arbitrary waveform (using the function ADD-WAVEFORM in source.lisp).
+
+Pulses are used as the driving function when the :USE-PULSE-LIST slot of the source is T;
+otherwise a waveform defines the source output. The parameters of the pulses or waveforms are
+stored in the source :PARAMETERS a-list slot, e.g.:
+
+	(vsource-parameters (element "Hippo-soma-vsrc")) -> 
+
+	((PULSE-TRAIN-ARGS (:START . 50.0) (:STOP . 200.0) (:DELAY . 10.0)
+	  (:DURATION . 10.0) (:PERIOD . 30.0) (:AMPLITUDE . -30.0))
+	 (ENABLE-INDIVIDUAL-PULSES)
+	 (ENABLE-PULSE-TRAIN . T)
+	 (PULSE-LIST (50.0 90.0 -20.0))
+	 (WAVEFORM-ARGS))
+
+Similar arguments may be included in the CREATE-PWL-ISOURCE or CREATE-PWL-VSOURCE functions as
+seen above. See discussion on ADD-PULSE-LIST below.
+
+Pulse sequences and canonical functions may be specified by entries in the the list
+*SOURCE-PULSE-LISTS*, as follows:
+
+     (source-list1 source-list2 source-list3 ...)
+
+Note that the name *SOURCE-PULSE-LISTS* is a bit inaccurate, since the information here can refer
+to waveforms as well as pulse sequences.
+
+The format for the source-list sublists are described below. 
+
+For pulse-based waveforms that actually drive a source, each pulse is approximated in a piece-wise
+linear fashion between the breakpoints of the pulse train, where the slope of each transition is
+determined by the variables *PWL-ISOURCE-DI-DT [nA/msec, default 100] or *PWL-VSOURCE-DV-DT
+[mV/msec, default 1000], as appropriate. These values may be edited with the menus.
+
+For waveforms that are derived from array values, the time base for the array is specified in the
+case of the canonical functions as the STEP parameter (milliseconds), or in the
+:WAVEFORM-TIME-INTERVAL argument of ADD-WAVEFORM (default 0.2ms). In either case, the array time
+base is inverted and assigned to the :WAVEFORM-TIME-INTERVAL-INVERSE slot of both current and
+voltage sources. The output value of a source at a given time point is a piece-wise linear
+interpoloation between the array values that frame the current time point. This two-point-based
+interpolation should be kept in mind when assigning a value of the array time base (the time
+resolution of the array), so that the synthesized waveform is an adequate approximation of the
+desired source output function.
+
+*****************************************************************
+*****************************************************************
+
+	Specifying Pulse Sequences and Pulse Trains
+
+*****************************************************************
+*****************************************************************
+
+Pulses may be defined as either descriptions of individual pulses and/or a description of a pulse
+train. The final driving function pulse sequence may be a combination of both, depending on the
+values of 'ENABLE-INDIVIDUAL-PULSES and 'ENABLE-PULSE-TRAIN in the source :PARAMETERS slot a-list.
+
+The format of the source-list for individual pulses is:
+
+  (source-name pulse-list1 pulse-list2 ...)
+
+The format of each pulse-list is as follows:
+
+  (start-time stop-time magnitude), e.g. (4 6 .1) 
+
+The magnitude for current sources is in nA, and for voltage sources is in mV.
+
+For example, consider if *SOURCE-PULSE-LISTS* =
+
+  (("cable-1-soma-stim" (3 4 0.1) (10 12 -0.2))
+   ("cable-2-stim" (20 25 -70)))
+
+These lists thus define pulse-based waveforms for two sources. Assuming that "cable-1-soma-stim"
+is a current source and "cable-2-stim" is a voltage source, this would specify a current waveform
+for "cable-1-soma-stim" as a 0.1 nA pulse from 3 milliseconds to 4 milliseconds and a -0.2 nA
+pulse from 10 milliseconds to 12 milliseconds and 0 nA otherwise, and the voltage waveform for
+"cable-2-stim" which holds its circuit node to -70 millivolts from 20 to 25 milliseconds, and to 0
+millivolts otherwise.
+
+The value of the source voltage for voltage sources during times outside of the specified waveform
+is given by the global variable *VCLAMP-DEFAULT-MAGNITUDE (mV). The analagous value for current
+sources is 0.
+
+In general, pulse sequences should be defined so that they are "well-behaved", that is the
+durations do not overlay (they can be contiguous, however). Surf-Hippo will attempt to synthesize
+waveforms that "make sense" given various pulse sequences, but if there is any doubt you should
+verify the resulting waveform by the plotted output of the source (this is an option also when you
+edit the stimulus).
+
+For example, the following pulse sequence is ok:
+
+ ("Hippo-soma-isrc" (10.0 20.0 2.0) (20.0 22.0 -5.0))
+
+If a pulse is defined or edited (e.g. via the menus) with the stop time less than or equal to the
+start time, then that pulse is ignored.  This is convenient, for example, when a multiple pulse
+stimulus is defined. Selected pulses in the train may be temporarily disabled simply by making the
+stop time negative, without the necessity of removing the pulse or changing any other pulse
+parameters. If the stop time of a pulse is greater than the stop time of the simulation, then that
+pulse is ignored.
+
+The format of the source-list for a pulse train is:
+
+  (source-name 
+	:TRAIN (:START . value) (:STOP . value) (:DELAY . value)
+	       (:DURATION . value) (:PERIOD . value) (:AMPLITUDE . value))
+
+For example:
+
+       ("Hippo-soma-isrc" 
+       :TRAIN
+       (:START . 5.0) (:STOP . 10.0) (:DELAY . 10.0)
+       (:DURATION . 10.0) (:PERIOD . 30.0) (:AMPLITUDE . -30.0)))
+
+
+*****************************************************************
+*****************************************************************
+
+	Specifying Waveforms
+
+*****************************************************************
+*****************************************************************
+
+An example of a source list that refers to a canonical waveform is:
+
+	("Hippo-5-vsrc"
+	 :SIN 
+	 (STEP . 0.2) (DELAY . 30.0) (TAU . 10.0) (DURATION . 60.0)
+	 (AMPLITUDE . 10.0) (PHASE . 0.0) (FREQUENCY . 0.1) (OFFSET . -50.0))
+
+The general format for these types of source lists is:  
+
+	(source-name waveform-spec)	
+
+The general format for the waveform-spec is keyword specifying the type of waveform, followed by
+various paraemeters specific to the type:
+
+	:WAVE-TYPE (PARAM1 . value) (PARAM2 . value) ... 
+
+In general, the units for wave parameters are milliseconds for time related units (e.g. STEP, DELAY,
+DURATION, TAU), and nA or mV for amplitude related units (e.g. AMPLITUDE, OFFSET). Briefly, here are
+the available reference waveforms, and their parameters (with default values):
+
+	  :EXPONENTIAL (STEP . 0.2) (DELAY . 0.0) (TAU . 10.0) (DURATION . 1.0)
+
+	  :IMPULSE (STEP . 0.2) (DELAY . 0.0)
+
+	  :ALPHA_FUNCTION (STEP . 0.2) (DELAY . 0.0) (TAU . 10.0) 
+	   (DURATION . 1.0) (TAU-POWER . 1.0) (NORMALIZE) (FIX-AREA . T)
+
+	  :DOUBLE_ALPHA_FUNCTION (STEP . 1.0) (DELAY . 0.0) (TAU . 10.0)
+	   (DURATION . 1.0) (TAU-2 . 10.0) (PROPORTION . 1.0) (POSITIVE . T)
+
+	  :SIN (STEP . 0.2) (DELAY . 0.0) (TAU . 10.0) (DURATION . 1.0)
+	   (AMPLITUDE . 1.0) (PHASE . 0.0) (FREQUENCY . 0.1) (OFFSET . 0.0)
+
+	  :DOUBLE-EXPONENTIAL (STEP . 0.2) (DELAY . 30.0) (TAU . 1.0) (AMPLITUDE . 1.0)
+	  (DURATION . 100.0) (OFFSET . 0.0) (TAU-2 . 20.0) (ADJUSTMENT . :NORMALIZE))
+
+
+Note that the :STEP parameter defines the resolution of the waveform. These arguments are
+documented further in waveforms.lisp.
+
+The global variable *SOURCE-PULSE-LISTS* may be set in the original circuit file, e.g.:
+
+     (setq *SOURCE-PULSE-LISTS*
+	   '(("Hippo-5-vsrc"
+	      :SIN (STEP . 0.2) (DELAY . 30.0) (TAU . 10.0) (DURATION . 60.0)
+		   (AMPLITUDE . 10.0) (PHASE . 0.0) (FREQUENCY . 0.1) (OFFSET . -50.0)))
+	     ("Hippo-soma-isrc" (10.0 20.0 2.0) (100.0 110.0 -5.0))))
+
+
+****************************************************************
+****************************************************************
+
+  EDIT-SOURCE-STIMULUS, ADD-PULSE-LIST and ADD-WAVEFORM Functions
+
+****************************************************************
+****************************************************************
+
+In source.lisp,
+
+	 edit-source-stimulus SOURCE
+
+Invokes menus for editing and inspecting the SOURCE driving function. This function may also be
+invoked via the EDIT-SOURCE function described above.
+
+
+	add-pulse-list SOURCE PULSE-LIST
+
+Adds a PULSE-LIST to SOURCE, where the format of PULSE-LIST is either
+
+  (pulse-1 pulse-2 ...)
+
+or for just a single pulse
+
+  pulse
+
+and the format of each specific pulse is as follows:
+
+  (start-time stop-time magnitude), e.g. (4 6 .1) 
+
+For example,
+
+	(add-pulse-list "789-pyramidal-soma-isource" '((120.0 170.0 0.5) (220.0 270.0 -0.5)))
+
+This example sets the current source named "789-pyramidal-soma-isource" to give a 50ms 0.5nA pulse
+starting at 120ms, and a 50ms -0.5nA pulse starting at 220ms.
+
+This function will also set the :USE-PULSE-LIST slot for the source.
+
+As above, the magnitude for current sources is in nA, and for voltage sources the magnitude is in
+mV. The time units are in milliseconds.
+
+This function has no effect on whether a defined pulse train is referenced.
+
+
+
+	add-waveform SOURCE &key WAVEFORM USE-MENU WAVEFORM-ARGS
+				 (WAVEFORM-TIME-INTERVAL 0.20)
+				 DELAY	
+
+
+ADD-WAVEFORM loads source with a waveform and its timebase information (WAVEFORM-TIME-INTERVAL
+[milliseconds] and DELAY [milliseconds]). When the WAVEFORM argument is not included and USE-MENU
+is T calls WAVEFORM-MENU to get waveform.  WAVEFORM-ARGS will setup the menu, or with neither menu
+or WAVEFORM argument, the WAVEFORM-ARGS will be interpreted to generate the final waveform. Puts
+the resulting waveform array into :WAVEFORM-ARRAY slot of SOURCE. The WAVEFORM argument has
+precedence over the WAVEFORM-ARGS argument for defining the source waveform.
+
+The format of the WAVEFORM-ARGS is the CDR of that describe above for
+source-lists. For example, if a sublist of *SOURCE-PULSE-LISTS* was:
+
+	("Hippo-5-vsrc"
+	 :SIN 
+	 (STEP . 0.2) (DELAY . 30.0) (TAU . 10.0) (DURATION . 60.0)
+	 (AMPLITUDE . 10.0) (PHASE . 0.0) (FREQUENCY . 0.1) (OFFSET . -50.0))   
+
+
+a call to ADD-WAVEFORM that adds the same thing would be:
+
+	(add-waveform "Hippo-5-vsrc"
+	 '(:SIN (STEP . 0.2) (DELAY . 30.0) (TAU . 10.0) (DURATION . 60.0)
+	        (AMPLITUDE . 10.0) (PHASE . 0.0) (FREQUENCY . 0.1) (OFFSET . -50.0)))
+
+This function will also resets the :USE-PULSE-LIST slot for the source.
+
+****************************************************************
+****************************************************************
+
+	     Source Resistance - Ideal Voltage Sources
+
+****************************************************************
+****************************************************************
+
+Both current and voltage sources may have a non-zero internal resistance, which as a
+first approximation represents the electrode resistance. For nodes with current sources,
+the voltage measured at the node will be offset by the IR drop across this resistance
+(given by the variable *ISOURCE-ELECTRODE-RESISTANCE* [Mohms, default 0] when the source
+is created, and which may be edited with the menus). For voltage sources, the source
+resistance (given by the variable *VSOURCE-RESISTANCE* [Mohms, default 0.001 or 1Kohms]
+when the source is created, and which may be edited with the menus) models the non-ideal
+voltage clamp. The voltage source resistance for non-ideal sources must be >0, since the
+circuit integration treats voltage sources as a (typically very large) membrane
+conductance in series with a controlled (time-varying) battery.
+
+For a more sophisticated model of sources, see the discussion on Electrode Model below.
+
+Ideal voltage sources (created by default), on the other hand, by definition have zero
+internal resistance. To toggle a voltage source between ideal and non-ideal, use the
+functions
+
+	ideal-vsource VSOURCE
+
+	non-ideal-vsource VSOURCE
+
+Circuits with nodes that have ideal voltage sources are solved by creating a new circuit
+matrix in which these nodes have been removed.  The nodes adjacent to these nodes still
+have a current and jacobian (from the connecting segment axial resistance) contribution
+from the removed nodes, as if those nodes were still there. Any membrane elements on the
+removed nodes are evaluated with reference to the value of the associated ideal voltage
+source (see also numerical.doc).
+
+
+****************************************************************
+****************************************************************
+
+	Sources May Be Disabled
+
+****************************************************************
+****************************************************************
+
+Via the stimulus menus, or with the following functions, sources may be disabled for a
+simulation.
+
+	turn-on SOURCE
+
+	turn-off SOURCE
+
+
+****************************************************************
+****************************************************************
+
+	Voltage Source Current Data
+
+****************************************************************
+****************************************************************
+
+
+The function GET-VSOURCE-CURRENT obtains the voltage source current in various ways:
+
+If the source is non-ideal, and the global variable *VSOURCE-INTRINSIC-CURRENT* is T,
+then the current is calculated using the voltage drop between the source and the source
+node, considering the source resistance. Otherwise, the current is summed over all the
+elements connected to the source node.
+
+If *INCLUDE-VSOURCE-CURRENT-LINEAR-AND-NON-LOCAL-COMPONENT* is NIL (default T), then the
+set of elements for summing the current does not include the source node leak
+resistance, the source node capacitance, and the segments and/or soma that are connected
+to the source node. If the source node is the only node with non-linear elements, then
+the resulting voltage source current is similar to what is obtained experimentally when
+the "linear component" of the voltage clamp current is subtracted from the record.
+
+If *INCLUDE-LOCAL-CAP-CURRENT-IN-VSOURCE* is NIL (default T), then the source node
+capacitance current is ignored.
+
+
+****************************************************************
+****************************************************************
+
+ Stability of Voltage Sources
+
+****************************************************************
+****************************************************************
+
+There are some subtleties vis-a-vis the integration and the (non-ideal) voltage source
+model that require further debugging. This shows up as (apparently) bounded oscillations
+in the voltage of the node with the source, and the source current. These oscillations
+are more pronounced with non-pulse source waveforms and variable time step integration.
+The oscillations are also larger with smaller source resistance.
+
+For the present we recommend conservative setting of the numerical parameters, in particular a
+small value for the global variable USER-MAX-STEP (default is 0.15 ms, but a better value in this
+case could be 0.01ms) when using a variable time step, or a similar value for a fixed time step,
+e.g.:
+
+	(setq *USE-FIXED-STEP* t)
+	(setq *USER-STEP* 0.01)
+
+See also the discussion "Choosing Parameters for Numerical Integration" in the hints_misc.doc
+file. Also see the discussion "Voltage Errors" in numerical.doc.
+
+Since the effective source resistance for ideal voltage sources is of the same order of
+magnitude as the tree structure (since the source "resistance" as seen by the circuit is
+taken from the appropriate segment axial resistance), we have not as yet observed
+stability problems with ideal voltage sources. Thus, in practice, the inclusion of an
+ideal voltage source poses no additional constraints on the time step parameters.
+
+
+****************************************************************
+****************************************************************
+
+	Electrode Model
+
+****************************************************************
+****************************************************************
+
+(in misc.lisp)
+
+For adding a simple electrode model with a current or voltage source, respectively, to a node:
+
+	add-ielectrode CELL-ELEMENT 
+			&key (CAPACITANCE 1.0e-3) (RESISTANCE 10e6) NAME (SOURCE-RESISTANCE 10)
+
+	add-velectrode CELL-ELEMENT
+			&key (CAPACITANCE 1.0e-3) (RESISTANCE 10e6) NAME (SOURCE-RESISTANCE 10)
+
+
+These functions add the following electrode model to CELL-ELEMENT -
+
+
+                          RESISTANCE (ohms)     SOURCE RESISTANCE (ohms)     
+                                                   -----------------------------
+ CELL-ELEMENT node  <----------/\/\/\-----+-------| -/\/\/\- <-- Current or     |--
+                                          |       |              Voltage Source |  |
+                                          |        -----------------------------   |
+                      CAPACITANCE (nF)  -----                                      |
+                                        -----                                     Gnd 
+                                          |
+                                          |
+                                         Gnd
+                                          
+
+RESISTANCE and SOURCE-RESISTANCE are in ohms, and CAPACITANCE is in nanofarads. If CELL-ELEMENT is
+a segment, then the electrode is added to the distal node of the segment.  If NAME is not given,
+the name of the electrode is taken from the name of the CELL-ELEMENT, with "-electrode" added. In
+fact, the actual circuit includes a linear conductance (1.0e-10 uS) in parallel with the
+capacitance, but this is small enough so that it may be ignored.
+
+SOURCE-RESISTANCE, the internal resistance of the current or voltage source (described earlier),
+is also included in the electrode model (essentially the source added to the electrode here is no
+different from any other source added to a cell). Thus, it may be important to adjust the source
+intrinsic resistance accordingly.
+
+In some situations, the electrode will be lumped together with the cell segments, for example with
+the plot output. This is because the electrode model is a special case of the segment model.
+
+	edit-electrodes &optional ELECTRODE
+
+This function allows direct menu editing of the electrode(s) axial and "membrane" resistance, and
+capacitance.
+
+
+	set-electrode-capacitance C-ELECTRODE &optional ELECTRODE
+
+SET-ELECTRODE-CAPACITANCE sets the capacitance of the optional ELECTRODE argument to C-ELECTRODE
+(nF). If ELECTRODE is not supplied, the first electrode returned by (LIST-OF-ALL-THINGS
+'ELECTRODE) will be used.
+
+
+	set-electrode-resistance R-ELECTRODE &optional ELECTRODE
+
+SET-ELECTRODE-RESISTANCE sets the resistance of the optional ELECTRODE argument to R-ELECTRODE
+(Mohms). If ELECTRODE is not supplied, the first electrode returned by (LIST-OF-ALL-THINGS
+'ELECTRODE) will be used.
+
+
+Here is an example of a script that tests the effect of various electrode parameters of the
+voltage measured at the electrode (assuming that the proper plotting parameters have already been
+set up, perhaps with the menus):
+
+
+	(loop for r-electrode in '(0.01 5.0 10.0 50.0) do
+	      (loop for c-electrode in '(0.0001 0.001 0.01) do
+		    (set-electrode-capacitance c-electrode) 	
+	    	    (set-electrode-resistance r-electrode)
+	    	    (goferit)))
+
+
+
+*********************************************
+*********************************************
+
+	Some Examples
+
+*********************************************
+*********************************************
+
+
+This form adds a current source (not the electrode model) to all the
+somas in the circuit, and gives each of them a pulse of 1nA starting
+from 0 milliseconds until 0.5 milliseconds:
+
+
+	(loop for soma in (somas) do (add-pulse-list (add-isource soma) '(0.0 0.5 1.0)))
+
+*********************************************
+*********************************************
+
+   Adding a Constant Current Source to Somas or Segments
+
+*********************************************
+*********************************************
+
+
+
+	add-constant-current-to-element ELEMENT CURRENT
+
+Adds a constant CURRENT [nA] to the soma or segment ELEMENT for the duration of the simulation.
+This is equivalent to including a current source at the element that has a fixed DC value.
+
+
+	clear-constant-currents
+
+Removes any constant current terms from all the circuit nodes.
+
+
+
+****************************************************************
+****************************************************************
+
+The Voltage Recorded at Current Source Nodes: Bridge Balance
+    and Internal Source Resistance
+
+****************************************************************
+****************************************************************
+
+Current sources have two additional parameters - an internal source
+resistance (Mohms, in the :RESISTANCE slot) and a :BRIDGE-BALANCE
+setting (Mohms, stored in the source's :PARAMETERS slot). These
+parameters, which may be changed from the EDIT-ISOURCE menu, effect
+*only* the voltage measured at the source node, as follows.
+
+Assume a circuit node NODE with a (single) current source ISRC (this
+could be a soma, a segment, or an electrode). ISRC has an internal
+resistance R-int, and a (non-zero) :BRIDGE-BALANCE R-bridge. If the
+current of the ISRC is I(t), the recorded voltage Vr(t) for NODE
+depends on whether or not the associated corrections are enabled
+(these flags are stored in the :PARAMETERS slot of ISRC):
+
+           Vr(t)                        :ENABLE-ISOURCE-DROP :ENABLE-BRIDGE-BALANCE
+-----------------------------------------------------------------------------------
+           V(t)                                 NIL                   NIL                                    
+V(T) + (I(t) * R-int)                            T                    NIL 
+V(T) - (I(t) * R-bridge)                        NIL                    T
+V(T) + (I(t) * R-int) - (I(t) * R-bridge)        T                     T
+
+
+If there is more than one current source associated with NODE, then
+these corrections are disabled.
+
+
+****************************************************************
+****************************************************************
+
+	Steady State Voltage Clamp at the Soma
+
+****************************************************************
+****************************************************************
+
+Steady-state voltage clamp experiments are more conveniently run using
+the function (protocols.lisp):
+
+	steady-state-vclamp V-HOLDING &optional (VSOURCE *VSOURCE*)
+
+When the vsource is at the soma, the initial voltage for all cell
+nodes is set according to an imposed holding potential at the soma,
+and only linear cable/membrane properties. With the latter assumption
+the starting conditions (potentials) may be found quickly by first
+calculating (iteratively, from distal to proximal) and storing the
+equivalent terminating (end) resistance connected to the distal node
+of each segment. With this information, the segment voltages may be
+assigned (iteratively, from proximal to distal) in one pass through
+the dendritic tree. These steps are performed by the function
+(cable_functions.lisp):
+
+	steady-state-linear-voltage-clamp (VSOURCE HOLDING-POTENTIAL)
+
+A future revision will apply this algorithm for voltage sources
+located anywhere in the cell.

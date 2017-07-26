@@ -1,0 +1,884 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>The poly-pen manual</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"></HEAD
+><BODY
+CLASS="article"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN2"
+>The poly-pen manual</A
+></H1
+><H2
+CLASS="subtitle"
+>Easy image generation in Common Lisp</H2
+><H3
+CLASS="author"
+><A
+NAME="AEN5"
+>Yannick Gingras</A
+></H3
+><DIV
+CLASS="affiliation"
+><DIV
+CLASS="address"
+><P
+CLASS="address"
+><CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:ygingras@ygingras.net"
+>ygingras@ygingras.net</A
+>&#62;</CODE
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="#AEN11"
+>Introduction</A
+></DT
+><DT
+><A
+HREF="#AEN37"
+>Colors</A
+></DT
+><DT
+><A
+HREF="#AEN52"
+>Shapes</A
+></DT
+><DT
+><A
+HREF="#AEN72"
+>Drawing</A
+></DT
+><DT
+><A
+HREF="#AEN102"
+>Text</A
+></DT
+><DT
+><A
+HREF="#AEN119"
+>Plots</A
+></DT
+><DT
+><A
+HREF="#AEN128"
+><CODE
+CLASS="function"
+>with</CODE
+> macros</A
+></DT
+><DT
+><A
+HREF="#AEN142"
+>Conclusion</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN11"
+>Introduction</A
+></H2
+><P
+>Several graphic libraries are available for the Common Lisp
+    programmer.  Those feature several low level operations with
+    incompatible interfaces.  The goal of <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+> is to offer a higher
+    level interface to graphic manipulation without committing to a
+    particular low level back-end.</P
+><P
+>The term <SPAN
+CLASS="QUOTE"
+>"proxy"</SPAN
+> defines well <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+>.  It lets
+    the programmer define hi-level drawing operations and switch at
+    will the back-end used to perform the low level primitives.</P
+><P
+>Lets start with an example, consider this image
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="home.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+    We are going to define a path on this image with stop points
+    represented by circles.  We are going to use the class
+    <CODE
+CLASS="classname"
+>vect</CODE
+>, a geometric vector, that we can add
+    and subtract to the primitive shapes to perform translations.  In
+    <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+> we can use the basic shapes
+    <CODE
+CLASS="classname"
+>point</CODE
+>, <CODE
+CLASS="classname"
+>line</CODE
+>,
+    <CODE
+CLASS="classname"
+>rect</CODE
+> and <CODE
+CLASS="classname"
+>circle</CODE
+> and
+    draw them all with the single primitive
+    <CODE
+CLASS="methodname"
+>draw</CODE
+>.</P
+><P
+>We can specify colors in RGB or in HSV, poly-pen will do the
+    conversion automaticly when needed.  The utility function
+    <CODE
+CLASS="function"
+>make-color-spiral</CODE
+> is supplied to pick a color
+    map on a rainbow slice.  I think we are ready for the code.
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="programlisting"
+>&#13;(defun example1-core (input output backend)
+  "draw a path on a map with a circle at stop points"
+  (let* ((*canvas* (image input :backend backend))
+         (*default-font* (font "Vera" :backend backend))
+         ;; displacement vectors from one stop to the other
+         (path (mapcar #'vect
+                       '((50 50) (36 32) (23 40) (74 80) (20 43) (-90 7))))
+         ;; those stops have a name
+         (names '("foo" "bar" "baz" "qux" "quux" "asd"))
+         ;; current location
+         (loc (point '(195 36)))
+         ;; circles radius
+         (rad 7)
+         ;; pick a few colors to show progression along the path
+         (cols (make-color-spiral (length path) 1 1 .8 .55 .25 nil)))
+    ;; 1st stop, draw a circle
+    (draw (circle loc rad) :col (elt cols 0))
+    (mapcar #'(lambda (seg col name)
+                ;; compute the space to skip, we don't want to draw
+                ;; the path inside the circle, rounded to the closest pixel
+                (let ((pad (map-coords #'round (mult (normalize seg) rad))))
+                  (draw (line (add loc pad)
+                              (sub (setf loc (add loc seg)) pad))
+                        :col col)
+                  (draw (circle loc rad) :col col)
+                  ;; label the stop point at 90 degree from the path
+                  (draw (add name
+                             (mult 2 (2d-vect (y pad) (- (x pad))))
+                             (vect loc)) :col col))) 
+            path (coerce cols 'list) names)
+    (save output)))
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    When we run <CODE
+CLASS="function"
+>example1-core</CODE
+> we get this image 
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="home2.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+    We can see how the center of the circles were left blank by using
+    a unit vector to compute the adjusted end points of the path
+    lines.  The rest of this document will expose all the gory details
+    of <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+>.</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN37"
+>Colors</A
+></H2
+><P
+>We can define colors with the classes
+    <CODE
+CLASS="classname"
+>rgb</CODE
+> and <CODE
+CLASS="classname"
+>hsv</CODE
+>.  Both
+    have an eponym constructor method that either takes a three
+    element list or an other color in order to perform a conversion.
+    The tree channels are in the closed range [0..1].  The class
+    <CODE
+CLASS="classname"
+>rgb-24</CODE
+> is supplied for users who prefer to
+    work in the closed range [0..255].
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(rgb '(.5 .5 .5))</KBD
+>
+#&#60;RGB 0.5 0.5 0.5&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(hsv '(.5 .5 .5))</KBD
+>
+#&#60;HSV 0.5 0.5 0.5&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(rgb (hsv '(.5 .5 .5)))</KBD
+>
+#&#60;RGB 0.25 0.5 0.5&#62;</PRE
+></TD
+></TR
+></TABLE
+>
+
+     It is also possible to add vectors to colors in order to perform
+     <SPAN
+CLASS="QUOTE"
+>"translations"</SPAN
+> on the three channels at a time, more
+     on adding vectors in the next section.  The operation on RGB
+     channels will clip inside the it's assigned range.  In example,
+     if red is at 0.5 and we add 0.8 to it, it will be set to 1, not
+     1.3.  Operation on HSV channel clip for value and saturation but
+     loop around for hue.  Operations on multiple channel at a time is
+     conveinient when working with a color map.  If we wanted to make
+     a pastel color out or an existing one, we would have to lower
+     it's saturation while setting it's saturation to maximum.
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="programlisting"
+>&#13;(defun example5 ()
+  (let* ((width 300)
+         (height 200)
+         (cols (make-color-spiral width .87)))
+    (with-defaults (:backend
+                    :sdl
+                    :canvas (:width width :height height))
+      (dotimes (x width)
+        (draw (line (2d-point x (/ height 6))
+                    (2d-point x (/ height 2.5)))
+              :col (add (hsv (elt cols x)) '(0 -.4 1))
+              :map-coords #'round)
+        (draw (line (2d-point x (* 1.5 (/ height 2.5)))
+                    (2d-point x (* 5 (/ height 6))))
+              :col (elt cols x)
+              :map-coords #'round))
+      (save #p"example5.bmp"))))
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="example5.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN52"
+>Shapes</A
+></H2
+><P
+>We can do basic operations on primitive shapes like adding
+    vectors to them for translations. The basic shapes are
+    <CODE
+CLASS="classname"
+>point</CODE
+>, <CODE
+CLASS="classname"
+>line</CODE
+>,
+    <CODE
+CLASS="classname"
+>rect</CODE
+> and <CODE
+CLASS="classname"
+>circle</CODE
+>. All
+    the operations on primitive shapes are non-destructive, we always
+    get a freshly allocated shape.  A simple functional interface is
+    supplied to interact with the shapes coordinates: the functions
+    <CODE
+CLASS="function"
+>map-coords</CODE
+>,
+    <CODE
+CLASS="function"
+>reduce-coords</CODE
+>,
+    <CODE
+CLASS="function"
+>every-coords</CODE
+> and
+    <CODE
+CLASS="function"
+>some-coords</CODE
+>
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(rect '(10 10) '(90 90))</KBD
+>
+#&#60;RECT (10, 90) 80x80&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(right-side (rect '(10 10) '(90 90)))</KBD
+>
+#&#60;LINE (90, 90) (90, 10)&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(add (right-side (rect '(10 10) '(90 90))) (vect '(10 10)))</KBD
+>
+#&#60;LINE (100, 100) (100, 20)&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(map-coords #'1+ (point '(0 0)))</KBD
+>
+#&#60;2D-POINT (1, 1)&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(normalize (vect '(5 5)))</KBD
+>
+#&#60;2D-VECT (0.7071068, 0.7071068)&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(every-coords #'integerp (normalize (vect '(5 5))))</KBD
+>
+NIL
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(every-coords #'integerp (map-coords #'round (vect '(.707 .707))))</KBD
+>
+T
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    Shapes use Cartesian coordinates, with the origin in the lower
+    left corner of the image.  When the back-end uses another
+    coordinate system, <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+> take care of the conversion for
+    us.</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN72"
+>Drawing</A
+></H2
+><P
+>Drawing in <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+> is performed on a
+    <CODE
+CLASS="classname"
+>canvas</CODE
+>.  It's the canvas that link the
+    drawing primitive to the graphic back-end.  At canvas creation
+    time, you can specify which back-end you want to use.  All the
+    other operations on that canvas will use the specicfied back-end.
+    The canvas creation methods are <CODE
+CLASS="methodname"
+>canvas</CODE
+>,
+    to get a blank (well, black in most cases) canvas and
+    <CODE
+CLASS="methodname"
+>image</CODE
+>, to create the canvas from an image
+    file.  Different back-ends support different image formats and
+    canvas parameter.  In example, the
+    <CODE
+CLASS="classname"
+>sdl-canvas</CODE
+> support the
+    <CODE
+CLASS="parameter"
+>:depth</CODE
+> creation keyword.
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="screen"
+>POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(canvas)</KBD
+>
+#&#60;SDL-CANVAS {58316975}&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(canvas :backend :gd)</KBD
+>
+#&#60;GD-CANVAS {5833E115}&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(canvas :backend :gd :height 100 :width 100 :true-color t)</KBD
+>
+#&#60;GD-CANVAS {5835CC7D}&#62;
+POLY-PEN&#62; <KBD
+CLASS="userinput"
+>(image #p"home.jpg" :backend :sdl)</KBD
+>
+#&#60;SDL-CANVAS {58384345}&#62;</PRE
+></TD
+></TR
+></TABLE
+>
+
+    The SDL back-end can read all the formats supported by SDL_Image
+    but can only save in BMP.  While the GD back-end in less
+    permissive in it's input support, it will save in all the formats
+    it can open.  There is a simple but fast back-end for points only
+    operations on GIF images: Skippy.  It will only save new images,
+    you can't load existing images with it.  Trivia: it is written in
+    pure Common Lisp.</P
+><P
+>All the drawing operations are performed on
+    <CODE
+CLASS="varname"
+>*canvas*</CODE
+> by default.  We can override this
+    behavior by using the <CODE
+CLASS="parameter"
+>:canvas</CODE
+> keyword.
+    The drawing of the primitive shapes is done with
+    <CODE
+CLASS="methodname"
+>draw</CODE
+>.  Thanks to CLOS multi-methods, the
+    dispatch is done on both the canvas type and the shape being
+    drawn.  Different shapes draws with different back-ends will
+    support different keywords.  In example, the
+    <CODE
+CLASS="parameter"
+>:filled</CODE
+> keyword is supported for drawing
+    rectangles but has no effect when drawing lines.</P
+><P
+>Since most back-ends are interface to C code, we can't
+    expect the garbage collector to reclaim the
+    <CODE
+CLASS="classname"
+>canvas</CODE
+> once we are finished with it.  The
+    method <CODE
+CLASS="methodname"
+>free</CODE
+> is supplied to reclaim the
+    resources used by a canvas.</P
+><P
+>Finally, once we are happy with our drawing we can save the
+    <CODE
+CLASS="classname"
+>canvas</CODE
+> with <CODE
+CLASS="methodname"
+>save</CODE
+>.
+    The argument to <CODE
+CLASS="methodname"
+>save</CODE
+> is either a stream
+    or a pathname.
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="programlisting"
+>&#13;(defun example2 ()
+  (let ((*canvas* (canvas :width 200 :height 200)))
+    (mapcar #'(lambda (shape col) (draw shape :col col))
+            (list (rect '(10 10) '(100 100))
+                  (circle '(100 100) 30)
+                  (point '(100 100))
+                  (line '(10 190) '(190 190))
+                  (line '(190 190) '(190 10)))
+            (list (hsv '(.4 1 1))
+                  (rgb '(0 0 1))
+                  (rgb '(1 0 0))
+                  (hsv '(.2 .9 .9))
+                  (hsv '(.25 .9 .9))))
+    (free *canvas*)
+    (save #p"foo.bmp")))
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="example2.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+    </P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN102"
+>Text</A
+></H2
+><P
+>Most back-ends will support the rendering of hi-quality text
+    on images using True Type fonts.  In <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+>, we load fonts with
+    <CODE
+CLASS="methodname"
+>font</CODE
+> and reclaim their resources with
+    <CODE
+CLASS="methodname"
+>free</CODE
+>.  We can pass
+    <CODE
+CLASS="methodname"
+>font</CODE
+> a string representing the name of
+    the font or a pathname leading to the <TT
+CLASS="filename"
+>.ttf</TT
+>
+    file. Just like with shapes, text is drawn with
+    <CODE
+CLASS="methodname"
+>draw</CODE
+>.  We can pass a string to be drawn
+    right to the last text (at the origin if it's the first text
+    operation) or translate our string by adding it to a displacement
+    vector.  The specified position corresponds to the left of
+    baseline.
+
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="programlisting"
+>&#13;(defun example3 ()
+  (let* ((msg "abcdefghijklmnop")
+         (cols (make-color-spiral (length msg) .9))
+         (angle (/ pi (length msg) .5)))
+    (with-defaults (:backend
+                    :gd
+                    :canvas (:width 200 :height 200)
+                    :font ("VeraMono")
+                    :colors ((rgb '(0 0 0))
+                             (rgb '(1 1 1))))
+      (draw "fooj")
+      (draw (add "Wooo" '(0 20)))
+      (draw "joo" :col (rgb '(1 0 0)) :blended nil)
+      (draw "baz" :font (font "VeraIt") :col (hsv '(.2 .9 .9)))
+      (draw "qux" :col (hsv '(.1 .9 .9)))
+      (dotimes (x (length msg))
+        (draw (add (string (elt msg x))
+                   (map-coords #'round
+                               (2d-vect (* 60 (cos (* x angle)))
+                                        (* 60 (sin (* x angle)))))
+                   (2d-vect 90 100))
+            
+              :col (elt cols x)))
+      (save #p"example3.png"))))
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="example3.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+    We can use <CODE
+CLASS="methodname"
+>width</CODE
+> and
+    <CODE
+CLASS="methodname"
+>height</CODE
+> on a string to see how large it
+    gets when rendered with a particular font.  SDL also supports
+    <CODE
+CLASS="methodname"
+>ascent</CODE
+> and
+    <CODE
+CLASS="methodname"
+>descent</CODE
+> to know how far up and down the
+    font goes from the baseline.
+
+</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN119"
+>Plots</A
+></H2
+><P
+>At the time of writing this document only one hi-level plot
+    is available in <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+>, the histogram.  To draw an histogram on a
+    fresh canvas, we just pick our favorite data set and pass it to
+    <CODE
+CLASS="methodname"
+>histogram</CODE
+>.  The histogram will fill the
+    available space.  It's possible to customize the appearance with
+    the keyword arguments.
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="programlisting"
+>&#13;(defun example4 ()
+  (let ((data nil))
+    (with-defaults (:backend
+                    :gd
+                    :canvas (:width 400 :height 300)
+                    :font ("FreeSans" :size 14))
+      (dotimes (x (+ 50 (random 100)))
+        (push (random 100) data))
+      (histogram data :text-col (hsv '(.1 .9 .6)))
+      (free *default-font*)
+      (save #p"example4.png"))))
+</PRE
+></TD
+></TR
+></TABLE
+>
+
+    <DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="example4.jpg"
+ALIGN="center"></P
+></DIV
+>
+
+    More hi-level plots will be available once the author finds a good
+    way to pick the scales one the axes. </P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN128"
+><CODE
+CLASS="function"
+>with</CODE
+> macros</A
+></H2
+><P
+>Of course we forget to free resources when we are finished
+    with them, the garbage collector made us lenient.  <SPAN
+CLASS="productname"
+>poly-pen</SPAN
+> provides
+    a few macros to help us keep track of the resources:
+    <CODE
+CLASS="function"
+>with-canvas</CODE
+>,
+    <CODE
+CLASS="function"
+>with-default-canvas</CODE
+>,
+    <CODE
+CLASS="function"
+>with-image</CODE
+>,
+    <CODE
+CLASS="function"
+>with-default-image</CODE
+>,
+    <CODE
+CLASS="function"
+>with-font</CODE
+>,
+    <CODE
+CLASS="function"
+>with-default-font</CODE
+>,
+    <CODE
+CLASS="function"
+>with-default-backend</CODE
+>,
+    <CODE
+CLASS="function"
+>with-default-colors</CODE
+> and a composite of all or
+    them, <CODE
+CLASS="function"
+>with-defaults</CODE
+>.</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN142"
+>Conclusion</A
+></H2
+><P
+>Thats about it for now.  A complete reference on the
+    capabilities of each back-end is on it's way and more hi-level
+    operations too.  Report bugs to
+    <CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:ygingras@ygingras.net"
+>ygingras@ygingras.net</A
+>&#62;</CODE
+>.  I'd like to thank my
+    university, <A
+HREF="http://www.uqam.ca"
+TARGET="_top"
+>UQAM</A
+>, for
+    supporting me while I was writing this proxy layer.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR></DIV
+></BODY
+></HTML
+>

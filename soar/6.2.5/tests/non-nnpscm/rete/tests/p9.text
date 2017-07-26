@@ -1,0 +1,30 @@
+(sp p9
+ (goal <g> ^name <=> 3)
+-->)
+
+run 1
+add-wme g1 ^name 9
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^name 4
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^name foo
+ms
+add-wme g1 ^name 9.5
+ms
+remove-wme 11
+ms
+remove-wme 12
+ms
+add-wme g1 ^name 1
+ms
+run 1
+remove-wme 13
+ms

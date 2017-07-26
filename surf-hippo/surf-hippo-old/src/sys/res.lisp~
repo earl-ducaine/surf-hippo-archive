@@ -1,0 +1,362 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10; -*-
+;;; (c) Copyright 1985, Don Webber, Thinking Machines Corporation, Inc.
+;;; File creation date: 6/09/85 11:56:24
+;
+; the resistor model
+;
+
+(in-package #+parallel '*surf #-parallel 'surf)
+
+
+(defstruct resistor
+  "Model for a resistor"
+  (name ""		:type string)   ; not really needed
+  (conductance zero	:type single-float)
+  node-1
+  node-2
+  core-res
+  model
+)
+
+#-parallel
+(defstruct core-resistor
+  "Core model for a resistor."
+  (node-1-pointp 0)	; zero if constant, one if node
+  node-1-point
+  (node-1-const zero	:type single-float)
+  (node-2-pointp 0)	; zero if constant, one if node
+  node-2-point
+  (node-2-const zero	:type single-float)
+
+  (mat-12-valid nil	:type boolean)
+  mat-12-point
+  (mat-21-valid nil	:type boolean)
+  mat-21-point
+
+  (conductance zero	:type single-float)
+  (current zero		:type single-float)
+)
+(defvar resistor-hash-table ())
+
+(defun create-resistor-model ()
+  "Creates a template for all resistors."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "resistor")
+      (model-template-default-params template) '((resistance . 0.0))
+      (model-template-eval-routine template) #'eval-resistor
+      (model-template-print-routine template) #'print-resistor
+      (model-template-create-routine template) #'create-resistor
+      (model-template-create-core-routine template) #'create-core-resistor
+      (model-template-add-off-diag-routine template) #'add-off-diag-resistor
+      (model-template-find-coupling-routine template) #'find-coupling-resistor
+      (model-template-fix-dc-nodes-routine template) #'resistor-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "resistor") *model-hash-table*) template
+      resistor-hash-table (make-hash-table :test #'equal))
+    (create-model-instance (string "r") (model-template-name template) '() )))
+	; only need one res model instance, so create it now.
+
+(defun print-resistor (res)
+  "Prints out this data associated with a resistor."
+  (format t "Resistor ~a from ~a to ~a : value ~8f~%"
+	  (resistor-name res)
+	  (node-name (resistor-node-1 res))
+	  (node-name (resistor-node-2 res))
+	  (/ (resistor-conductance res))))
+
+(defun create-resistor (name node1 node2 model-name parameters &optional (cell-name "Unknown")(plot-pane 1)  )
+  "Creates a element of type resistor. Inputs 'name' 'node1' and 'node2' are strings,
+   'model-name' is the name of the model-instance, and 'parameters' is an a-list."
+  (if
+    (gethash name resistor-hash-table)
+    (sim-warning (format nil "create-resistor: resistor ~a  already defined, ignoring"
+			 name))
+    (let ((n1 (create-node node1 :cell-name cell-name :plot-pane plot-pane))
+	  (n2 (create-node node2 :cell-name cell-name :plot-pane plot-pane))
+	  (match nil)
+	  (model (gethash model-name *model-instance-hash-table*))
+	  resistance junk
+	  temp-resistance)
+      (if (not (or (eq n1 n2)
+		   (and (or (node-is-dc-source n1)
+			    (node-is-pwl-source n1))
+			(or (node-is-dc-source n2)
+			    (node-is-pwl-source n2)))))
+	  (progn
+	    (setf 
+	      resistance (eval (cdr (assoc 'resistance (model-template-default-params
+						  (model-instance-model model)))))
+	      temp-resistance (eval (cdr (assoc 'resistance (model-instance-changed-params
+								model))))
+	      junk (if temp-resistance
+		       (setf
+			 resistance temp-resistance))
+	      temp-resistance (eval (cdr (assoc 'resistance parameters)))
+	      junk (if temp-resistance
+		       (setf
+			 resistance temp-resistance))
+	      junk (if (equal resistance 0)
+		       (sim-error (format nil
+					  "Resistor ~a has zero resistance."
+					  name))))
+	    (dolist (elt (node-elements n1))	       ; look for other resistors connected to
+						       ;  this node
+	      (if
+		(typep elt 'resistor)
+		(if
+		  (eq n1 (resistor-node-1 elt))
+		  (if 
+		    (eq n2 (resistor-node-2 elt))       ; no need to create a new resistor,
+							;  one already exists, just add
+							;  to the conductance
+		    (setf
+		      (resistor-conductance elt) (+ (resistor-conductance elt)
+						    (/ 1.0 resistance))
+		      match t))
+		  (if
+		    (eq n1 (resistor-node-2 elt))
+		    (if
+		      (eq n2 (resistor-node-1 elt))       ; no need to create a new resistor,
+						          ;  one already exists, just add
+							  ;  to the conductance
+		      (setf
+			(resistor-conductance elt) (+ (resistor-conductance elt)
+						      (/ 1.0 resistance))
+			match t)))))
+	      (if
+		match
+		(return)))
+	    (if
+	      (not match)			        ; then create a new resistor
+	      (let ((res (make-resistor)))
+		(setf
+		  (resistor-name res) name
+		  (resistor-conductance res) (/ 1.0 resistance)
+		  (resistor-node-1 res) n1
+		  (resistor-node-2 res) n2
+		  (resistor-model res) model
+		  (node-elements n1) (cons res (node-elements n1))
+		  (node-elements n2) (cons res (node-elements n2))
+		  (gethash name resistor-hash-table) res
+		  (model-instance-elements model) (cons res (model-instance-elements model)))
+		res)))))))
+
+
+; This function creates a core resistor data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignores this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+(defun create-core-resistor (res nd)
+  "Creates the core struct for a resistor."
+  (let (core-res
+	(proc #-parallel nil #+parallel (allocate-processor)))
+    #-parallel (declare (ignore proc))
+    #+parallel (*setf (pref fanout-valid proc) t)
+    #+parallel (*setf (pref fanout-seg-forward proc) nil)
+    (if (resistor-core-res res)			; 
+	(setf core-res (resistor-core-res res))	; core resistor has already been allocated
+	(progn					; else allocate one
+	  #-parallel (setf core-res (make-core-resistor))
+	  #+parallel (*setf core-res proc)
+	  #+parallel (*setf (pref *lisp-struct-type core-res) core-resistor)
+	  (#+parallel *setf #-parallel setf
+	    (#+parallel pref #.core-resistor-conductance core-res) (resistor-conductance res))
+	    (setf (resistor-core-res res) core-res)
+	  #+parallel (*setf (pref core-device-node2-conductance core-res)
+			   (resistor-conductance res))
+	  ))
+    
+    (let ((node1 (resistor-node-1 res))
+	  (node2 (resistor-node-2 res)))
+      (cond
+	((eq nd node1)
+	 #-parallel
+	 (setf
+	   (#.core-resistor-node-1-pointp core-res) t
+	   (#.core-resistor-node-1-point core-res) (node-core-nd node1))
+	 #+parallel
+	 (*setf
+	   (pref #.core-resistor-node-1-pointp core-res) t
+	   (pref #.core-resistor-node-1-point core-res) proc))
+	((eq nd node2)
+	 #-parallel
+	 (setf
+	   (#.core-resistor-node-2-pointp core-res) t
+	   (#.core-resistor-node-2-point core-res) (node-core-nd node2))
+	 #+parallel
+	 (*setf
+	   (pref #.core-resistor-node-2-pointp core-res) t
+	   (pref #.core-resistor-node-2-point core-res) proc))
+	(t
+	 (sim-error "Internal error: called create-core on a device with a invalid node"))
+	))))
+
+(defun add-off-diag-resistor (res diag off-diag off-diag-entry)
+  "Adds off diagonal entries for this resistor."
+  #-parallel (declare (ignore diag))
+  #+off-diag
+  (let ((node1 (resistor-node-1 res))
+	(node2 (resistor-node-2 res))
+#+parallel	(proc nil)
+	(core-res (resistor-core-res res)))
+    (cond
+      ((eq off-diag node1)
+       #-parallel
+       (setf
+	 (#.core-resistor-mat-21-valid core-res) t
+	 (#.core-resistor-mat-21-point core-res) off-diag-entry)
+       #+parallel
+       (*setf
+         proc (allocate-processor)
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-resistor-mat-21-valid core-res) t
+	 (pref #.core-resistor-mat-21-point core-res) proc))
+      ((eq off-diag node2)
+       #-parallel
+       (setf
+	 (#.core-resistor-mat-12-valid core-res) t
+	 (#.core-resistor-mat-12-point core-res) off-diag-entry)
+       #+parallel
+       (*setf
+         proc (allocate-processor)
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-resistor-mat-12-valid core-res) t
+	 (pref #.core-resistor-mat-12-point core-res) proc))
+      )))
+
+(defun find-coupling-resistor (nd res)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  (cond
+    ((eq nd (resistor-node-1 res))
+      (if (or (node-is-dc-source (resistor-node-2 res))
+	      (node-is-pwl-source (resistor-node-2 res)))
+	nil
+	(cons (resistor-node-2 res) (resistor-conductance res))))
+    (t
+      (if (or (node-is-dc-source (resistor-node-1 res))
+	      (node-is-pwl-source (resistor-node-1 res)))
+	nil
+	(cons (resistor-node-2 res) (resistor-conductance res))))))
+
+(defun resistor-fix-dc-nodes (res)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (resistor-core-res res)
+      (progn
+	(if (node-is-dc-source (resistor-node-1 res))
+	    (#+parallel *setf #-parallel setf
+	      (#+parallel pref #.core-resistor-node-1-pointp (resistor-core-res res)) nil
+	      (#+parallel pref #.core-resistor-node-1-const (resistor-core-res res))
+	      (node-voltage (resistor-node-1 res))))
+	(if (node-is-dc-source (resistor-node-2 res))
+	    (#+parallel *setf #-parallel setf
+	      (#+parallel pref #.core-resistor-node-2-pointp (resistor-core-res res)) nil
+	      (#+parallel pref #.core-resistor-node-2-const (resistor-core-res res))
+	      (node-voltage (resistor-node-2 res)))))))
+
+#-parallel
+(defun get-resistor-voltage-1 (res)
+  (if (#.core-resistor-node-1-pointp res)
+      (core-node-voltage-n+1 (#.core-resistor-node-1-point res))
+      (#.core-resistor-node-1-const res)))
+
+#-parallel
+(defun get-resistor-voltage-2 (res)
+  (if (#.core-resistor-node-2-pointp res)
+      (core-node-voltage-n+1 (#.core-resistor-node-2-point res))
+      (#.core-resistor-node-2-const res)))
+
+#-parallel
+(defun eval-resistor (res)
+  (let (v-diff
+	(core-res (resistor-core-res res)))
+    (if (null core-res)
+	(return-from eval-resistor (values)))
+						; get the voltages
+    (setf v-diff (- (get-resistor-voltage-1 core-res)
+		    (get-resistor-voltage-2 core-res)))
+    
+						; calculate the current
+    (setf (core-resistor-current core-res) (* v-diff (#.core-resistor-conductance core-res)))
+    
+						; send the values back where they go
+    (if (#.core-resistor-node-1-pointp core-res)
+	(if (not (core-node-is-source (#.core-resistor-node-1-point core-res)))
+	    (setf
+	      (core-node-current (#.core-resistor-node-1-point core-res))
+	      (+ (core-node-current (#.core-resistor-node-1-point core-res))
+		 (core-resistor-current core-res))
+	      (core-node-jacobian (#.core-resistor-node-1-point core-res))
+	      (+ (core-node-jacobian (#.core-resistor-node-1-point core-res))
+		 (#.core-resistor-conductance core-res)))))
+    
+    (if (#.core-resistor-node-2-pointp core-res)
+	(if (not (core-node-is-source (#.core-resistor-node-2-point core-res)))
+	    (setf
+	      (core-node-current (#.core-resistor-node-2-point core-res))
+	      (- (core-node-current (#.core-resistor-node-2-point core-res))
+		 (core-resistor-current core-res))
+	      (core-node-jacobian (#.core-resistor-node-2-point core-res))
+	      (+ (core-node-jacobian (#.core-resistor-node-2-point core-res))
+		 (#.core-resistor-conductance core-res)))))
+
+    #+off-diag
+    (if *use-tridiagonal*
+	(progn
+	  (if (#.core-resistor-mat-21-valid core-res)
+	      (let ((off-diag-entry (#.core-resistor-mat-21-point core-res))
+		    (node2 (resistor-node-2 res)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node2))
+			  (- (aref *lower-diag* (node-index node2))
+			     (core-resistor-conductance core-res)))
+		    (setf (aref *upper-diag* (node-index node2))
+			  (- (aref *upper-diag* (node-index node2))
+			     (core-resistor-conductance core-res))))))
+	  
+	  (if (#.core-resistor-mat-12-valid core-res)
+	      (let ((off-diag-entry (#.core-resistor-mat-12-point core-res))
+		    (node1 (resistor-node-1 res)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node1))
+			  (- (aref *lower-diag* (node-index node1))
+			     (core-resistor-conductance core-res)))
+		    (setf (aref *upper-diag* (node-index node1))
+			  (- (aref *upper-diag* (node-index node1))
+			     (core-resistor-conductance core-res))))))
+	  ))
+    ))
+
+#+parallel
+(*defun get-resistor-voltage-1 (v1)
+  (cond!!
+    (#.core-resistor-node-1-pointp v1)
+    (t!! #.core-resistor-node-1-const)))
+
+#+parallel
+(*defun get-resistor-voltage-2 (v2)
+  (cond!!
+    (#.core-resistor-node-2-pointp v2)
+    (t!! #.core-resistor-node-2-const)))
+
+#+parallel
+(defun eval-resistor ()
+  (*select-type (core-resistor)
+    (*let
+      ((v-diff (!! zero)))
+      (declare (type (pvar big-float) v-diff))
+      ; get the voltages
+
+      (*set v-diff
+	    (-!! 
+	      (get-resistor-voltage-1 #.core-resistor-node-1-voltage)
+	      (get-resistor-voltage-2 #.core-resistor-node-2-voltage)))
+    
+      ; calculate the current
+      (*set #.core-resistor-current (*!! v-diff #.core-resistor-conductance))
+      (*set core-device-node2-current (-!! #.core-resistor-current))
+      )))

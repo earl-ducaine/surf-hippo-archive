@@ -1,0 +1,2 @@
+(load "../../../../../default/nnpscm/default.soar")
+(load "../../../../../examples/nnpscm/missionaries/mac.soar")

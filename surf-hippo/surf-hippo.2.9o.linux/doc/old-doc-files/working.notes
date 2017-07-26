@@ -1,0 +1,325 @@
+** INTERNAL USE ONLY **
+
+11/6/93
+
+added inter/i-windows.lisp patch. unser open windows window exposure
+seems to be a bit better, but occasionally the window contents are
+still not exposed until the window in manipulated (e.g. deexposed/exposed).
+
+
+***************************************************************
+
+
+Note: The optimized compiled code is very sensitive to the type of a
+numeric variable. A typical symptom of this mismatch will be:
+
+     Error in function UNIX::SIGBUS-HANDLER:  Bus Error at #x79E2C14.
+
+     Restarts:
+     0: [ABORT] Return to Top-Level.
+
+     Debug  (type H for help)
+
+     (UNIX::SIGBUS-HANDLER #<unavailable-arg>
+     #<unavailable-arg>
+     #.(SYSTEM:INT-SAP #xF7FFE2C8))
+     0] 
+
+Almost all the variable types are given in declare.lisp (in the
+PROCLAIM statement), or in the structure definitions in the various
+circuit element files.
+
+
+It appears that declaring the type of LOOP declared variables is
+problematic, and using a DO form is better (see make-v-particle-arrays).
+
+
+************************************************************
+************** BENCHMARKING 11/22/92 - (unoptimized garnet)
+************************************************************
+
+* (progn (ext::gc)
+       (setq  ext::*bytes-consed-between-gcs* 2000000)
+       (setq ext::*gc-verbose* t)
+       (setq ext::*gc-verbose* nil)
+       (setq  user-stop-time 200.0
+	      *source-pulse-lists* (list (list (cons "hippo-soma-istim"  'ISOURCE) (list 5 180 0.5))))
+       
+       (do ((i   500000 (* i 2)))
+	   ((> i 8000000))
+       (profile::unprofile)
+       (profile::profile surf)
+	 (format t "~%~%~%ext::*bytes-consed-between-gcs* = ~R~%"
+		 (setq  ext::*bytes-consed-between-gcs* i))
+	 (let ((user::*console-output nil))
+	   (dotimes (k 20) (surf 'sun-hippo)))
+	 (profile::report-time))
+
+       (setq  ext::*bytes-consed-between-gcs* 2000000)
+        (ext::gc)
+	(setq ext::*gc-verbose* t))
+[GC threshold exceeded with 11,135,192 bytes in use.  Commencing GC.]
+[GC completed with 11,086,232 bytes retained and 48,960 bytes freed.]
+[GC will next occur when at least 13,086,232 bytes are in use.]
+
+ext::*bytes-consed-between-gcs* = five hundred thousand
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   852.284 | 27,083,504 |      20 |   42.61419 | SURF
+------------------------------------------------------
+   852.284 | 27,083,504 |      20 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+
+ext::*bytes-consed-between-gcs* = one million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   680.734 | 27,131,192 |      20 |   34.03669 | SURF
+------------------------------------------------------
+   680.734 | 27,131,192 |      20 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+
+ext::*bytes-consed-between-gcs* = two million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   539.994 | 26,920,584 |      20 |   26.99969 | SURF
+------------------------------------------------------
+   539.994 | 26,920,584 |      20 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+
+ext::*bytes-consed-between-gcs* = four million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   465.574 | 26,752,696 |      20 |   23.27868 | SURF
+------------------------------------------------------
+   465.574 | 26,752,696 |      20 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+
+ext::*bytes-consed-between-gcs* = eight million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   435.504 | 26,574,768 |      20 |   21.77518 | SURF
+------------------------------------------------------
+   435.504 | 26,574,768 |      20 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+T
+* 
+
+
+************************************************************
+************** BENCHMARKING 11/22/92 - (optimized garnet)
+************************************************************
+*  (progn (ext::gc)
+       (setq  ext::*bytes-consed-between-gcs* 2000000)
+       (setq ext::*gc-verbose* t)
+       (setq ext::*gc-verbose* nil)
+       (setq  user-stop-time 200.0
+	      *source-pulse-lists* (list (list (cons "hippo-soma-istim"  'ISOURCE) (list 5 180 0.5))))
+       
+       (do ((i   500000 (* i 2)))
+	   ((> i 8000000))
+       (profile::unprofile)
+       (profile::profile surf)
+	 (format t "~%~%~%ext::*bytes-consed-between-gcs* = ~R~%"
+		 (setq  ext::*bytes-consed-between-gcs* i))
+	 (let ((user::*console-output nil))
+	   (dotimes (k 20) (surf 'sun-hippo)))
+	 (profile::report-time))
+
+       (setq  ext::*bytes-consed-between-gcs* 2000000)
+        (ext::gc)
+	(setq ext::*gc-verbose* t)       )
+
+ext::*bytes-consed-between-gcs* = five hundred thousand
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   696.923 | 26,655,504 |      20 |   34.84616 | SURF
+------------------------------------------------------
+   696.923 | 26,655,504 |      20 |            | Total
+
+Estimated total profiling overhead: 0.07 seconds
+
+ext::*bytes-consed-between-gcs* = one million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   535.983 | 26,836,360 |      20 |   26.79916 | SURF
+------------------------------------------------------
+   535.983 | 26,836,360 |      20 |            | Total
+
+Estimated total profiling overhead: 0.07 seconds
+
+ext::*bytes-consed-between-gcs* = two million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   445.523 | 26,737,088 |      20 |   22.27616 | SURF
+------------------------------------------------------
+   445.523 | 26,737,088 |      20 |            | Total
+
+Estimated total profiling overhead: 0.07 seconds
+
+ext::*bytes-consed-between-gcs* = four million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   387.773 | 26,607,440 |      20 |   19.38866 | SURF
+------------------------------------------------------
+   387.773 | 26,607,440 |      20 |            | Total
+
+Estimated total profiling overhead: 0.07 seconds
+
+ext::*bytes-consed-between-gcs* = eight million
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   353.503 | 26,557,072 |      20 |   17.67516 | SURF
+------------------------------------------------------
+   353.503 | 26,557,072 |      20 |            | Total
+
+Estimated total profiling overhead: 0.07 seconds
+T
+* 
+
+
+************************************************************
+************** BENCHMARKING 11/22/92 - (optimized garnet - using
+my-polyline vs. garnet polyline)
+************************************************************
+
+*    (progn (ext::gc)
+        (setq *use-my-polyline t)
+	(profile::unprofile)
+	  (profile::profile surf-plotter)
+	  (dotimes (k 10) (surf-plotter))
+	  (profile::report-time)
+
+	          (setq *use-my-polyline nil)
+	(profile::unprofile)
+	  (profile::profile surf-plotter)
+	  (dotimes (k 10) (surf-plotter))
+	  (profile::report-time))
+[GC threshold exceeded with 14,904,416 bytes in use.  Commencing GC.]
+[GC completed with 13,418,688 bytes retained and 1,485,728 bytes freed.]
+[GC will next occur when at least 15,418,688 bytes are in use.]
+[GC threshold exceeded with 15,425,672 bytes in use.  Commencing GC.]
+[GC completed with 13,698,720 bytes retained and 1,726,952 bytes freed.]
+[GC will next occur when at least 15,698,720 bytes are in use.]
+[GC threshold exceeded with 15,704,200 bytes in use.  Commencing GC.]
+[GC completed with 13,869,696 bytes retained and 1,834,504 bytes freed.]
+[GC will next occur when at least 15,869,696 bytes are in use.]
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   164.662 | 4,682,880 |      10 |   16.46616 | SURF-PLOTTER
+------------------------------------------------------
+   164.662 | 4,682,880 |      10 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+[GC threshold exceeded with 15,876,264 bytes in use.  Commencing GC.]
+[GC completed with 14,042,736 bytes retained and 1,833,528 bytes freed.]
+[GC will next occur when at least 16,042,736 bytes are in use.]
+  Seconds  |  Consed   |  Calls  |  Sec/Call  |  Name:
+------------------------------------------------------
+   146.002 | 2,801,472 |      10 |   14.60016 | SURF-PLOTTER
+------------------------------------------------------
+   146.002 | 2,801,472 |      10 |            | Total
+
+Estimated total profiling overhead: 0.04 seconds
+* 
+
+
+
+********************************************************
+
+12/21/92
+start-amacrine-3 moving bar for 300ms 195 nodes just excitatory syns
+
+;;(/ (/   12581128.0 788) 195) -> 81.8764 estimate vector error
+ ;; (/ (/ 8444200 658.0) 195) -> 65.81093 estimate biggest error node
+
+no apparent difference in node voltages.
+
+********************************************************
+
+
+
+
+GRM v.2.1 = Garnet Reference Manual, v.2.1, November 1992
+
+User Interface:
+
+An error may occur if a too large/small number is entered in a menu.
+
+Adjusting X window sizes:
+
+(surf-plotter) and (draw-cells) will adjust their output to a resized
+X window, usually. There are apparently "...bugs in some window managers that make this
+difficult or impossible" (GRM v.2.1, p.165). With TWM, the window size
+has to be changed a few times before someone takes proper notice.
+
+
+The global variable *PLOT-NODE-ELEMENTS* '("Hippo-soma" "Hippo-5")
+contains a list of node names. Any and all circuit element (channel,
+synapse, isource, etc.) that is connected to a node in the list will
+have its appropriate data saved and plotted. 
+
+If any of the specific plot variable lists is set to 'ALL, e.g.
+
+ 	(setq *plot-channel-currents* 'all
+	      *plot-channel-conductances* 'all)
+
+then all instances of that element in the circuit will be plotted.
+
+For simulations that include a current source, make sure that 
+
+	*include-sources 
+
+is T.
+
+
+For simulations that include channels, make sure that *active, and the
+appropriate *include-XX variable is set T, eg.
+
+	(setq *include-na1 t  *include-na3 t *include-dr t
+	*include-a t  *active t)
+
+Note that for channels to be a part of a circuit, there must be a call
+to either the low level CREATE-CHANNEL function, or, more
+conveniently,
+
+	(create-channels '(na1 na2 na3 a dr) soma)
+
+where the second argument is a specific circuit element (of type soma
+or segment) (see the function HIPPO in /src/hippocampus/hippos.lisp).
+
+
+;;; The business of dealing with time in units of mrt is to avoid floating point time
+;;; representations during time steps - this may not really gain much
+now.
+
+
+
+Generating ps files of windows (Garnet's MAKE-PS-FILE) requires a ridiculous amount of
+consing, but it works for now.
+
+
+1/4/92
+It appears that the off-step explicit computation of particle states
+results in a strong sensitivity to max-step-size (at least when the
+lte does not consider particle state trajectories). Basically, a large
+step that is justified from a voltage lte estimate can allow a
+particle to change too much. a non-linear fix is to limit step size
+(e.g. via USER-MAX-STEP). For a 40ms two spike protocol (basic-hippo),
+the time for the second spike converged (was within 0.1ms) when
+USER-MAX-STEP was 0.5ms versus 0.25ms. The time for the second spike
+was off, in comparison, by about 1ms when the max-step was unlimited.
+In the later case, the total time points/iterations was 164/199. When
+USER-MAX-STEP was set to 0.5ms, the total time points/iterations was
+185/214.
+
+Possibly for controlled synaptic input simulations, w/o channels, an
+unlimited step size will be ok.
+
+
+
+

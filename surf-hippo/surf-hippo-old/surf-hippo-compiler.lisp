@@ -1,0 +1,94 @@
+;;; -*- Mode: LISP; Syntax: Common-Lisp; Package: USER; Base: 10 -*-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;         The Surf-Hippo Neuron Simulator                         ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; This code was written as part of the Surf-Hippo project at the  ;;;
+;;; Center for Biological Information Processing, Department of     ;;;
+;;; Brain and Cognitive Sciences, Massachusetts Institute of        ;;;
+;;; Technology, and has been placed in the public                   ;;;
+;;; domain.  If you are using this code or any part of Surf-Hippo,  ;;;
+;;; please contact lyle@ai.mit.edu to be put on the mailing list.   ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; 
+;;; This file  compiles all the surf-hippo modules.
+;;; First load the file: 	surf-hippo-prepare-compile
+;;; Then load 			surf-hippo-loader
+;;; Then load this file:	surf-hippo-compiler
+;;;
+;;; ** See the comments at the top of surf-hippo-prepare-compile
+;;;
+;;;
+;;; This loader file was adapted from garnet-compiler.lisp:
+;;;
+;;;         The Garnet User Interface Development Environment.      ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; This code was written as part of the Garnet project at          ;;;
+;;; Carnegie Mellon University, and has been placed in the public   ;;;
+;;; domain.  If you are using this code or any part of Garnet,      ;;;
+;;; please contact garnet@cs.cmu.edu to be put on the mailing list. ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+============================================================
+Change log:
+============================================================
+|#
+
+(in-package "USER" :use '("LISP"))
+
+(unless (and (boundp 'load-sys-p-copy)           (boundp 'Surf-Hippo-SYS-Src)
+	     (boundp 'load-hippocampus-p-copy)  (boundp 'Surf-Hippo-hippocampus-Src)
+	     (boundp 'load-rabbit-p-copy)           (boundp 'Surf-Hippo-rabbit-Src)
+	     (boundp 'load-debug-p-copy)        (boundp 'Surf-Hippo-Debug-Src)
+	     )
+  (error "** Must load Surf-Hippo-Prepare-Compile and Surf-Hippo-Loader before
+  loading this file"))
+
+(when compile-sys-p
+  (format T "~%  %%%%%%%%%%%%%%  Compiling SYS %%%%%%%%%%%%%%% ~%")
+  (load (merge-pathnames "sys-compiler" 
+			 #+cmu "sys-src:"
+			 #+(not cmu) Surf-Hippo-SYS-Src
+			 )
+	))
+(unless compile-sys-p
+  (load Surf-Hippo-SYS-Loader))
+
+
+(when compile-hippocampus-p
+  (format T "~%  %%%%%%%%%%%%%%  Compiling Hippocampus %%%%%%%%%%%%%%% ~%")
+  (load (merge-pathnames "hippocampus-compiler" 
+			 #+cmu "hippocampus-src:"
+			 #+(not cmu) Surf-Hippo-Hippocampus-Src
+			 )
+	))
+
+(unless compile-hippocampus-p
+  (load Surf-Hippo-Hippocampus-Loader))
+
+(when compile-rabbit-p
+  (format T "~%  %%%%%%%%%%%%%%  Compiling Rabbit %%%%%%%%%%%%%%% ~%")
+  (load (merge-pathnames "rabbit-compiler" 
+			 #+cmu "rabbit-src:"
+			 #+(not cmu) Surf-Hippo-Rabbit-Src
+			 )
+	))
+(unless compile-rabbit-p
+  (load Surf-Hippo-rabbit-Loader))
+
+
+
+(when compile-debug-p
+  (format T "~%  %%%%%%%%%%%%%%  Compiling Debugging Routines %%%%%%%%%%%%% ~%")
+  (load (merge-pathnames "debug-compiler" 
+			 #+cmu "debug-src:"
+			 #+(not cmu) Surf-Hippo-Debug-Src
+			 )
+	))
+(when load-debug-p-copy
+  (unless compile-debug-p
+    (load Surf-Hippo-Debug-Loader)))
+
+
+(setf *Surf-Hippo-Going-To-Compile* NIL)  ; no longer in compile mode

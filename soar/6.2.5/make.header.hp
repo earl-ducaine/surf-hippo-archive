@@ -1,0 +1,18 @@
+# $Id: make.header.hp,v 1.3 1994/06/08 21:44:15 portelli Exp $
+#
+# HP 9000/730, HPUX, native compiler:
+
+CC         = cc
+CFLAGS     = -O -Aa -DUNIX
+EXTRA_LIBS = 
+RANLIB     = @echo No need to ranlib
+
+MACHINE_DEP_DIR = hp700
+
+# If you select USE_X_DISPLAY then you may need to change the 
+# CFLAGS and EXTRA_LIBS lines to something like the following
+# since HP has a funny idea about where these files should be.
+#
+# CFLAGS     = -g -Aa -I/usr/include/X11R4
+# EXTRA_LIBS = -L/usr/lib/X11R4
+

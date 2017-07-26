@@ -1,0 +1,634 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10;  -*-
+;;; Lyle Borg-Graham, MIT Center for Biological Information Processing
+;
+;; For setting up output flags, saving out data during simulation, printing the ciruit, making the output lists and 
+;; output files.
+;
+
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+
+#+sun
+(defparameter *data-directory* (concatenate 'string *Surfdir* "/data/"))
+
+;These are for the Symbolics version.
+(defvar simulation-data-archive-path "peron:>lyle>surf>simulations>~s-~a.dat")
+(defvar simulation-info-archive-path "peron:>lyle>surf>simulations>~s-~a.info")
+
+;;; SIMULATION-OUTPUT This is the overal function for preparing output lists, printing simulation information,
+;;;  writing data files, and plotting results, if appropriate. It is called from SIM.
+(defun simulation-output (&optional filename)
+  (print-simulation-stats t)
+  (setq *ordered-time-list* (reverse *time-list*))
+  (if *save-simulation
+      (let ((symb (create-output-symbol *circuit-name* 'time)))
+	(set symb *ordered-time-list*)
+	(setq *file-output-data-list*
+	      (list `(setq ,(create-output-symbol  *simulation-name* symb) ',(eval symb)))
+	      *file-output-variable-list*
+	      (list (create-output-symbol *simulation-name* symb)))))
+  (generate-output)
+  (if *save-simulation
+      #+sun (dump-sun-file filename)
+      #-sun (dump-symbolics-file filename))
+  (if *print-circuit (print-circuit))	
+  #+cmu (if *plot-results  (surf-plotter))			
+  #-sun (surf-screen)
+  )
+
+#+sun
+(defun dump-sun-file (&optional  filename)
+  (declare (ignore  filename))
+;  (setq time-vector (car (last *archive-variable-list*)))
+  (let* ((filename (string-downcase
+		     (concatenate 'string *data-directory*
+				  (string *circuit-name*)  ".plot")))
+	 (stream (open filename :direction :output
+		       :if-exists :supersede)))
+    (format stream ";;; -*- Package: SURF; Mode: LISP -*-~%~%")
+    (dolist (var-form *file-output-data-list*)
+      (format stream "(setq ~s '(" (cadr var-form))
+      (dolist (data-point (eval (caddr var-form) ))
+	(format stream " ~6f" data-point))	;Round the data to 6 digit precision to save filespace.
+      (format stream "))~%~%"))
+    (close stream)
+    (format t "File ~a written~%" filename))
+  (let* ((filename (string-downcase
+		     (concatenate 'string *data-directory*
+				  (string *circuit-name*)  ".info")))
+	 (stream (open filename :direction :output
+		       :if-exists :supersede)))
+    (print-circuit stream t)
+    (print-simulation-stats stream)
+    (close stream)
+    (format t "File ~a written~%" filename)))
+
+(defun print-simulation-stats (output-stream)
+  (format output-stream "~%Circuit: ~a~%" *circuit-name*)
+  (format output-stream "Total number of time points used ~a~%" *total-num-time-points*)
+  (format output-stream "Total number of iterations used ~a~%" *total-num-iterations*))
+
+(defun order-list-from-key-list (list key-list &optional other-list)
+    (let ((output '()))
+      (loop for key in key-list do
+	    (let ((search-result-list (member key list :test 'equal)))
+	      (if search-result-list
+		  (setq output
+			(nconc (list (nth (- (length list) (length search-result-list))
+					  (if other-list other-list list)))
+			       output)))))
+      (reverse output)))
+
+;;; GENERATE-OUTPUT This generates the output lists according to the output pointer lists.
+(defun generate-output ()
+;
+;  (setq *pane2-data-list
+;        (ORDER-LIST-FROM-KEY-LIST *pane2-label-list *plot-nodes* *pane2-data-list))
+;  (setq *pane2-label-list
+;        (ORDER-LIST-FROM-KEY-LIST *pane2-label-list *plot-nodes*))
+;  (setq *pane2-data-list
+;        (ORDER-LIST-FROM-KEY-LIST *pane2-label-list *plot-nodes* *pane2-data-list))
+;  (setq *pane2-label-list
+;	(ORDER-LIST-FROM-KEY-LIST *pane2-label-list *plot-nodes*))
+
+  (setq *pane1-data-list '() *pane2-data-list '() *pane3-data-list '() 
+	*pane1-label-list '() *pane2-label-list '() *pane3-label-list '()
+ 	*current-pane-data-list '() *conductance-pane-data-list '()
+	*conductance-pane-label-list '() *current-pane-label-list '()
+	*conc-int-pane-data-list '() 	*conc-int-pane-label-list '()
+	*conc-part-pane-data-list '() 	*conc-part-pane-label-list '()
+ 	*particle-pane-data-list '()  *particle-pane-label-list '())
+  (format t "~%Circuit: ~a~%" *circuit-name*)
+  (maphash 'collect-node-plot-data node-hash-table)
+  (maphash 'collect-channel-plot-data channel-hash-table)
+  (maphash 'collect-isource-plot-data isource-hash-table)
+  (maphash 'collect-vsource-plot-data vsource-hash-table)
+  (maphash 'collect-synapse-plot-data synapse-hash-table)
+  (maphash 'collect-particle-plot-data particle-hash-table)
+  (maphash 'collect-conc-particle-plot-data conc-part-hash-table)
+  (if *plot-concentrations (maphash 'collect-conc-int-plot-data conc-int-hash-table)))
+
+
+;; GROW-FILE-LISTS Concantenate data lists that will be dumped to file.
+(defun grow-file-lists (data name)
+  (if *save-simulation
+      (let ((symb (create-output-symbol *circuit-name* name)))
+	(set symb data)
+	(setq *file-output-data-list*
+	      (cons `(setq ,(create-output-symbol  *simulation-name* symb) ',(eval symb))
+		    *file-output-data-list*)
+	      *file-output-variable-list*
+	      (nconc (list (create-output-symbol *simulation-name* symb))
+		     *file-output-variable-list*)))))
+
+
+(defun collect-node-plot-data (name node)
+  (if (node-plot-voltage node)
+      (let ((data (reverse (node-voltage-data node))))
+	(cond
+	  ((eq (node-plot-pane node) 1)
+	   (setq *pane1-data-list (nconc *pane1-data-list (list (list data *ordered-time-list*)))
+		 *pane1-label-list (nconc *pane1-label-list (list name))))
+	  ((eq (node-plot-pane node) 2)
+	   (setq *pane2-data-list (nconc *pane2-data-list (list (list data *ordered-time-list*)))
+		 *pane2-label-list (nconc *pane2-label-list (list name))))
+	  ((eq (node-plot-pane node) 3)
+	   (setq *pane3-data-list (nconc *pane3-data-list (list (list data *ordered-time-list*)))
+		 *pane3-label-list (nconc *pane3-label-list (list name)))))
+	(grow-file-lists data name))))
+
+(defun collect-vsource-plot-data (name vsource)
+  (if (vsource-plot-current vsource)
+      (let ((data (reverse (vsource-current-data vsource))))
+	(setq *current-pane-data-list
+	      (nconc *current-pane-data-list
+		     (list (list data *ordered-time-list*)))
+	      *current-pane-label-list
+	      (nconc *current-pane-label-list (list name)))
+	(grow-file-lists data name))))
+
+(defun collect-isource-plot-data (name isource)
+  (if (isource-plot-current isource)
+      (let ((data (reverse (isource-current-data isource))))
+      (setq *current-pane-data-list
+	    (nconc *current-pane-data-list
+		   (list (list data *ordered-time-list*)))
+	    *current-pane-label-list
+	    (nconc *current-pane-label-list (list name)))
+      (grow-file-lists data name))))
+
+(defun collect-channel-plot-data (name channel)
+  (if (channel-plot-current channel)
+      (let ((data (reverse (channel-current-data channel))))
+	(setq *current-pane-data-list
+	    (nconc *current-pane-data-list
+		   (list (list data *ordered-time-list*)))
+	    *current-pane-label-list
+	    (nconc *current-pane-label-list (list name)))
+	(grow-file-lists data name)))
+  (if (channel-plot-conductance channel)
+      (let ((data (reverse (channel-conductance-data channel)))
+	    (g-name (format nil "~a-G" name)))
+	(setq *conductance-pane-data-list
+	    (nconc *conductance-pane-data-list
+		   (list (list (reverse (channel-conductance-data channel)) *ordered-time-list*)))
+	    *conductance-pane-label-list
+	    (nconc *conductance-pane-label-list (list g-name)))
+	(grow-file-lists data g-name))))
+
+(defun collect-synapse-plot-data (name synapse)
+  (if (and (synapse-plot-current synapse)  (synapse-current-data synapse))
+      (let ((data (reverse (synapse-current-data synapse))))
+	(setq *current-pane-data-list
+	    (nconc *current-pane-data-list
+		   (list (list data *ordered-time-list*)))
+	    *current-pane-label-list
+	    (nconc *current-pane-label-list (list name)))
+	(grow-file-lists data name)))
+  (if (and (synapse-plot-conductance synapse) (synapse-conductance-data synapse))
+      (let ((data (reverse (synapse-conductance-data synapse)))
+	    (g-name (format nil "~a-G" name)))
+	(setq *conductance-pane-data-list
+	    (nconc *conductance-pane-data-list
+		   (list (list (reverse (synapse-conductance-data synapse)) *ordered-time-list*)))
+	    *conductance-pane-label-list
+	    (nconc *conductance-pane-label-list (list g-name)))
+	(grow-file-lists data g-name))))
+
+(defun collect-particle-plot-data (name particle)
+  (if (particle-plot-state particle)
+      (let ((data (reverse (particle-state-data particle))))
+	(setq *particle-pane-data-list
+	      (nconc *particle-pane-data-list
+		     (list (list data *ordered-time-list*)))
+	      *particle-pane-label-list
+	      (nconc *particle-pane-label-list (list name)))
+	(grow-file-lists data name))))
+
+(defun collect-conc-particle-plot-data (name conc-particle)
+  (if (conc-part-plot-state conc-particle)
+      (let ((data (reverse (conc-part-state-data conc-particle))))
+	(setq *particle-pane-data-list
+	      (nconc *particle-pane-data-list
+		     (list (list data *ordered-time-list*)))
+	      *particle-pane-label-list
+	      (nconc *particle-pane-label-list (list name)))
+	(grow-file-lists data name))))
+
+(defun collect-conc-int-plot-data (name conc-int)
+  (if (conc-int-plot-concentration conc-int)
+      (let ((name-1 (format nil "~a-1" name))
+	    (name-2 (format nil "~a-2" name))
+	    (data-1 (reverse (conc-int-concentration-1-data conc-int)))
+	    (data-2 (reverse (conc-int-concentration-2-data conc-int))))
+	(setq *conc-int-pane-data-list
+	      (nconc *conc-int-pane-data-list
+		     (list (list data-1 *ordered-time-list*)))
+	      *conc-int-pane-label-list
+	      (nconc *conc-int-pane-label-list (list name-1)))
+	(grow-file-lists data-1 name-1)
+	(setq *conc-int-pane-data-list
+	      (nconc *conc-int-pane-data-list
+		     (list (list data-2 *ordered-time-list*)))
+	      *conc-int-pane-label-list
+	      (nconc *conc-int-pane-label-list (list name-2)))
+	(grow-file-lists data-2 name-2))))
+
+
+
+
+
+(defun save-data ()
+  "Saves the necessary data at each time step."
+  (setf *time-list* (cons *real-time *time-list*))
+  (maphash 'save-node-data node-hash-table)
+  (maphash 'save-channel-data channel-hash-table)
+  (maphash 'save-synapse-data synapse-hash-table)
+  (maphash 'save-isource-data isource-hash-table)
+  (maphash 'save-vsource-data vsource-hash-table)
+  (maphash 'save-particle-data particle-hash-table)
+  (maphash 'save-conc-integrator-data conc-int-hash-table)
+  )
+
+(defun save-node-data (name node)
+  (declare (ignore name))
+  (if (or  (node-plot-voltage node) (node-analyze-voltage node))	; the output is "interesting"
+	(progn
+	  (push (core-node-voltage-n+1 (node-core-nd node)) (node-voltage-data node))
+	  (if *debug-at-time-steps*
+      (print-a-node-voltage (node-core-nd node))))))
+
+(defun save-channel-data (name channel)
+  (declare (ignore name))
+  (if (channel-plot-current channel)		; the output is "interesting"
+      (push (core-channel-current (channel-core-ch channel))
+	    (channel-current-data  channel)))
+  (if (channel-plot-conductance channel)	; the output is "interesting"
+      (push (core-channel-conductance (channel-core-ch channel))
+	    (channel-conductance-data  channel))))
+
+
+(defun save-synapse-data (name synapse)
+  (declare (ignore name))
+  (if (synapse-plot-current synapse)	; the output is "interesting"
+    (push (core-synapse-current (synapse-core-syn synapse))
+	  (synapse-current-data synapse)))
+  (if (synapse-plot-conductance synapse)	; the output is "interesting"
+    (push (core-synapse-conductance (synapse-core-syn synapse))
+	  (synapse-conductance-data synapse))))
+
+
+(defun save-isource-data (name isource)
+  (declare (ignore name))
+  (if (isource-plot-current isource)	; the output is "interesting"
+    (push (core-isource-current (isource-core-isrc isource))
+	  (isource-current-data isource))))
+
+(defun save-vsource-data (name vsource)
+  (declare (ignore name))
+  (if (vsource-plot-current vsource)	; the output is "interesting"
+    (push (vsource-return-current  vsource)
+	  (vsource-current-data vsource))))
+
+
+
+(defun save-particle-data (name particle)
+  (declare (ignore name))
+  (if (particle-plot-state particle)		; the output is "interesting"
+      (push (core-node-voltage-n+1 (#.core-particle-node-point (particle-core-prt particle)))
+	    (particle-state-data particle))))
+
+
+(defun save-conc-integrator-data (name conc-integrator)
+  (declare (ignore name))
+  (if (conc-int-plot-concentration conc-integrator)	; the output is "interesting"
+      (progn
+	(push (core-node-voltage-n+1 (#.core-conc-int-node-1-point (conc-int-core-cint conc-integrator)))
+	      (conc-int-concentration-1-data conc-integrator))
+	(push (core-node-voltage-n+1 (#.core-conc-int-node-2-point (conc-int-core-cint conc-integrator)))
+	      (conc-int-concentration-2-data conc-integrator)))))
+
+;;; SET-UP-OUTPUT-FLAGS Updates structure flags for saving data from information in *plot-???* lists, which in turn
+;;; might be altered after the circuit is loaded.
+(defun set-up-output-flags ()
+  (maphash 'update-node-plot-flag node-hash-table)
+  (maphash 'update-node-analysis-flag node-hash-table)
+  (maphash 'update-channel-plot-flag channel-hash-table)
+  (maphash 'update-synapse-plot-flag synapse-hash-table)
+;  (maphash 'update-isource-plot-flag isource-hash-table)
+;  (maphash 'update-vsource-plot-flag vsource-hash-table)	;
+  (maphash 'update-particle-plot-flag particle-hash-table))
+
+(defun update-node-plot-flag (name node)
+  (setf (node-plot-voltage node)
+	(or (consp (member name *plot-soma-nodes* :test #'string-equal))
+	    (consp (member name *plot-nodes* :test #'string-equal)))))
+
+(defun update-node-analysis-flag (name node)
+  (setf (node-analyze-voltage node)(consp (member name *analysis-nodes* :test #'string-equal))))
+
+(defun update-particle-plot-flag (name particle)
+  (setf (particle-plot-state particle) (consp (member name *plot-particles* :test #'string-equal))))
+
+(defun update-conc-int-plot-flag (name conc-int)
+  (setf (conc-int-plot-concentration conc-int) (consp (member name *plot-conc-ints* :test #'string-equal))))
+
+(defun update-channel-plot-flag (name channel)
+  (setf (channel-plot-current channel) (consp (member name *plot-channel-currents* :test #'string-equal)))
+  (setf (channel-plot-conductance channel) (consp (member name *plot-channel-conductances* :test #'string-equal))))
+
+(defun update-synapse-plot-flag (name synapse)
+  (setf (synapse-plot-current synapse) (consp (member name *plot-synapse-currents* :test #'string-equal)))
+  (setf (synapse-plot-conductance synapse) (consp (member name *plot-synapse-conductances* :test #'string-equal))))
+
+
+
+
+
+;;; PRINT-LIGHT-SYNAPSE-PARAMETERS
+(defun print-light-synapse-parameters (&optional (output-stream t))
+  (let ((temp *output-stream))
+    (setq *output-stream output-stream)		;
+    (format output-stream "Light stimulus is a ~a, strength ~a ~%" *light-stimulus *light-stimulus-strength)
+    (case *light-stimulus
+      (apparent-motion (print-apparent-motion-parameters output-stream))
+      (moving-bar (print-moving-bar-parameters output-stream))
+      (moving-bar-grating (print-moving-bar-grating-parameters output-stream))
+      (moving-sine-grating (print-moving-sine-grating-parameters output-stream))
+      (moving-spot (print-moving-spot-parameters output-stream))
+      (annulus (print-spot-and-annulus-parameters output-stream))
+      (spot (print-spot-and-annulus-parameters output-stream)))
+    (maphash 'print-synapse-type-parameters *synapse-type-model-hash-table*)
+    (setq *output-stream temp)))
+
+(defun print-apparent-motion-parameters (output-stream)
+  (format output-stream
+	  "  Bar A intensity = ~a, Bar B intensity = ~a~%"  *bar-a-intensity *bar-b-intensity))
+
+(defun print-moving-bar-parameters (output-stream)
+  (format t "  Bar width ~a uM, length ~a uM.~%" *bar-width *bar-length)
+  (format output-stream "  Speed ~a uM/mS, " *light-speed )
+  (if *light-direction
+      (format output-stream "-> 90 deg ahead of long axis.~%")
+      (format output-stream "-> 90 deg behind of long axis.~%")))
+
+(defun print-moving-bar-grating-parameters (output-stream)
+  (format t "  Bar width ~a, length ~a [uM].~%" *bar-width *bar-length)
+  (format output-stream " Grating speed ~a uM/mS, " *light-speed )
+  (if *light-direction
+      (format output-stream "-> 90 degrees ahead of long axis ~%")
+      (format output-stream "-> 90 degrees behind of long axis ~%"))
+  (format output-stream " Grating spatial period = ~a ~%" *grating-spatial-period ))
+
+
+(defun print-moving-sine-grating-parameters (output-stream)
+  (if *light-direction
+      (format output-stream "  Sine grating is -> 90 degrees ahead of long axis ~%")
+      (format output-stream "  Sine grating is -> 90 degrees behind of long axis ~%"))
+  (format output-stream "  Grating speed [microns per millisecond]= ~a, " *light-speed )
+  (format output-stream "  Grating spatial period = ~a ~%" *grating-spatial-period )
+)
+
+(defun print-moving-spot-parameters (output-stream)
+  (format output-stream "  Spot speed ~a uM/mS~%" *light-speed )
+  )
+
+(defun print-spot-and-annulus-parameters (output-stream)
+  (format output-stream "  Spot outside diameter ~a uM, " *spot-outside-diameter )
+  (format output-stream "inside diameter ~a uM~%" *spot-inside-diameter )
+  )
+
+
+(defvar *print-analysis t)
+;;; PRINT-CIRCUIT
+(defun print-circuit (&optional (output-stream t) (full-description nil))
+  (let ((temp-stream *output-stream ))
+    (setq *output-stream output-stream)
+    "Print the circuit that has been read in."
+    #-sun (send *standard-output* :clear-window)
+    (format output-stream (concatenate 'string "~%" *comment-string*))
+    (format output-stream "~%Simulation '~a'~%" *simulation-name*)
+    (format output-stream "~a cell type(s), " (hash-table-count cell-type-hash-table))
+    (format output-stream "~a cells, " (hash-table-count cell-hash-table))
+    (format output-stream "with ~a  nodes.~%" (hash-table-count node-hash-table))
+    (format output-stream "There are ~a vsources, " (hash-table-count vsource-hash-table))
+    (format output-stream "~a isources, " (hash-table-count isource-hash-table))
+    (format output-stream "~a somas,~%" (hash-table-count soma-hash-table))	;
+    (format output-stream "~a channels, " (hash-table-count channel-hash-table))
+    (format output-stream "~a synapses, " (hash-table-count synapse-hash-table))
+    (format output-stream "~a particles,~%" (hash-table-count particle-hash-table))
+    (format output-stream "~a conc particles, " (hash-table-count conc-part-hash-table))
+    (format output-stream "~a conc integrators,~%" (hash-table-count conc-int-hash-table))
+    (format output-stream "and ~a segments.~%~%" (hash-table-count segment-hash-table))
+    #+parallel
+    (format output-stream "Number of processors allocated ~a~%" *processor-allocation-counter*)
+    (progn
+      (dolist (mod *models*)
+	(if (or full-description (equal "cell-type" (model-template-name mod)))
+	    (progn 
+;	      (format output-stream "Model ~a~%" (model-template-name mod))
+	      (dolist (inst (model-template-instances mod))
+;		(format output-stream " Instance ~a~%" (model-instance-name inst))
+		(dolist (elt (model-instance-elements inst))
+		  (format output-stream "  ")
+		  (funcall (model-template-print-routine mod) elt)))
+	      (format output-stream "~%"))))
+;      (format output-stream "~%")
+      )
+    (if (and (or *use-synapse-events *include-light-synapses) *include-synapses)
+	(print-light-synapse-parameters output-stream))
+    (if *print-analysis
+	(progn
+	  (if  *pane1-data-list (INTEGRATE-DATA *pane1-data-list *pane1-label-list))
+	  (if  *pane2-data-list (INTEGRATE-DATA *pane2-data-list *pane2-label-list))))
+    (setq *output-stream temp-stream)))
+
+
+(defun print-node-voltages ()
+  "Prints the vector of node voltages and delta-v's. Mainly for debugging."
+  (format t "Node Voltages at time ~4f.~%" *real-time)
+  (format t "Node           Predictor   V-n+1  V-n    Delta-V      RHS          jacobian     charge       current      old_rhs~%")
+  #-parallel (maphash '(lambda (name nd) (print-a-node-voltage nd)) node-hash-table)
+  #+parallel (*select-type (core-node)
+	       (do-for-selected-processors (proc-num)
+		 (print-a-node-voltage proc-num)))
+;		 (print proc-num)))
+  )
+
+#-parallel 
+(defun print-a-node-voltage (nd)
+  "Prints the voltage and delta-v for one node."
+  (if (not (eq nd *ground-node*))		; don't print for ground
+      (if (node-is-dc-source nd)
+	  (format t "~14a             ~6f~%" (node-name nd) (node-voltage nd))
+	  (if (node-is-pwl-source nd)
+	      (format t "~14a             ~6f~%"
+		      (node-name nd) (core-node-voltage-n+1 (node-core-nd nd)))
+	      (format t "~14a ~6f ~27t~6f~27t~6f~40t~6f~53t~6f~66t~6f~79t~6f~92t~6f~105t~6f~%"
+		      (node-name nd)
+		      (core-node-predictor (node-core-nd nd))
+		      (core-node-voltage-n+1 (node-core-nd nd))
+		      (core-node-voltage-n (node-core-nd nd))
+		      (core-node-delta-v (node-core-nd nd))
+		      (core-node-rhs (node-core-nd nd))
+		      (core-node-jacobian (node-core-nd nd))
+		      (core-node-charge (node-core-nd nd))
+		      (core-node-current (node-core-nd nd))
+		      (core-node-old-rhs (node-core-nd nd)))))))
+
+#+parallel 
+(defun print-a-node-voltage (proc-num)
+  "Prints the voltage and delta-v for one node."
+  (if (pref core-node-is-source proc-num)
+      (format t "~14a             ~6f~%"
+	      proc-num
+	      (pref core-node-voltage-n+1 proc-num))
+      (format t "~14a ~6f ~26t~6f~38t~6f~50t~6f~62t~6f~74t~6f~86t~6f~98t~6f~%"
+	      proc-num
+	      (pref core-node-predictor proc-num)
+	      (pref core-node-voltage-n+1 proc-num)
+	      (pref core-node-delta-v proc-num)
+	      (pref core-node-rhs proc-num)
+	      (pref core-node-jacobian proc-num)
+	      (pref core-node-charge proc-num)
+	      (pref core-node-current proc-num)
+	      (pref core-node-old-rhs proc-num))))
+
+
+#|
+; local ( TMC ) hacks that I don't want to be dependent on, so I put them here
+(defun my-cat*-general (packaje with-- names &OPTIONAL (bace 10.))
+  (let ((base bace)
+	(*nopoint t))  ;this is new -brewster
+    (intern (with-output-to-string (string)
+	      (princ (car names) string)
+	      (dolist (name (cdr names))
+		(if with--
+		    (tyo #/- string))
+		(princ name string)))
+	    packaje)))
+
+(defun my-cat* (&rest names)
+  "creates an interned (in the current package) atom which is the cat of the PRINC in base 10.
+   of the names with hyphens between them.  The packages of the old symbols are not in 
+   the string"
+  (my-cat*-general *package* t names))
+|#
+
+(defun create-output-symbol (name1 name2)
+  (intern
+    (string-upcase (format nil "~a-~a" name1 name2))
+;    (string-upcase (format nil "~a" name2))
+    *package*))
+
+;(deff zl:graph-2d-array zl:graph-2d-array)
+
+;(defun plot (&rest args)
+;  (dolist (x args)
+;    (zl-user:graph-2d-array (eval x) nil nil t)))
+;
+;(defun pl (&rest args)
+;  (dolist (x args)
+;    (let ((y (create-output-symbol 'node x)))
+;      (if (boundp y)
+;	  (zl-user:graph-2d-array (eval y) nil nil t)
+;	  (format t "~%Can't find node ~a" x)))))
+
+;(defun plot-loop ()
+;  (do
+;    ()
+;    (nil)
+;    (plot (read))))
+
+
+
+
+; ***** have to use this for CM renovation later....
+;(defun save-data ()
+;  "Saves the necessary data at each time step."
+;  (setf
+;    *time-list* (cons *real-time *time-list*))
+;  (maphash 'save-node-data node-hash-table)
+;;  
+;;  (dolist (output-current *channel-currents-to-output*)
+;;;    (format t "~%saveing current ~a" (#+parallel pref #.core-channel-current
+;;;				      (channel-core-ch (output-info-pointer output-current))))
+;;    (push (#+parallel pref #.core-channel-current (channel-core-ch
+;;						    (output-info-pointer output-current)))
+;;	  (output-info-data output-current)))
+;;  (dolist (output-conductance *channel-conductances-to-output*)
+;;;    (format t "~%saveing conductance ~a" (#+parallel pref #.core-channel-conductance
+;;;				      (channel-core-ch (output-info-pointer output-conductance))))
+;;    (push (#+parallel pref #.core-channel-conductance (channel-core-ch
+;;						    (output-info-pointer output-conductance)))
+;;	  (output-info-data output-conductance)))
+;
+;  (maphash 'save-channel-data channel-hash-table)
+;
+;
+;;  (dolist (output-current *synapse-currents-to-output*)
+;;;    (print (output-info-data output-current))
+;;;    (format t "~%saveing current ~a" (#+parallel pref #.core-synapse-current
+;;;				      (synapse-core-syn (output-info-pointer output-current))))
+;;    (push (#+parallel pref #.core-synapse-current (synapse-core-syn
+;;						    (output-info-pointer output-current)))
+;;	  (output-info-data output-current)))
+;;  (dolist (output-conductance *synapse-conductances-to-output*)
+;;;    (format t "~%saveing conductance ~a" (#+parallel pref #.core-synapse-conductance
+;;;				      (synapse-core-syn (output-info-pointer output-conductance))))
+;;    (push (#+parallel pref #.core-synapse-conductance (synapse-core-syn
+;;						    (output-info-pointer output-conductance)))
+;;	  (output-info-data output-conductance)))
+;  (maphash 'save-synapse-data synapse-hash-table)
+;
+;
+;
+;;  (dolist (output-source-current *source-currents-to-output*)
+;;;;    (format t "~%saveing current ~a" (#+parallel pref #.core-channel-current
+;;;;				      (channel-core-ch (output-info-pointer output-current))))
+;;    (push (#+parallel pref #.core-isource-current (isource-core-isrc
+;;						    (output-info-pointer output-source-current)))
+;;	  (output-info-data output-source-current)))
+;  (maphash 'save-isource-data isource-hash-table)
+;
+;;  (dolist (output-source-current *vsource-currents-to-output*)
+;;;;    (format t "~%saveing current ~a" (#+parallel pref #.core-channel-current
+;;;;				      (channel-core-ch (output-info-pointer output-current))))
+;;    (push (#+parallel pref #.vsource-return-current (output-info-pointer output-source-current))
+;;	  (output-info-data output-source-current)))
+;  (maphash 'save-vsource-data vsource-hash-table)
+;
+;  (maphash 'save-particle-data particle-hash-table)
+;
+;
+;;  (dolist (output-value *particle-values-to-output*)
+;;    #-parallel (push (core-node-voltage-n+1
+;;		       (#.core-particle-node-point
+;;			 (particle-core-prt
+;;			   (output-info-pointer output-value))))
+;;		     (output-info-data output-value))
+;;    #+parallel (push (pref #.core-particle-node-voltage
+;;			   (particle-core-prt
+;;			     (output-info-pointer output-value)))
+;;		     (output-info-data output-value))
+;;    )
+;;  (dolist (output-value *conc-integrator-values-to-output*)
+;;
+;;    #-parallel (push (core-node-voltage-n+1
+;;		       (#.core-conc-int-node-1-point
+;;			 (conc-int-core-cint
+;;			   (output-info-pointer output-value))))
+;;		     (output-info-data output-value))
+;;    #+parallel (push (pref #.core-particle-node-voltage
+;;			   (particle-core-prt
+;;			     (output-info-pointer output-value)))
+;;		     (output-info-data output-value))
+;;    )
+;
+;)

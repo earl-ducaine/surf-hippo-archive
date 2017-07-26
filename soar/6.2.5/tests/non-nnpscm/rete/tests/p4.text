@@ -1,0 +1,27 @@
+(sp p4
+ (goal <g> ^constant c)
+-->
+)
+
+run 1
+add-wme g1 ^constant c
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^constant c
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^constant b
+ms
+add-wme g1 ^constant c
+ms
+run 1
+remove-wme 11
+ms
+remove-wme 12
+ms

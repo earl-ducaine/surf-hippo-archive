@@ -1,0 +1,212 @@
+
+	******************************************************
+	******************************************************
+		    CONSOLIDATING DENDRITIC TREES
+	******************************************************
+	******************************************************
+
+See also surf-hippo/src/sys/trees.lisp and surf-hippo/src/sys/segment.lisp.
+
+The following procedure can be evoked from the (Main Menu) "Edit
+circuit elements" -> "Examine/modify distribution of electrotonic
+lengths" option. Note that a histogram plot of the distribution of
+electrotonic lengths in the loaded cells is also available.
+
+
+Surf-Hippo can reduce the number of segments in the dendritic tree by
+the following algorithm: 
+
+Starting from the soma, and working down each proximal segment,
+combine two consecutive segments into one if [a] there is no other
+segment common to both (ie the connection is not a branch point) AND
+[b] if their total electrotonic length is less than that set by the
+global variable *MAXIMUM-ELECTROTONIC-LENGTH*.
+
+A more stringent requirement is that the electrotonic length of the
+replacement segment be less than *MAXIMUM-ELECTROTONIC-LENGTH*. This
+is more stringent since the sum of the consecutive segments'
+electrotonic length will underestimate the electrotonic length of the
+replacement segment constructed with the criteria listed below. The
+tighter test is controlled by the global variable
+*USE-STRICT-LAMBDA-CRITERIUM* [default T] - the disadvantage is an increase in
+processing time.
+
+If two segments are consolidated into one, then the new segment is
+constructed according to the following constraints:
+
+ 1. The total axial series resistivity is conserved
+  
+ 2. The total membrane impedance (area) is conserved
+  
+ 3. The end points of the new segment correspond to the (non-common)
+    end points of the original two segments
+
+In order to meet these constraints an additional parameter must be
+introduced, which we are choosing to be a coefficient for the segment
+intracellular resistivity.
+
+ Thus, 
+
+	  l_1 = length of proximal segment
+	  d_1 = diameter of proximal segment
+	  a_1 = coefficient for r_i of proximal segment
+
+	  l_2 = length of distal segment
+	  d_2 = diameter of distal segment
+	  a_2 = coefficient for r_i of distal segment
+
+	  l_3 = length of new segment
+	  d_3 = diameter of new segment
+	  a_3 = coefficient for r_i of new segment
+
+
+ First, 
+
+         l_3 is fixed by the far endpoints of the proximal and distal segment
+
+
+
+ Conservation of membrane area (conservation of capacitance and
+ membrane resistance) =>
+
+		  (l_1 * d_1) + (l_2 * d_2)
+	  d_3 =  ---------------------------
+			      l_3
+
+ Conservation of axial resistance =>
+
+		  l_1 * a_1     l_2 * a_2
+		  ---------  +  ---------
+		  d_1 * d_1     d_2 * d_2 
+	  a_3 = ---------------------------
+			    l_3
+			  ---------
+			  d_3 * d_3 	
+
+
+
+
+This technique yields a new segment whose cable parameters are
+identical to the concatenation of the two "parents". However, the
+actual input impedance of the discrete segment will always be greater
+than or equal to the input impedance of the former segment chain,
+since the membrane impedance is now entirely at the end of the new
+segment, instead of being split with part in the "middle" of the
+former chain. Thus, the input impedance of a transformed
+(consolidated) tree will always be greater than or equal to the
+original tree. The difference in the impedances will be greater the
+larger the consolidation. As one example:
+
+     * (surf)
+
+      ** Surf-Hippo: The MIT CBIP Neuron Simulator (Version 2.2) **
+
+     Reading in circuit j43d...
+     ; Loading #p"/home/lyle/surf-hippo/anatomy/j43d.sparcf".
+     Destroying zero length segment 4-3-56
+     Destroying zero length segment 11-1-1
+     Destroying zero length segment 11-2-1
+     Locating segments...
+
+      76 branch points and 3369 segments processed.
+     Sunday, 10/30/94 03:38:40 am EST
+
+     Simulation 'j43d-619512' [File: /home/lyle/surf-hippo/anatomy/j43d.sparcf]
+     1 cell type, 1 cell, with 3370 nodes. Temperature 27.0 degrees(C)
+     There is 1 soma, 1 current source, and 3369 segments.
+
+       Cell-type V1-pyramidal:
+       Rm 40000.0, Rm-sm 40000.0 (ohm-cm2)
+       Soma shunt 1.0e+30 ohms, Ra 200.0 ohm-cm, Cm-sm 1.0, Cm-den 1.0 (uF/cm2) 
+       E-soma-leak -70.0 mV, E-dendrite-leak -70.0 mV 
+       Cells of type V1-pyramidal are:
+	 j43d (soma @ [0.0 0.0 0.0])
+	   Max G-in/Min R-in = 1.34e-2 uS/7.46e+1 Mohms 
+	   Soma passive R-in = 2.75e+3 Mohms 
+	   Dendritic tree passive R-in (actual model) = 9.80e+1 Mohms 
+				       (cable model) = 9.79e+1 Mohms 
+	   Passive total R-in from soma (actual model) = 9.47e+1 Mohms 
+					(cable model) = 9.45e+1 Mohms 
+
+     Locating segments...
+
+      76 branch points and 1427 segments processed.
+
+     Sunday, 10/30/94 03:44:10 am EST
+
+     Simulation 'j43d-619545' [File: /home/lyle/surf-hippo/anatomy/j43d.sparcf]
+     Trees have been consolidated with a maximum electrotonic length of 0.3
+     1 cell type, 1 cell, with 1428 nodes. Temperature 27.0 degrees(C)
+     There is 1 soma, 1 current source, and 1427 segments.
+
+       Cell-type V1-pyramidal:
+       Rm 40000.0, Rm-sm 40000.0 (ohm-cm2)
+       Soma shunt 1.0e+30 ohms, Ra 200.0 ohm-cm, Cm-sm 1.0, Cm-den 1.0 (uF/cm2) 
+       E-soma-leak -70.0 mV, E-dendrite-leak -70.0 mV 
+       Cells of type V1-pyramidal are:
+	 j43d (soma @ [0.0 0.0 0.0])
+	   Max G-in/Min R-in = 1.34e-2 uS/7.46e+1 Mohms 
+	   Soma passive R-in = 2.75e+3 Mohms 
+	   Dendritic tree passive R-in (actual model) = 9.84e+1 Mohms 
+				       (cable model) = 9.79e+1 Mohms 
+	   Passive total R-in from soma (actual model) = 9.50e+1 Mohms 
+					(cable model) = 9.45e+1 Mohms 
+
+
+
+
+This algorithm may be run from a menu with the function CONSOLIDATE-CELLS-TREE. Otherwise, use
+
+CONSOLIDATE-CELL-TREE is an internal symbol in the SURF-HIPPO package.
+Function: #<Function CONSOLIDATE-CELL-TREE {87EF619}>
+Function arguments:
+  (&key (cell *cell*) single-step starting-segment
+   (maximum-electrotonic-length *maximum-electrotonic-length*)
+   (use-strict-lambda-criterium *use-strict-lambda-criterium*))
+Function documentation:
+  Consolidate the dendritic tree of CELL, according to the values of MAXIMUM-ELECTROTONIC-LENGTH
+ (default value is given by the global variable *MAXIMUM-ELECTROTONIC-LENGTH*) and
+ USE-STRICT-LAMBDA-CRITERIUM (default value is given by the global variable
+ *USE-STRICT-LAMBDA-CRITERIUM*). If SINGLE-STEP is T, then only one pair of segments are
+ consolidated, otherwise successive segment pairs are consolidated moving distally and starting from
+ STARTING-SEGMENT, if supplied, otherwise starting from the trunk segments of the CELL soma. If CELL
+ is not supplied, then the current value of *CELL* is used. The circuit is processed with
+ PROCESS-CIRCUIT-STRUCTURE at the end of the consolidation.
+
+
+
+
+See also hints_misc.doc for Saving Cell Geometries.
+
+
+
+
+****************************************************************
+****************************************************************
+
+	Naming Consolidated Segments
+
+****************************************************************
+****************************************************************
+
+The new name of a replacement segment is derived from the original
+segment names as follows:
+
+When neither of the two names contain the character "^", then the new
+name is the concatenation of the original names, separated by "^", for
+example:
+
+	"19" "2-34" --> "19^2-34"
+	"foo" "bar" --> "foo^bar"
+
+When either name contains a "^", the new name is constructed from the
+characters to the left of the first "^" in the first (proximal)
+segment name, and the characters to the right of the last "^" in the
+first (proximal) segment name, separated by "^", for example:
+
+	"foo^bar" "bar2" --> "foo^bar2"
+	"1-2-43^1-2-48" "1-2-49" --> "1-2-43^1-2-49"
+        "1-2-43^1-2-48" "1-2-49^1-2-54" --> "1-2-43^1-2-54"
+
+The motivation is that the new name reflects the names of both the
+distal and proximal segments that contribute to it.

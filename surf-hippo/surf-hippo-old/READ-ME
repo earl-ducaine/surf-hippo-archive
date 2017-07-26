@@ -1,0 +1,170 @@
+
+
+***********
+
+[Preliminary] Instructions for Installing a Test Version 0.0 of Surf-Hippo
+
+***********
+
+Lyle J Borg-Graham lyle@ai.mit.edu
+August 15, 1992
+
+
+1. Add the pathname of the top level surf-hippo directory to .cshrc, for example:
+
+	setenv SURFHOME /home/hc/lyle/surf-hippo/
+
+2. Run CMU Common Lisp from Ilisp.
+
+3. Load Garnet - see example garnet-loader.lisp file in SURFHOME.
+
+4. Load Surf-Hippo by loading surf-hippo-loader file.
+
+5. If you need to recompile entire system, then try with
+surf-hippo-prepare-compile, surf-hippo-loader, surf-hippo-compile
+sequence. The new bin files may then be transferred to the
+SURFHOME/bin/ directories.
+
+6. The system organization for Surf-Hippo is stolen directly from
+Garnet, and is still being debugged.
+
+7. While compiling the supplied source, all warnings may be ignored,
+as far as I know.
+
+8. Once Surf-Hippo has been loaded into the ILISP window, then set
+the package -
+
+	  .
+	  .
+	  .
+	  .
+	  .
+
+	  ... Surf-Hippo Load Complete ...
+	  T
+	  * *package*
+	  #<The COMMON-LISP-USER package, 126/188 internal, 5/9 external>
+	  * (setsurf)
+	  #<The SURF-HIPPO package, 1915/3150 internal, 0/9 external>
+
+	  .
+	  .
+	  .
+	  .
+	  .
+
+
+
+9. Try the canned simulation of a hippocampal action potential (the output
+should look something like this, and at the end plotting windows will
+be generated) -
+
+
+	  .
+	  .
+	  .
+	  .
+	  .
+
+
+	  * (surf 'sun-hippo)
+	  -*-  Surf-Hippo  -*-
+
+	  MIT CBIP Neuron Simulator -- Serial Version
+	  Reading in circuit SUN-HIPPO...
+	  Collecting circuit objects...
+	  Locating nodes...
+	  [GC threshold exceeded with 10,751,840 bytes in use.  Commencing GC.]
+	  [GC completed with 8,758,232 bytes retained and 1,993,608 bytes freed.]
+	  [GC will next occur when at least 10,758,232 bytes are in use.]
+
+
+	  Simulation 'SUN-HIPPO-2922905974'
+	  1 cell type(s), 1 cells, with 17  nodes.
+	  There are 0 vsources, 1 isources, 1 somas,
+	  5 channels, 0 synapses, 10 particles,
+	  0 conc particles, 0 conc integrators,
+	  and 5 segments.
+
+	  Cell-type CA1:
+	  Rm 40000.0, Rm-sm 2550.0 (ohm-cm2)
+	  Soma shunt 1.0e+30 ohms, Ra 200.0 ohm-cm, Cm 1.0 uF/cm2 
+	  Cells of type CA1 are: 
+	  hippo
+
+
+	  Light stimulus is a SPOT, strength 1.0 
+	  Spot outside diameter 0.0 uM, inside diameter 0.0 uM
+
+	  Starting DC solution
+	  No DC convergence
+
+
+	  Starting transient solution
+	  Simulation time: 0.24722591. Stop time: 25.0
+	  Simulation time: 1.2984508. Stop time: 25.0
+	  Simulation time: 3.1492255. Stop time: 25.0
+	  Simulation time: 5.9189053. Stop time: 25.0
+	  Simulation time: 6.7927666. Stop time: 25.0
+	  Simulation time: 7.846628. Stop time: 25.0
+	  Simulation time: 8.990739. Stop time: 25.0
+	  Simulation time: 9.983081. Stop time: 25.0
+	  Simulation time: 10.993138. Stop time: 25.0
+	  Simulation time: 11.862845. Stop time: 25.0
+	  Simulation time: 12.901931. Stop time: 25.0
+	  Simulation time: 13.894746. Stop time: 25.0
+	  Simulation time: 14.950834. Stop time: 25.0
+	  Simulation time: 15.787429. Stop time: 25.0
+	  Simulation time: 16.824383. Stop time: 25.0
+	  Simulation time: 17.929342. Stop time: 25.0
+	  Simulation time: 18.883259. Stop time: 25.0
+	  Simulation time: 19.482412. Stop time: 25.0
+	  Simulation time: 20.987625. Stop time: 25.0
+	  Simulation time: 21.856953. Stop time: 25.0
+	  Simulation time: 22.75014. Stop time: 25.0
+	  Simulation time: 23.654404. Stop time: 25.0
+
+	  Circuit: SUN-HIPPO
+	  Total number of time points used 145
+	  Total number of iterations used 0
+
+	  Circuit: SUN-HIPPO
+
+
+	  Simulation 'SUN-HIPPO-2922905974'
+	  1 cell type(s), 1 cells, with 17  nodes.
+	  There are 0 vsources, 1 isources, 1 somas,
+	  5 channels, 0 synapses, 10 particles,
+	  0 conc particles, 0 conc integrators,
+	  and 5 segments.
+
+	  Cell-type CA1:
+	  Rm 40000.0, Rm-sm 2550.0 (ohm-cm2)
+	  Soma shunt 1.0e+30 ohms, Ra 200.0 ohm-cm, Cm 1.0 uF/cm2 
+	  Cells of type CA1 are: 
+	  hippo
+
+
+	  Light stimulus is a SPOT, strength 1.0 
+	  Spot outside diameter 0.0 uM, inside diameter 0.0 uM
+	  Node hippo-soma integral =  699.8265
+	  Node hippo-2 integral =  574.06757
+	  Node hippo-1 integral =  629.87427
+	  Node hippo-5 integral =  490.21704
+	  NIL
+	  * 
+
+
+
+
+
+10. To see a complicated cell, from
+/surf-hippo/src/rabbit/star-amacrine-functions.lisp, try
+
+         * (surf 'star-amacrine-3)
+
+
+However, the stimulus is not being drawn, and voltage-pane1 is not correct.
+
+
+

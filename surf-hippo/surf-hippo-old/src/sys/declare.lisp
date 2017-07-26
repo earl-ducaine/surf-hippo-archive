@@ -1,0 +1,562 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10;   -*-
+;;; (c) Copyright 1985, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 6/09/85 11:54:37
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+
+;;; Various declarations for circuit simulator, including defining
+;;; many of the global variables.
+;;;
+;;; Other files may define globals as well.
+;;;
+;;; The naming convention for the variables is as follows -
+;;;  
+;;;   variable-name     = local variable
+;;;   *variable-name    = global variable
+;;;   *variable-name*   = global variable
+;;;
+;;; See the INIT.LISP file for more information on these parameters
+;;; and the default values that are typically used. See the
+;;; READ-ME.LISP file for example of a simulation file which alters
+;;; appropriate variables.
+
+
+; 4-26-92 lbg CMUCL complains when :conc-name defstruct option has no
+; arguments. According to GLSteele, we don't want this option at all,
+; since the default for the accessor function names to prefix the
+; structure name onto the slot keyword. This has now been removed from
+; all the other system files.
+; (defstruct (model-template :conc-name)
+
+; 6-17-92 lbg CMUCL complains when nil is used as default for slot
+; declared as a :type for which nil is not a member. CLTL2 sez that
+; the use of type is implementation dependent - it is unknown whether
+; or not our use of :type in all the structures is helping things very
+; much. I have removed all the :type declarations in similar slot
+; options in the other system files.
+
+(defstruct model-template
+  "The template for all element models"
+  (name "" 		:type string)
+  (default-params () 	:type list)
+  (instances ()		:type list)
+  eval-routine
+  print-routine
+  create-routine
+  create-core-routine
+  add-off-diag-routine
+  find-coupling-routine
+  fix-dc-nodes-routine
+)
+
+(defstruct model-instance
+  "An instance of a model"
+  (name "" 		:type string)
+  model
+  (changed-params ()	:type list)
+  (elements () 		:type list)
+)
+
+
+;;;***** From SURF alone *****
+
+;;; 7/5/92 -  CMU CL is very uptight about number types, especially with
+;;; respect to structure slots. We are keeping everything in single
+;;; precision, so we will define a single precision pi internal to the
+;;; SURF package.
+
+
+(defconstant pi-single (COERCE user::PI 'SINGLE-FLOAT))
+(defconstant pi-over-2 (/ pi-single 2.0))
+(defconstant pi-over-f4 (/ pi-single 4.0))
+
+(defvar *resimulate-last-circuit )
+(defvar *comment-string* "")			;Comment with formatting characters
+(defvar *circuit-name*  "The name of the circuit being simulated.") 
+(defvar *simulation-name* nil)
+(defvar *time-stamp nil)
+(defvar *surf-interactive*  "t if the program is being run interactively.")
+(defvar *models* '() "A list of all models; to be added to by each create model routine.")
+(defvar *model-hash-table*  "A table of all model templates by name.")
+(defvar *model-instance-hash-table*  "A table of all model instances.")
+(defvar *num-nodes* 0 "The number of non source nodes in the circuit.")
+
+(defvar *synapse-type-models* '() "A list of all synapse type models; to be added to by each create model routine.")
+(defvar *synapse-type-model-hash-table*  "A table of all synapse type model templates by name.")
+
+(defvar particle-type-hash-table  "A table of all particle type model templates by name.")
+
+(defvar *branch-list* '())
+
+
+
+
+(defvar *cells* '() "List of names of cells") 
+
+(defvar node-hash-table  "A table of nodes.")
+(defvar cell-hash-table '() "A table of cells.") 
+(defvar cell-type-hash-table '() "A table of cell-types.") 
+(defvar synapse-hash-table () "A table of synapses.")
+(defvar soma-hash-table '() "A table of somata.")
+(defvar segment-hash-table '() "A table of segments.")
+(defvar channel-hash-table ()  "A table of channels.")
+(defvar particle-hash-table ())
+(defvar conc-int-hash-table ())
+(defvar conc-part-hash-table ())
+(defvar vsource-hash-table  "A table of all voltage sources.")
+(defvar isource-hash-table ())
+
+
+
+
+
+(defvar *use-tridiagonal* t "Use the tridiagonal relaxation algorithm.")
+(defvar *use-Hines*  t "Use the Hines matrix solver algorithm.")
+(defvar *node-array* "An array of the nodes")
+(defvar *diag* "The diagonal of the matrix")
+(defvar *lower-diag* "The lower diagonal of the matrix")
+(defvar *upper-diag* "The upper diagonal of the matrix")
+(defvar *delta-v* "The upper diagonal of the matrix")
+(defvar *rhs* "The upper diagonal of the matrix")
+
+(defvar delta-back 0.0)				;For the Hines interleaved computation of gating particles,
+(defvar delta-forward 0.0)			;using variable time steps.
+
+(defvar half-delta-for-back 0.0)
+(defvar sum-delta-for-back 0.0)
+
+
+
+
+
+; This flag may be used to enable channel creation.
+(defvar *active t)
+
+(defvar *core-node-list* '() "A list of the core nodes. These are the nodes that need 
+  evaluating.")
+(defvar *num-unknowns* 0 "The number of unknowns in the circuit.")
+(defvar *node-order* '()
+  "A list of nodes: if set, use this order for the nodes in the matrix.")
+
+;;
+;; Variables which are used for dumping and referencing simulation results stored in files.
+;;
+(defvar  *archive-variable-list* '())		;This is a list of variable names that have been loaded from data file.
+(defvar *file-output-data-list* '())		;This is a list of "setq" forms for storing the results of the
+						;current simulation
+(defvar *file-output-variable-list* '())	;This is a list of the variable names referenced by
+						;*file-output-data-list*.
+
+
+
+;;
+;; Plotting information
+;;
+(defvar *plot-nodes* '() "A list of nodes to output.")
+(defvar *plot-soma-nodes* '() "A list of nodes to output.")
+(defvar *plot-channel-currents* '() "A list of channel currents to output.")
+(defvar *plot-synapse-currents* '() "A list of synapse currents to output.")
+(defvar *plot-channel-conductances* '() "A list of channel conductances to output.")
+(defvar *plot-synapse-conductances* '() "A list of synapse conductances to output.")	
+(defvar *plot-isource-currents* '() "A list of isources to output.")	
+(defvar *plot-vsource-currents* '() "A list of vsources to output.")	
+(defvar *plot-conc-ints* '() "A list of concentration integrators to output.")
+(defvar *plot-conc-particles* '() "A list of concentration-dependent particles to output.")
+(defvar *plot-particles* '() "A list of voltage-dependent particles to output.")
+(defvar  *plot-concentrations nil)
+(defvar *transformed-plot nil)
+(defvar *ANALYSIS-NODES* nil)
+
+; Non-essential plotting information
+(defvar *old-plot-nodes* '())
+(defvar *old-plot-particles* '())
+(defvar *old-plot-channel-currents* '())
+(defvar *old-plot-synapse-currents* '())
+(defvar *old-plot-channel-conductances* '())
+(defvar *old-plot-synapse-conductances* '())
+
+;; Lists which hold plotting data. The format of these lists is appropriate for the Plot Package written by P.
+;; O'Donnell of the MIT AI Lab that runs in the Symbolics Window environment. See the PRINT.LISP and PLOT.LISP
+;; files for more information.
+(defvars-w-value
+  (*pane1-data-list '()) (*pane2-data-list '()) (*pane3-data-list '()) 
+  (*current-pane-data-list '()) (*conductance-pane-data-list '())
+  (*particle-pane-data-list '()) (*particle-pane-label-list '())
+  (*pane1-label-list '()) (*pane2-label-list '()) (*pane3-label-list '()) 
+  (*current-pane-label-list '())		
+  (*conductance-pane-label-list '())
+  (*conc-int-pane-data-list '()) (*conc-int-pane-label-list '())
+  (*conc-part-pane-data-list '()) (*conc-part-pane-label-list '()))
+
+
+
+
+;;
+;; Some light synapse variables.
+;;
+(defvar *spatial-rf-arrays-list '())
+
+;;;  *FAST-RF-BAR This may be used when the stimulus is an infinite slit along the y-axis, and the bar sweeps
+;;;  across the entire cell. When T, the spatial RF is integrated along the x-axis only.
+(defvar *fast-rf-bar nil)
+
+;;;  *FAST-FULL-FIELD-SPOT This may be used when the stimulus is a full field spot, and therefore all the synapse
+;;;  waveforms for each synapse type are identical.
+(defvar *fast-full-field-spot nil)
+
+
+
+;;
+;; Stimulation-related variables.
+;;
+(defvar *vclamp-default-magnitude -70.0)
+(defvar *temp-pulse-start-time 0.0)
+(defvar *temp-pulse-stop-time 0.0)
+(defvar *temp-pulse-magnitude 0.0)
+(defvar *old-pulse-lists* '())
+(defvar *include-sources t)
+
+(defvar *ground-node*  "The ground node, if it has been defined. It has to be 
+  defined before the simulation can start.")
+(defvar *time-list* '() "The list of time points for the simulation.")
+(defvar *ordered-time-list* '() "The list of time points for the simulation in the correct order.")
+(defvar *init-value-list* '() "A list of dotted pairs, the car's are nodes, the cdr's
+  are the initial value to set that node to.")
+(defvar *old-init-value-list* '())
+
+(defvar *break-point-list* '() "A list of the break points of pwl sources.")
+
+(defvar *model-ca-variation* nil  "Used in the neuron model.")
+(defvar *Temperature* 300.0 "Temperature of the simulation in degrees Kelvin.")
+
+
+(defvar *pseudo-transient-requested* nil "If t, do a pseudo transient DC solution.")
+(defvar *dc-solution-computed* nil "Automatically set to t after a DC solution")
+
+(defparameter cmin 0.0 "The value to use for the minimum capacitance to ground at every node.")
+(defparameter vabs 1e-6 "Absolute voltage tolerance.")
+(defparameter vrel 1e-3 "Relative voltage tolerance.")
+(defparameter iabs 1e-9 "Absolute current tolerance.")
+(defparameter irel 1e-3 "Relative current tolerance.")
+(defparameter max-voltage-step 1.0 
+  "The maximum amount that a voltage can change between NR iterations.")
+
+
+
+
+(defvar *hines-max-error 0.05)			;these are reasonable 
+(defvar *part-error-factor 100)			;Particle state values may need a different error criteria than
+						;voltage nodes.
+
+
+; stuff for time stepping
+(defparameter lteabs 0.01 "Absolute LTE tolerance.")
+(defparameter lterel 0.02 "Relative LTE tolerance.")
+(defvar up-step-ratio 2 "The amount to increase the step size.")
+(defvar step-3-ratio (* up-step-ratio up-step-ratio up-step-ratio) "up-step-ratio cubed.")
+(defvar down-step-ratio 8 "The amount to decrease the step size.")
+(defconstant time-word-length #-cmu 32 #+cmu 30
+  "The number of bits in a integer used for internal times.")
+(defconstant max-integer-time (expt 2 (- time-word-length 2)) 
+  "The maximum integer used for internal times. The word length is 
+   subtracted by 2, one to allow for 2's complement math, and one
+   for safety if a simulation runs over the stop time. I don't know
+   if the second one is necessary.")
+(defvar mrt 0.0
+  "The minimum resolvable time, to convert floating times into integers.")
+(defvar user-start-time 0.0 "The start time of the simulation, in milliseconds.")
+(defvar start-time 0 "The start time in units of mrt.")
+(defvar user-stop-time 0.0 "The time to end the simulation, in milliseconds.")
+(defvar stop-time 0 "The stop time in units of mrt.")
+(defvar user-min-step 0.0 "The minimum time step allowed, in milliseconds.")
+(defvar min-step 0 "The minimum time step in units of mrt.")
+
+(defvar *hines-time-step 0.0)
+
+(defvar *display-time-increment 1)
+
+;;; USER-MAX-STEP may be reduced (e.g. 2.0 -> 0.01 - 0.001) for very
+;;; accurate simulations, but for most runs 2.0msec is probably
+;;; sufficient.
+
+(defvar user-max-step 2.0 "The maximum time step allowed, in milliseconds.")
+(defvar max-step 0 "The maximum time step in units of mrt.")
+(defvar sim-time-n+1 0 "The time for the step currently being computed. t(n+1)")
+(defvar sim-time-n   0 "The time for the step already computed. t(n)")
+(defvar sim-time-n-1 0 "The time for one step back. t(n-1)")
+(defvar sim-time-n-2 0 "The time for two steps back. t(n-2)")
+(defvar time-step 0 "The current time step.")
+(defvar last-time-step 0 "The last time step.")
+
+(defvar *real-time 0.0 "Time during simulation (msec)")
+(defvar *integer-time 0 "The integer part of real-time")
+(defvar *fractional-time 0.0 "The fractional part of real-time")
+
+
+
+(defvar alpha 0.0
+  "The constant to multiply capacitances and charges by
+   for the trapazoidal rule.")
+
+(defvar *max-num-relax-iterations* 60
+  "The number of relaxation iterations to do before reducing the time step.")
+
+; The next three variables control an experimental SOR ( successive over relaxation
+; scheme. To disable it, set *iters-before-sor* to be greater than *max-num-relax-iterations*.
+; Preliminary experiments seem to show that a good set of values for there parameters are:
+; 10, 0.5 , and 1.5 respectively.
+(defvar *iters-before-sor* 10 "After this many iters, a SOR method is used.")
+(defvar *under-relax-factor* 0.5 "The factor to under relax by.")
+(defvar *over-relax-factor* 1.5 "The factor to over relax by.")
+
+(defvar *total-num-iterations* 0 "The total number of relaxation iterations over all time.")
+(defvar *total-num-time-points* 0 "The total number of time points taken for the simulation.")
+(defvar *num-messages-not-sent* 0 
+  "The number of message passing cycles during which at least one message didn't get passed.")
+(defvar *total-num-messages-not-sent* 0 "The total number of messages not sent over the simulation.")
+
+; I'm not sure how to declare a pointer, so I'll try a 16 bit field
+;#-parallel
+(defvar *pointer-length* 16)
+;#+parallel 
+;(defvar *pointer-length* cm:*cube-address-length*)
+
+; Variables for debugging
+(defvar *debug-hines* nil)
+(defvar *debug-time-trace* nil "When t, prints one line of info at each time step.")
+(defvar *debug-at-time-steps* nil "When t, prints out the node voltages at every node.")
+(defvar *debug-all-iterations*  nil "When t, prints out the node voltages at every relaxation
+  iteration.")
+(defvar *print-matrix* nil  "When t, prints out the matrix at each iteration.")
+(defvar *debug-dc* nil  "When t, prints out info while computing dc solution.")
+(defvar *debug-partition* nil "When t, print out the partitioning of the circuit.")
+
+; Numerical constants
+(defconstant ZERO 0e0 "Zero: if 0e0, computations are single precision, 0d0 for double")
+(defconstant FUZZ 1e-30 "Numerical fuzz")
+(defconstant NFUZZ -1e-30 "Numerical fuzz")
+(defconstant VTHERMAL 2.58e-2 "Thermal voltage at 300K.")
+(defconstant NI 1.5e10 "substrate doping?")
+(defconstant EOX 3.453e-13 "Espilon for SiO2 in Farads/cm.")
+(defconstant MAXEXP 85.0 "To prevent exp() overflow.")
+(defconstant NMOS 0 "Flag for a nmos device.")
+(defconstant PMOS 1 "Flag for a pmos device.")
+
+(defconstant Faraday 9.648e4 "Faraday's constant")
+(defconstant GasConstant 8.314e3 "Gas Constant")
+(defconstant FoverR 11.60 "Faraday / GasConstant.")
+
+; type constants (these may have to be checked for cmucl)
+(defconstant *fp-exponent-large* 8 "The number of bits in a fp exponent.")
+(defconstant *fp-mantissa-large* 40 "The number of bits if a fp mantissa.")
+(defconstant *fp-exponent-small* 8 "The number of bits in a fp exponent.")
+(defconstant *fp-mantissa-small* 11 "The number of bits if a fp mantissa.")
+
+(deftype big-float () 'single-float)
+(deftype little-float () 'single-float)
+
+(defvar *automatic-run nil "This run is completely under computer control")
+
+(defvar *simulation-file-name* nil)
+(defvar *save-simulation nil)
+
+
+(defvar *output-stream t "Output stream for simulator info")
+(defvar  *hard-copy-screen nil)
+(defvar *modify-globals nil)
+(defvar  *print-circuit t)
+(defvar *modify-synapses nil)
+(defvar *include-synapses t)
+
+
+
+;;;  ************** PASSIVE COMPONENTS
+
+(defvar *r-mem 40000.0 "Default value of membrane resistance (ohms cm^2)")
+(defvar *r-a 200.0 "Default value of segment axial resistance (ohms cm)")
+(defvar *r-mem-soma 2500.0 "Default value of soma membrane resistance (ohms cm^2)")
+(defvar *cap-mem 1.0 "Default value of membrane capacitance (uF/cm^2)")
+;;; Soma membrane resistance (ohm-cm-cm)
+(defvar *rs-mem 850.0)				
+
+;;; Dendrite membrane resistance (ohm-cm-cm)
+(defvar *rd-mem 40000.0)				
+
+;;; Dendrite axoplasmic resistance (ohm-cm)
+(defvar *rd-int 200.0)
+
+;;; Dendrite membrane capacitance (microfarads/sq-cm)
+(defvar *capd-mem 1.0)
+;;;  Soma membrane capacitance (microfarads/sq-cm)
+(defvar *caps-mem 1.0)				
+
+(defvar *soma-radius 17.5)			;micrometers 
+
+(defvar *e-na 50.0)				;mvolts
+(defvar *e-ca 110.0)				;mvolts
+(defvar *e-k  -85.0)				;mvolts
+(defvar *e-holding -70.0)		;mvolts
+
+(defvar *e-l -70.0)				;constant leakage battery (mV)
+(defvar *ed-l -70.0)				;constant leakage battery (mV) (for dendrites - not used now)
+
+(defvar *faraday 9.648e4)			;Coulombs/mole
+(defvar *R 8.314)				;Gas constant -- (Volts*Coulombs)/(DegreesKelvin*mole)
+
+(defvar *ca-conc-extra 1.8)			;Extra-cellular Ca++ concentration [mmol/liter]
+						;Hille says 1.5 mM Ca out, <10e-7 mM in.
+						;Segal and Barker, 1986 use 4.0 mM Ca out
+						;Madison and Nicoll, 1982 use 2.5 mM Ca out
+						;Blaxter et al, 1986 use ACSF with 3.25 mM Ca
+						;Wong and Prince, 1981 use 2.0 mM Ca
+;;; Electrode shunt resistance (Mohm)
+(defvar *r-electrode 10000000.0)
+
+;; Temperature dependent parameters
+(defvar *qten 3.0)				;Temperature dependance of rate constants. The rate constants
+						;are multiplied by *QTEN raised to (T-Tbase)/10, where T is the     
+						;temperature of the simulation, and Tbase is the temperature of
+						;the experiment that measured the rate constants.
+
+(defvar *qten-m 5.0)				;as reported by Paul
+
+(defvars-w-value (*qten-factor-at-25 1.0) (*qten-factor-at-24 1.0)
+		 (*qten-factor-at-22 1.0) (*qten-factor-at-37 1.0)
+		 (*qten-factor-at-14 1.0) (*qten-factor-at-25-m 1.0)
+		 (*qten-g-24 1.0)(*qten-factor-at-27 1.0)
+		 (*qten-g-30 1.0)(*qten-factor-at-30 1.0)
+		 (*qten-g-32 1.0)(*qten-factor-at-32 1.0))
+
+(defvar *qten-ionic 1.5)
+
+
+(defvar *V-REV-EX 0.0)				;Reversal potential of excitatory synapse.
+(defvar *V-REV-IN -100.0)			;Reversal potential of inhibitory synapse.
+
+
+
+(defvar *lambda-factor 1.0 "Modifies lambda (length const) in computing synapse-weight")
+
+(defvar *synaptic-time-resolution 0.5
+  "Number of ms per element in the synaptic waveform array")	;;;; Not currently used.
+
+
+
+(defvar *spines* )				; A list of spine segments.
+
+(defvars *dummy1 *dummy2 *dummy3 *dummy4 *dummy5)
+
+(defvar *modify-cell nil)
+
+(defvar  *distal-nodes* nil)
+
+;; Some plotting and drawing parameters
+(defvar *modify-drawing nil)
+(defvar *draw-cells t)
+(defvar *modify-plot-parameters nil)
+(defvar *automatic-dendrite-voltage-plot-scaling t)
+(defvar  *dendrite-voltage-plot-min -75)
+(defvar *dendrite-voltage-plot-max nil)
+(defvar *automatic-soma-voltage-plot-scaling nil)
+(defvar  *soma-voltage-plot-min -75)
+(defvar *soma-voltage-plot-max 30)
+
+;;; Miscellaneous flags
+(defvar *modify-stimulus nil)
+
+
+(defvars-w-value
+    (*modify-currents nil)
+    (*modify-overall-parameters nil)
+  (*specify-initial-node-voltages nil)
+  (*plot-voltages-solid nil)
+  (*overlay-simulations nil)
+  (*change-plotted-nodes nil)
+  (*change-plotted-particles nil)
+  (*change-plotted-currents nil)
+  (*change-plotted-conductances nil)
+  (*plot-results t)
+  (*plot-results-frame-2 nil)
+  )
+
+(defvar  *modify-cell-type nil)
+(defvar *last-circuit nil)
+
+
+;;; Flags for the currents
+(defvars *include-na1 *include-na2 *include-na3
+	 *include-nap *include-a *include-ahp  *include-cas
+	 *include-dr *include-c *include-m *include-kinetics
+	 *include-ca *include-q *include-shunt)
+
+(defvars *na1-mod *na2-mod *na3-mod
+	 *nap-mod *a-mod *ahp-mod *cas-mod 
+	 *dr-mod *k-mod *c-mod *m-mod 
+	 *ca-mod *q-mod)
+
+(defvar *clamp-type "Current clamp")
+
+(proclaim '(single-float pi-over-2 pi-over-4 pi-single delta-back delta-forward half-delta-for-back
+            sum-delta-for-back *vclamp-default-magnitude
+            *hines-time-step
+            *temp-pulse-start-time *temp-pulse-stop-time 
+            *temp-pulse-magnitude *Temperature* cmin vabs 
+            vrel iabs irel max-voltage-step lteabs lterel
+            mrt user-start-time user-stop-time user-min-step
+            user-max-step  *real-time  *fractional-time alpha
+            ZERO  FUZZ  NFUZZ  Faraday GasConstant FoverR
+            *r-mem *r-a *r-mem-soma *cap-mem *rs-mem
+            *rd-mem *rd-int *capd-mem *caps-mem *soma-radius 
+            *e-na *e-ca *e-k *e-holding *e-l *ed-l *faraday *R *ca-conc-extra
+            *r-electrode *qten *qten-m *qten-factor-at-25
+            *qten-factor-at-24 *qten-factor-at-22 *qten-factor-at-37 
+            *qten-factor-at-14 *qten-factor-at-25-m *qten-g-24 *qten-factor-at-27 
+            *qten-g-30 *qten-factor-at-30 *qten-g-32 *qten-factor-at-32 *qten-ionic 
+            *V-REV-EX *V-REV-IN *lambda-factor *synaptic-time-resolution
+            *under-relax-factor* *over-relax-factor*
+            *hines-max-error *part-error-factor))
+;(proclaim '(fixnum *num-nodes* *num-unknowns* up-step-ratio step-3-ratio
+;                  down-step-ratio time-word-length max-integer-time min-step
+;                  start-time stop-time  max-step sim-time-n+1 sim-time-n sim-time-n-1
+;                  sim-time-n-2 time-step last-time-step  *max-num-relax-iterations*
+;                  *total-num-iterations* *total-num-time-points*  *fp-exponent-large*
+;                  *fp-mantissa-large* *fp-exponent-small*
+;                  *fp-mantissa-small* *iters-before-sor* *integer-time))
+;(proclaim '(string *comment-string* *clamp-type ))
+;;(proclaim '(bit *resimulate-last-circuit *surf-interactive* *use-tridiagonal*
+;                   *use-Hines* *active *fast-rf-bar *fast-full-field-spot
+;                   *include-sources  *pseudo-transient-requested*
+;                   *dc-solution-computed*  *model-ca-variation*
+;                   *debug-hines* *debug-time-trace* *debug-at-time-steps* *debug-all-iterations*
+;                   *print-matrix* *debug-dc* *debug-partition*
+;                   *automatic-run *save-simulation
+;                   *modify-globals *print-circuit *modify-synapses  *include-synapses
+;                   *modify-cell *modify-drawing *draw-cells
+;                   *modify-plot-parameters *automatic-dendrite-voltage-plot-scaling  
+;                   *automatic-soma-voltage-plot-scaling *modify-stimulus
+;                   *modify-currents *modify-overall-parameters *specify-initial-node-voltages 
+;                   *plot-voltages-solid *overlay-simulations *change-plotted-nodes
+;                   *change-plotted-particles *change-plotted-currents *change-plotted-conductances 
+;                   *plot-results *plot-results-frame-2 *modify-cell-type 
+;                   *include-na1 *include-na2 *include-na3 *include-nap *include-a *include-ahp
+;                   *include-cas *include-dr *include-c *include-m *include-kinetics
+;                   *include-ca *include-q *include-shunt 
+;                   *na1-mod *na2-mod *na3-mod *nap-mod *a-mod *ahp-mod *cas-mod
+; 		    *dr-mod *k-mod *c-mod *m-mod *ca-mod *q-mod		   ))
+
+(proclaim '(type (simple-array single-float 1) *diag* *lower-diag* *upper-diag* *delta-v* *rhs*))
+(proclaim '(type list  *break-point-list*))
+
+
+
+
+
+
+

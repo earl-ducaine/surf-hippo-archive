@@ -1,0 +1,42 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		Information Windows
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+A special Information Window may be generated and detailed circuit
+information will be printed out in the Lisp Listener or Information
+Window, if the appropriate flags are checked in [Main Simulation Menu:
+<Modify overall simulation parameters> <Specify information output
+parameters> [Simulation Info]]. If a file from a previous simulation
+has been written, then the name of this file will appear in the menu
+title.
+
+Surf-Hippo will dump simulation/circuit information to either this
+type of window and/or the Lisp Listener (e.g. in the terminal window
+or the Ilisp window). The advantage of the output to a Lisp Listener
+is efficiency, and if this is Ilisp or other editor-based window, then
+the output can be readily edited. The advantage of the Information
+Window is that this can be hardcopied in the same manner as the
+Plotting windows. From within the Information
+Window:
+
+ CONTROL-p will prompt for printing the selected window (and the
+ others). 
+
+ CONTROL-d will destroy the selected window (after prompting for
+ verification).
+
+
+These windows scroll, and may be resized by hand. Printing an
+Information Window will result in an image (.ps file) that includes
+only the part of the window that is visible on the screen. If part of
+the information is not visible, and you want a complete record, then
+select the output to information file option (see files.doc).
+

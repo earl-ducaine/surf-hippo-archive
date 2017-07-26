@@ -1,0 +1,100 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+	INITIALIZATION OF VOLTAGES AND CONCENTRATIONS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Initial Values for Voltages and Concentrations
+2. Virtual Holding Potentials
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+****************************************************************
+****************************************************************
+
+	Initial Values for Voltages and Concentrations
+
+****************************************************************
+****************************************************************
+
+
+
+Two variables may be used to set initial node voltages and concentration integrator concentrations:
+
+	*INIT-VALUE-LIST* [default NIL]
+	*CONC-INT-INIT-VALUE-LIST* [default NIL]
+
+The first is a list of pairs, the CAR's of which are nodes, the CADR's of which are the initial
+voltage to set that node to. The second is a list of lists, the CAR's being concentration
+integrators, and the CADR's being lists of compartment initial concentrations to set that
+integrator to.
+
+The function
+
+	set-*init-value-list*
+
+grabs the current node voltages and stores them in *INIT-VALUE-LIST*. Likewise, the function
+
+	set-*conc-int-init-value-list*
+
+grabs the current concentration integrator values and stores them in *CONC-INT-INIT-VALUE-LIST*.
+
+The variables
+
+	*USE-INIT-VALUE-LIST* [default NIL]
+	*USE-CONC-INT-INIT-VALUE-LIST* [default NIL]
+
+enable the use of the initialization value lists. These options may be set by the Initialization
+menu [Main Simulation Menu: <Modify overall simulation parameters> 
+<Menu for voltage and concentration integrator initializations>.
+
+Note that the initial state of voltage and concentration dependent gating particles are set by
+their steady state values determined by the initial values of the appropriate voltages or
+concentrations.
+
+
+****************************************************************
+****************************************************************
+
+	Virtual Holding Potentials
+
+****************************************************************
+****************************************************************
+
+Normally, the voltage of each node at the begining of the simulation is set to the appropriate
+reversal potential of the leak conductance. Voltage dependent elements may also reference a
+"virtual" holding potential at the begining of the simulation.This is called a virtual holding
+potential since the actual voltage of the node is not changed. The effect is as if the node
+was voltage clamped from negative infinity time at the holding potential (and all other nodes
+clamped to either their virtual holding potential or their leak reversal potential), and then
+at time 0 there was an instantaneous and zero duration voltage clamp to the leak reversal
+potential for all nodes.
+
+Virtual holding potentials may be set from the Initialization menu, or to set the virtual
+holding potential for an element use the function ELEMENT-HOLDING-POTENTIAL. If VALUE (in
+mV) is supplied, this function sets the 'HOLDING-POTENTIAL parameter of the circuit node
+associated with ELEMENT and returns VALUE (converted to double-float). Otherwise, it
+returns the current value of the 'HOLDING-POTENTIAL parameter for the node, if that value
+has been set previously.
+
+	element-holding-potential ELEMENT &optional VALUE
+
+To cancel the virtual holding potential, use
+
+	(element-holding-potential some-element NIL)
+
+
+Note that setting a virtual holding potential for an element will do the same for any other
+element at the same node.

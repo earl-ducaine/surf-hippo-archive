@@ -1,0 +1,1985 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/towers-of-hanoi/towers-of-hanoi.soar
+********************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/towers-of-hanoi/probs/prob.3d.2
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (tower-of-hanoi)
+  Desired[On(1,C),Above(1,2)].
+  Desired[On(2,C),Above(2,3)].
+  Desired[On(3,C),Above(3,-)].
+     2:    S: S1 
+  On(1,A),Above(1,-).
+  On(2,B),Above(2,3).
+  On(3,B),Above(3,-).
+  Upper-Disk(2).
+  Upper-Disk(1).
+  Clear(Peg(C)).
+     3:    O: O1 (set-focus)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P5 (set-focus)
+     6:       S: S1 
+     7:       O: O2 (create-focus)
+Building chunk-1
+  Focus(Disk(3)).
+Building chunk-2
+     8:    O: O3 (set-focus)
+Firing chunk-2
+     9:    ==>G: G3 (operator no-change)
+    10:       P: P6 (set-focus)
+    11:       S: S1 
+Building chunk-3
+Ignoring chunk-3 because it is a duplicate of chunk-2 
+Building chunk-4
+    12:       O: O4 (change-focus)
+Building chunk-5
+  Focus(Disk(2)).
+Building chunk-6
+    13:    O: O5 (set-focus)
+Firing chunk-6
+Firing chunk-4
+    14:    ==>G: G4 (operator no-change)
+    15:       P: P7 (set-focus)
+    16:       S: S1 
+Building chunk-7
+Ignoring chunk-7 because it is a duplicate of chunk-6 
+Building chunk-8
+Ignoring chunk-8 because it is a duplicate of chunk-4 
+    17:       O: O6 (change-focus)
+Building chunk-9
+  Focus(Disk(1)).
+    18:    O: O8 (move-disk)
+  On(1,C),Above(1,-).
+  Executing(Move-Disk(1,A,C)).
+  Clear(Peg(A)).
+    19:    O: O9 (pop)
+    20:    O: O10 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    21:    O: O11 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    22:    O: O13 (move-disk)
+  On(2,A),Above(2,-).
+  Executing(Move-Disk(2,B,A)).
+  Upper-Disk(3).
+    23:    O: O14 (pop)
+    24:    O: O15 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    25:    O: O16 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    26:    O: O18 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,C,A)).
+  Clear(Peg(C)).
+    27:    O: O19 (pop)
+    28:    O: O20 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    29:    O: O22 (move-disk)
+  On(3,C),Above(3,-).
+  Executing(Move-Disk(3,B,C)).
+  Clear(Peg(B)).
+    30:    O: O23 (pop)
+    31:    O: O24 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+    32:    O: O25 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    33:    O: O27 (move-disk)
+  On(1,B),Above(1,-).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(2).
+    34:    O: O28 (pop)
+    35:    O: O29 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+    36:    O: O31 (move-disk)
+  On(2,C),Above(2,3).
+  Executing(Move-Disk(2,A,C)).
+  Clear(Peg(A)).
+    37:    O: O32 (pop)
+    38:    O: O33 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(1)).
+    39:    O: O35 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,B,C)).
+  Clear(Peg(B)).
+    40:    O: O36 (pop)
+    41:    O: Q2 (goal-test)
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus none)
+  (<s1> ^pursue <d2> ^holds <h1>)
+  (<d2> ^disk <d1> ^on <p1>)
+ -{ (<s1> ^pursue <j>)
+    (<j> ^disk <z>)
+    (<z> ^larger <d1>)}
+  (<h1> ^disk <d1> ^on <p2>)
+-->
+  (<s1> ^disk-to-move <m1> + ^disk-to-move <m1> &)
+  (<m1> ^disk <d1> + ^from <p2> + ^to <p1> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h1> ^holds <h2>)
+  (<m1> ^disk <d1> ^from <p1> ^to <p2>)
+  (<h1> ^disk <d1> ^on <p1>)
+  (<h2> ^on <p1> ^disk <d2>)
+  (<d1> ^larger <d2>)
+-->
+  (<m1> ^is-blocked-by <d2> + ^is-blocked-by <d2> &))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1>)
+  (<m1> ^is-blocked-by <d1>)
+ -{ (<s1> ^disk-to-move <m1>)
+    (<m1> ^is-blocked-by <z>)
+    (<z> ^larger <d1>)}
+-->
+  (<m1> ^largest-blocking-disk <d1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^from { <> <p3> <p1> }
+        ^to { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h2> ^holds <h1>)
+  (<m1> ^from <p2> ^disk <d2> ^to { <> <p2> <p1> })
+  (<h2> ^on <p2> ^disk <d2>)
+  (<d2> ^larger <d1>)
+  (<h1> ^disk <d1> ^on <p1>)
+-->
+  (<m1> ^is-blocked-by <d1> + ^is-blocked-by <d1> &))
+
+(sp chunk-9
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^to { <> <p3> <p1> }
+        ^from { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/towers-of-hanoi/probs/prob.4d.1
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (tower-of-hanoi)
+  Desired[On(1,C),Above(1,2)].
+  Desired[On(2,C),Above(2,3)].
+  Desired[On(3,C),Above(3,4)].
+  Desired[On(4,C),Above(4,-)].
+     2:    S: S1 
+  On(1,A),Above(1,2).
+  On(2,A),Above(2,3).
+  On(3,A),Above(3,4).
+  On(4,A),Above(4,-).
+  Upper-Disk(1).
+  Clear(Peg(C)).
+  Clear(Peg(B)).
+     3:    O: O1 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+     4:    O: O2 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+     5:    O: O3 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+     6:    O: O4 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+     7:    O: O6 (move-disk)
+  On(1,B),Above(1,-).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(2).
+     8:    O: O7 (pop)
+     9:    O: O8 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    10:    O: O9 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    11:    O: O10 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    12:    O: O12 (move-disk)
+  On(2,C),Above(2,-).
+  Executing(Move-Disk(2,A,C)).
+  Upper-Disk(3).
+    13:    O: O13 (pop)
+    14:    O: O14 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    15:    O: O15 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    16:    O: O16 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    17:    O: O18 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,B,C)).
+  Clear(Peg(B)).
+    18:    O: O19 (pop)
+    19:    O: O20 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    20:    O: O21 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    21:    O: O23 (move-disk)
+  On(3,B),Above(3,-).
+  Executing(Move-Disk(3,A,B)).
+  Upper-Disk(4).
+    22:    O: O24 (pop)
+    23:    O: O25 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    24:    O: O26 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    25:    O: O27 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    26:    O: O29 (move-disk)
+  On(1,A),Above(1,4).
+  Executing(Move-Disk(1,C,A)).
+  Upper-Disk(2).
+    27:    O: O30 (pop)
+    28:    O: O31 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    29:    O: O32 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    30:    O: O34 (move-disk)
+  On(2,B),Above(2,3).
+  Executing(Move-Disk(2,C,B)).
+  Clear(Peg(C)).
+    31:    O: O35 (pop)
+    32:    O: O36 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    33:    O: O37 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    34:    O: O39 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(4).
+    35:    O: O40 (pop)
+    36:    O: O41 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    37:    O: O43 (move-disk)
+  On(4,C),Above(4,-).
+  Executing(Move-Disk(4,A,C)).
+  Clear(Peg(A)).
+    38:    O: O44 (pop)
+    39:    O: O45 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    40:    O: O46 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    41:    O: O47 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    42:    O: O49 (move-disk)
+  On(1,C),Above(1,4).
+  Executing(Move-Disk(1,B,C)).
+  Upper-Disk(2).
+    43:    O: O50 (pop)
+    44:    O: O51 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    45:    O: O52 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    46:    O: O54 (move-disk)
+  On(2,A),Above(2,-).
+  Executing(Move-Disk(2,B,A)).
+  Upper-Disk(3).
+    47:    O: O55 (pop)
+    48:    O: O56 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    49:    O: O57 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    50:    O: O59 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,C,A)).
+  Upper-Disk(4).
+    51:    O: O60 (pop)
+    52:    O: O61 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+    53:    O: O63 (move-disk)
+  On(3,C),Above(3,4).
+  Executing(Move-Disk(3,B,C)).
+  Clear(Peg(B)).
+    54:    O: O64 (pop)
+    55:    O: O65 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+    56:    O: O66 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    57:    O: O68 (move-disk)
+  On(1,B),Above(1,-).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(2).
+    58:    O: O69 (pop)
+    59:    O: O70 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+    60:    O: O72 (move-disk)
+  On(2,C),Above(2,3).
+  Executing(Move-Disk(2,A,C)).
+  Clear(Peg(A)).
+    61:    O: O73 (pop)
+    62:    O: O74 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(1)).
+    63:    O: O76 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,B,C)).
+  Clear(Peg(B)).
+    64:    O: O77 (pop)
+    65:    O: Q2 (goal-test)
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus none)
+  (<s1> ^pursue <d2> ^holds <h1>)
+  (<d2> ^disk <d1> ^on <p1>)
+ -{ (<s1> ^pursue <j>)
+    (<j> ^disk <z>)
+    (<z> ^larger <d1>)}
+  (<h1> ^disk <d1> ^on <p2>)
+-->
+  (<s1> ^disk-to-move <m1> + ^disk-to-move <m1> &)
+  (<m1> ^disk <d1> + ^from <p2> + ^to <p1> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h1> ^holds <h2>)
+  (<m1> ^disk <d1> ^from <p1> ^to <p2>)
+  (<h1> ^disk <d1> ^on <p1>)
+  (<h2> ^on <p1> ^disk <d2>)
+  (<d1> ^larger <d2>)
+-->
+  (<m1> ^is-blocked-by <d2> + ^is-blocked-by <d2> &))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1>)
+  (<m1> ^is-blocked-by <d1>)
+ -{ (<s1> ^disk-to-move <m1>)
+    (<m1> ^is-blocked-by <z>)
+    (<z> ^larger <d1>)}
+-->
+  (<m1> ^largest-blocking-disk <d1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^from { <> <p3> <p1> }
+        ^to { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h2> ^holds <h1>)
+  (<m1> ^from <p2> ^disk <d2> ^to { <> <p2> <p1> })
+  (<h2> ^on <p2> ^disk <d2>)
+  (<d2> ^larger <d1>)
+  (<h1> ^disk <d1> ^on <p1>)
+-->
+  (<m1> ^is-blocked-by <d1> + ^is-blocked-by <d1> &))
+
+(sp chunk-9
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^to { <> <p3> <p1> }
+        ^from { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/towers-of-hanoi/probs/prob.5d.1
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (tower-of-hanoi)
+  Desired[On(1,C),Above(1,2)].
+  Desired[On(2,C),Above(2,3)].
+  Desired[On(3,C),Above(3,4)].
+  Desired[On(4,C),Above(4,5)].
+  Desired[On(5,C),Above(5,-)].
+     2:    S: S1 
+  On(1,A),Above(1,2).
+  On(2,A),Above(2,3).
+  On(3,A),Above(3,4).
+  On(4,A),Above(4,5).
+  On(5,A),Above(5,-).
+  Upper-Disk(1).
+  Clear(Peg(C)).
+  Clear(Peg(B)).
+     3:    O: O1 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+     4:    O: O2 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+     5:    O: O3 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+     6:    O: O4 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+     7:    O: O5 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+     8:    O: O7 (move-disk)
+  On(1,C),Above(1,-).
+  Executing(Move-Disk(1,A,C)).
+  Upper-Disk(2).
+     9:    O: O8 (pop)
+    10:    O: O9 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    11:    O: O10 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    12:    O: O11 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    13:    O: O12 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    14:    O: O14 (move-disk)
+  On(2,B),Above(2,-).
+  Executing(Move-Disk(2,A,B)).
+  Upper-Disk(3).
+    15:    O: O15 (pop)
+    16:    O: O16 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    17:    O: O17 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    18:    O: O18 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    19:    O: O19 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    20:    O: O21 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,C,B)).
+  Clear(Peg(C)).
+    21:    O: O22 (pop)
+    22:    O: O23 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    23:    O: O24 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    24:    O: O25 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    25:    O: O27 (move-disk)
+  On(3,C),Above(3,-).
+  Executing(Move-Disk(3,A,C)).
+  Upper-Disk(4).
+    26:    O: O28 (pop)
+    27:    O: O29 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    28:    O: O30 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    29:    O: O31 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    30:    O: O32 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    31:    O: O34 (move-disk)
+  On(1,A),Above(1,4).
+  Executing(Move-Disk(1,B,A)).
+  Upper-Disk(2).
+    32:    O: O35 (pop)
+    33:    O: O36 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    34:    O: O37 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    35:    O: O38 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    36:    O: O40 (move-disk)
+  On(2,C),Above(2,3).
+  Executing(Move-Disk(2,B,C)).
+  Clear(Peg(B)).
+    37:    O: O41 (pop)
+    38:    O: O42 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    39:    O: O43 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    40:    O: O44 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    41:    O: O46 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,A,C)).
+  Upper-Disk(4).
+    42:    O: O47 (pop)
+    43:    O: O48 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    44:    O: O49 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    45:    O: O51 (move-disk)
+  On(4,B),Above(4,-).
+  Executing(Move-Disk(4,A,B)).
+  Upper-Disk(5).
+    46:    O: O52 (pop)
+    47:    O: O53 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    48:    O: O54 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    49:    O: O55 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    50:    O: O56 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    51:    O: O58 (move-disk)
+  On(1,B),Above(1,4).
+  Executing(Move-Disk(1,C,B)).
+  Upper-Disk(2).
+    52:    O: O59 (pop)
+    53:    O: O60 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    54:    O: O61 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    55:    O: O62 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    56:    O: O64 (move-disk)
+  On(2,A),Above(2,5).
+  Executing(Move-Disk(2,C,A)).
+  Upper-Disk(3).
+    57:    O: O65 (pop)
+    58:    O: O66 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    59:    O: O67 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    60:    O: O68 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    61:    O: O70 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,B,A)).
+  Upper-Disk(4).
+    62:    O: O71 (pop)
+    63:    O: O72 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    64:    O: O73 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    65:    O: O75 (move-disk)
+  On(3,B),Above(3,4).
+  Executing(Move-Disk(3,C,B)).
+  Clear(Peg(C)).
+    66:    O: O76 (pop)
+    67:    O: O77 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    68:    O: O78 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    69:    O: O79 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    70:    O: O81 (move-disk)
+  On(1,C),Above(1,-).
+  Executing(Move-Disk(1,A,C)).
+  Upper-Disk(2).
+    71:    O: O82 (pop)
+    72:    O: O83 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    73:    O: O84 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    74:    O: O86 (move-disk)
+  On(2,B),Above(2,3).
+  Executing(Move-Disk(2,A,B)).
+  Upper-Disk(5).
+    75:    O: O87 (pop)
+    76:    O: O88 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    77:    O: O89 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    78:    O: O91 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,C,B)).
+  Clear(Peg(C)).
+    79:    O: O92 (pop)
+    80:    O: O93 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    81:    O: O95 (move-disk)
+  On(5,C),Above(5,-).
+  Executing(Move-Disk(5,A,C)).
+  Clear(Peg(A)).
+    82:    O: O96 (pop)
+    83:    O: O97 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    84:    O: O98 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    85:    O: O99 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    86:    O: O100 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    87:    O: O102 (move-disk)
+  On(1,A),Above(1,-).
+  Executing(Move-Disk(1,B,A)).
+  Upper-Disk(2).
+    88:    O: O103 (pop)
+    89:    O: O104 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    90:    O: O105 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    91:    O: O106 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    92:    O: O108 (move-disk)
+  On(2,C),Above(2,5).
+  Executing(Move-Disk(2,B,C)).
+  Upper-Disk(3).
+    93:    O: O109 (pop)
+    94:    O: O110 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    95:    O: O111 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    96:    O: O112 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    97:    O: O114 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,A,C)).
+  Clear(Peg(A)).
+    98:    O: O115 (pop)
+    99:    O: O116 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   100:    O: O117 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+   101:    O: O119 (move-disk)
+  On(3,A),Above(3,-).
+  Executing(Move-Disk(3,B,A)).
+  Upper-Disk(4).
+   102:    O: O120 (pop)
+   103:    O: O121 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   104:    O: O122 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+   105:    O: O123 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   106:    O: O125 (move-disk)
+  On(1,B),Above(1,4).
+  Executing(Move-Disk(1,C,B)).
+  Upper-Disk(2).
+   107:    O: O126 (pop)
+   108:    O: O127 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   109:    O: O128 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+   110:    O: O130 (move-disk)
+  On(2,A),Above(2,3).
+  Executing(Move-Disk(2,C,A)).
+  Upper-Disk(5).
+   111:    O: O131 (pop)
+   112:    O: O132 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   113:    O: O133 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   114:    O: O135 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,B,A)).
+  Upper-Disk(4).
+   115:    O: O136 (pop)
+   116:    O: O137 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   117:    O: O139 (move-disk)
+  On(4,C),Above(4,5).
+  Executing(Move-Disk(4,B,C)).
+  Clear(Peg(B)).
+   118:    O: O140 (pop)
+   119:    O: O141 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+   120:    O: O142 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+   121:    O: O143 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   122:    O: O145 (move-disk)
+  On(1,C),Above(1,4).
+  Executing(Move-Disk(1,A,C)).
+  Upper-Disk(2).
+   123:    O: O146 (pop)
+   124:    O: O147 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+   125:    O: O148 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+   126:    O: O150 (move-disk)
+  On(2,B),Above(2,-).
+  Executing(Move-Disk(2,A,B)).
+  Upper-Disk(3).
+   127:    O: O151 (pop)
+   128:    O: O152 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+   129:    O: O153 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+   130:    O: O155 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,C,B)).
+  Upper-Disk(4).
+   131:    O: O156 (pop)
+   132:    O: O157 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(3)).
+   133:    O: O159 (move-disk)
+  On(3,C),Above(3,4).
+  Executing(Move-Disk(3,A,C)).
+  Clear(Peg(A)).
+   134:    O: O160 (pop)
+   135:    O: O161 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+   136:    O: O162 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   137:    O: O164 (move-disk)
+  On(1,A),Above(1,-).
+  Executing(Move-Disk(1,B,A)).
+  Upper-Disk(2).
+   138:    O: O165 (pop)
+   139:    O: O166 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(2)).
+   140:    O: O168 (move-disk)
+  On(2,C),Above(2,3).
+  Executing(Move-Disk(2,B,C)).
+  Clear(Peg(B)).
+   141:    O: O169 (pop)
+   142:    O: O170 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(1)).
+   143:    O: O172 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,A,C)).
+  Clear(Peg(A)).
+   144:    O: O173 (pop)
+   145:    O: Q2 (goal-test)
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus none)
+  (<s1> ^pursue <d2> ^holds <h1>)
+  (<d2> ^disk <d1> ^on <p1>)
+ -{ (<s1> ^pursue <j>)
+    (<j> ^disk <z>)
+    (<z> ^larger <d1>)}
+  (<h1> ^disk <d1> ^on <p2>)
+-->
+  (<s1> ^disk-to-move <m1> + ^disk-to-move <m1> &)
+  (<m1> ^disk <d1> + ^from <p2> + ^to <p1> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h1> ^holds <h2>)
+  (<m1> ^disk <d1> ^from <p1> ^to <p2>)
+  (<h1> ^disk <d1> ^on <p1>)
+  (<h2> ^on <p1> ^disk <d2>)
+  (<d1> ^larger <d2>)
+-->
+  (<m1> ^is-blocked-by <d2> + ^is-blocked-by <d2> &))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1>)
+  (<m1> ^is-blocked-by <d1>)
+ -{ (<s1> ^disk-to-move <m1>)
+    (<m1> ^is-blocked-by <z>)
+    (<z> ^larger <d1>)}
+-->
+  (<m1> ^largest-blocking-disk <d1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^from { <> <p3> <p1> }
+        ^to { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h2> ^holds <h1>)
+  (<m1> ^from <p2> ^disk <d2> ^to { <> <p2> <p1> })
+  (<h2> ^on <p2> ^disk <d2>)
+  (<d2> ^larger <d1>)
+  (<h1> ^disk <d1> ^on <p1>)
+-->
+  (<m1> ^is-blocked-by <d1> + ^is-blocked-by <d1> &))
+
+(sp chunk-9
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^to { <> <p3> <p1> }
+        ^from { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/towers-of-hanoi/probs/prob.5d.2
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (tower-of-hanoi)
+  Desired[On(1,B),Above(1,2)].
+  Desired[On(2,B),Above(2,3)].
+  Desired[On(3,B),Above(3,-)].
+  Desired[On(4,C),Above(4,5)].
+  Desired[On(5,C),Above(5,-)].
+     2:    S: S1 
+  On(1,B),Above(1,2).
+  On(2,B),Above(2,3).
+  On(3,B),Above(3,4).
+  On(4,B),Above(4,5).
+  On(5,B),Above(5,-).
+  Upper-Disk(1).
+  Clear(Peg(C)).
+  Clear(Peg(A)).
+     3:    O: O1 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+     4:    O: O2 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+     5:    O: O3 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+     6:    O: O4 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+     7:    O: O5 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+     8:    O: O7 (move-disk)
+  On(1,C),Above(1,-).
+  Executing(Move-Disk(1,B,C)).
+  Upper-Disk(2).
+     9:    O: O8 (pop)
+    10:    O: O9 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    11:    O: O10 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    12:    O: O11 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    13:    O: O12 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    14:    O: O14 (move-disk)
+  On(2,A),Above(2,-).
+  Executing(Move-Disk(2,B,A)).
+  Upper-Disk(3).
+    15:    O: O15 (pop)
+    16:    O: O16 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    17:    O: O17 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    18:    O: O18 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    19:    O: O19 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    20:    O: O21 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,C,A)).
+  Clear(Peg(C)).
+    21:    O: O22 (pop)
+    22:    O: O23 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    23:    O: O24 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    24:    O: O25 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    25:    O: O27 (move-disk)
+  On(3,C),Above(3,-).
+  Executing(Move-Disk(3,B,C)).
+  Upper-Disk(4).
+    26:    O: O28 (pop)
+    27:    O: O29 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    28:    O: O30 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    29:    O: O31 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    30:    O: O32 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    31:    O: O34 (move-disk)
+  On(1,B),Above(1,4).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(2).
+    32:    O: O35 (pop)
+    33:    O: O36 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    34:    O: O37 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    35:    O: O38 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+    36:    O: O40 (move-disk)
+  On(2,C),Above(2,3).
+  Executing(Move-Disk(2,A,C)).
+  Clear(Peg(A)).
+    37:    O: O41 (pop)
+    38:    O: O42 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    39:    O: O43 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    40:    O: O44 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    41:    O: O46 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,B,C)).
+  Upper-Disk(4).
+    42:    O: O47 (pop)
+    43:    O: O48 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    44:    O: O49 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(4)).
+    45:    O: O51 (move-disk)
+  On(4,A),Above(4,-).
+  Executing(Move-Disk(4,B,A)).
+  Upper-Disk(5).
+    46:    O: O52 (pop)
+    47:    O: O53 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    48:    O: O54 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    49:    O: O55 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    50:    O: O56 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    51:    O: O58 (move-disk)
+  On(1,A),Above(1,4).
+  Executing(Move-Disk(1,C,A)).
+  Upper-Disk(2).
+    52:    O: O59 (pop)
+    53:    O: O60 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    54:    O: O61 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    55:    O: O62 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    56:    O: O64 (move-disk)
+  On(2,B),Above(2,5).
+  Executing(Move-Disk(2,C,B)).
+  Upper-Disk(3).
+    57:    O: O65 (pop)
+    58:    O: O66 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    59:    O: O67 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    60:    O: O68 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    61:    O: O70 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(4).
+    62:    O: O71 (pop)
+    63:    O: O72 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    64:    O: O73 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(3)).
+    65:    O: O75 (move-disk)
+  On(3,A),Above(3,4).
+  Executing(Move-Disk(3,C,A)).
+  Clear(Peg(C)).
+    66:    O: O76 (pop)
+    67:    O: O77 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    68:    O: O78 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    69:    O: O79 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    70:    O: O81 (move-disk)
+  On(1,C),Above(1,-).
+  Executing(Move-Disk(1,B,C)).
+  Upper-Disk(2).
+    71:    O: O82 (pop)
+    72:    O: O83 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    73:    O: O84 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    74:    O: O86 (move-disk)
+  On(2,A),Above(2,3).
+  Executing(Move-Disk(2,B,A)).
+  Upper-Disk(5).
+    75:    O: O87 (pop)
+    76:    O: O88 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    77:    O: O89 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    78:    O: O91 (move-disk)
+  On(1,A),Above(1,2).
+  Executing(Move-Disk(1,C,A)).
+  Clear(Peg(C)).
+    79:    O: O92 (pop)
+    80:    O: O93 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(5)).
+    81:    O: O95 (move-disk)
+  On(5,C),Above(5,-).
+  Executing(Move-Disk(5,B,C)).
+  Clear(Peg(B)).
+    82:    O: O96 (pop)
+    83:    O: O97 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    84:    O: O98 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    85:    O: O99 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    86:    O: O100 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+    87:    O: O102 (move-disk)
+  On(1,B),Above(1,-).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(2).
+    88:    O: O103 (pop)
+    89:    O: O104 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    90:    O: O105 (set-focus)
+Firing chunk-2
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    91:    O: O106 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(2)).
+    92:    O: O108 (move-disk)
+  On(2,C),Above(2,5).
+  Executing(Move-Disk(2,A,C)).
+  Upper-Disk(3).
+    93:    O: O109 (pop)
+    94:    O: O110 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+    95:    O: O111 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+    96:    O: O112 (set-focus)
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(1)).
+    97:    O: O114 (move-disk)
+  On(1,C),Above(1,2).
+  Executing(Move-Disk(1,B,C)).
+  Clear(Peg(B)).
+    98:    O: O115 (pop)
+    99:    O: O116 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   100:    O: O117 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(3)).
+   101:    O: O119 (move-disk)
+  On(3,B),Above(3,-).
+  Executing(Move-Disk(3,A,B)).
+  Upper-Disk(4).
+   102:    O: O120 (pop)
+   103:    O: O121 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   104:    O: O122 (set-focus)
+Firing chunk-6
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+   105:    O: O123 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   106:    O: O125 (move-disk)
+  On(1,A),Above(1,4).
+  Executing(Move-Disk(1,C,A)).
+  Upper-Disk(2).
+   107:    O: O126 (pop)
+   108:    O: O127 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   109:    O: O128 (set-focus)
+Firing chunk-2
+Firing chunk-6
+Firing chunk-4
+Firing chunk-9
+
+  Focus(Disk(2)).
+   110:    O: O130 (move-disk)
+  On(2,B),Above(2,3).
+  Executing(Move-Disk(2,C,B)).
+  Upper-Disk(5).
+   111:    O: O131 (pop)
+   112:    O: O132 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   113:    O: O133 (set-focus)
+Firing chunk-2
+Firing chunk-4
+Firing chunk-5
+
+  Focus(Disk(1)).
+   114:    O: O135 (move-disk)
+  On(1,B),Above(1,2).
+  Executing(Move-Disk(1,A,B)).
+  Upper-Disk(4).
+   115:    O: O136 (pop)
+   116:    O: O137 (set-focus)
+Firing chunk-1
+
+  Focus(Disk(4)).
+   117:    O: O139 (move-disk)
+  On(4,C),Above(4,5).
+  Executing(Move-Disk(4,A,C)).
+  Clear(Peg(A)).
+   118:    O: O140 (pop)
+   119:    O: Q2 (goal-test)
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+ goal tower-of-hanoi achieved 
+  Goal tower-of-hanoi succeeded. 
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus none)
+  (<s1> ^pursue <d2> ^holds <h1>)
+  (<d2> ^disk <d1> ^on <p1>)
+ -{ (<s1> ^pursue <j>)
+    (<j> ^disk <z>)
+    (<z> ^larger <d1>)}
+  (<h1> ^disk <d1> ^on <p2>)
+-->
+  (<s1> ^disk-to-move <m1> + ^disk-to-move <m1> &)
+  (<m1> ^disk <d1> + ^from <p2> + ^to <p1> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h1> ^holds <h2>)
+  (<m1> ^disk <d1> ^from <p1> ^to <p2>)
+  (<h1> ^disk <d1> ^on <p1>)
+  (<h2> ^on <p1> ^disk <d2>)
+  (<d1> ^larger <d2>)
+-->
+  (<m1> ^is-blocked-by <d2> + ^is-blocked-by <d2> &))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1>)
+  (<m1> ^is-blocked-by <d1>)
+ -{ (<s1> ^disk-to-move <m1>)
+    (<m1> ^is-blocked-by <z>)
+    (<z> ^larger <d1>)}
+-->
+  (<m1> ^largest-blocking-disk <d1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^from { <> <p3> <p1> }
+        ^to { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p3> ^state <s1>)
+  (<o1> ^name set-focus ^done? no)
+  (<s1> ^disk-to-move <m1> ^holds <h2> ^holds <h1>)
+  (<m1> ^from <p2> ^disk <d2> ^to { <> <p2> <p1> })
+  (<h2> ^on <p2> ^disk <d2>)
+  (<d2> ^larger <d1>)
+  (<h1> ^disk <d1> ^on <p1>)
+-->
+  (<m1> ^is-blocked-by <d1> + ^is-blocked-by <d1> &))
+
+(sp chunk-9
+  :chunk
+  (goal <g1> ^operator <o1> ^problem-space <p4> ^state <s1>)
+  (<o1> ^name set-focus ^done? no ^previous-focus <m1>)
+  (<s1> ^disk-to-move <m1> ^peg <p3> ^holds <h1>)
+  (<m1> ^largest-blocking-disk <d2> ^disk <d1> ^to { <> <p3> <p1> }
+        ^from { <> <p3> <p2> })
+  (<d1> ^larger <d2>)
+  (<h1> ^disk <d2> ^on <p1>)
+-->
+  (<s1> ^disk-to-move <m2> + ^disk-to-move <m2> & ^disk-to-move <m1> -)
+  (<m2> ^disk <d2> + ^from <p1> + ^to <p3> +)
+  (<o1> ^done? yes + ^done? no -))
+
+
+Soar> 
+Soar> 

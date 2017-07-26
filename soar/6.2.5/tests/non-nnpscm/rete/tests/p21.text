@@ -1,0 +1,34 @@
+(sp p21
+   (goal <g1> ^a <a>)
+   (goal <g2> ^b <a>)
+ -{(goal <g1> ^a <a>)
+   (goal <g2> ^b <g1>)}
+-->)
+
+run 1
+add-wme g1 ^a c
+ms
+add-wme g2 ^b c
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^a c
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^b c
+ms
+add-wme g1 ^b g1
+ms
+remove-wme 13
+ms
+run 1
+remove-wme 11
+ms
+run 1
+remove-wme 12
+ms

@@ -1,0 +1,408 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10; -*-
+;;; (c) Copyright 1985, Don Webber, Thinking Machines Corporation, Inc.
+;;;  major modifications , (c) Copyright 1985 Geoff Wong, Thinking Machines Corporation 22-Oct-85+
+;;; File creation date: 6/09/85 11:57:03
+;
+; the capacitor model
+;
+
+(in-package #+parallel '*surf #-parallel 'surf)
+
+(defstruct capacitor
+  "Model for a capacitor"
+  (name ""		:type string)   ; not really needed
+  (capacitance zero	:type single-float)
+  node-1
+  node-2
+  core-cap
+  model
+)
+
+#-parallel
+(defstruct core-capacitor
+  "Core model for a capacitor."
+  (node-1-pointp nil	:type boolean)	; zero if constant, one if node
+  node-1-point
+  (node-1-const zero	:type single-float)
+  (node-2-pointp nil	:type boolean)	; zero if constant, one if node
+  node-2-point
+  (node-2-const zero	:type single-float)
+
+  (mat-12-valid nil	:type boolean)
+  mat-12-point
+  (mat-21-valid nil	:type boolean)
+  mat-21-point
+
+  (capacitance zero	:type single-float)
+  (charge zero		:type single-float)
+)
+
+(defvar capacitor-hash-table ())
+
+(defun create-capacitor-model ()
+  "Creates a template for all capacitors."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "capacitor")
+      (model-template-default-params template) '((capacitance . 0.0))
+      (model-template-eval-routine template) #'eval-capacitor
+      (model-template-print-routine template) #'print-capacitor
+      (model-template-create-routine template) #'create-capacitor
+      (model-template-create-core-routine template) #'create-core-capacitor
+      (model-template-add-off-diag-routine template) #'add-off-diag-capacitor
+      (model-template-find-coupling-routine template) #'find-coupling-capacitor
+      (model-template-fix-dc-nodes-routine template) #'capacitor-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "capacitor") *model-hash-table*) template
+      capacitor-hash-table (make-hash-table :test #'equal))
+    (create-model-instance (string "c") (model-template-name template) '())))
+	; only need one cap model instance
+
+(defun print-capacitor (cap)
+  "Prints out the data associated with a capacitor."
+  (format t "Capacitor ~a from ~a to ~a : value ~a~%"
+	  (capacitor-name cap)
+	  (node-name (capacitor-node-1 cap))
+	  (node-name (capacitor-node-2 cap))
+	  (capacitor-capacitance cap)))
+
+;(defun capacitor-print-node-1 (cap)
+;  "Returns the printable value of node1 for a capacitor."
+;  (if (capacitor-node-1-pointp cap)
+;      (node-name (capacitor-node-1-point cap))
+;    (format nil "~a volts" (#.capacitor-node-1-const cap))))
+;
+;(defun capacitor-print-node-2 (cap)
+;  "Returns the printable value of node2 for a capacitor."
+;  (if (capacitor-node-2-pointp cap)
+;      (node-name (capacitor-node-2-point cap))
+;    (format nil "~a volts" (#.capacitor-node-2-const cap))))
+
+(defun create-capacitor (name node1 node2 model-name parameters &optional (cell-name "Unknown") (plot-pane 1))
+  "Creates a element of type capacitor. Inputs 'name' 'node1' and 'node2' are strings,
+   'model-name' is the name of the model-instance, and 'parameters' is an a-list."
+  (if (gethash name capacitor-hash-table)
+      (sim-warning (format nil "create-capacitor: capacitor ~a  already defined, ignoring"
+			   name))
+      (let ((n1 (create-node node1 :cell-name cell-name :plot-pane plot-pane))
+	    (n2 (create-node node2 :cell-name cell-name :plot-pane plot-pane))		;
+	    (match nil)
+	    (model (gethash model-name *model-instance-hash-table*))
+	    capacitance junk
+	    temp-capacitance)
+	(if (not (or (eq n1 n2)
+		     (and (or (node-is-dc-source n1)
+			      (node-is-pwl-source n1))
+			  (or (node-is-dc-source n2)
+			      (node-is-pwl-source n2)))))
+	    (progn
+	      (setf
+		capacitance (eval (cdr (assoc 'capacitance (model-template-default-params
+						      (model-instance-model model)))))
+		temp-capacitance (eval (cdr (assoc 'capacitance
+						     (model-instance-changed-params model))))
+		junk (if temp-capacitance
+			 (setf
+			   capacitance temp-capacitance))
+		temp-capacitance (eval (cdr (assoc 'capacitance parameters)))
+		junk (if temp-capacitance
+			 (setf
+			   capacitance temp-capacitance)))
+	      (dolist (elt (node-elements n1))	     ; look for other capacitors connected to
+						     ;  this node
+		(if
+		  (typep elt 'capacitor)
+		  (if
+		    (eq n1 (capacitor-node-1 elt))
+		    (if 
+		      (eq n2 (capacitor-node-2 elt))      ; no need to create a new capacitor,
+							  ;  one already exists, just add
+							  ;  to the capacitance
+		      (setf
+			(capacitor-capacitance elt) (+ (capacitor-capacitance elt)
+						       capacitance)
+			match t))
+		    (if
+		      (eq n1 (capacitor-node-2 elt))
+		      (if
+			(eq n2 (capacitor-node-1 elt))	  ; no need to create a new capacitor,
+							  ;  one already exists, just add
+							  ;  to the capacitance
+			(setf
+			  (capacitor-capacitance elt) (+ (capacitor-capacitance elt)
+							 capacitance)
+			  match t)))))
+		(if
+		  match
+		  (return)))
+	      (if
+		(not match)				  ; then create a new capacitor
+		(let ((cap (make-capacitor)))
+		  (setf
+		    (capacitor-name cap) name
+		    (capacitor-capacitance cap) capacitance
+		    (capacitor-node-1 cap) n1
+		    (capacitor-node-2 cap) n2
+		    (capacitor-model cap) model
+		    (node-elements n1) (cons cap (node-elements n1))
+		    (node-elements n2) (cons cap (node-elements n2))
+		    (gethash name capacitor-hash-table) cap
+		    (model-instance-elements model) (cons cap
+							  (model-instance-elements model)))
+		  cap)))))))
+
+
+; This function creates a core capacitor data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignores this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+(defun create-core-capacitor (cap nd)
+  "Creates the core struct for a capacitor."
+  (let (core-cap
+	(proc #-parallel nil #+parallel (allocate-processor)))
+    #-parallel (declare (ignore proc))
+    #+parallel (*setf (pref fanout-valid proc) t)
+    #+parallel (*setf (pref fanout-seg-forward proc) nil)
+    (if (capacitor-core-cap cap)		; 
+	(setf core-cap (capacitor-core-cap cap)); core capacitor has already been allocated
+	(progn					; else allocate one
+	  #-parallel (setf core-cap (make-core-capacitor))
+	  #+parallel (*setf core-cap proc)
+	  #+parallel (*setf (pref *lisp-struct-type core-cap) core-capacitor)
+	  (#+parallel *setf #-parallel setf	
+	    (#+parallel pref #.core-capacitor-capacitance core-cap) (capacitor-capacitance cap))
+	  (setf (capacitor-core-cap cap) core-cap)))
+    
+    (let ((node1 (capacitor-node-1 cap))
+	  (node2 (capacitor-node-2 cap)))
+      (cond
+	((eq nd node1)
+	 #-parallel
+	 (setf
+	   (#.core-capacitor-node-1-pointp core-cap) t
+	   (#.core-capacitor-node-1-point core-cap) (node-core-nd node1))
+	 #+parallel
+	 (*setf
+	   (pref #.core-capacitor-node-1-pointp core-cap) t
+	   (pref #.core-capacitor-node-1-point core-cap) proc))
+	((eq nd node2)
+	 #-parallel
+	 (setf
+	   (#.core-capacitor-node-2-pointp core-cap) t
+	   (#.core-capacitor-node-2-point core-cap) (node-core-nd node2))
+	 #+parallel
+	 (*setf
+	   (pref #.core-capacitor-node-2-pointp core-cap) t
+	   (pref #.core-capacitor-node-2-point core-cap) proc))
+	(t
+	 (sim-error "Internal error: called create-core on a device with a invalid node"))
+	))))
+
+(defun add-off-diag-capacitor (cap diag off-diag off-diag-entry)
+  "Adds off diagonal entries for this capacitor."
+  (declare (ignore diag))
+  #+off-diag
+  (let ((node1 (capacitor-node-1 cap))
+	(node2 (capacitor-node-2 cap))
+	(proc nil)
+	(core-cap (capacitor-core-cap cap)))
+    #-parallel (declare (ignore proc))
+    (cond
+      ((eq off-diag node1)
+       #-parallel
+       (setf
+	 (#.core-capacitor-mat-21-valid core-cap) t
+	 (#.core-capacitor-mat-21-point core-cap) off-diag-entry)
+       #+parallel
+       (*setf
+         proc (allocate-processor)
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-capacitor-mat-21-valid core-cap) t
+	 (pref #.core-capacitor-mat-21-point core-cap) proc))
+      ((eq off-diag node2)
+       #-parallel
+       (setf
+	 (#.core-capacitor-mat-12-valid core-cap) t
+	 (#.core-capacitor-mat-12-point core-cap) off-diag-entry)
+       #+parallel
+       (*setf
+         proc (allocate-processor)
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-capacitor-mat-12-valid core-cap) t
+	 (pref #.core-capacitor-mat-12-point core-cap) proc))
+      )))
+
+(defun find-coupling-capacitor (nd cap)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  (cond
+    ((eq nd (capacitor-node-1 cap))
+      (if (or (node-is-dc-source (capacitor-node-2 cap))
+	      (node-is-pwl-source (capacitor-node-2 cap)))
+	nil
+	(cons (capacitor-node-2 cap) (* alpha (capacitor-capacitance cap)))))
+    (t
+      (if (or (node-is-dc-source (capacitor-node-2 cap))
+	      (node-is-pwl-source (capacitor-node-2 cap)))
+	nil
+	(cons (capacitor-node-1 cap) (* alpha (capacitor-capacitance cap)))))))
+
+(defun capacitor-fix-dc-nodes (cap)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (capacitor-core-cap cap)
+      (progn
+	(if (node-is-dc-source (capacitor-node-1 cap))
+	    (#+parallel *setf #-parallel setf	
+	     (#+parallel pref #.core-capacitor-node-1-pointp (capacitor-core-cap cap)) nil
+	     (#+parallel pref #.core-capacitor-node-1-const (capacitor-core-cap cap))
+	     (node-voltage (capacitor-node-1 cap))))
+	(if (node-is-dc-source (capacitor-node-2 cap))
+	    (#+parallel *setf #-parallel setf	
+	     (#+parallel pref #.core-capacitor-node-2-pointp (capacitor-core-cap cap)) nil
+	     (#+parallel pref #.core-capacitor-node-2-const (capacitor-core-cap cap))
+	     (node-voltage (capacitor-node-2 cap)))))))
+
+#-parallel
+(defun get-capacitor-voltage-1 (cap)
+  (if (#.core-capacitor-node-1-pointp cap)
+      (core-node-voltage-n+1 (#.core-capacitor-node-1-point cap))
+      (#.core-capacitor-node-1-const cap)))
+
+#-parallel
+(defun get-capacitor-voltage-2 (cap)
+  (if (#.core-capacitor-node-2-pointp cap)
+      (core-node-voltage-n+1 (#.core-capacitor-node-2-point cap))
+      (#.core-capacitor-node-2-const cap)))
+
+#-parallel
+(defun eval-capacitor (cap)
+  (let (v-diff
+	(core-cap (capacitor-core-cap cap)))
+    (if (null core-cap)
+	(return-from eval-capacitor (values)))
+    (setf v-diff (- (get-capacitor-voltage-1 core-cap)
+		    (get-capacitor-voltage-2 core-cap)))
+    
+						; calculate the charge
+    (setf (#.core-capacitor-charge core-cap) (* v-diff (#.core-capacitor-capacitance core-cap)))
+    
+						; send the values back where they go
+    (if (#.core-capacitor-node-1-pointp core-cap)
+	(if (not (core-node-is-source (#.core-capacitor-node-1-point core-cap)))
+	    (setf
+	      (core-node-charge (#.core-capacitor-node-1-point core-cap))
+	       (+ (core-node-charge (#.core-capacitor-node-1-point core-cap))
+		  (#.core-capacitor-charge core-cap))
+	      (core-node-jacobian (#.core-capacitor-node-1-point core-cap))
+	       (+ (core-node-jacobian (#.core-capacitor-node-1-point core-cap))
+		  (* alpha (#.core-capacitor-capacitance core-cap))))))
+    
+    (if (#.core-capacitor-node-2-pointp core-cap)
+	(if (not (core-node-is-source (#.core-capacitor-node-2-point core-cap)))
+	    (setf
+	      (core-node-charge (#.core-capacitor-node-2-point core-cap))
+	       (- (core-node-charge (#.core-capacitor-node-2-point core-cap))
+		  (#.core-capacitor-charge core-cap))
+	      (core-node-jacobian (#.core-capacitor-node-2-point core-cap))
+	       (+ (core-node-jacobian (#.core-capacitor-node-2-point core-cap))
+		  (* alpha (#.core-capacitor-capacitance core-cap))))))
+
+    #+off-diag
+    (if *use-tridiagonal*
+	(progn
+	  (if (#.core-capacitor-mat-21-valid core-cap)
+	      (let ((off-diag-entry (#.core-capacitor-mat-21-point core-cap))
+		    (node2 (capacitor-node-2 cap)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node2))
+			  (- (aref *lower-diag* (node-index node2))
+			     (* alpha (#.core-capacitor-capacitance core-cap))))
+		  (setf (aref *upper-diag* (node-index node2))
+			(- (aref *upper-diag* (node-index node2))
+			   (* alpha (#.core-capacitor-capacitance core-cap)))))))
+	  
+	  (if (#.core-capacitor-mat-12-valid core-cap)
+	      (let ((off-diag-entry (#.core-capacitor-mat-12-point core-cap))
+		    (node1 (capacitor-node-1 cap)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node1))
+			  (- (aref *lower-diag* (node-index node1))
+			     (* alpha (#.core-capacitor-capacitance core-cap))))
+		  (setf (aref *upper-diag* (node-index node1))
+			(- (aref *upper-diag* (node-index node1))
+			   (* alpha (#.core-capacitor-capacitance core-cap)))))))
+	  ))
+    ))
+
+#+parallel
+(*defun get-capacitor-voltage-1 (v1)
+  (cond!!
+    (#.core-capacitor-node-1-pointp v1)
+    (t!! #.core-capacitor-node-1-const)))
+
+#+parallel
+(*defun get-capacitor-voltage-2 (v2)
+  (cond!!
+    (#.core-capacitor-node-2-pointp v2)
+    (t!! #.core-capacitor-node-2-const)))
+
+#+parallel
+(defun eval-capacitor ()
+  (*select-type (core-capacitor)
+    (*let
+      ((v-diff (!! zero)))
+      (declare (type (pvar big-float) v-diff))
+      ; get the voltages
+      (*set v-diff
+	    (-!!
+	      (get-capacitor-voltage-1 #.core-capacitor-node-1-voltage)
+	      (get-capacitor-voltage-2 #.core-capacitor-node-2-voltage)))
+    
+      ; calculate the charge
+      (*set #.core-capacitor-charge (*!! v-diff #.core-capacitor-capacitance))
+      (*set core-device-node2-charge (-!! #.core-capacitor-charge))
+      (*set core-device-node1-conductance (*!! (!! alpha) #.core-capacitor-capacitance))
+      (*set core-device-node2-conductance core-device-node1-conductance))))
+
+(defun add-cmin ()
+  "Adds a minimum capacitor to each node in the circuit to satisfy the requirement
+   that each node must have a capacitor to ground."
+;;  (maphash #'add-cmin-to-node *node-hash-table*)
+  )
+
+(defun add-cmin-to-node (name nd)
+  "Adds a small capacitor to this node if there is not already one there."
+  (if (not (or
+	     (eq nd *ground-node*)
+	     (node-is-dc-source nd)
+	     (node-is-pwl-source nd)))
+      (let ((grounded-cap
+	      (dolist (elt (node-elements nd))
+		(if (typep elt 'capacitor)
+		    (if (or (eq (capacitor-node-1 elt) *ground-node*)
+			    (eq (capacitor-node-2 elt) *ground-node*))
+			(return elt))))))
+	(if (null grounded-cap)
+	    (create-capacitor (gensym)		; add a cap of value cmin
+			      name
+			      (node-name *ground-node*)
+			      (string "c")
+			      (list (cons 'capacitance cmin)))
+	    (progn				; there is already a grounded cap, make
+						;  sure its at least cmin
+	      (if (< (capacitor-capacitance grounded-cap)
+		     cmin)
+		  (setf
+		    (capacitor-capacitance grounded-cap) cmin)))))))
+
+#|
+#-parallel
+(defun capacitor-return-current ())
+#-parallel
+(defun capacitor-return-charge ())
+#-parallel
+(defun capacitor-return-conductance ())
+|#

@@ -1,0 +1,659 @@
+Soar 6.2.5  NNPSCM
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/nnpscm/default.soar
+****************************************************************************************************
+
+Soar> 
+Loading ../../../examples/nnpscm/farmer/farmer.soar
+**********************
+
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  HOLDS H4: at(cabbage,left-bank)
+  HOLDS H3: at(goat,left-bank)
+  HOLDS H2: at(wolf,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+     1:    ==>S: S2 (operator tie)
+  O1: move-with(cabbage,left-bank,right-bank)
+  O2: move-with(goat,left-bank,right-bank)
+  O3: move-with(wolf,left-bank,right-bank)
+  O4: move-alone(self,left-bank,right-bank)
+     2:       O: O8 (evaluate-object O4 (move-alone))
+     3:       ==>S: S3 (operator no-change)
+  HOLDS N1: at(farmer,left-bank)
+  HOLDS N2: at(wolf,left-bank)
+  HOLDS N3: at(goat,left-bank)
+  HOLDS N4: at(cabbage,left-bank)
+     4:          O: C2 (move-alone)
+  APPLIED C2: move-alone(self,left-bank,right-bank)
+  HOLDS N1: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-1
+Building justification-2
+  Evaluation of O4 (move-alone) is failure
+     5:       O: O7 (evaluate-object O3 (move-with))
+     6:       ==>S: S4 (operator no-change)
+  HOLDS N5: at(farmer,left-bank)
+  HOLDS N6: at(wolf,left-bank)
+  HOLDS N7: at(goat,left-bank)
+  HOLDS N8: at(cabbage,left-bank)
+     7:          O: C3 (move-with)
+  APPLIED C3: move-with(wolf,left-bank,right-bank)
+  HOLDS N5: at(farmer,right-bank)
+  HOLDS N6: at(wolf,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-3
+Building justification-4
+Building justification-5
+Building justification-6
+  Evaluation of O3 (move-with) is failure
+     8:       O: O6 (evaluate-object O2 (move-with))
+     9:       ==>S: S5 (operator no-change)
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N10: at(wolf,left-bank)
+  HOLDS N11: at(goat,left-bank)
+  HOLDS N12: at(cabbage,left-bank)
+    10:          O: C4 (move-with)
+  APPLIED C4: move-with(goat,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N11: at(goat,right-bank)
+    11:          O: O25 (move-alone)
+  APPLIED O25: move-alone(self,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+    12:          ==>S: S6 (operator tie)
+  O26: move-with(cabbage,left-bank,right-bank)
+  O27: move-with(wolf,left-bank,right-bank)
+    13:             O: O30 (evaluate-object O27 (move-with))
+    14:             ==>S: S7 (operator no-change)
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N14: at(wolf,left-bank)
+  HOLDS N15: at(goat,right-bank)
+  HOLDS N16: at(cabbage,left-bank)
+    15:                O: C5 (move-with)
+  APPLIED C5: move-with(wolf,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N14: at(wolf,right-bank)
+    16:                ==>S: S8 (operator tie)
+  O34: move-with(goat,right-bank,left-bank)
+  O36: move-alone(self,right-bank,left-bank)
+    17:                   O: O38 (evaluate-object O36 (move-alone))
+    18:                   ==>S: S9 (operator no-change)
+  HOLDS N17: at(farmer,right-bank)
+  HOLDS N18: at(wolf,right-bank)
+  HOLDS N19: at(goat,right-bank)
+  HOLDS N20: at(cabbage,left-bank)
+    19:                      O: C6 (move-alone)
+  APPLIED C6: move-alone(self,right-bank,left-bank)
+  HOLDS N17: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-7
+Building justification-8
+  Evaluation of O36 (move-alone) is failure
+    20:                O: O34 (move-with)
+  APPLIED O34: move-with(goat,right-bank,left-bank)
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N15: at(goat,left-bank)
+    21:                ==>S: S10 (operator tie)
+  O44: move-with(cabbage,left-bank,right-bank)
+  O46: move-alone(self,left-bank,right-bank)
+    22:                   O: O48 (evaluate-object O46 (move-alone))
+    23:                   ==>S: S11 (operator no-change)
+  HOLDS N21: at(farmer,left-bank)
+  HOLDS N22: at(wolf,right-bank)
+  HOLDS N23: at(goat,left-bank)
+  HOLDS N24: at(cabbage,left-bank)
+    24:                      O: C7 (move-alone)
+  APPLIED C7: move-alone(self,left-bank,right-bank)
+  HOLDS N21: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-9
+Building justification-10
+  Evaluation of O46 (move-alone) is failure
+    25:                O: O44 (move-with)
+  APPLIED O44: move-with(cabbage,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N16: at(cabbage,right-bank)
+    26:                ==>S: S12 (operator tie)
+  O54: move-with(wolf,right-bank,left-bank)
+  O56: move-alone(self,right-bank,left-bank)
+    27:                   O: O58 (evaluate-object O56 (move-alone))
+    28:                   ==>S: S13 (operator no-change)
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N26: at(wolf,right-bank)
+  HOLDS N27: at(goat,left-bank)
+  HOLDS N28: at(cabbage,right-bank)
+    29:                      O: C8 (move-alone)
+  APPLIED C8: move-alone(self,right-bank,left-bank)
+  HOLDS N25: at(farmer,left-bank)
+    30:                      O: O62 (move-with)
+  APPLIED O62: move-with(goat,left-bank,right-bank)
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N27: at(goat,right-bank)
+  Goal implement-evaluate-object succeeded. 
+Building justification-11
+Building justification-12
+Building justification-13
+Building justification-14
+  Evaluation of O56 (move-alone) is success
+Building justification-15
+  Evaluation of O27 (move-with) is partial-success
+    31:          O: O27 (move-with)
+  APPLIED O27: move-with(wolf,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N10: at(wolf,right-bank)
+    32:          ==>S: S14 (operator tie)
+  O68: move-with(goat,right-bank,left-bank)
+  O70: move-alone(self,right-bank,left-bank)
+    33:             O: O72 (evaluate-object O70 (move-alone))
+    34:             ==>S: S15 (operator no-change)
+  HOLDS N29: at(farmer,right-bank)
+  HOLDS N30: at(wolf,right-bank)
+  HOLDS N31: at(goat,right-bank)
+  HOLDS N32: at(cabbage,left-bank)
+    35:                O: C9 (move-alone)
+  APPLIED C9: move-alone(self,right-bank,left-bank)
+  HOLDS N29: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-16
+Building justification-17
+  Evaluation of O70 (move-alone) is failure
+    36:          O: O68 (move-with)
+  APPLIED O68: move-with(goat,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N11: at(goat,left-bank)
+    37:          ==>S: S16 (operator tie)
+  O78: move-with(cabbage,left-bank,right-bank)
+  O80: move-alone(self,left-bank,right-bank)
+    38:             O: O82 (evaluate-object O80 (move-alone))
+    39:             ==>S: S17 (operator no-change)
+  HOLDS N33: at(farmer,left-bank)
+  HOLDS N34: at(wolf,right-bank)
+  HOLDS N35: at(goat,left-bank)
+  HOLDS N36: at(cabbage,left-bank)
+    40:                O: C10 (move-alone)
+  APPLIED C10: move-alone(self,left-bank,right-bank)
+  HOLDS N33: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-18
+Building justification-19
+  Evaluation of O80 (move-alone) is failure
+    41:          O: O78 (move-with)
+  APPLIED O78: move-with(cabbage,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N12: at(cabbage,right-bank)
+    42:          ==>S: S18 (operator tie)
+  O88: move-with(wolf,right-bank,left-bank)
+  O90: move-alone(self,right-bank,left-bank)
+    43:             O: O92 (evaluate-object O90 (move-alone))
+    44:             ==>S: S19 (operator no-change)
+  HOLDS N37: at(farmer,right-bank)
+  HOLDS N38: at(wolf,right-bank)
+  HOLDS N39: at(goat,left-bank)
+  HOLDS N40: at(cabbage,right-bank)
+    45:                O: C11 (move-alone)
+  APPLIED C11: move-alone(self,right-bank,left-bank)
+  HOLDS N37: at(farmer,left-bank)
+    46:                O: O96 (move-with)
+  APPLIED O96: move-with(goat,left-bank,right-bank)
+  HOLDS N37: at(farmer,right-bank)
+  HOLDS N39: at(goat,right-bank)
+  Goal implement-evaluate-object succeeded. 
+Building justification-20
+Building justification-21
+Building justification-22
+Building justification-23
+  Evaluation of O90 (move-alone) is success
+Building justification-24
+  Evaluation of O2 (move-with) is partial-success
+    47:    O: O2 (move-with)
+  APPLIED O2: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+    48:    O: O103 (move-alone)
+  APPLIED O103: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+    49:    ==>S: S20 (operator tie)
+  O104: move-with(wolf,left-bank,right-bank)
+  O105: move-with(cabbage,left-bank,right-bank)
+    50:       O: O108 (evaluate-object O105 (move-with))
+    51:       ==>S: S21 (operator no-change)
+  HOLDS N41: at(farmer,left-bank)
+  HOLDS N42: at(wolf,left-bank)
+  HOLDS N43: at(goat,right-bank)
+  HOLDS N44: at(cabbage,left-bank)
+    52:          O: C12 (move-with)
+  APPLIED C12: move-with(cabbage,left-bank,right-bank)
+  HOLDS N41: at(farmer,right-bank)
+  HOLDS N44: at(cabbage,right-bank)
+    53:          ==>S: S22 (operator tie)
+  O112: move-with(goat,right-bank,left-bank)
+  O114: move-alone(self,right-bank,left-bank)
+    54:             O: O116 (evaluate-object O114 (move-alone))
+    55:             ==>S: S23 (operator no-change)
+  HOLDS N45: at(farmer,right-bank)
+  HOLDS N46: at(wolf,left-bank)
+  HOLDS N47: at(goat,right-bank)
+  HOLDS N48: at(cabbage,right-bank)
+    56:                O: C13 (move-alone)
+  APPLIED C13: move-alone(self,right-bank,left-bank)
+  HOLDS N45: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-25
+Building justification-26
+  Evaluation of O114 (move-alone) is failure
+    57:          O: O112 (move-with)
+  APPLIED O112: move-with(goat,right-bank,left-bank)
+  HOLDS N41: at(farmer,left-bank)
+  HOLDS N43: at(goat,left-bank)
+    58:          ==>S: S24 (operator tie)
+  O122: move-with(wolf,left-bank,right-bank)
+  O124: move-alone(self,left-bank,right-bank)
+    59:             O: O126 (evaluate-object O124 (move-alone))
+    60:             ==>S: S25 (operator no-change)
+  HOLDS N49: at(farmer,left-bank)
+  HOLDS N50: at(wolf,left-bank)
+  HOLDS N51: at(goat,left-bank)
+  HOLDS N52: at(cabbage,right-bank)
+    61:                O: C14 (move-alone)
+  APPLIED C14: move-alone(self,left-bank,right-bank)
+  HOLDS N49: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-27
+Building justification-28
+  Evaluation of O124 (move-alone) is failure
+    62:          O: O122 (move-with)
+  APPLIED O122: move-with(wolf,left-bank,right-bank)
+  HOLDS N41: at(farmer,right-bank)
+  HOLDS N42: at(wolf,right-bank)
+    63:          ==>S: S26 (operator tie)
+  O132: move-with(cabbage,right-bank,left-bank)
+  O134: move-alone(self,right-bank,left-bank)
+    64:             O: O136 (evaluate-object O134 (move-alone))
+    65:             ==>S: S27 (operator no-change)
+  HOLDS N53: at(farmer,right-bank)
+  HOLDS N54: at(wolf,right-bank)
+  HOLDS N55: at(goat,left-bank)
+  HOLDS N56: at(cabbage,right-bank)
+    66:                O: C15 (move-alone)
+  APPLIED C15: move-alone(self,right-bank,left-bank)
+  HOLDS N53: at(farmer,left-bank)
+    67:                O: O140 (move-with)
+  APPLIED O140: move-with(goat,left-bank,right-bank)
+  HOLDS N53: at(farmer,right-bank)
+  HOLDS N55: at(goat,right-bank)
+  Goal implement-evaluate-object succeeded. 
+Building justification-29
+Building justification-30
+Building justification-31
+Building justification-32
+  Evaluation of O134 (move-alone) is success
+Building justification-33
+  Evaluation of O105 (move-with) is partial-success
+    68:    O: O105 (move-with)
+  APPLIED O105: move-with(cabbage,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H4: at(cabbage,right-bank)
+    69:    ==>S: S28 (operator tie)
+  O146: move-with(goat,right-bank,left-bank)
+  O148: move-alone(self,right-bank,left-bank)
+    70:       O: O150 (evaluate-object O148 (move-alone))
+    71:       ==>S: S29 (operator no-change)
+  HOLDS N57: at(farmer,right-bank)
+  HOLDS N58: at(wolf,left-bank)
+  HOLDS N59: at(goat,right-bank)
+  HOLDS N60: at(cabbage,right-bank)
+    72:          O: C16 (move-alone)
+  APPLIED C16: move-alone(self,right-bank,left-bank)
+  HOLDS N57: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-34
+Building justification-35
+  Evaluation of O148 (move-alone) is failure
+    73:    O: O146 (move-with)
+  APPLIED O146: move-with(goat,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+  HOLDS H3: at(goat,left-bank)
+    74:    ==>S: S30 (operator tie)
+  O156: move-with(wolf,left-bank,right-bank)
+  O158: move-alone(self,left-bank,right-bank)
+    75:       O: O160 (evaluate-object O158 (move-alone))
+    76:       ==>S: S31 (operator no-change)
+  HOLDS N61: at(farmer,left-bank)
+  HOLDS N62: at(wolf,left-bank)
+  HOLDS N63: at(goat,left-bank)
+  HOLDS N64: at(cabbage,right-bank)
+    77:          O: C17 (move-alone)
+  APPLIED C17: move-alone(self,left-bank,right-bank)
+  HOLDS N61: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building justification-36
+Building justification-37
+  Evaluation of O158 (move-alone) is failure
+    78:    O: O156 (move-with)
+  APPLIED O156: move-with(wolf,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H2: at(wolf,right-bank)
+    79:    ==>S: S32 (operator tie)
+  O166: move-with(cabbage,right-bank,left-bank)
+  O168: move-alone(self,right-bank,left-bank)
+    80:       O: O170 (evaluate-object O168 (move-alone))
+    81:       ==>S: S33 (operator no-change)
+  HOLDS N65: at(farmer,right-bank)
+  HOLDS N66: at(wolf,right-bank)
+  HOLDS N67: at(goat,left-bank)
+  HOLDS N68: at(cabbage,right-bank)
+    82:          O: C18 (move-alone)
+  APPLIED C18: move-alone(self,right-bank,left-bank)
+  HOLDS N65: at(farmer,left-bank)
+    83:          O: O174 (move-with)
+  APPLIED O174: move-with(goat,left-bank,right-bank)
+  HOLDS N65: at(farmer,right-bank)
+  HOLDS N67: at(goat,right-bank)
+  Goal implement-evaluate-object succeeded. 
+Building justification-38
+Building justification-39
+  Evaluation of O168 (move-alone) is success
+    84:    O: O168 (move-alone)
+  APPLIED O168: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+    85:    O: O180 (move-with)
+  APPLIED O180: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+farmer achieved 
+  Goal farmer succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  HOLDS H4: at(cabbage,left-bank)
+  HOLDS H3: at(goat,left-bank)
+  HOLDS H2: at(wolf,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+     1:    ==>S: S2 (operator tie)
+  O1: move-with(cabbage,left-bank,right-bank)
+  O2: move-with(goat,left-bank,right-bank)
+  O3: move-with(wolf,left-bank,right-bank)
+  O4: move-alone(self,left-bank,right-bank)
+     2:       O: O8 (evaluate-object O4 (move-alone))
+     3:       ==>S: S3 (operator no-change)
+  HOLDS N1: at(farmer,left-bank)
+  HOLDS N2: at(wolf,left-bank)
+  HOLDS N3: at(goat,left-bank)
+  HOLDS N4: at(cabbage,left-bank)
+     4:          O: C2 (move-alone)
+  APPLIED C2: move-alone(self,left-bank,right-bank)
+  HOLDS N1: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-1
+Building chunk-2
+  Evaluation of O4 (move-alone) is failure
+     5:       O: O7 (evaluate-object O3 (move-with))
+     6:       ==>S: S4 (operator no-change)
+  HOLDS N5: at(farmer,left-bank)
+  HOLDS N6: at(wolf,left-bank)
+  HOLDS N7: at(goat,left-bank)
+  HOLDS N8: at(cabbage,left-bank)
+Firing chunk-2
+     7:          O: C3 (move-with)
+  APPLIED C3: move-with(wolf,left-bank,right-bank)
+  HOLDS N5: at(farmer,right-bank)
+  HOLDS N6: at(wolf,right-bank)
+Retracting chunk-2
+
+  Goal implement-evaluate-object failed. 
+Building chunk-3
+Building chunk-4
+Building chunk-5
+Building chunk-6
+  Evaluation of O3 (move-with) is failure
+     8:       O: O6 (evaluate-object O2 (move-with))
+     9:       ==>S: S5 (operator no-change)
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N10: at(wolf,left-bank)
+  HOLDS N11: at(goat,left-bank)
+  HOLDS N12: at(cabbage,left-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+    10:          O: C4 (move-with)
+  APPLIED C4: move-with(goat,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N11: at(goat,right-bank)
+Retracting chunk-5
+Retracting chunk-2
+Retracting chunk-6
+Retracting chunk-4
+    11:          O: O25 (move-alone)
+  APPLIED O25: move-alone(self,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+    12:          ==>S: S6 (operator tie)
+  O26: move-with(cabbage,left-bank,right-bank)
+  O27: move-with(wolf,left-bank,right-bank)
+    13:             O: O30 (evaluate-object O27 (move-with))
+    14:             ==>S: S7 (operator no-change)
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N14: at(wolf,left-bank)
+  HOLDS N15: at(goat,right-bank)
+  HOLDS N16: at(cabbage,left-bank)
+    15:                O: C5 (move-with)
+  APPLIED C5: move-with(wolf,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N14: at(wolf,right-bank)
+    16:                ==>S: S8 (operator tie)
+  O34: move-with(goat,right-bank,left-bank)
+  O36: move-alone(self,right-bank,left-bank)
+    17:                   O: O38 (evaluate-object O36 (move-alone))
+    18:                   ==>S: S9 (operator no-change)
+  HOLDS N17: at(farmer,right-bank)
+  HOLDS N18: at(wolf,right-bank)
+  HOLDS N19: at(goat,right-bank)
+  HOLDS N20: at(cabbage,left-bank)
+    19:                      O: C6 (move-alone)
+  APPLIED C6: move-alone(self,right-bank,left-bank)
+  HOLDS N17: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-7
+Building chunk-8
+  Evaluation of O36 (move-alone) is failure
+    20:                O: O34 (move-with)
+  APPLIED O34: move-with(goat,right-bank,left-bank)
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N15: at(goat,left-bank)
+    21:                ==>S: S10 (operator tie)
+  O44: move-with(cabbage,left-bank,right-bank)
+  O46: move-alone(self,left-bank,right-bank)
+    22:                   O: O48 (evaluate-object O46 (move-alone))
+    23:                   ==>S: S11 (operator no-change)
+  HOLDS N21: at(farmer,left-bank)
+  HOLDS N22: at(wolf,right-bank)
+  HOLDS N23: at(goat,left-bank)
+  HOLDS N24: at(cabbage,left-bank)
+    24:                      O: C7 (move-alone)
+  APPLIED C7: move-alone(self,left-bank,right-bank)
+  HOLDS N21: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-9
+Building chunk-10
+  Evaluation of O46 (move-alone) is failure
+    25:                O: O44 (move-with)
+  APPLIED O44: move-with(cabbage,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N16: at(cabbage,right-bank)
+    26:                ==>S: S12 (operator tie)
+  O54: move-with(wolf,right-bank,left-bank)
+  O56: move-alone(self,right-bank,left-bank)
+    27:                   O: O58 (evaluate-object O56 (move-alone))
+    28:                   ==>S: S13 (operator no-change)
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N26: at(wolf,right-bank)
+  HOLDS N27: at(goat,left-bank)
+  HOLDS N28: at(cabbage,right-bank)
+    29:                      O: C8 (move-alone)
+  APPLIED C8: move-alone(self,right-bank,left-bank)
+  HOLDS N25: at(farmer,left-bank)
+    30:                      O: O62 (move-with)
+  APPLIED O62: move-with(goat,left-bank,right-bank)
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N27: at(goat,right-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+
+  Goal implement-evaluate-object succeeded. 
+Building chunk-11
+Building chunk-12
+Building chunk-13
+Building chunk-14
+  Evaluation of O56 (move-alone) is success
+Building chunk-15
+  Evaluation of O27 (move-with) is partial-success
+    31:          O: O27 (move-with)
+  APPLIED O27: move-with(wolf,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N10: at(wolf,right-bank)
+Retracting chunk-15
+Firing chunk-8
+    32:          O: O68 (move-with)
+  APPLIED O68: move-with(goat,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N11: at(goat,left-bank)
+Retracting chunk-8
+Firing chunk-10
+    33:          O: O71 (move-with)
+  APPLIED O71: move-with(cabbage,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N12: at(cabbage,right-bank)
+Retracting chunk-10
+Firing chunk-12
+Building chunk-16
+Firing chunk-14
+Building chunk-17
+  Evaluation of O2 (move-with) is partial-success
+    34:    O: O2 (move-with)
+  APPLIED O2: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Retracting chunk-17
+    35:    O: O78 (move-alone)
+  APPLIED O78: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Firing chunk-15
+    36:    O: O79 (move-with)
+  APPLIED O79: move-with(wolf,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H2: at(wolf,right-bank)
+Retracting chunk-15
+Firing chunk-8
+    37:    O: O82 (move-with)
+  APPLIED O82: move-with(goat,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+  HOLDS H3: at(goat,left-bank)
+Retracting chunk-8
+Firing chunk-10
+    38:    O: O85 (move-with)
+  APPLIED O85: move-with(cabbage,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H4: at(cabbage,right-bank)
+Retracting chunk-10
+Firing chunk-14
+    39:    O: O90 (move-alone)
+  APPLIED O90: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Retracting chunk-14
+    40:    O: O91 (move-with)
+  APPLIED O91: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+
+farmer achieved 
+  Goal farmer succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  HOLDS H4: at(cabbage,left-bank)
+  HOLDS H3: at(goat,left-bank)
+  HOLDS H2: at(wolf,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Firing chunk-17
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+     1:    O: O2 (move-with)
+  APPLIED O2: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Retracting chunk-2
+Retracting chunk-5
+Retracting chunk-17
+Retracting chunk-6
+Retracting chunk-4
+     2:    O: O6 (move-alone)
+  APPLIED O6: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Firing chunk-15
+     3:    O: O7 (move-with)
+  APPLIED O7: move-with(wolf,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H2: at(wolf,right-bank)
+Retracting chunk-15
+Firing chunk-8
+     4:    O: O10 (move-with)
+  APPLIED O10: move-with(goat,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+  HOLDS H3: at(goat,left-bank)
+Retracting chunk-8
+Firing chunk-10
+     5:    O: O13 (move-with)
+  APPLIED O13: move-with(cabbage,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H4: at(cabbage,right-bank)
+Retracting chunk-10
+Firing chunk-14
+     6:    O: O18 (move-alone)
+  APPLIED O18: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Retracting chunk-14
+     7:    O: O19 (move-with)
+  APPLIED O19: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+
+farmer achieved 
+  Goal farmer succeeded. 
+System halted.
+
+Soar> 

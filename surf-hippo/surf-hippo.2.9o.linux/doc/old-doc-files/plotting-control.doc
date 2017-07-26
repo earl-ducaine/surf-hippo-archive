@@ -1,0 +1,105 @@
+************************************************************
+************************************************************
+
+
+	Plot Windows Mouse and Keyboard Actions
+
+************************************************************
+************************************************************
+
+
+ r, R will refresh the window (not replot).
+
+ h, H, CONTROL-h or CONTROL-H will create a information
+ window with this file in it. 
+
+ CONTROL-LEFT will give a resizable rectangle for zooming.
+
+ CONTROL-m will create a main plot menu for revising various parameters of the
+ selected plot, including the font used by the labels. Various menus
+ may be called from this executive menu.
+
+ CONTROL-t gives a menu for adding/removing comments and titles on
+ windows. Window text can be edited directly on the window by clicking
+ the the left mouse on the text to start editing (typical emacs
+ commands) and clicking with the mouse again to exit.
+
+ RIGHT (unzoom) will replot at the last zoom view.
+
+ CONTROL-RIGHT (restore) will replot the original view.
+
+ CONTROL-p will prompt for printing the selected window (and the
+ others). 
+
+ CONTROL-s will prompt for saving the selected window to a Lisp file,
+ allowing easy editing and re-creation of plots.
+
+ CONTROL-SHIFT-LEFT will give a resizable rectangle for zooming to 
+ a new window.
+
+ MIDDLE will put a cross hair on the window which can then
+ be moved around - When the middle mouse button is released the xy
+ coordinates of the last location of the cross hair is displayed in
+ the units of the window data and the cross hair will remain. If 
+ there was a previous point so delineated, then the slope between 
+ that point and the current one is also displayed, again in the units
+ of the data in the window. *NOTE* If the window has been resized, 
+ the cross hair result will not be correct until the window has been
+ replotted/redrawn (e.g. for a data plot, doing a Restore 
+ (CONTROL-RIGHT)). If the window is a HISTOLOGY or BUILDER window, 
+ then the length between the current and last points is shown.
+
+
+	  For zooming and zooming to a new window, the keys on the
+	  keyboard may be released while moving the mouse and
+	  pressing the mouse button. For these actions and when
+	  putting a cross hair on the window, hitting CONTROL-g
+	  (*before* releasing the mouse button) will abort the
+	  operation.
+
+
+ CONTROL-MIDDLE will prompt for placing and editing a small cross
+ marker, with optional label, at the any points that were selected
+ with the cross hairs. This menu also allows for other editing
+ options, such as removing the cross if you just want the text. The
+ labels may also be edited directly by clicking the left mouse button
+ on the text.
+
+ CONTROL-d will destroy the selected window (after prompting for
+ verification).
+
+ CONTROL-g, will toggle a grid on the plot. This may also be specified
+ in the main plot menu below.
+
+ CONTROL-f will remove the oldest zoom-rectangle or cross-hair that is
+ visible.
+
+ CONTROL-l will remove the newest zoom-rectangle or cross-hair that is
+ visible.
+
+ CONTROL-A will remove all the zoom-rectangles and markers.
+
+ CONTROL-b will prompt for drawing a horizontal baseline on the plot.
+
+ CONTROL-B will prompt for destroying any horizontal baselines on the plot.
+
+ CONTROL-G, will create a menu for a grid on the plot. This menu may also be 
+ accessed via the main plot menu below.
+
+ CONTROL-e will erase any pointer comment (e.g. cross-hair coordinates).
+
+ CONTROL-E will erase the data stored in a (standard) plot window, but not the
+ displayed image. This may be useful if there are a lot of plots and memory is
+ getting tight. While a window whose data has been erased may be printed and
+ examined with the cross hairs, zooming, unzooming, restoring, or other
+ rescaling will not be possible.
+
+ CONTROL-L will toggle a lock on a plotting window which when set prevents
+ that window from being used for subsequent plots. If CONTROL-L is activated
+ on a non-locked window, then the lock is set.  If the lock is already set, a
+ menu will verify that you want to unlock the window.
+
+ If there are a lot of output windows, and the menu(s) is(are) buried,
+ hitting CONTROL-q over any plot or histology window will deiconify and
+ raise any active menus.
+

@@ -1,0 +1,247 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+	ELEMENT TYPE LIBRARIES and PARAMETER SAVING
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Global Parameter Lists As Element Type Reference Libraries
+2. TYPE-DEF Macros For Updating Parameter Libraries
+3. Source Files are Automatically Registered
+4. Inheritance of Types
+5. Updating Parameters of Existing Element Types 
+6. Saving Loadable Element Type Parameters
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+This file describes the overall structure for accessing/storing parameter
+libraries. See also membrane_elements.doc, synapse.doc, channel.doc, and
+concentration.doc.
+
+
+***************************************************************
+***************************************************************
+
+Global Parameter Lists As Element Type Reference Libraries
+
+***************************************************************
+***************************************************************
+
+The parameters for the various element types, in particular for channel
+types, synapse types, particle types, concentration dependent particle
+types, concentration integrator types, axon types, pump types, and buffer
+types, are referenced from parameter libraries specific to each type. Each
+of these libraries of type parameters are organized as lists of parameter
+association lists (Param A-LIST), and are stored in the
+:PARAMETER-TYPE-LIBRARY slot of the appropriate model structure.
+
+***************************************************************
+***************************************************************
+
+TYPE-DEF Macros For Updating Parameter Libraries
+
+***************************************************************
+***************************************************************
+
+Normally, the user need not manipulate the above library lists of
+parameters.  Adding a new Param A-LIST, associated with a given element
+type, to the appropriate library is done with the following TYPE-DEF
+macros:
+
+ AXON-TYPE-DEF
+ CHANNEL-TYPE-DEF
+ PARTICLE-TYPE-DEF
+ CONC-PARTICLE-TYPE-DEF
+ SYNAPSE-TYPE-DEF
+ CONC-INT-TYPE-DEF
+ BUFFER-TYPE-DEF
+ PUMP-TYPE-DEF
+
+The format and necessary and optional entries for a given element type can be
+found in the appropriate doc file. 
+
+For example, the following form
+
+	  (synapse-type-def
+	   `(basic-markram
+	     (parent-type . auto-fast-ex-double-exp-abs)
+	     ;; The original tau-fall was 10ms.
+	     (waveform-function . (double-exponential 0.10 20.0 :step 0.2 :length 400 :normalize t))
+	     (tau-recovery . 800)			;ms
+	     (markram-dynamics . t)
+	     (release-fraction . 0.05)))
+
+removes any current Param A-LIST in :PARAMETER-TYPE-LIBRARY slot of the
+SYNAPSE-TYPE model structure whose CAR (first element) is the symbol
+BASIC-MARKRAM, and then adds the new A-LIST to this list.  Subsequently, a
+call to
+
+	(create-synapse-type 'BASIC-MARKRAM)
+
+will search the :PARAMETERS-TYPE-LIBRARY slot for a Param A-LIST which
+starts with BASIC-MARKRAM, and then use the associated parameters to
+create the synapse type.
+
+***************************************************************
+***************************************************************
+
+Source Files are Automatically Registered
+
+***************************************************************
+***************************************************************
+
+The TYPE-DEF macros above also store the source (or object) file of the
+definition, in an a-list entry denoted by 'SOURCE. This information
+(typically displayed in the EDIT-ELEMENT routines) may be useful for
+tracking down some obscure element long after it is loaded.
+
+
+***************************************************************
+***************************************************************
+
+Inheritance of Types
+
+***************************************************************
+***************************************************************
+
+The following element types may be created with reference to a "parent
+type":
+
+	  CHANNEL-TYPE
+	  PARTICLE-TYPE
+	  CONC-PARTICLE-TYPE 
+	  CONC-INT-type
+	  BUFFER-TYPE
+	  PUMP-TYPE 
+	  SYNAPSE-TYPE
+	  AXON-TYPE
+
+This mechanism requires that the appropriate TYPE-DEF form include a
+PARENT-TYPE entry:
+
+	(thing-type-def 'NEW-THING
+        	(some-parameter . value)
+		       .
+		       .
+		       .
+		(parent-type . SOME-OTHER-TYPE)
+		       .
+		       .
+		       .
+        	(another-parameter . value))
+
+
+Thus, when an instance of 'NEW-THING is created, it is built upon the
+parameters defined (in another TYPE-DEF form) for 'SOME-OTHER-TYPE. This
+base is then modified with any parameters included in the TYPE-DEF form
+for 'NEW-THING. The parent-type mechanism may be non-recusively nested.
+Note that for a given element type, the required parameters in the
+associated TYPE-DEF form must be satisfied at minimum in the lowest
+parent-type of the new type.
+
+When a parent-type is included in a TYPE-DEF form, the parent type is NOT
+created explicitly - there will be no instance of the parent type unless
+it was created by a top-level create call specific to the parent type.
+
+For a given TYPE instance, the PARENT-TYPES entry in the :PARAMETERS
+slot, e.g. as returned by:
+
+	(get-element-parameters TYPE 'parent-types)	
+
+has a list of the ancestor parent type symbols, if any, with the
+immediate parent first. These symbols may them be referenced to the
+TYPE library in order to see the original chain of definitions.
+
+
+***************************************************************
+***************************************************************
+
+Updating Parameters of Existing Element Types 
+
+***************************************************************
+***************************************************************
+
+Note that for concentration integrator, channel, particle, concentration
+particle, and synapse types, calls to the associated create type functions
+(e.g. CREATE-SYNAPSE-TYPE) have a second optional UPDATE-PARAMETERS
+argument. When this argument is non-nil, then calling the CREATE function
+on a already existing type will force an update of that type's parameters
+according to the current definition stored in the :PARAMETER-TYPE-LIBRARY
+slot of the appropriate model. This update may also be done by using the
+functions:
+
+	revamp-channel-type-parameters
+	revamp-synapse-type-parameters
+	revamp-conc-int-type-parameters
+
+These functions go through all the current instances of channel, synapse,
+or conc-int types, and updates them as described above. Note that updates
+on channel types will automatically update the associated particle and
+concentration particle types as well.
+
+The function
+
+	revamp-type-parameters
+
+calls all three of the above revamping functions.
+
+
+***************************************************************
+***************************************************************
+
+Saving Loadable Element Type Parameters
+
+***************************************************************
+***************************************************************
+
+The following element types have routines which will write to file
+loadable TYPE-DEF forms as above which include the current values of a
+type's paraameters:
+
+	PARTICLE-TYPE
+	CONC-PARTICLE-TYPE
+	CHANNEL-TYPE
+	SYNAPSE-TYPE
+	CONC-INT-TYPE
+
+The following element types also have a documentation routine which is
+Lisp-loadable, in this case being CREATE-thing type of functions that
+reference the current circuit:
+
+	CHANNEL
+	SYNAPSE
+	VSOURCE
+	ISOURCE
+
+
+Edits of an element type during a simulation may be saved for use later
+from the menus (follow Information Output from the main menu) or using the
+function
+
+	dump-elements-file &OPTIONAL elements-or-select-each-element
+
+This function writes a loadable file with TYPE-DEF forms for selected
+(loaded) elements which are element types, and CREATE forms for selected
+elements such as channels, synapses, or sources. Selected elements are
+determined by the ELEMENT-OR-SELECT-EACH-ELEMENTS argument - this arg can
+be either a single element, a list of elements, non-NIL (generating a
+selection menu, or NIL (default) which will select all loaded elements.
+
+
+Loadable type-def forms are written to the /data directory with a filename
+constructed from the simulation name and the date (see
+simulation_and_file_names.doc), with the extension ".elts".
+
+
+
+
+

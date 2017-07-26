@@ -1,0 +1,16 @@
+***********************************
+***********************************
+
+Very Inadequate Glossary of Surf-Hippo Terminology
+
+***********************************
+***********************************
+
+
+CELL-ELEMENT - either a soma or a segment (structure)
+
+LOCATION-NAME - the name of a cell-element (string)
+
+ELEMENT - any object that is directly part of a cell, including somas,
+segments, channels, particles, synapses, axons, etc., or types,
+including channel types, particle types, etc.

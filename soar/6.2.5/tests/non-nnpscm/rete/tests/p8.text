@@ -1,0 +1,32 @@
+(sp p8
+ (goal <g> ^number < 10)
+-->)
+
+run 1
+add-wme g1 ^number 9
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^number 9
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^number 12
+ms
+add-wme g1 ^number 9.5
+ms
+run 1
+remove-wme 11
+ms
+remove-wme 12
+ms
+run 1
+add-wme g1 ^number 1
+ms
+run 1
+remove-wme 13
+ms

@@ -1,0 +1,988 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/eight-puzzle/eight-puzzle.soar
+***************
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (eight-puzzle)
+     2:    S: S1 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+     3:    ==>G: G2 (operator tie)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O6 (evaluate-object O1 (move-tile))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (eight-puzzle)
+     9:          S: D12 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    10:          O: O1 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-1
+  Evaluation of O1 (move-tile) is 1
+    11:       O: O5 (evaluate-object O2 (move-tile))
+    12:       ==>G: G4 (operator no-change)
+    13:          P: P1 (eight-puzzle)
+    14:          S: D14 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    15:          O: O2 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 5 | 0 | 
+      ------------- 
+ 
+Building justification-2
+Building justification-3
+  Evaluation of O2 (move-tile) is -1
+    16:       O: O4 (evaluate-object O3 (move-tile))
+    17:       ==>G: G5 (operator no-change)
+    18:          P: P1 (eight-puzzle)
+    19:          S: D16 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    20:          O: O3 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 0 | 7 | 5 | 
+      ------------- 
+ 
+Building justification-4
+Building justification-5
+Building justification-6
+Building justification-7
+  Evaluation of O3 (move-tile) is -1
+    21:    O: O1 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    22:    ==>G: G6 (operator tie)
+    23:       P: P3 (selection)
+    24:       S: S3 
+    25:       O: O30 (evaluate-object O24 (move-tile))
+    26:       ==>G: G7 (operator no-change)
+    27:          P: P1 (eight-puzzle)
+    28:          S: D18 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    29:          O: O24 (move-tile)
+      ------------- 
+      | 2 | 0 | 3 | 
+      |---|---|---| 
+      | 1 | 8 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-8
+  Evaluation of O24 (move-tile) is 0
+    30:       O: O29 (evaluate-object O25 (move-tile))
+    31:       ==>G: G8 (operator no-change)
+    32:          P: P1 (eight-puzzle)
+    33:          S: D20 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    34:          O: O25 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-9
+Building justification-10
+Building justification-11
+  Evaluation of O25 (move-tile) is 0
+    35:       O: O28 (evaluate-object O27 (move-tile))
+    36:       ==>G: G9 (operator no-change)
+    37:          P: P1 (eight-puzzle)
+    38:          S: D22 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    39:          O: O27 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 4 | 0 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-12
+Building justification-13
+Building justification-14
+  Evaluation of O27 (move-tile) is -1
+    40:    O: O25 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    41:    ==>G: G10 (operator tie)
+    42:       P: P4 (selection)
+    43:       S: S4 
+    44:       O: O56 (evaluate-object O52 (move-tile))
+    45:       ==>G: G11 (operator no-change)
+    46:          P: P1 (eight-puzzle)
+    47:          S: D24 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    48:          O: O52 (move-tile)
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-15
+  Evaluation of O52 (move-tile) is 0
+    49:       O: O55 (evaluate-object O53 (move-tile))
+    50:       ==>G: G12 (operator no-change)
+    51:          P: P1 (eight-puzzle)
+    52:          S: D26 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    53:          O: O53 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 7 | 1 | 4 | 
+      |---|---|---| 
+      | 0 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-16
+Building justification-17
+  Evaluation of O53 (move-tile) is -1
+    54:    O: O52 (move-tile)
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    55:    O: O68 (move-tile)
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    56:    ==>G: G13 (operator tie)
+    57:       P: P5 (selection)
+    58:       S: S5 
+    59:       O: O73 (evaluate-object O70 (move-tile))
+    60:       ==>G: G14 (operator no-change)
+    61:          P: P1 (eight-puzzle)
+    62:          S: D28 
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    63:          O: O70 (move-tile)
+      ------------- 
+      | 8 | 3 | 0 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-18
+  Evaluation of O70 (move-tile) is -1
+    64:       O: O72 (evaluate-object O71 (move-tile))
+    65:       ==>G: G15 (operator no-change)
+    66:          P: P1 (eight-puzzle)
+    67:          S: D30 
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    68:          O: O71 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-19
+Building justification-20
+  Evaluation of O71 (move-tile) is 0
+    69:    O: O71 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    70:    ==>G: G16 (operator tie)
+    71:       P: P6 (selection)
+    72:       S: S6 
+    73:       O: O92 (evaluate-object O87 (move-tile))
+    74:       ==>G: G17 (operator no-change)
+    75:          P: P1 (eight-puzzle)
+    76:          S: D32 
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    77:          O: O87 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-21
+  Evaluation of O87 (move-tile) is 0
+    78:       O: O91 (evaluate-object O88 (move-tile))
+    79:       ==>G: G18 (operator no-change)
+    80:          P: P1 (eight-puzzle)
+    81:          S: D34 
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    82:          O: O88 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+Building justification-22
+Building justification-23
+  Evaluation of O88 (move-tile) is -1
+    83:       O: O90 (evaluate-object O89 (move-tile))
+    84:       ==>G: G19 (operator no-change)
+    85:          P: P1 (eight-puzzle)
+    86:          S: D36 
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    87:          O: O89 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 4 | 0 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-24
+Building justification-25
+Building justification-26
+Building justification-27
+  Evaluation of O89 (move-tile) is -1
+    88:    O: O87 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    89:    ==>G: G20 (operator tie)
+    90:       P: P7 (selection)
+    91:       S: S7 
+    92:       O: O118 (evaluate-object O114 (move-tile))
+    93:       ==>G: G21 (operator no-change)
+    94:          P: P1 (eight-puzzle)
+    95:          S: D38 
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    96:          O: O114 (move-tile)
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-28
+  Evaluation of O114 (move-tile) is 1
+    97:       O: O117 (evaluate-object O115 (move-tile))
+    98:       ==>G: G22 (operator no-change)
+    99:          P: P1 (eight-puzzle)
+   100:          S: D40 
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+   101:          O: O115 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 7 | 2 | 4 | 
+      |---|---|---| 
+      | 0 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-29
+Building justification-30
+  Evaluation of O115 (move-tile) is -1
+   102:    O: O114 (move-tile)
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+   103:    O: O130 (move-tile)
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+   104:    ==>G: G23 (operator tie)
+   105:       P: P8 (selection)
+   106:       S: S8 
+   107:       O: O135 (evaluate-object O132 (move-tile))
+   108:       ==>G: G24 (operator no-change)
+   109:          P: P1 (eight-puzzle)
+   110:          S: D42 
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+   111:          O: O132 (move-tile)
+      ------------- 
+      | 1 | 3 | 0 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-31
+  Evaluation of O132 (move-tile) is -1
+   112:       O: O134 (evaluate-object O133 (move-tile))
+   113:       ==>G: G25 (operator no-change)
+   114:          P: P1 (eight-puzzle)
+   115:          S: D44 
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+   116:          O: O133 (move-tile)
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building justification-32
+  Goal implement-evaluate-object succeeded. 
+Building justification-33
+Building justification-34
+  Evaluation of O133 (move-tile) is 1
+Building justification-35
+  Evaluation of O133 (move-tile) is success
+   117:    O: O133 (move-tile)
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+  Goal solve-eight-puzzle succeeded. 
+ goal solve-eight-puzzle achieved 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (eight-puzzle)
+     2:    S: S1 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+     3:    ==>G: G2 (operator tie)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O6 (evaluate-object O1 (move-tile))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (eight-puzzle)
+     9:          S: D12 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    10:          O: O1 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building chunk-1
+  Evaluation of O1 (move-tile) is 1
+    11:       O: O5 (evaluate-object O2 (move-tile))
+    12:       ==>G: G4 (operator no-change)
+    13:          P: P1 (eight-puzzle)
+    14:          S: D14 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    15:          O: O2 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 5 | 0 | 
+      ------------- 
+ 
+Building chunk-2
+Building chunk-3
+Firing chunk-3
+Firing chunk-3
+
+  Evaluation of O2 (move-tile) is -1
+    16:    O: O1 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+    17:    ==>G: G5 (operator tie)
+    18:       P: P3 (selection)
+    19:       S: S3 
+    20:       O: O25 (evaluate-object O19 (move-tile))
+    21:       ==>G: G6 (operator no-change)
+    22:          P: P1 (eight-puzzle)
+    23:          S: D16 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    24:          O: O19 (move-tile)
+      ------------- 
+      | 2 | 0 | 3 | 
+      |---|---|---| 
+      | 1 | 8 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-3
+Building chunk-4
+  Evaluation of O19 (move-tile) is 0
+    25:       O: O24 (evaluate-object O20 (move-tile))
+Firing chunk-4
+Building chunk-5
+Building chunk-6
+  Evaluation of O20 (move-tile) is 0
+    26:       O: O23 (evaluate-object O22 (move-tile))
+Firing chunk-2
+Building chunk-7
+Firing chunk-7
+Firing chunk-7
+Firing chunk-7
+Building chunk-8
+Ignoring chunk-8 because it is a duplicate of chunk-7 
+  Evaluation of O22 (move-tile) is -1
+    27:    O: O20 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-7
+Retracting chunk-7
+Retracting chunk-5
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-7
+    28:    ==>G: G7 (operator tie)
+    29:       P: P4 (selection)
+    30:       S: S4 
+    31:       O: O37 (evaluate-object O33 (move-tile))
+    32:       ==>G: G8 (operator no-change)
+    33:          P: P1 (eight-puzzle)
+    34:          S: D18 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    35:          O: O33 (move-tile)
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building chunk-9
+  Evaluation of O33 (move-tile) is 0
+    36:       O: O36 (evaluate-object O34 (move-tile))
+Firing chunk-2
+Building chunk-10
+Firing chunk-10
+
+  Evaluation of O34 (move-tile) is -1
+    37:    O: O33 (move-tile)
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+    38:    O: O44 (move-tile)
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-10
+Firing chunk-10
+    39:    O: O47 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-6
+Firing chunk-5
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+    40:    O: O49 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-6
+Retracting chunk-5
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-7
+Firing chunk-3
+Firing chunk-10
+    41:    O: O52 (move-tile)
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-10
+Firing chunk-3
+    42:    O: O56 (move-tile)
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Firing chunk-3
+Firing chunk-3
+    43:    O: O59 (move-tile)
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+
+  Goal solve-eight-puzzle succeeded. 
+ goal solve-eight-puzzle achieved 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (eight-puzzle)
+     2:    S: S1 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+Firing chunk-3
+Firing chunk-3
+     3:    O: O1 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-5
+Firing chunk-6
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+     4:    O: O5 (move-tile)
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-7
+Retracting chunk-5
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-10
+Firing chunk-10
+Firing chunk-10
+     5:    O: O8 (move-tile)
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+     6:    O: O12 (move-tile)
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-10
+Firing chunk-10
+     7:    O: O15 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-6
+Firing chunk-5
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+     8:    O: O17 (move-tile)
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-6
+Retracting chunk-5
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-7
+Firing chunk-3
+Firing chunk-10
+     9:    O: O20 (move-tile)
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-10
+Firing chunk-3
+    10:    O: O24 (move-tile)
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Firing chunk-3
+Firing chunk-3
+    11:    O: O27 (move-tile)
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+
+  Goal solve-eight-puzzle succeeded. 
+ goal solve-eight-puzzle achieved 
+System halted.
+
+Soar> 

@@ -1,0 +1,1298 @@
+;;;
+;;; FILE          : keys-and-boxes.s, alias: kab.s (PSCM)
+;;;
+
+;;; 
+;;; AUTHOR(1)     : Aladin.Akyurek [ Soar 6.2.3 ]
+;;;
+
+;;;   
+;;; CREATED(1)    : Sep 11, 94
+;;; 
+
+;;;
+;;; Copyright (C) Aladin Akyurek (NISCALE, Leiden, The Netherlands). 
+;;;
+
+;;;
+;;; ABSTRACT. This file provides a Soar system to solve the Keys 
+;;; and Boxes problem which "has been proposed by Michie
+;;; /.../ as a "benchmark" problem for problem solving programs.
+;;; The problem is as follows:
+;;;           In a room there is a robot with no sensory ability
+;;; whatsoever. Four places are defined in the room: BOX1, BOX2,
+;;; TABLE, and DOOR. Outside the room there is one place: OUTSIDE.
+;;;           At DOOR there is a non-empty pile of red objects.
+;;;           At BOX1 or BOX2 (we don't know which) there is a
+;;; non-empty pile of keys, all of which fit the door. We don't know
+;;; what is at the other box.
+;;;           TABLE is empty.
+;;;           The robot has three possible actions:
+;;; 1. Pick up -- If the robot is holding something, this action has
+;;;    no effect. Otherwise, some object at the location will be in the
+;;;    robot's hand when this action is completed.
+;;; 2. Put down -- If the robot is not holding anything, this action
+;;;    has no effect. Otherwise, the object in the robot's hand is added
+;;;    to the pile at the current location of the robot.
+;;; 3. Go to X -- The robot's location becomes X. If X is OUTSIDE, there
+;;;    must be a key in the pile at DOOR or this action has no effect.
+;;; The robot has no way to tell if any action had an effect or not.
+;;;           Initially the robot is at an undetermined place in the
+;;; room, and it is unknown if anything is in its hand. /.../ The problem
+;;; is to develop a set of actions that will ensure that a red object is
+;;; OUTSIDE" [1, pp. 55-56].
+;;;
+;;; As specified by Sacerdoti (1977), the problem contains a crucial 
+;;; contradiction which makes it unsolvable/intractable for most human 
+;;; subjects. A robot "with no sensory ability whatsoever" is indeed 
+;;; difficult to imagine as capable of "Go to X", that is, going to a 
+;;; specified object. Sacerdoti and his system Noah ignored this, 
+;;; apparently without knowing that they did so. In fact, even without 
+;;; this restrictive statement, it is an interesting, "pure" planning 
+;;; problem that requires one to deal "with a partially specified initial 
+;;; state, and with actions whose effects are only partially specified." 
+;;; The problem that we solve here does not contain the statement in 
+;;; question. As said, this modification of the problem specification 
+;;; does not change its nature. 
+;;; 
+;;; John E. Laird (1986) ever wrote the following: "This is a complex
+;;; problem with many steps that was unsolvable without the use of
+;;; *hierarchical kernels* in Noah. The argument implicit in Noah is
+;;; that this problem would be intractable in a system like Soar without
+;;; deliberate planning." The Soar system here is an attempt to meet
+;;; that challenge.
+;;;
+
+;;;
+;;; The system is comprised of two problem spaces, three task-operators 
+;;; (T-Ops), and seven generic operators (G-Ops):
+;;; 
+;;; Problem Space         Associated Operators
+;;; --------------        ------------------------------------------------
+;;; Keys-And-Boxes        { Create-Focus, Change-Focus, Pick-Up, Put-Down,
+;;;                         GoTo, Pop, Add, Del, Replace, Goal-Test }
+;;; Set-Focus             { Set-Focus }
+;;; --------------        ------------------------------------------------
+;;;
+;;; The keys-and-boxes space (i.e., the task space) looks for an *action*,
+;;; and if it can, it proposes one or more T-ops for that *action*.
+;;; Otherwise, G-ops attempt to bring in a different *action* in focus for
+;;; which T-ops can be created. An *action* is computed from within
+;;; a subspace by means of the set-focus operator that proposes other G-ops
+;;; to create or change a focus in the task space (cf. the system for 
+;;; tower-of-hanoi, also in the "examples" directory). The table below
+;;; shows the mapping between an *action* and T-ops.
+;;;
+;;; Action                T-Ops
+;;; --------------        ------------------------------------------------
+;;; Acquire(X)            GoTo(I), Pick-Up(X,I) where Loc(X,I)
+;;; Transfer(X)           GoTo(I), Put-Down(X,I) where I = any location
+;;; Transfer(X,I)         GoTo(I), Put-Down(X,I) where I = destination
+;;; --------------        ------------------------------------------------
+;;;
+;;; Note that Soar solves the problem by "abstraction planning" (see
+;;; Tenenberg [2]) as did Noah, and by look-ahead.
+;;;
+;;; REFERENCES. [1] Sacerdoti, E. D. (1977). A structure for plans and
+;;; behavior. New York: Elsevier.
+;;;             [2] Tenenberg, J. D. (1991). Abstraction in planning. In
+;;; J. F. Allen, H. A. Kautz, R. N. Pelavin, and J. D. Tenenberg, Reasoning
+;;; about plans (Chap. 4). San Mateo, CA: Morgan Kaufmann.
+;;;
+
+;;;
+;;; TOP GOAL TASK:
+;;; KEYS-AND-BOXES
+;;;
+
+(sp top-goal*elaborate*goal*keys-and-boxes
+    (goal <g> ^object nil)
+    -->
+    (<g> ^name keys-and-boxes))
+
+;;;
+;;; TASK PROBLEM SPACE:
+;;; KEYS-AND-BOXES
+;;;
+
+(sp keys-and-boxes*propose*space*keys-and-boxes
+    (goal <g> ^name keys-and-boxes ^object nil)
+    -->
+    (<g> ^problem-space <p>)
+    (<p> ^name keys-and-boxes
+         ^default-state-copy yes
+         ^one-level-attributes
+              room + &,
+	      box + &,
+	      table + &,
+	      door + &,
+	      outside + &,
+	      robot + &,
+	      object + &,
+              location + &
+         ^two-level-attributes 
+              holds + &, 
+              action + & ))
+
+;;;
+;;; TASK SPACE:
+;;; INITIAL STATE AND
+;;; DESIRED STATE
+;;;
+
+(sp keys-and-boxes*propose*state*initial-and-desired-states
+    (goal <g> ^name keys-and-boxes ^problem-space <p>)
+    (<p> ^name keys-and-boxes)
+    -->
+    (<g> ^state <s>)
+    (<s> ^room <room>
+         ^box <box-1> + &, <box-2> + &
+         ^table <table>
+         ^door <door>
+         ^outside <loc-o>
+         ^robot <robot>
+         ^pile <c1> + &, <c2> + &, <c3> + &
+         ^location <box-1> + &, <box-2> + &, <door> + &, <table> + &, <loc-o> + &
+         ^object <x1> + &, <x2> + &, <x3> + &, <x4> + &
+         ^holds <h1> + &, <h2> + &, <h3> + &, <h4> + &, <h5> + &, <h6> + & )
+    (<box-1> ^in <room> ^name box-1)
+    (<box-2> ^in <room> ^name box-2)
+    (<table> ^in <room> ^name table)
+    (<door> ^links <room> ^to <loc-o> ^in <room> ^name door)
+    (<loc-o> ^name outside)
+    (<robot> ^name robot)
+    (<c1> ^base-type red-object + & ^loc <door>)
+    (<c2> ^base-type key + &, non-key + & ^loc <box-1>)
+    (<c3> ^base-type key + &, non-key + & ^loc <box-2>)
+    (<h1> ^robot <robot> ^holding <x1> ^loc <loc-r>)
+    (<loc-r> ^in <room> ^name |_|)
+    (<h2> ^object <x1> ^loc <robot>)
+    (<x1> ^type unknown ^name object-1)
+    (<h3> ^door <door> ^status locked)
+    (<h4> ^object <x2> ^loc <box-1>)
+    (<x2> ^type key + &, non-key + & ^name object-2)
+    (<h5> ^object <x3> ^loc <box-2>)
+    (<x3> ^type key + &, non-key + & ^name object-3)
+    (<h6> ^object <x4> ^loc <door>)
+    (<x4> ^type red-object ^name object-4)
+    (<g> ^desired <d> + & )
+    (<d> ^object <x4> ^loc <loc-o>))
+    
+;;;
+;;; TASK SPACE OPERATORS:
+;;; T-Ops = GOTO, PICK-UP, AND PUT-DOWN
+;;; G-Ops = CREATE-FOCUS, CHANGE-FOCUS, 
+;;;         POP, ADD, DEL, REPLACE,
+;;;         AND GOAL-TEST
+;;; For the generic operator Goal-Test,
+;;; see the section on goal-test.
+;;;
+
+;
+;GoTo + Pick-Up <-- Acquire
+;
+
+(sp keys-and-boxes*propose*operator-set*goto->pick-up*object*object-loc
+    "Acquire ==> GoTo, Pick-Up."
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h1> <h2> ^action <a>)
+    (<h1> ^object <x> ^loc <i>)
+    (<h2> ^robot <r> ^holding nothing)
+    (<a> ^isa acquire ^object <x>)
+    -->
+    (<g> ^operator <op-1> <op-2>)
+    (<op-1> ^name goto
+            ^reference-action <a>
+            ^loc <i>
+            ^done? no)
+    (<op-2> ^name pick-up
+            ^reference-action <a>
+            ^object <x>
+            ^loc <i>
+            ^done? no))
+
+;
+;GoTo + Put-Down <-- Transfer
+;
+
+(sp keys-and-boxes*propose*operator-set*goto->put-down*object*destination
+    "Transfer ==> GoTo, Put-Down: destination is given."
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h1> <h2> ^action <a>)
+    (<h1> ^object <x> ^loc <r>)
+    (<h2> ^robot <r> ^holding <x>)
+    (<a> ^isa transfer ^object <x> ^destination <i>)
+    -->
+    (<g> ^operator <op-1> <op-2>)
+    (<op-1> ^name goto
+            ^reference-action <a>
+            ^loc <i>
+            ^done? no)
+    (<op-2> ^name put-down
+            ^reference-action <a>
+            ^object <x>
+            ^loc <i>
+            ^done? no))
+         
+(sp keys-and-boxes*propose*operator-set*goto->put-down*object*no-destination
+    "Transfer ==> GoTo, Put-Down: destination is not given."
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    ;the expression ^location <i> is crucial here.    
+    (<s> ^location <i> ^holds <h1> <h2> ^action <a>)
+    (<h1> ^object <x> ^loc <r>)
+    (<h2> ^robot <r> ^holding <x>)
+    (<a> ^isa transfer ^object <x> -^destination)
+    -->
+    (<g> ^operator <op-1> <op-2>)
+    (<op-1> ^name goto
+            ^reference-action <a>
+            ^loc <i>
+            ^done? no)
+    (<op-2> ^name put-down
+            ^reference-action <a>
+            ^object <x>
+            ^loc <i>
+            ^done? no))
+         
+;
+;Create-Focus, Change-Focus 
+;are proposed from within the subspace
+;set-focus, or by chunks.
+;
+
+;
+;Pop
+;
+
+(sp keys-and-boxes*object*action*propose*operator*pop*transfer
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a> ^location <i> ^holds <h>)
+    (<a> ^isa transfer ^object <x> -^destination)
+    (<h> ^object <x> ^loc <i>)
+    -->
+    (<g> ^operator <q> + = )
+    (<q> ^name pop
+         ^action <a>
+         ^done? no))
+
+(sp keys-and-boxes*object*action*propose*operator*pop*transfer*destination
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a> ^location <i> ^holds <h>)
+    (<a> ^isa transfer ^object <x> ^destination <i>)
+    (<h> ^object <x> ^loc <i>)
+    -->
+    (<g> ^operator <q> + = )
+    (<q> ^name pop
+         ^action <a>
+         ^done? no))
+
+(sp keys-and-boxes*object*action*propose*operator*pop*acquire
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a> ^holds <h>)
+    (<a> ^isa acquire ^object <x>)
+    (<h> ^robot <r> ^holding <x>)
+    -->
+    (<g> ^operator <q> + = )
+    (<q> ^name pop
+         ^action <a>
+         ^done? no))
+
+;
+;Add, Del. None proposed in this task.
+;
+
+;
+;Replace
+;
+	    
+(sp object*action*propose*operator*replace*door*value*locked
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^location <door> ^holds <h>)
+    (<h> ^door <door> ^status locked)
+   -{ (<s> ^holds <i>)
+      (<i> ^object <k> ^loc <> <door>)
+      (<k> ^type key) }
+    -->
+    (<g> ^operator <q> + = )
+    (<q> ^name replace
+         ^level two
+         ^structure <h>
+         ^pattern-value locked
+         ^by open
+         ^done? no))
+	    
+;;;
+;;; TASK SPACE:
+;;; OPERATOR APPLICATION
+;;;
+
+(sp apply*pick-up    
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name pick-up
+         ^object <x>
+         ^loc <i>
+         ^done? no)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h1> <h2>)
+    (<h1> ^object <x> ^loc <i>)
+    (<h2> ^robot <r> ^holding nothing ^loc <i>)
+    -->
+    (<h1> ^loc <r> <i> - )
+    (<h2> ^holding <x> nothing - )
+    (<o> ^done? yes no - ))
+ 
+(sp apply*put-down    
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name put-down
+         ^object <x>
+         ^loc <i>
+         ^done? no)
+    (<p> ^name <p-name>)
+    ;^location <i> added.
+    (<s> ^location <i> ^holds <h1> <h2>)
+    ;Object(X) & Loc(X,R) & Robot(R) = Robot R has X.
+    (<h1> ^object <x> ^loc <r>)
+    (<h2> ^robot <r> ^holding <x> ^loc <i>)
+    -->
+    (<h1> ^loc <i> <r> - )
+    (<h2> ^holding nothing <x> - )
+    (<o> ^done? yes no - ))
+
+(sp apply*goto
+    "Locations inside/outside are handled within goto proposals."
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name goto
+         ^loc <i>
+         ^done? no)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^loc { <> <i> <loc-r> })
+    -->
+    (<h> ^loc <i> <loc-r> - )
+    (<o> ^done? yes no - ))
+
+;
+;Save the task operator that is applied.
+;
+
+(sp keys-and-boxes*save*operator*applied*first-time
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name <o-name> ^loc <i>)
+    (<p> ^name keys-and-boxes)
+    (<s> -^applied)
+    -->
+    (<s> ^applied <o>))
+	    
+(sp keys-and-boxes*save*operator*applied*later-times
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name <o-name> ^loc <i>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^applied <q> <> <o>)
+    -->
+    (<s> ^applied <o> <q> - ))
+
+(sp apply*create-focus
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    (<q> ^name create-focus ^action <a> ^done? no)
+    (<a> ^isa <a-type> ^super-action none)
+    (<s> -^action <a>)
+    -->
+    (<s> ^action <a> + & )
+    (<q> ^done? yes no - ))     
+
+(sp apply*change-focus
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    (<q> ^name change-focus ^action <a> ^done? no)
+    (<a> ^isa <a-type> ^super-action <x>)
+    (<s> ^action <x> -^action <a>)
+    -->
+    (<s> ^action <a> + &, <x> - )
+    (<q> ^done? yes no - ))     
+
+;
+;Apply Pop, Add, Del, Replace. 
+;
+
+(sp apply*pop*a
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name pop
+         ^action <a>
+         ^done? no)    
+    (<a> ^super-action none)
+    (<p> ^name <p-name>)
+    (<s> ^action <a>)
+    -->
+    (<s> ^action <a> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*pop*b
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name pop
+         ^action <a>
+         ^done? no)    
+    (<a> ^super-action { <> none <s-action> })
+    (<p> ^name <p-name>)
+    (<s> ^action <a> ^action { <> <a> <s-action> })
+    -->
+    (<s> ^action <a> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*pop*c
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name pop
+         ^action <a>
+         ^done? no)    
+    (<a> ^super-action { <> none <s-action> })
+    (<p> ^name <p-name>)
+    (<s> ^action <a> -^action <s-action>)
+    -->
+    (<s> ^action <s-action> + &, <a> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*add*level-one
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name add
+         ^level one
+         ^pattern <i>
+         ^done? no)
+    (<i> ^<a> <v>)    
+    (<p> ^name <p-name>)
+    (<s> -^<a> <v>)
+    -->
+    (<s> ^<a> <v> + & )
+    (<q> ^done? yes no - ))
+
+(sp apply*add*level-two
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name add
+         ^level two
+         ^structure <x>
+         ^pattern <i> 
+         ^done? no)
+    (<i> ^<a> <v>)    
+    (<p> ^name <p-name>)
+    (<s> ^<x-slot> <x>)
+    (<x> -^<a> <v>)
+    -->
+    (<x> ^<a> <v> + & )
+    (<q> ^done? yes no - ))
+
+(sp apply*del*level-one
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name del
+         ^level one
+         ^pattern <i>
+         ^done? no)    
+    (<i> ^<a> <v>)    
+    (<p> ^name <p-name>)
+    (<s> ^<a> <v>)
+    -->
+    (<s> ^<a> <v> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*del*level-two
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name del
+         ^level two
+         ^structure <x>
+         ^pattern <i>
+         ^done? no)    
+    (<i> ^<a> <v>)    
+    (<p> ^name <p-name>)
+    (<s> ^<x-slot> <x>)
+    (<x> ^<a> <v>)
+    -->
+    (<x> ^<a> <v> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*replace*level-one
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name replace
+         ^level one
+         ^pattern-value <value>
+         ^by <new-value>
+         ^done? no)    
+    (<p> ^name <p-name>)
+    (<s> ^<a> <value>)
+    -->
+    (<s> ^<a> <new-value> <value> - )
+    (<q> ^done? yes no - ))
+
+(sp apply*replace*level-two
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name replace
+         ^level two
+         ^structure <x>
+         ^pattern-value <value>
+         ^by <new-value>
+         ^done? no)    
+    (<p> ^name <p-name>)
+    (<s> ^<x-slot> <x>)
+    (<x> ^<a> <value>)
+    -->
+    (<x> ^<a> <new-value> <value> - )
+    (<q> ^done? yes no - ))
+
+;;;
+;;; TASK SPACE:
+;;; OPERATOR TERMINATION 
+;;;
+
+(sp terminate*put-down
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name put-down ^done? yes)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <o> @ ))
+
+(sp terminate*pick-up
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name pick-up ^done? yes)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <o> @ ))
+
+(sp terminate*goto
+    (goal <g> ^operator <o>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name goto ^done? yes)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <o> @ ))
+
+(sp terminate*create-focus
+    (goal <g> ^operator <q>)         
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name create-focus ^done? yes)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+(sp terminate*change-focus
+    (goal <g> ^operator <q>)         
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name change-focus ^done? yes)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+(sp terminate*pop
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name pop ^done? yes)    
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+(sp terminate*add
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name add ^done? yes)    
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+(sp terminate*del
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name del ^done? yes)    
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+(sp terminate*replace
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name replace ^done? yes)    
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+;;;
+;;; SEARCH CONTROL:
+;;; TASK SPACE AND
+;;; SELECTION SPACE
+;;;
+
+(sp keys-and-boxes*reject*operator*goto*not-table
+    "Tranfer(X,-) & GoTo(I) & Not(Table(I)), Reject(GoTo(I))."
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name goto ^reference-action <a> ^loc <i>)
+    (<p> ^name <p-name>)
+    (<s> ^action <a> -^table <i>)
+    (<a> ^isa transfer -^destination)
+    -->
+    (<g> ^operator <o> - ))
+
+(sp keys-and-boxes*reject*operator*put-down*not-table
+    "Tranfer(X,-) & Put-Down(X,I) & Not(Table(I)), Reject(Put-Down(X,I))."
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name put-down ^reference-action <a> ^loc <i>)
+    (<p> ^name <p-name>)
+    (<s> ^action <a> -^table <i>)
+    (<a> ^isa transfer -^destination)
+    -->
+    (<g> ^operator <o> - ))
+
+(sp keys-and-boxes*reject*operator*goto*current-loc
+    "Loc(R,I) & GoTo(I), Reject(GoTo(I))."
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name goto ^loc <i>)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^loc <i>)
+    -->
+    (<g> ^operator <o> - ))
+
+(sp keys-and-boxes*best*operator*doable
+    "Loc(R,I) & Op(X,I), Best(Op(X,I))."    
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name << pick-up put-down >> ^loc <i>)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^loc <i>)
+    -->
+    (<g> ^operator <o> > ))
+
+(sp keys-and-boxes*reject*operator*door-locked*to-outside
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name <o-name> ^loc <j> ^done? no)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h1> <h2>)
+    (<h1> ^robot <r> ^loc <i>)
+    (<h2> ^door <door> ^status locked)
+    (<j> -^in <room>)
+    (<i> ^in <room>)
+    -->
+    (<g> ^operator <o> - )) 
+           
+(sp keys-and-boxes*reject*operator*door-locked*to-inside
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name <o-name> ^loc <j> ^done? no)
+    (<p> ^name <p-name>)
+    (<s> ^holds <h1> <h2>)
+    (<h1> ^robot <r> ^loc <i>)
+    (<h2> ^door <door> ^status locked)
+    (<j> ^in <room>)
+    (<i> -^in <room>)
+    -->
+    (<g> ^operator <o> - )) 
+
+#|(sp keys-and-boxes*compare*goto*better
+    "Loc(R,Not(I)) & GoTo(I) & Op(X,I), Better(GoTo(I),Op(X,I))."        
+    (goal <g> ^operator <op-1> + <op-2> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    (<op-1> ^name goto ^loc <i>)
+    (<op-2> ^name << pick-up put-down >> ^object <x> ^loc <i>)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^loc <> <i>)
+    -->
+    (<g> ^operator <op-1> > <op-2>))|#
+
+(sp selection*compare*evaluate-goto*better
+    "Loc(R,Not(I)) & GoTo(I) & Op(X,I), Better(GoTo(I),Op(X,I))."        
+    (goal <g*> ^operator <op-1> + <op-2> + )
+    (goal <g*> ^problem-space <p*> ^object <g1>)
+    (<p*> ^name selection)
+    (<op-1> ^name evaluate-object ^object <x1>)
+    (<op-2> ^name evaluate-object ^object <x2>)
+    (<x1> ^name goto ^loc <i>)
+    (<x2> ^name << pick-up put-down >> ^object <x> ^loc <i>)
+    (goal <g1> ^state <s1>)
+    (<s1> ^holds <h1>)
+    (<h1> ^robot <r> ^loc <> <i>)
+    -->
+    (<g*> ^operator <op-1> > <op-2>))
+
+;
+;Search Control for Create-Focus, Change-Focus.
+;
+
+(sp keys-and-boxes*reject*operator*create-focus
+    "Prefer changing an existing focus to creating another."
+    (goal <g> ^operator <o> + <q> + )
+    (<o> ^name create-focus ^done? no)
+    (<q> ^name change-focus ^done? no)
+    -->
+    (<g> ^operator <o> - ))
+
+(sp keys-and-boxes*reject*focus-operator*done*yes
+    "Bar re-selecting a focus operator."
+    (goal <g> ^operator <x> + )
+    (<x> ^name << create-focus change-focus >>
+         ^done? yes)
+    -->
+    (<g> ^operator <x> - ))
+
+(sp keys-and-boxes*reject*focus-operator*same-action-and-object
+    (goal <g> ^operator <q> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name << create-focus change-focus >>
+         ^action <a>
+         ^done? no)
+    (<a> ^isa <type> ^object <x>)
+    (<s> ^action <i>)
+    (<i> ^isa <type> ^object <x>)
+    -->
+    (<g> ^operator <q> - ))
+
+;
+;Search Control for Pop, Add, Del, Replace.
+;
+
+(sp task-space*compare*pop*indifferent
+    (goal <g> ^operator <op-1> + <op-2> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<op-1> ^name pop ^done? no)
+    (<op-2> ^name pop ^done? no)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <op-1> = <op-2> ))    
+
+(sp task-space*compare*pop*better
+    (goal <g> ^operator <op-1> + <op-2> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<op-1> ^name pop ^done? no)
+    (<op-2> -^name << pop add del replace >>)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <op-1> > <op-2> ))    
+
+#|(sp task-space*compare*add-del-replace*indifferent
+    (goal <g> ^operator <o> + { <> <o> <q> } + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name { << add del replace >> <o-name> })
+    (<q> ^name <o-name>)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <o> = <q> ))|#    
+
+(sp task-space*compare*add-del-replace*better
+    (goal <g> ^operator <o> + { <> <o> <q> } + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<o> ^name << add del replace >> )
+    (<q> -^name << add del replace >>)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <o> > <q> ))    
+
+;;;
+;;; SUBSPACE SET-FOCUS:
+;;; INITIAL STATE
+;;;
+
+;
+;Initial state of the subspace
+;is a duplicate of superstate.
+;
+
+(sp impasse-no-change*create*goal-context
+    (goal <g*> ^impasse no-change ^object <g1>)
+    (<g1> ^problem-space <p1> ^state <s1>)
+    (<p1> ^name keys-and-boxes)
+    -->
+    (<g*> ^problem-space <p*>)
+    (<p*> ^name set-focus         
+          ^default-state-copy yes
+          ^default-operator-copy yes
+          ;attributes to copy or duplicate should be
+          ;in a separate, task production.
+          ^one-level-attributes 
+               room + &,
+	       box + &,
+	       table + &,
+	       door + &,
+	       outside + &,
+	       robot + &,
+	       object + &,
+               location + &, 
+               pursue + &, 
+               action + &
+          ^two-level-attributes 
+               holds + & )
+    (<g*> ^state <dup-state*> ! + )
+    (<dup-state*> ^duplicate-of* <s1>)
+    (<g*> ^duplicates* <d*>))
+
+(sp impasse-no-change*elaborate*state*duplicate*one-level-attributes 
+    :default
+    (goal <g> ^problem-space <p> ^state <dup-state> + )
+    (<p> ^name <p-name> ^default-state-copy yes
+         ^one-level-attributes <att>)
+    (<dup-state> ^duplicate-of* <s>)
+    (<s> ^<att> <val>)
+    -->
+    (<dup-state> ^<att> <val> + & ))
+
+(sp impasse-no-change*elaborate*state*duplicate*id-for-attribute 
+    :default 
+    (goal <g> ^problem-space <p> 
+              ^state <dup-state> 
+              ^duplicates* <d>)
+    (<p> ^name <p-name> ^default-state-copy yes 
+         ^two-level-attributes <att>)
+    (<dup-state> ^duplicate-of* <s>)
+    (<s> ^<att> <id>)
+    -->
+    (<d> ^<id> <new-id> + = ))
+
+(warnings off)
+(sp impasse-no-change*elaborate*state*add-attribute-to-duplicate 
+    :default
+    (goal <g> ^problem-space <p> 
+              ^state <dup-state> +
+              ^duplicates* <d>) 
+    (<p> ^name <p-name> ^default-state-copy yes)
+    (<d> ^<id> <new-id>)
+    (<id> ^<sub-att> <sub-val>)
+    (<d> -^<sub-val>)
+    -->
+    (<new-id> ^<sub-att> <sub-val> + & ))
+(warnings on)
+
+(warnings off)
+(sp impasse-no-change*elaborate*state*add-duplicated-attribute-to-duplicate 
+    :default 
+    (goal <g> ^problem-space <p>
+              ^state <dup-state> + 
+              ^duplicates* <d>) 
+    (<p> ^name <p-name> ^default-state-copy yes)
+    (<d> ^<id> <new-id>)
+    (<id> ^<sub-att> <sub-val>)
+    (<d> ^<sub-val> <new-val>)
+    -->
+    (<new-id> ^<sub-att> <new-val> + & ))
+(warnings on)
+
+(sp impasse-no-change*elaborate*state*add-duplicate-to-state 
+    :default 
+    (goal <g> ^problem-space <p> 
+              ^state <dup-state> + 
+              ^duplicates* <d>)
+    (<p> ^default-state-copy yes ^two-level-attributes <att>)
+    (<dup-state> ^duplicate-of* <s>)
+    (<s> ^<att> <id>)
+    (<d> ^<id> <new-id>)
+    -->
+    (<dup-state> ^<att> <new-id> + & ))
+
+;;;
+;;; SUBSPACE OPERATOR:
+;;; SET-FOCUS
+;;;
+
+(sp set-focus*propose*operator*set-focus
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name set-focus)
+    -->
+    (<g> ^operator <q>)
+    (<q> ^name set-focus))
+
+(sp set-focus*elaborate*operator*set-focus*action*none
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name set-focus)
+    (<s> -^action)
+    -->
+    (<o> ^action none)) 
+
+(sp set-focus*elaborate*operator*set-focus*action
+    (goal <g> ^operator <o> + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name set-focus)
+    (<s> ^action <a>)
+    -->
+    (<o> ^action <a> + & )) 
+
+;;;
+;;; SET-FOCUS SUBSPACE:
+;;; OPERATOR APPLICATION
+;;;
+
+(sp apply*set-focus*action*transfer*object*destination
+    (goal <g*> ^operator <o*>)
+    (goal <g*> ^problem-space <p*> ^state <s*>
+               ^object <g1>)
+    (<o*> ^name set-focus ^action none)
+    (<p*> ^name <name>)
+    (<s*> ^pursue <desired>)
+    (<desired> ^object <x> ^loc <i>)
+    -->
+    (<g1> ^operator <q1> + <, <q1> = )
+    (<q1> ^name create-focus ^action <a1> ^done? no)
+    (<a1> ^isa transfer
+          ^super-action none 
+          ^object <x> 
+          ^destination <i>))
+
+(sp apply*set-focus*acquire*object
+    (goal <g*> ^operator <o*>)
+    (goal <g*> ^problem-space <p*> ^state <s*>
+               ^object <g1>)
+    (<o*> ^name set-focus ^action <action>)
+    (<s*> ^holds <holds> ^action <action>)
+    (<holds> ^robot <r> ^holding <> <x>)
+    (<action> ^isa transfer ^object <x> ^destination <i>)
+    -->
+    (<g1> ^operator <q1> + <, <q1> = )
+    (<q1> ^name change-focus ^action <a1> ^done? no)
+    (<a1> ^isa acquire 
+          ^super-action <action> 
+          ^object <x>))
+    
+(sp apply*set-focus*transfer*object*type*key
+    (goal <g*> ^operator <o*>)
+    (goal <g*> ^problem-space <p*> ^state <s*>
+               ^object <g1>)
+    (<o*> ^name set-focus ^action <action>)
+    (<s*> ^location <door> 
+          ^holds <holds1> <holds2> <holds3>
+          ^action <action>)
+    (<holds1> ^door <door> ^status locked)
+    (<door> ^links <room> ^to <i>)
+    (<holds2> ^object <x> ^loc <loc-x> <> <door>)
+    (<holds3> ^object <k> ^loc <loc-k> <> <door>)
+    (<k> ^type key)
+    (<action> ^isa transfer ^object <x> ^destination <i>)
+    -->
+    ;no worst preference here.
+    (<g1> ^operator <q1> + = )
+    (<q1> ^name change-focus ^action <a1> ^done? no)
+    (<a1> ^isa transfer 
+          ^super-action <action> 
+          ^object <k>
+          ^destination <door>))
+    
+(sp apply*set-focus*transfer*object*hand-free
+    (goal <g*> ^operator <o*>)
+    (goal <g*> ^problem-space <p*> ^state <s*>
+               ^object <g1>)
+    (<o*> ^name set-focus ^action <action>)
+    (<s*> ^holds <holds1> <holds2> ^action <action>)
+    (<holds1> ^object <x> ^loc <r>)
+    (<holds2> ^robot <r> ^holding <x>)
+    (<action> ^isa acquire ^object { <> <x> <z> })
+    -->
+    (<g1> ^operator <q1> + <, <q1> = )
+    (<q1> ^name change-focus ^action <a1> ^done? no) 
+    (<a1> ^isa transfer 
+          ^super-action <action>
+          ^object <x>))
+    
+;;;
+;;; TASK SPACE:
+;;; GOAL TEST
+;;;
+
+(sp keys-and-boxes*elaborate*goal*desired-of-object*satisfied
+    (goal <g> ^desired <d>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<d> ^object <x> ^loc <d-loc>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h>)
+    (<h> ^object <x> ^loc <d-loc>)
+    -->
+    (<g> ^satisfied <d> + & ))
+
+(sp task-space*elaborate*state*pursue
+    (goal <g> ^desired <d> -^satisfied <d>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    -->
+    (<s> ^pursue <d> + & ))
+
+(sp task-space*propose*operator*goal-test*success*top-level
+    (goal <g> ^object nil)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    (<s> -^pursue -^success)
+    -->
+    (<g> ^operator <q> =, <q> + )
+    (<q> ^name goal-test ^result-type success))
+
+(sp task-space*propose*operator*goal-test*success*look-ahead
+    (goal <g> ^name implement-evaluate-object)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name <p-name>)
+    (<s> -^pursue -^success)
+    -->
+    (<g> ^operator <q> =, <q> + )
+    (<q> ^name goal-test ^result-type success))
+
+(sp task-space*select*operator*goal-test*better
+    (goal <g> ^operator <q> + { <> <q> <o> } + )
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name goal-test)
+    (<o> -^name << pop add del replace >>)
+    (<p> ^name <p-name>)
+    (<s> -^pursue)
+    -->
+    (<g> ^operator <q> > <o>))
+
+(sp apply*goal-test*top-level
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>
+              ^desired <d>
+              ^satisfied <d>
+              ^object nil)
+    (<q> ^name goal-test ^result-type <r-type>)
+    (<s> -^pursue -^<r-type> <d>)
+    -->
+    (<s> ^<r-type> <d> + & ))
+
+(sp apply*goal-test*look-ahead
+    (goal <g> ^operator <q>)
+    (goal <g> ^name implement-evaluate-object 
+              ^problem-space <p> ^state <s>
+              ^desired <d>
+              ^satisfied <d>)
+    (<q> ^name goal-test ^result-type <r-type>)
+    (<s> -^pursue -^<r-type> <d> ^applied <operator>)
+    -->
+    (<s> ^<r-type> <d> + & ))
+
+(sp terminate*goal-test
+    (goal <g> ^operator <q>)
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<q> ^name goal-test)
+    (<p> ^name <p-name>)
+    -->
+    (<g> ^operator <q> @ ))
+
+;;;
+;;; TASK SPACE: 
+;;; MONITOR STATE AND OPERATORS
+;;;
+
+(sp keys-and-boxes*monitor*state*holds*object*loc
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h>)
+    (<h> ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+           |  loc(| <x-name> 
+           |,| <i-name> 
+           |).|))
+    
+(sp keys-and-boxes*monitor*state*holds*robot*loc*holding*no
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^holding nothing ^loc <i>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+           |  loc(robot,| <i-name>
+           |), holding nothing.|))
+    
+(sp keys-and-boxes*monitor*state*holds*robot*loc*holding*yes
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h>)
+    (<h> ^robot <r> ^holding <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+           |  loc(robot,| <i-name>
+           |), holding(| <x-name> 
+           |).|))
+    
+(sp keys-and-boxes*monitor*state*holds*door*status
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^holds <h>)
+    (<h> ^door <k> ^status <status>)
+    -->
+    (write (crlf) 
+           |  | <status>
+           |(door).|))
+
+(sp keys-and-boxes*desired-state*object*destination
+    (goal <g> ^desired <d> ^object nil)
+    (<d> ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+           |  desired[loc(| <x-name> 
+           |,| <i-name> 
+           |)].|))
+  
+(sp keys-and-boxes*monitor*action*acquire
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a>)
+    (<a> ^isa acquire ^object <x>)
+    (<x> ^name <x-name>)
+    -->
+    (write (crlf) 
+    	   |  | <a> 
+    	   |: acquire(| <x-name> 
+           |).|))
+
+(sp keys-and-boxes*monitor*action*transfer
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a>)
+    (<a> ^isa transfer ^object <x> -^destination)
+    (<x> ^name <x-name>)
+    -->
+    (write (crlf) 
+    	   |  | <a> 
+    	   |: transfer(| <x-name> 
+           |).|))
+           
+(sp keys-and-boxes*monitor*action*transfer*destination
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name keys-and-boxes)
+    (<s> ^action <a>)
+    (<a> ^isa transfer ^object <x> ^destination <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+    	   |  | <a> 
+    	   |: transfer(| <x-name>   
+           |,| <i-name> 
+           |).|))
+
+(sp keys-and-boxes*monitor*tied-operator*pick-up
+    (goal <g> ^impasse tie 
+              ^attribute operator 
+              ^item <item>)
+    (<item> ^name pick-up ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+    	   |  | <item> 
+    	   |: pick-up(| <x-name> 
+           |,| <i-name> 
+    	   |).|))
+
+(sp keys-and-boxes*monitor*tied-operator*put-down
+    (goal <g> ^impasse tie 
+              ^attribute operator 
+              ^item <item>)
+    (<item> ^name put-down ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+    	   |  | <item> 
+    	   |: put-down(| <x-name> 
+           |,| <i-name> 
+    	   |).|))
+
+(sp keys-and-boxes*monitor*tied-operator*goto
+    (goal <g> ^impasse tie 
+              ^attribute operator 
+              ^item <item>)
+    (<item> ^name goto ^loc <i>)
+    (<i> ^name <i-name>)
+    -->
+    (write (crlf) 
+    	   |  | <item> 
+    	   |: goto(| <i-name> 
+    	   |).|))
+
+(sp keys-and-boxes*monitor*operator-application*pick-up
+    (goal <g> ^operator <o>)
+    (goal <g> ^state <s>)
+    (<o> ^name pick-up ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    (<s> ^holds <h1> <h2>)   
+    (<h1> ^object <x> ^loc <robot>)
+    (<h2> ^robot <r> ^holding <x> ^loc <i>)
+    -->
+    (write (crlf) 
+           |  pick-up(| <x-name>
+           |,| <i-name> 
+           |).|))
+
+(sp keys-and-boxes*monitor*operator-application*put-down
+    (goal <g> ^operator <o>)
+    (goal <g> ^state <s>)
+    (<o> ^name put-down ^object <x> ^loc <i>)
+    (<x> ^name <x-name>)
+    (<i> ^name <i-name>)
+    (<s> ^holds <h1> <h2>)   
+    (<h1> ^object <x> ^loc <i>)
+    (<h2> ^robot <r> ^holding nothing ^loc <i>)
+    -->
+    (write (crlf) 
+           |  put-down(| <x-name>
+           |,| <i-name> 
+           |).|))
+
+(sp keys-and-boxes*monitor*operator-application*goto*holding*no
+    (goal <g> ^operator <o>)
+    (goal <g> ^state <s>)
+    (<o> ^name goto ^loc <i>)
+    (<i> ^name <i-name>)
+    (<s> ^holds <h>)   
+    (<h> ^robot <r> ^holding nothing ^loc <i>)
+    -->
+    (write (crlf) 
+           |  goto(| <i-name> 
+           |), while holding nothing.|))
+
+(sp keys-and-boxes*monitor*operator-application*goto*holding*yes
+    (goal <g> ^operator <o>)
+    (goal <g> ^state <s>)
+    (<o> ^name goto ^loc <i>)
+    (<i> ^name <i-name>)
+    (<s> ^holds <h>)   
+    (<h> ^robot <r> ^holding <x> ^loc <i>)
+    (<x> ^name <x-name>) 
+    -->
+    (write (crlf) 
+           |  goto(| <i-name> 
+           |), while holding(| <x-name>
+           |).|))
+
+;;; eof of kab.s (Version: PSCM)
+
+
+
+
+

@@ -1,0 +1,480 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		 Analysis of Data
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+This file describes techniques for the analysis and display of
+Surf-Hippo data, both integral to the execution of simulations, for
+examination of data after a simulation is complete, and for later
+analysis of stored data.
+
+See also element-data.doc, data-folder.doc
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Analysis Functions, Removal of Fast Events (e.g. Spikes)
+2. Sessions of Simulations
+3. Plotting Archived Data
+4. Phase Plots
+5. Spike Detection
+6. Others
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	 Analysis Functions, Removal of Fast Events (e.g. Spikes)
+
+*********************************************************************************
+*********************************************************************************
+
+
+The following functions operate on lists of numbers, either
+implicitely via reference to a given element's data, on explicitely as
+an argument. Most are defined in the waveforms.lisp file.
+
+
+
+
+	element-integrated-data ELEMENT &optional DATA-TYPE TYPE
+
+According to the plot data and time points of the last simulation, returns the sum of the integrals
+of the data of type DATA-TYPE of each element in ELEMENT, of element type TYPE, where the default
+DATA-TYPE is given in the documentation for the ELEMENT-DATA function. ELEMENT can either be a
+single element or a list of elements.
+
+
+
+	integrate-wave WAVE DELTA-T &optional (X-0 0.0)
+
+
+Given WAVE, an array or list of numbers assumed to be spaced evenly by DELTA-T with respect to
+the independent variable, returns a list which is the cumulative integral of WAVE, with the
+initial conditions given by the optional argument X-0.
+
+
+
+	differentiate-wave WAVE DELTA-T
+
+Returns a list which is a differentiated WAVE, an array or list of numbers which is
+assumed to be spaced evenly with respect to the independent variable, with a grid
+of DELTA-T. Note that the length of the result is one less than the length of WAVE.
+Thus, given a n-valued sequence WAVE with values
+
+     [x1 x2 x3 ... xn]
+
+returns an (n-1)-valued list with values
+
+     [(x2-x1)/DELTA-T, (x3-x2)/DELTA-T, ... (x(i+1)-xi)/DELTA-T, ... (xn-x(n-1))/DELTA-T]
+
+
+
+	element-data-max ELEMENT &key DATA-TYPE (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+		       		      ELEMENT-TYPE 
+
+	element-data-min ELEMENT &key DATA-TYPE (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+		       		      ELEMENT-TYPE 
+
+	element-data-max-slope ELEMENT &key DATA-TYPE (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+		       		       ELEMENT-TYPE 
+
+	element-data-min-slope ELEMENT &key DATA-TYPE (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+		       		       ELEMENT-TYPE 
+
+	element-amplitude ELEMENT &key DATA-TYPE (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) dt (TIME-LIST *TIME*)
+		       		       ELEMENT-TYPE NEGATIVE-P BASE-LEVEL
+
+
+ELEMENT-DATA-MIN, ELEMENT-DATA-MAX, ELEMENT-DATA-MIN-SLOPE and ELEMENT-DATA-MAX-SLOPE find the minimum, maximum,
+minimum slope or maximum slope, respectively, of the data associated with to ELEMENT (evaluated by the ELEMENT
+function, using the ELEMENT-TYPE argument if supplied), and referenced by DATA-TYPE (when DATA-TYPE is not specified
+the default data type used by the function ELEMENT-DATA as described above is used). When either MIN-TIME or
+MAX-TIME are included, then the data extremum is found within the specified time window - the default for these
+values are 0.0 and the stop time of the last simulation, respectively. When DT is NIL, the time base is taken from
+TIME-LIST (in milliseconds, default is *TIME*, the list of plotted time points from the last simulation); if DT
+(milliseconds) is included, then the data is first resampled at the DT step (with TIME-LIST as the reference time
+base) and the slope then evaluated.  ELEMENT-AMPLITUDE is similar to the others, but also takes into account the
+NEGATIVE-P and BASE-LEVEL arguments.  All functions return 2 values, the extremum value and the time associated with
+that value.
+
+
+	data-max &key DATA-LIST (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+
+	data-min &key DATA-LIST (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+
+	data-max-slope &key DATA-LIST (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+
+	data-min-slope &key DATA-LIST (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) DT (TIME-LIST *TIME*)
+
+	data-amplitude &key (MIN-TIME 0.0) (MAX-TIME USER-STOP-TIME) dt (TIME-LIST *TIME*) NEGATIVE-P BASE-LEVEL
+
+These are companion functions to the ones above, and may be used when you have a data list
+already available. This can be more efficient if, for example, various analyses are to be
+done on sampled simulation data. In this case, it is advantageous to first derive and
+assign to a local variable a sampled version of some element's data, and then pass that
+list to succesive calls of the desired analysis functions.
+
+
+
+	frame-min-maxs WAVE DVDT DELTA-T MAX-FOR-DVDT MIN-FOR-DVDT MIN-TIME-FOR-EVENT
+
+	frame-max-mins WAVE DVDT DELTA-T MAX-FOR-DVDT MIN-FOR-DVDT MIN-TIME-FOR-EVENT
+
+
+FRAME-MIN-MAXS (FRAME-MAX-MINS) is used to select out negative (positive) going events in
+some data WAVE, and kill them. Each function returns a list which is the processed version
+of the argument WAVE.
+
+For both of these functions, the names are derived from the sequence of minimum or maximums
+in the time derivative of the original WAVE - e.g. detection of (strong) negative events is
+done by looking for sequences of large minimums and maximums in the time derivative, and
+vica-versa for the detection of (strong) positive events.
+
+FRAME-MIN-MAXS tracks the original data in WAVE and as soon as the start of a min dvdt event
+is reached (as defined by the analysis of the dvdt with the MIN-FOR-DVDT threshold parameter
+and MIN-TIME-FOR-EVENT time parameter), the output data is frozen at the value of WAVE at
+the start of the min event. The output data is held constant until the end of a max dvdt
+event is reached, (as defined by the analysis of the dvdt with the MAX-FOR-DVDT threshold
+parameter and MIN-TIME-FOR-EVENT time parameter).
+
+FRAME-MAX-MINS is analogous, but aims at postive-going events in WAVE.  
+
+Procedure: 
+
+1. Get a list of data into WAVE with some DELTA-T 
+
+2. Get a DVDT with (DIFFERENTIATE-WAVE WAVE DELTA-T)
+
+
+optional - look at dvdt (plot-timed-data dvdt nil nil :delta-t delta-t)
+this will give an idea of the "events" that you will be looking for with the frame-max-mins
+function, and the sort of values you want to use for the max-for-dvdt min-for-dvdt and
+min-time-for-event arguments. 
+
+preliminary results of voltage clamp data show good results with 
+
+ MAX-FOR-DVDT = 11 [nA/ms]
+ MIN-FOR-DVDT = -11 [nA/ms]
+ MIN-TIME-FOR-EVENT = 21.0 [ms]
+
+for example:
+
+	(plot-timed-data (list WAVE (FRAME-MIN-MAXS WAVE DVDT 0.125 11 -11 2))
+			 '("p5-10" "spikes all gone") nil :delta-t 0.125
+			 :title "p5-10 spike removal w/minmax 11, mindt 2"
+		         :y-label "nA")
+
+
+****************************************************************
+****************************************************************
+
+	Sessions of Simulations
+
+****************************************************************
+****************************************************************
+
+The session organization allows you to run a sequence of simulations
+with all the results (as generated by the call to PRINT-ANALYSIS, see
+below) being sent (appended) to the same *.results file. When
+*SESSION-NAME* is redefined, then the next call to PRINT-ANALYSIS
+(assuming that *DUMP-ANALYSIS-TO-FILE* and *PRINT-OUT-TO-LISP* are T)
+will write the results to a new *.results file, determined by the new
+value of *SESSION-NAME*.
+
+The advantage of the *.results file format is that these files may be
+loaded directly into the Lisp, and the data manipulated more readily
+than is the case if you need to search and edit through the *.info
+files (which may have the same data, but in a more readable form).
+
+The function (WRITE-COMMENT-TO-ANALYSIS-FILE comment-string) will
+write (append) its argument to the current *.results file.
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+		Plotting Archived Data
+
+****************************************************************
+****************************************************************
+
+
+As described in file.doc (In the section "Loading Archived Data / Circuit
+Description / Element Description Files"), simulation data that has been archived
+to .dat files may be later reloaded and plotted via the menus. While this interface
+may be improved in later releases, the following describes how you may combine
+traces from different simulations in a single plot by entering plotting functions
+directly into the LISP interpreter.
+
+We will assume that three simulations were run previously, named AXON-298604580,
+AXON-298604630, AXON-298604648, and each were saved (see doc/simulation_names.doc
+for a description on how simulations are named). We shall also assume that for each
+simulation a soma voltage and a current source were plotted. Remember that in order
+to save (archive) a simulation, you must do so before the next simulation run.  In
+other words, the memory locations for the simulation data are overwritten with
+every subsequent simulation. Also, note that only circuit data that is plotted may
+be subsequently archived.
+
+Now, after these simulations, or during a subsequent Surf-Hippo session (and as
+described in the file.doc section mentioned above), these archives may be loaded
+either from the menus or by entering LOAD commands to LISP directly. For example,
+in the latter case (assuming that the directory "data" is a subdirectory of the
+current working directory - otherwise the full pathname is needed):
+
+ lisp-prompt> (load "data/axon/8_16_1994/AXON-298604580.dat")
+
+
+As described in file.doc, loaded archive data may be plotted out with the menus:
+
+[Main Simulation Menu:<Modify plot parameters - plot loaded archive
+data><Plot loaded archive data>[Choose Archived Simulation]]
+
+
+Otherwise, enter the LISP interpreter (QUIT from the Main Menu), and use the
+PLOT-TIMED-DATA and PLOT-XY-DATA functions (defined in src/sys/plot-hack.lisp) to
+plot out the archive lists whose names are given by evaluating
+*ARCHIVE-VARIABLE-LIST*. For example, after the three archives are loaded (assuming
+nothing else was loaded from the archive), evaluating *ARCHIVE-VARIABLE-LIST* shows
+what is available:
+
+ lisp-prompt> *ARCHIVE-VARIABLE-LIST*
+
+     ((AXON-298604580
+       AXON-298604580-TIME
+       ((AXON-298604580-MARCH-SOMA-ISRC-ISOURCE-CURRENT-DATA ISOURCE-CURRENT-DATA)
+	(AXON-298604580-MARCH-SOMA-NODE-VOLTAGE-DATA NODE-VOLTAGE-DATA)))
+      (AXON-298604630
+       AXON-298604630-TIME
+       ((AXON-298604630-MARCH-SOMA-ISRC-ISOURCE-CURRENT-DATA ISOURCE-CURRENT-DATA)
+	(AXON-298604630-MARCH-SOMA-NODE-VOLTAGE-DATA NODE-VOLTAGE-DATA)))
+      (AXON-298604648
+       AXON-298604648-TIME
+       ((AXON-298604648-MARCH-SOMA-ISRC-ISOURCE-CURRENT-DATA ISOURCE-CURRENT-DATA)
+	(AXON-298604648-MARCH-SOMA-NODE-VOLTAGE-DATA NODE-VOLTAGE-DATA))))
+
+The list contains three lists, one for each simulation. The CAR of each simulation
+list is a symbol with the name of the simulation (e.g.  AXON-298604580). The second
+component of each simulation list is a symbol which points to a list of time points
+(e.g.  AXON-298604580-TIME). The last component of each simulation list is a list
+of lists, each of which is the CONS of a symbol pointing to a data list (e.g.
+AXON-298604580-MARCH-SOMA-ISRC-ISOURCE-CURRENT-DATA) and a symbol (e.g.
+ISOURCE-CURRENT-DATA) which describes the type of data (although this is often
+apparent from the the data list symbol itself). For example, if we evaluate these
+symbols directly:
+
+ lisp-prompt> AXON-298604580-TIME
+	(1399.402 1398.402 1397.402 1396.402 1395.402 1394.402 
+ 		.
+ 		.
+ 		.
+
+	 5.428644 4.428662 3.428681   2.4287 1.428719 .4287377
+	 .0103995 .0001147 0.0)
+
+ lisp-prompt> AXON-298604580-MARCH-SOMA-ISRC-ISOURCE-CURRENT-DATA
+
+	(0.200 0.200 0.200 0.200 0.200 0.200 0.200 0.200 0.200 
+ 		.
+ 		.
+ 		.
+
+	0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0)
+
+ lisp-prompt>
+
+Note that the time list is in reverse order - however, the archived circuit data is
+also stored in reverse order, so there is always a direct match between the time
+list and the data lists in a given .dat file.
+ 
+In general, the PLOT-TIMED-DATA function is more convenient when making a plot of
+one or more traces from the same simulation:
+
+ lisp-prompt> (plot-timed-data AXON-298604580-MARCH-SOMA-NODE-VOLTAGE-DATA
+	                       (list "Soma Voltage, Control")
+	                       AXON-298604580-TIME)
+
+PLOT-XY-DATA must be used, however, when traces from different simulations are
+plotted, so that each data list may be matched with the proper time sequence:
+
+ lisp-prompt> (plot-xy-data (list (list AXON-298604580-TIME AXON-298604580-MARCH-SOMA-NODE-VOLTAGE-DATA)
+	                          (list AXON-298604630-TIME AXON-298604630-MARCH-SOMA-NODE-VOLTAGE-DATA)
+	                          (list AXON-298604648-TIME AXON-298604648-MARCH-SOMA-NODE-VOLTAGE-DATA))
+	                    (list "Soma Voltage, Control"
+	                          "Soma Voltage, Na Blocked"
+	                          "Soma Voltage, K Blocked"))
+
+Refer to the function documentation in src/sys/plot-hack.lisp for more options for
+these two functions, or to doc/plotting.doc (all the keyboard, mouse and menu
+interactions described there will work for any plots you make with calls to
+PLOT-TIMED-DATA or PLOT-XY-DATA).
+	                
+
+*********************************************************************************
+*********************************************************************************
+
+	Phase Plots
+
+*********************************************************************************
+*********************************************************************************
+
+
+
+	phase-plots ELEMENT-PAIRS &key TITLE Y-LABEL X-LABEL X-MIN Y-MIN X-MAX Y-MAX
+
+
+
+The argument ELEMENT-PAIRS is one of the following:
+
+   (element-1 element-2)     ->    The data types for each element are defaults from
+
+					(typecase element
+					((or axon segment soma node) 'voltage)
+					((or channel synapse isource vsource) 'current)
+					((or particle conc-particle) 'state) 
+					(conc-int 'concentration-1))
+
+Or data types may be specified for any of the elements -
+   ((element-1 data-type) element-2)
+   (element-1 (element-2 data-type))
+   ((element-1 data-type) (element-2 data-type))
+
+Or, a list of element pairs (with optional data types) may be given -
+
+   (((element-1 data-type) element-2) (element-3 element-4) (element-4 (element-5 data-type)) ... )
+
+
+Example -
+
+	(PHASE-PLOTS `((("Hippo-soma-CA-IN-GEN" concentration-2) ,*soma*)
+		        ("Hippo-soma-CA-IN-GEN" ,*soma*)))
+
+Note that in this example, the global variable *SOMA* is referenced.
+Using list construction with the backquote notation (`), the comma
+before *SOMA* allows it to be evaluated. This could have been done
+with the name of the *SOMA* -
+
+	(PHASE-PLOTS `((("Hippo-soma-CA-IN-GEN" concentration-2) "Hippo-soma")
+		        ("Hippo-soma-CA-IN-GEN" "Hippo-soma")))
+
+
+Another example -
+
+	(PHASE-PLOTS `(("Hippo-soma-NA-RF2-NAM-RF2" "Hippo-soma-NA-RF2-NAH-RF2")
+		       ("Hippo-soma-NA-RF1-NAM-RF1" "Hippo-soma-NA-RF1-NAH-RF1"))
+		     :title "Na Particle States" 
+		     :x-label "State" :y-label "mV"
+		     :x-max 1.0 :x-min 0.0 :y-max 40 :y-min -80)
+
+Note that a given element data type must have been enabled for
+plotting, for example with the menus or with the function
+
+	enable-element-plot ELEMENT &optional DATA-TYPE TYPE
+
+described above.
+
+
+
+*********************************************************************************
+*********************************************************************************
+
+	Spike Detection
+
+*********************************************************************************
+*********************************************************************************
+
+
+
+	element-spike-times ELEMENT &key (SPIKE-THRESHOLD -20.0) (SUPRA-THRESHOLD-DURATION-MIN 0.1)
+				    (SUB-THRESHOLD-TIME 0.5) (DT 0.1)
+				    TYPE (REFERENCE-TIME-LIST *TIME*)
+
+Returns a list of detected spikes from the voltage of the soma or segment associated with ELEMENT
+according to the key word parameters SPIKE-THRESHOLD [default -20.0mV],
+SUPRA-THRESHOLD-DURATION-MIN [default 0.1ms], SUB-THRESHOLD-TIME [default 0.5ms]. The voltage trace
+from ELEMENT is resampled at a time step DT [default 0.1ms] with reference to REFERENCE-TIME-LIST
+[default *TIME* - the time list from the last simulation]. The TYPE of ELEMENT may be specified.
+
+
+
+
+	element-firing-frequency ELEMENT &key (START-TIME 0) (END-TIME user-stop-time))
+			                      (SPIKE-THRESHOLD -20.0) (SUPRA-THRESHOLD-DURATION-MIN 0.1)
+	                                      (SUB-THRESHOLD-TIME 0.5) (DT 0.1) TYPE (REFERENCE-TIME-LIST *time*)
+
+
+Returns the firing frequency in Hz from spikes detected from the voltage of the soma or segment
+associated with ELEMENT, between START-TIME (default 0ms) and END-TIME (default USER-STOP-TIME).
+Also takes key word arguments for spike detection as used in the function ELEMENT-SPIKE-TIMES.
+
+
+****************************************************************
+****************************************************************
+
+	Others
+
+****************************************************************
+****************************************************************
+
+Additional functions which are useful for data analysis are found in
+the following files:
+
+	src/sys/waveforms.lisp
+
+	   Of particular interest: 
+
+	       CONVERT-DATA-TIME-LISTS Given a list of time points (TIME-LIST), which
+	       may not be evenly spaced, and a list of data points (DATA-LIST) that
+	       reference these time points, generate a data list that is sampled
+	       evenly at NEW-TIME-STEP intervals. The units for new-time-step are the
+	       same assumed in TIME-LIST. For making evenly sampled versions of
+	       Surf-Hippo simulations, the current simulation time list is found in
+	       the global variable *TIME*. Note that this list contains only the 
+	       time points used when plot data is saved - the relationship between
+               this sampling and the actual simulation time steps is given by the
+               global variable *SAVE-DATA-AT-STEP (see plotting.doc). 
+
+
+	src/sys/misc.lisp
+
+	   Of particular interest: INTEGRATE-X-Y
+
+
+
+
+
+
+
+For organizing the way data is grouped, the following two global
+variables may be useful (these may be set from the plot details menu):
+
+
+	*GROUP-PLOT-DATA-BY-CELL* [default T]
+	*GROUP-PLOT-DATA-BY-CELL-TYPE* [default T]
+
+	*PLOT-SYNAPSES-BY-MAJOR-ION* [default nil]
+	*PLOT-CHANNELS-BY-MAJOR-ION* [default nil]
+	*PLOT-CURRENTS-BY-MAJOR-ION* [default nil]
+
+
+Depending on these variables, for a given type of data (e.g. voltage, conductance,
+current), all traces associated with each cell or cell type in the circuit, for the
+first two, or with a given ion, for the last three, are displayed in their own
+window(s).
+

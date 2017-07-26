@@ -1,6 +1,0 @@
-; you can denote passive structures either by "`" or by using the
-; operator "inst"
-(hn (foo _x _y)
-    (is _x `(tup a b c))
-	(is _y (inst (tup b c))) )
-

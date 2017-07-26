@@ -1,0 +1,66 @@
+
+                                                            reader syntax #=
+
+
+    READER SYNTAX
+    #=  -  representation of a unique labelled object
+
+    Usage
+    #N=EXPR
+
+    DESCRIPTION
+    When this syntactic form is encountered, the expression  EXPR  following
+    it  is read normally, but its unique identity is remembered by assigning
+    it a `label.' This label is the required  unsigned  decimal  integer  N.
+    This number may be used later within the same scope in the #N# syntactic
+    form.  The scope of these labels is the expression  being  read  by  the
+    outermost  application  of  read.   Each label must be unique within its
+    scope.  The syntactic form #N# is read as the object identical (that is,
+    eq)  to  the object read and labelled by the corresponding #N= syntactic
+    form.  An object must be labelled with #N= before it may  be  referenced
+    with the #N# syntax.  That is, the label defined by #N= may only be used
+    in #N# to the right of #N= in the same outermost expression.  It is  not
+    permitted for #N# to refer to itself, i.e. the expression #1= #1# is not
+    defined.
+
+    This reader macro is useful for entering circular lists and objects with
+    shared  structure.   The  printer makes use of this syntax when printing
+    such objects if the *print-circle* variable is true.
+
+    EXAMPLES
+    (setq *print-circle* t)
+
+    (let ((a (list nil 1 2 3))
+          (b (list 10 20 30)))
+      (setf (car a) b)
+      (setf (cdr (last b)) a)
+      (setf (cdr (last a)) b)
+      a) => #1=(#2=(10 20 30 . #1#) 1 2 3 . #2#)
+
+    (list-length '#1=(1 2 3 . #1#)) => nil
+
+    (let ((x (gensym)))
+      (list x x)) => (#1=#:g131 #1#)
+
+    SEE ALSO
+    CLtL 22:357, about printing, about reading, reader syntax ##, reader
+    syntax #:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

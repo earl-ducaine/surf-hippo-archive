@@ -1,0 +1,48 @@
+(sp chunk-7
+  :chunk
+  (goal <g1> ^state <s1> ^operator <n1> ^problem-space <p1>)
+  (<s1> -^object-in-focus <o*1> ^visual-model <l1> -^object-in-focus <l1>
+        ^intention <i1>)
+  (<l1> ^type robotloc)
+  (<i1> ^expected-response robotloc)
+  (<p1> ^name top-space)
+-->
+  (<s1> ^object-in-focus <l1> +))
+
+
+(sp chunk-8
+  :chunk
+  (goal <g1> ^operator <n1> ^state <s1> ^problem-space <p1>)
+  (<s1> -^object-in-focus <o*1> ^visual-model <l1> -^object-in-focus <l1>
+        ^intention <i1>)
+  (<l1> ^type robotloc)
+  (<i1> ^expected-response robotloc)
+  (<p1> ^name top-space)
+-->
+  (<s1> ^object-in-focus <l1> +))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^problem-space <p1> ^state <s1>)
+  (<p1> ^name top-space ^type imagery)
+  (<s1> ^intention <i1> -^recall-failure <i1>)
+  (<i1> ^command goto ^to-location <l1>)
+ -{ (<s1> ^visual-model <v*1>)
+    (<v*1> ^visualized-for-intention <i1>)}
+-->
+  (<s1> ^visual-model <l2> + ^visual-model <l2> &)
+  (<l2> ^type robotloc + ^val <l1> + ^visualized-for-intention <i1> +))
+
+
+(sp chunk-4
+  :chunk
+  (goal <g2> ^problem-space <p1> ^state <s1>)
+  (<p1> ^type imagery ^name top-space)
+  (<s1> ^intention <i1> -^recall-failure <i1>)
+  (<i1> ^command goto ^to-location <l1>)
+ -{ (<s1> ^visual-model <v*1>)
+    (<v*1> ^visualized-for-intention <i1>)}
+-->
+  (<s1> ^visual-model <l2> + ^visual-model <l2> &)
+  (<l2> ^type robotloc + ^val <l1> + ^visualized-for-intention <i1> +))
+

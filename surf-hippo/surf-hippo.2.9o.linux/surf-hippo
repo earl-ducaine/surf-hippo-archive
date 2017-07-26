@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cd $SURFHOME
+
+# Choose the lisp that matches your system.
+
+# lisp=cmucl/cmucl18a-sunos.4.1.3
+lisp=cmucl/cmucl2.4.20-x86
+# lisp=/home/surf-hippo/cmucl/cmucl18-x86
+# lisp=cmucl/cmucl18a-ultra
+# lisp=cmucl/cmucl18a-solaris
+# lisp=cmucl/cmucl18b-solaris
+
+# This was necessary for some releases under Linux (need to be root to do this). 
+# echo 1 > /proc/sys/vm/overcommit_memory
+# exec $lisp "$@" -core lib/image -eval '(progn (load "misc/loaders/initial-message.lisp" :verbose nil) (start))' 
+exec $lisp "$@" -core lib/image -eval '(start)' 
+
+

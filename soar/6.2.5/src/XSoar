@@ -1,0 +1,23 @@
+! Soar X initialization 
+!
+! Notify X of these resources with "xrdb -merge XSoar"
+!
+! The first group of 9 resources applies to any Soar agent 
+! unless overridden.  Currently, the display resource cannot
+! be overridden by an agent class resource.
+
+*Soar*display:		
+*Soar*geometry:		500x250+0+0
+*Soar*font:		6x13
+*Soar*background:	White
+*Soar*foreground:	Black
+*Soar*borderWidth:	4
+*Soar*borderColor:	White
+
+*Soar.Monitor*geometry:	370x220+600+0
+*Soar.Monitor*font:	-adobe-times-bold-i-*-*-24-*-*-*-*-*-*-*
+
+! Specialized agent class definitions (example)
+*Soar*Friendly*borderColor:	Blue
+*Soar*Friendly.Rio*borderColor: Green
+*Soar*Opposing*borderColor:	Red

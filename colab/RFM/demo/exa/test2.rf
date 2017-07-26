@@ -1,9 +1,0 @@
-(ft (wph
-     (cns
-      (cns _f (cns _begin (cns (p _z 0) _t)))
-      nil ) )
-    (dummy)
-    `(wp
-      (cns
-       (cns _f (cns _begin (cns (p _z 0) _t)))
-       nil ) ) )

@@ -1,0 +1,26 @@
+;
+; This tests that multiple inter condition tests match correctly
+;
+(sp p17
+ (goal <g> ^<a> <v>)
+ (<g> ^<a> <v>)
+-->)
+
+run 1
+add-wme g1 ^attr val
+ms
+run 1
+remove-wme 3
+ms
+run 1
+add-wme g1 ^attr val
+ms
+run 1
+remove-wme 4
+ms
+run 1
+add-wme g1 ^atr2 val
+ms
+run 1
+remove-wme 5
+ms

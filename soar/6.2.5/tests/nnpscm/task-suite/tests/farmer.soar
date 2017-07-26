@@ -1,0 +1,11 @@
+;; $Id: farmer.soar,v 1.2 1994/06/10 01:39:15 portelli Exp $
+(user-select first)
+(load "../../../default/nnpscm/default.soar")
+(load "../../../examples/nnpscm/farmer/farmer.soar")
+(learn off)
+(run)
+(learn on)
+(init-soar)
+(run)
+(init-soar)
+(run)

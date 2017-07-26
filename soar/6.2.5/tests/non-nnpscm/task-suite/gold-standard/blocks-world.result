@@ -1,0 +1,357 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/blocks-world/blocks-world.soar
+************************
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+Initial state has A on B and B and C on the table.
+The goal is to get A on B on C on the table.
+     3:    O: O2 (build-tower)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (blocks-world)
+     6:       S: S1 (top-state)
+  ontop(a,b)
+  ontop(b,table)
+  ontop(c,table)
+     7:       ==>G: G3 (operator tie)
+  O3: move-block(a,table)
+  O4: move-block(c,a)
+  O5: move-block(a,c)
+     8:          P: P3 (selection)
+     9:          S: S2 
+    10:          O: O8 (evaluate-object O3 (move-block))
+    11:          ==>G: G4 (operator no-change)
+    12:             P: P2 (blocks-world)
+    13:             S: D7 
+  ontop(a,b)
+  ontop(b,table)
+  ontop(c,table)
+    14:             O: O3 (move-block)
+  APPLIED O3: move-block(a,table)
+  ontop(a,table)
+    15:             ==>G: G5 (operator tie)
+  O13: move-block(c,b)
+  O14: move-block(b,c)
+  O15: move-block(b,a)
+  O10: move-block(c,a)
+    16:                P: P4 (selection)
+    17:                S: S3 
+    18:                O: O19 (evaluate-object O13 (move-block))
+    19:                ==>G: G6 (operator no-change)
+    20:                   P: P2 (blocks-world)
+    21:                   S: D9 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    22:                   O: O13 (move-block)
+  APPLIED O13: move-block(c,b)
+  ontop(c,b)
+    23:                   O: O24 (move-block)
+  APPLIED O24: move-block(a,c)
+  ontop(a,c)
+    24:                   ==>G: G7 (state no-change)
+    25:                      ==>G: G8 (goal no-change)
+Building justification-1
+Building justification-2
+Building justification-3
+Building justification-4
+Building justification-5
+Building justification-6
+  Evaluation of O13 (move-block) is failure
+    26:                O: O18 (evaluate-object O14 (move-block))
+    27:                ==>G: G9 (operator no-change)
+    28:                   P: P2 (blocks-world)
+    29:                   S: D11 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    30:                   O: O14 (move-block)
+  APPLIED O14: move-block(b,c)
+  ontop(b,c)
+    31:                   O: O30 (move-block)
+  APPLIED O30: move-block(a,b)
+  ontop(a,b)
+  Goal implement-evaluate-object succeeded. 
+Building justification-7
+Building justification-8
+Building justification-9
+Building justification-10
+  Evaluation of O14 (move-block) is success
+Building justification-11
+  Evaluation of O3 (move-block) is partial-success
+    32:       O: O3 (move-block)
+Building justification-12
+Building justification-13
+Building justification-14
+Building justification-15
+  APPLIED O3: move-block(a,table)
+Building justification-16
+  ontop(a,table)
+    33:       ==>G: G10 (operator tie)
+  O37: move-block(c,b)
+  O38: move-block(b,c)
+  O39: move-block(b,a)
+  O4: move-block(c,a)
+    34:          P: P5 (selection)
+    35:          S: S4 
+    36:          O: O43 (evaluate-object O37 (move-block))
+    37:          ==>G: G11 (operator no-change)
+    38:             P: P2 (blocks-world)
+    39:             S: D13 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    40:             O: O37 (move-block)
+  APPLIED O37: move-block(c,b)
+  ontop(c,b)
+    41:             O: O48 (move-block)
+  APPLIED O48: move-block(a,c)
+  ontop(a,c)
+    42:             ==>G: G12 (state no-change)
+    43:                ==>G: G13 (goal no-change)
+Building justification-17
+Building justification-18
+Building justification-19
+Building justification-20
+Building justification-21
+Building justification-22
+  Evaluation of O37 (move-block) is failure
+    44:          O: O42 (evaluate-object O38 (move-block))
+    45:          ==>G: G14 (operator no-change)
+    46:             P: P2 (blocks-world)
+    47:             S: D15 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    48:             O: O38 (move-block)
+  APPLIED O38: move-block(b,c)
+  ontop(b,c)
+    49:             O: O54 (move-block)
+  APPLIED O54: move-block(a,b)
+  ontop(a,b)
+  Goal implement-evaluate-object succeeded. 
+Building justification-23
+Building justification-24
+  Evaluation of O38 (move-block) is success
+    50:       O: O38 (move-block)
+Building justification-25
+Building justification-26
+Building justification-27
+Building justification-28
+Building justification-29
+  APPLIED O38: move-block(b,c)
+  ontop(b,c)
+    51:       O: O36 (move-block)
+Building justification-30
+Building justification-31
+Building justification-32
+Building justification-33
+Building justification-34
+  APPLIED O36: move-block(a,b)
+  ontop(a,b)
+Building justification-35
+Building justification-36
+Building justification-37
+Building justification-38
+Building justification-39
+Building justification-40
+  Goal build-tower succeeded. 
+    52:    O: O1 (wait)
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+Initial state has A on B and B and C on the table.
+The goal is to get A on B on C on the table.
+     3:    O: O2 (build-tower)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (blocks-world)
+     6:       S: S1 (top-state)
+  ontop(a,b)
+  ontop(b,table)
+  ontop(c,table)
+     7:       ==>G: G3 (operator tie)
+  O3: move-block(a,table)
+  O4: move-block(c,a)
+  O5: move-block(a,c)
+     8:          P: P3 (selection)
+     9:          S: S2 
+    10:          O: O8 (evaluate-object O3 (move-block))
+    11:          ==>G: G4 (operator no-change)
+    12:             P: P2 (blocks-world)
+    13:             S: D7 
+  ontop(a,b)
+  ontop(b,table)
+  ontop(c,table)
+    14:             O: O3 (move-block)
+  APPLIED O3: move-block(a,table)
+  ontop(a,table)
+    15:             ==>G: G5 (operator tie)
+  O13: move-block(c,b)
+  O14: move-block(b,c)
+  O15: move-block(b,a)
+  O10: move-block(c,a)
+    16:                P: P4 (selection)
+    17:                S: S3 
+    18:                O: O19 (evaluate-object O13 (move-block))
+    19:                ==>G: G6 (operator no-change)
+    20:                   P: P2 (blocks-world)
+    21:                   S: D9 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    22:                   O: O13 (move-block)
+  APPLIED O13: move-block(c,b)
+  ontop(c,b)
+    23:                   O: O24 (move-block)
+  APPLIED O24: move-block(a,c)
+  ontop(a,c)
+    24:                   ==>G: G7 (state no-change)
+    25:                      ==>G: G8 (goal no-change)
+Building justification-41
+Building justification-42
+Building justification-43
+Building justification-44
+Building justification-45
+Building justification-46
+  Evaluation of O13 (move-block) is failure
+    26:                O: O18 (evaluate-object O14 (move-block))
+    27:                ==>G: G9 (operator no-change)
+    28:                   P: P2 (blocks-world)
+    29:                   S: D11 
+  ontop(a,table)
+  ontop(b,table)
+  ontop(c,table)
+    30:                   O: O14 (move-block)
+  APPLIED O14: move-block(b,c)
+  ontop(b,c)
+    31:                   O: O30 (move-block)
+  APPLIED O30: move-block(a,b)
+  ontop(a,b)
+  Goal implement-evaluate-object succeeded. 
+Building justification-47
+Building chunk-1
+Building justification-48
+Building chunk-2
+  Evaluation of O14 (move-block) is success
+Building chunk-3
+  Evaluation of O3 (move-block) is partial-success
+    32:       O: O3 (move-block)
+Building justification-49
+Building justification-50
+Building justification-51
+Building justification-52
+  APPLIED O3: move-block(a,table)
+Building justification-53
+  ontop(a,table)
+Retracting chunk-3
+Firing chunk-2
+    33:       O: O38 (move-block)
+Building justification-54
+Building justification-55
+Building justification-56
+Building justification-57
+Building justification-58
+  APPLIED O38: move-block(b,c)
+  ontop(b,c)
+Retracting chunk-2
+    34:       O: O36 (move-block)
+Building justification-59
+Building justification-60
+Building justification-61
+Building justification-62
+Building justification-63
+  APPLIED O36: move-block(a,b)
+  ontop(a,b)
+Building justification-64
+Building justification-65
+Building justification-66
+Building justification-67
+Building justification-68
+Building justification-69
+  Goal build-tower succeeded. 
+    35:    O: O1 (wait)
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+Initial state has A on B and B and C on the table.
+The goal is to get A on B on C on the table.
+     3:    O: O2 (build-tower)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (blocks-world)
+     6:       S: S1 (top-state)
+  ontop(a,b)
+  ontop(b,table)
+  ontop(c,table)
+Firing chunk-3
+     7:       O: O3 (move-block)
+Building justification-70
+Building justification-71
+Building justification-72
+Building justification-73
+  APPLIED O3: move-block(a,table)
+Building justification-74
+  ontop(a,table)
+Retracting chunk-3
+Firing chunk-2
+     8:       O: O8 (move-block)
+Building justification-75
+Building justification-76
+Building justification-77
+Building justification-78
+Building justification-79
+  APPLIED O8: move-block(b,c)
+  ontop(b,c)
+Retracting chunk-2
+     9:       O: O6 (move-block)
+Building justification-80
+Building justification-81
+Building justification-82
+Building justification-83
+Building justification-84
+  APPLIED O6: move-block(a,b)
+  ontop(a,b)
+Building justification-85
+Building justification-86
+Building justification-87
+Building justification-88
+Building justification-89
+Building justification-90
+  Goal build-tower succeeded. 
+    10:    O: O1 (wait)
+System halted.
+
+Soar> 

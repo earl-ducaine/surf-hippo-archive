@@ -1,0 +1,67 @@
+(sp p23
+   (goal <g1> ^0 <a>)
+  -(goal <g1> ^1 <a>)
+   (goal <g1> ^2 <a>)
+  -(goal <g1> ^3 <a>)
+   (goal <g1> ^4 <a>)
+  -(goal <g1> ^5 <a>)
+   (goal <g1> ^6 <a>)
+-->)
+
+run 1
+add-wme g1 ^0 1
+ms
+add-wme g1 ^2 1
+ms
+add-wme g1 ^4 1
+ms
+add-wme g1 ^6 1
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^0 1
+ms
+run 1
+remove-wme 12
+ms
+run 1
+add-wme g1 ^6 1
+ms
+add-wme g1 ^1 1
+ms
+remove-wme 15
+ms
+run 1
+add-wme g1 ^3 1
+ms
+run 1
+remove-wme 16
+ms
+run 1
+add-wme g1 ^5 1
+ms
+run 1
+remove-wme 17
+ms
+run 1
+add-wme g1 ^1 1
+ms
+run 1
+add-wme g1 ^3 1
+ms
+remove-wme 18
+ms
+remove-wme 19
+ms
+run 1
+add-wme g1 ^1 1
+ms
+run 1
+add-wme g1 ^3 1
+ms
+remove-wme 21
+ms
+remove-wme 20
+ms

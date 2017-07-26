@@ -1,0 +1,39 @@
+***********************************************************************
+***********************************************************************
+
+The Surf-Hippo Neuron Simulator
+
+L. Borg-Graham
+
+Institut Alfred Fessard, CNRS, Gif-sur-Yvette, France
+
+The Surf-Hippo Neuron Simulator is a circuit simulation package for
+investigating morphometrically and biophysically detailed models of
+single neurons and small networks of neurons. Surf-Hippo allows ready
+construction of multiple cells from various file formats (e.g. that
+used by the Hines NEURON simulator, [De Schutter, TINS 1992]), or with
+easily written LISP code, any of which can describe complicated
+dendritic trees in 3-space with distributed non-linearities and
+synaptic contacts between cells. The retention of XYZ coordinates for
+each circuit node may be exploited, for example, by simulations which
+use spatially-coded input, or with multiple cell simulations that have
+contacts between cells defined by spatial proximity. Stationary and
+moving two dimensional input (e.g. light, for retinal simulations
+[Borg-Graham and Grzywacz, 1992]) is also provided. Multi-compartment
+intracellular calcium accumulation is provided for modelling
+calcium-dependent processes (e.g. Ca++ dependent K+ channels). An
+extensive user interface is provided, including menus, 3D graphics of
+dendritic trees, on-line addition and modification of circuit
+elements, and data plotting (including camera-ready Postscript
+output). Data files may also be saved for analysis with external
+tools.
+
+Surf-Hippo (available by anonymous ftp from ftp.ai.mit.edu or
+cogni.iaf.cnrs-gif.fr [pub/surf-hippo]) is written in LISP, and is
+configured to run using the public domain CMU Common Lisp and Garnet
+packages. Our version is compiled for SPARC workstations, and should
+be easily ported to other UNIX machines running X. LISP is a useful
+simulator language because it has the benefits of a powerful
+interpreted script language, but it may also be compiled. Thus it is
+convenient to integrate custom code into Surf-Hippo. The simulator may
+also be used with a minimum of programming expertise, if desired.

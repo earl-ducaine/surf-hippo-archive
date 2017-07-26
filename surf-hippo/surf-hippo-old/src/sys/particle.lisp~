@@ -1,0 +1,580 @@
+;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10 ; -*-
+;;; (c) Copyright 1988, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 1/25/88 17:58:12
+;
+; the voltage-dependent gating particle model, part of the neuron model
+;
+
+(in-package #+parallel '*surf #-parallel 'surf)
+
+;; Use of look-up tables for the voltage-dependent rate constants (actually, for the time constant and the
+;; steady-state value) gives an approximately 20% speed-up for a soma-only cell with 4 channels (8 particles),
+;; serial version.
+(defvar *use-particle-look-up-tables t)
+
+(defvar *use-particle-types t)
+
+(defstruct particle-type
+  "The template for the particle types"
+  (name "" :type string)
+  (alpha-array nil )
+  (beta-array nil  )
+  (tau-array nil )
+  (inf-array nil )
+  (z 0.0 :type single-float)
+  (gamma 0.0  :type single-float)
+  (alpha-0 0.0  :type single-float)
+  (v-half 0.0  :type single-float)
+  (tau-0 0.0  :type single-float)
+  (Q10 1.0  :type single-float))
+
+(defstruct particle
+  "Model for a gating particle"
+  (name "" :type string)  
+  type
+  (plot-state nil :type boolean)
+  (state-data '() :type list)
+  node
+  core-prt
+  model
+  (channel nil)
+  (params nil)
+  (cell-element nil)				;Type soma or segment
+  (z 0.0  :type single-float)
+  (gamma 0.0  :type single-float)
+  (alpha-0 0.0  :type single-float)
+  (v-half 0.0  :type single-float)
+  (tau-0 0.0  :type single-float)
+  (Q10 1.0  :type single-float)
+)
+
+#-parallel
+(defstruct core-particle
+  "Core model for a particle."
+  (node-pointp nil	)		; zero if constant, one if node
+  node-point
+  (node-const zero	)
+  vnode-point
+  vnode-pointp
+  vnode-const
+  (tau-array nil  )
+  (inf-array nil )
+  (z 0.0  :type single-float)
+  (gamma 0.0  :type single-float)
+  (alpha-0 0.0  :type single-float)
+  (v-half 0.0  :type single-float)
+  (tau-0 0.0  :type single-float)
+  (Q10 1.0  :type single-float)
+  (state-t-dt/2 0.0  :type single-float) ;For Hines method, the particle values at time t - dt/2,
+  (state-t+dt/2 0.0  :type single-float) ;and at time t + dt/2.
+  (temp-state-t+dt/2 0.0  :type single-float) ;Temporary state at time t + dt/2, until time step is
+					;verified.
+  (alpha-array nil)			;For use in the Hines method.
+  (beta-array nil )
+  )
+
+
+(defun create-particle-model ()
+  "Creates a template for all particles."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "particle")
+      (model-template-default-params template) '()
+      (model-template-eval-routine template) #'eval-particle
+      (model-template-print-routine template) #'print-particle
+      (model-template-create-routine template) #'create-particle
+      (model-template-create-core-routine template) #'create-core-particle
+      (model-template-add-off-diag-routine template) #'add-off-diag-particle
+      (model-template-find-coupling-routine template) #'find-coupling-particle
+      (model-template-fix-dc-nodes-routine template) #'particle-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "particle") *model-hash-table*) template
+      particle-hash-table (make-hash-table :test #'equal)
+      particle-type-hash-table (make-hash-table :test #'equal))
+						; only need one particle model instance, so create it now.
+    (create-model-instance (string "prt") (model-template-name template) '() )))
+
+(defun print-particle (prt)
+  "Prints out this data associated with a particle."
+  (format *output-stream "Particle ~a at ~a, cell ~a : z ~a gamma ~a alpha-0 ~a v-half ~a tau-0 ~a Q10 ~,2e  Initial value ~a~%"
+	  (particle-name prt)
+	  (node-name (particle-node prt))
+	  (cell-name (node-cell (particle-node prt)))
+	  (particle-z prt)
+	  (particle-gamma prt)
+	  (particle-alpha-0 prt)
+	  (particle-v-half prt)
+	  (particle-tau-0 prt)
+	  (particle-Q10 prt)
+	  (node-initial-voltage (particle-node prt))))
+
+
+;;; CREATE-PARTICLE 'Channel' is an instance of a channel structure. Name of particle node is same as particle name.
+(defun create-particle-type (particle-type-name param-list)
+  (let ((template (make-particle-type
+		    :name particle-type-name
+		    :z (coerce (second param-list) 'single-float)
+		    :gamma (coerce (third param-list) 'single-float)
+		    :alpha-0 (coerce (fourth param-list) 'single-float)
+		    :v-half (coerce (fifth param-list) 'single-float)
+		    :tau-0 (coerce (sixth param-list) 'single-float)
+		    :q10 (coerce (seventh param-list) 'single-float))))
+    (setf (gethash particle-type-name particle-type-hash-table) template)
+    template))
+
+(defun create-particle (channel cell-name param-list &key  (save-particle nil)
+			(plot-pane 1)  )
+  "Creates a element of type particle. Inputs 'name' and 'node' are strings,
+   'model-name' is the name of the model-instance, and 'parameters' is an a-list."
+  (let* ((particle-name (format nil "~a-~a" (channel-name channel) (first param-list)))
+	 (particle-type-name (format nil "~a-~a" (channel-type channel) (first param-list)))
+	 (node-name particle-name)
+	 (n1 (create-node node-name :cell-name cell-name :plot-pane plot-pane))
+	 (n2 (if (channel-pre-synaptic-node channel)
+		 (channel-pre-synaptic-node channel)
+		 (if (typep (channel-cell-element channel) 'soma)
+		     (soma-node (channel-cell-element channel) )
+		     (segment-node-2 (channel-cell-element channel) ))))
+	 (model (gethash "prt" *model-instance-hash-table*))
+	 type)
+    (if  *use-particle-types
+	 (setq type (if (gethash particle-type-name particle-type-hash-table)
+			(gethash particle-type-name particle-type-hash-table)
+			(create-particle-type particle-type-name param-list))))
+    (if (not (or (node-is-dc-source n1)
+		 (node-is-pwl-source n1)))
+	(let ((prt (make-particle :name particle-name
+				  :type type
+				  :model model
+				  :cell-element (channel-cell-element channel)
+				  :node n1
+				  :z (coerce (second param-list) 'single-float)
+				  :gamma (coerce (third param-list) 'single-float)
+				  :v-half (coerce (fifth param-list) 'single-float)
+				  :alpha-0 (coerce (fourth param-list) 'single-float)
+				  :tau-0 (coerce (sixth param-list) 'single-float)
+				  :q10 (coerce (seventh param-list) 'single-float)
+				  :channel channel
+				  :plot-state save-particle)))
+	  (setf
+	    (gethash particle-name particle-hash-table) prt
+	    (model-instance-elements model) (cons prt (model-instance-elements model))
+	    (node-elements n1) (cons prt (node-elements n1))
+	    (node-elements n2) (cons prt (node-elements n2)))
+	  (eval-particle-ss prt)
+	  prt))))
+
+
+; This function creates a core particle data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignores this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+
+(defun create-core-particle (prt nd)
+  "Creates the core struct for a particle."
+  (let (core-prt
+	(proc #-parallel nil #+parallel (allocate-processor)))
+    #-parallel (declare (ignore proc))
+    #+parallel (*setf (pref fanout-valid proc) t)
+    #+parallel (*setf (pref fanout-seg-forward proc) nil)
+    (if (particle-core-prt prt)			; 
+	(setf core-prt (particle-core-prt prt))	; core particle has already been allocated
+	(progn					; else allocate one
+	  #-parallel (setf core-prt (make-core-particle))
+	  #+parallel (setf core-prt proc)
+	  #+parallel (*setf (pref *lisp-struct-type core-prt) core-particle)
+	  (#+parallel *setf #-parallel setf	
+	   (#+parallel pref #.core-particle-z core-prt) (particle-z prt)
+	   (#+parallel pref #.core-particle-gamma core-prt) (particle-gamma prt)
+	   (#+parallel pref #.core-particle-alpha-0 core-prt) (particle-alpha-0 prt)
+	   (#+parallel pref #.core-particle-v-half core-prt) (particle-v-half prt)
+	   (#+parallel pref #.core-particle-tau-0 core-prt) (particle-tau-0 prt)
+	   (#+parallel pref #.core-particle-Q10 core-prt) (particle-Q10 prt))
+	  (setf (particle-core-prt prt) core-prt)))
+    (let ((node1 (particle-node prt))
+	  (node2 (if (channel-pre-synaptic-node (particle-channel prt))
+		     (channel-pre-synaptic-node (particle-channel prt))
+		     (if (typep (particle-cell-element prt) 'soma)
+			 (soma-node (particle-cell-element prt))
+			 (segment-node-2 (particle-cell-element prt))))))
+      #-parallel
+      (if *use-hines* (setf (core-particle-state-t-dt/2 core-prt) (node-initial-voltage (particle-node prt))))
+      #-parallel
+      (if (or *use-hines* *use-particle-look-up-tables) (make-v-particle-arrays prt))
+      (cond
+	((eq nd node1)
+	 #-parallel
+	 (setf
+	   (#.core-particle-node-pointp core-prt) t
+	   (#.core-particle-node-point core-prt) (node-core-nd node1))
+	 #+parallel
+	 (*setf
+	   (pref #.core-particle-node-pointp core-prt) t
+	   (pref #.core-particle-node-point core-prt) proc))
+	((eq nd node2)
+	 #-parallel
+	 (setf
+	   (#.core-particle-vnode-pointp core-prt) t
+	   (#.core-particle-vnode-point core-prt) (node-core-nd node2))
+	 #+parallel
+	 (*setf
+	   (pref #.core-particle-vnode-pointp core-prt) t
+	   (pref #.core-particle-vnode-point core-prt) proc))
+	(t
+	 (sim-error "Internal error: called create-core on a device with a invalid node"))
+	))))
+
+(defun add-off-diag-particle (prt diag off-diag off-diag-entry)
+  (declare (ignore prt diag off-diag off-diag-entry)))
+
+(defun find-coupling-particle (nd prt)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  (declare (ignore nd prt ))
+  nil)
+
+(defun particle-fix-dc-nodes (prt)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (particle-core-prt prt)
+      (progn
+	(if (node-is-dc-source (particle-node prt))
+	    (#+parallel *setf #-parallel setf    
+	      (#+parallel pref #.core-particle-node-pointp (particle-core-prt prt)) nil
+	      (#+parallel pref #.core-particle-node-const (particle-core-prt prt))
+	      (node-voltage (particle-node prt))))
+	)))
+
+#-parallel
+(defun get-particle-voltage (prt)
+  (if (#.core-particle-node-pointp prt)
+      (core-node-voltage-n+1 (#.core-particle-node-point prt))
+      (#.core-particle-node-const prt)))
+
+#-parallel
+(defun get-particle-vnode-value (prt)
+  (if (#.core-particle-vnode-pointp prt)
+      (core-node-voltage-n+1 (#.core-particle-vnode-point prt))
+      (#.core-particle-vnode-const prt)))
+
+(defconstant upper-arg 20.0)
+(defconstant lower-arg -20.0)
+
+(defvar *particle-look-up-table-length 1500)
+(defvar *particle-look-up-table-precision 1.0)
+
+
+(defun v-inf-particle-plot-list (particle)
+    (list (loop for v from 0 to 1499 by 10
+	  collect (- (* 0.1 v) 100.0))
+	  (loop for v from 0 to 1499 by 10
+	  collect
+	  (/ (aref (core-particle-alpha-array (particle-core-prt particle)) v)
+	     (+ (aref (core-particle-alpha-array (particle-core-prt particle)) v)
+		(aref (core-particle-beta-array (particle-core-prt particle)) v))))))
+
+(defun v-tau-particle-plot-list (particle)
+    (list (loop for v from 0 to 1499 by 10
+	  collect (- (* 0.1 v) 100.0))
+	  (loop for v from 0 to 1499 by 10
+	  collect
+	  (/ 1.0
+	     (+ (aref (core-particle-alpha-array (particle-core-prt particle)) v)
+		(aref (core-particle-beta-array (particle-core-prt particle)) v))))))
+
+
+
+(proclaim '(single-float  *particle-look-up-table-precision))
+(proclaim '(fixnum  *particle-look-up-table-length))
+(defun make-v-particle-arrays (prt)
+  (declare (optimize (safety 0) (speed 3) (space 1)))
+  (setq  *particle-look-up-table-precision (/ 150.0 *particle-look-up-table-length)) ;do it here at least
+  (let ((core-prt (particle-core-prt prt))(particle-type-already-here nil))
+    (if *use-hines*
+	(progn (setf (core-particle-alpha-array core-prt)
+		     (if (particle-type prt)
+			 (if (particle-type-alpha-array (particle-type prt))
+			     (progn (setq particle-type-already-here t)
+				    (particle-type-alpha-array (particle-type prt)))
+			     (setf (particle-type-alpha-array (particle-type prt))
+				   (make-array *particle-look-up-table-length :element-type 'single-float)))
+			 (make-array *particle-look-up-table-length :element-type 'single-float)))
+	       (setf (core-particle-beta-array core-prt)
+		     (if (particle-type prt)
+			 (if (particle-type-beta-array (particle-type prt))
+			     (particle-type-beta-array (particle-type prt))
+			     (setf (particle-type-beta-array (particle-type prt))
+				   (make-array *particle-look-up-table-length :element-type 'single-float)))
+			 (make-array *particle-look-up-table-length :element-type 'single-float))))
+	(progn (setf (core-particle-tau-array core-prt)
+		     (make-array *particle-look-up-table-length :element-type 'single-float))
+	       (setf (core-particle-inf-array core-prt)
+		     (make-array *particle-look-up-table-length :element-type 'single-float))))
+    (if (not (and *use-particle-types  particle-type-already-here))
+	(loop for array-index from 0 to (- *particle-look-up-table-length 1)
+	      for voltage from -100.0 by (/ 150.0 *particle-look-up-table-length)
+	      do
+	      (let* ((arg1 (/ (* FoverR
+				 (core-particle-z core-prt)
+				 (- voltage (core-particle-v-half core-prt)))
+			      *Temperature*))
+		     (arg2 (max (min (* arg1 (- (core-particle-gamma core-prt) 1.0)) upper-arg) lower-arg))
+		     (alpha 0.0)(beta 0.0))
+		(declare (single-float arg1 arg2 alpha beta voltage))
+		(declare (fixnum array-index))
+		(setf arg1 (max (min (* arg1 (core-particle-gamma core-prt)) upper-arg) lower-arg))
+		;; Now do tau limiting directly on the alpha and beta rate constants.
+		(setf alpha (min (* (core-particle-alpha-0 core-prt) (exp arg1))	
+				 (/ 1.0 (core-particle-tau-0 core-prt))))
+		(setf beta (min (* (core-particle-alpha-0 core-prt) (exp arg2))
+				(/ 1.0 (core-particle-tau-0 core-prt))))	
+		(if *use-hines*
+		    (progn (setf (aref (core-particle-alpha-array core-prt) array-index) alpha)
+			   (setf (aref (core-particle-beta-array core-prt) array-index) beta))
+		    (progn (setf (aref (core-particle-tau-array core-prt) array-index)
+				 (* (/ (+ alpha beta)) (core-particle-Q10 core-prt)))
+			   (setf (aref (core-particle-inf-array core-prt) array-index)
+				 (* alpha
+				    (/ (+ alpha beta)))))))))))
+
+
+#-parallel
+(defvar  *use-new-part-formula t)
+(defvar  *interpolate-particle-arrays nil)
+
+;;; EVAL-PARTICLE If *use-hines* is set, then this does the direct explicit computation of particle state at (t
+;;; + dt/2): dt is the current time step, and t is t-n. The particle state at t + dt/2 is stored as in the
+;;; core-particle's core-node slot core-node-voltage-n+1.
+(defun eval-particle (prt)
+  (declare (optimize (safety 0) (speed 3) (space 1)))
+  (let ((voltage 0.0)(current 0.0)(conductance 0.0) (charge 0.0)(arg1 0.0)(arg2 0.0)(a 0.0)(b 0.0)
+	(xinf 0.0)(taux 0.0) (core-prt (particle-core-prt prt)))
+    (declare (single-float arg1 arg2 voltage current conductance charge a b xinf taux))
+    (if (null core-prt)	(return-from eval-particle (values)))
+    (if *use-hines*
+	(progn
+	  (setq voltage			;Get voltage of particle circuit node.
+					; For the Taylor expansion around (t - delta-back), below.
+					;(* 0.5 (core-node-voltage-n-1 (#.core-particle-vnode-point core-prt))
+					; (core-node-voltage-n (#.core-particle-vnode-point core-prt)))
+		(if *use-new-part-formula
+;;; Estimate voltage at time (t~) halfway between midpoints of last
+;;; step and current step. Depending on size of these two steps, V(t~)
+;;; is either an interpolation between or an extrapolation beyond
+;;; V(t-n-1) and V(t-n).
+		    (+ (core-node-voltage-n (#.core-particle-vnode-point core-prt))
+		       (* half-delta-for-back 
+			  (/ (- (core-node-voltage-n (#.core-particle-vnode-point core-prt))
+				(core-node-voltage-n-1 (#.core-particle-vnode-point core-prt)))
+			     sum-delta-for-back)))
+;;; Else, use V(t-n).
+		    (core-node-voltage-n (#.core-particle-vnode-point core-prt))))
+;;;Limit voltage-index to avoid overrunning arrays.
+	  (let ((voltage-index (round (* *particle-look-up-table-length
+					 (/ (+ 100.0 (min 49.0 (max -100.0 voltage))) 150.0)))))
+	    (if  *interpolate-particle-arrays
+		 (let* ((remainder (rem voltage *particle-look-up-table-precision))
+			(one-remainder (- 1.0 remainder)))
+		   (declare (single-float remainder one-remainder))
+		   (setf a (+ (* one-remainder
+				 (aref (core-particle-alpha-array core-prt) voltage-index))
+			      (* remainder
+				 (aref (core-particle-alpha-array core-prt) (1+ voltage-index))))
+			 b (+ (* one-remainder
+				 (aref (core-particle-beta-array core-prt) voltage-index))
+			      (* remainder
+				 (aref (core-particle-beta-array core-prt) (1+ voltage-index))))))
+		 (setq a (aref (core-particle-alpha-array core-prt) voltage-index)
+		       b  (aref (core-particle-beta-array core-prt) voltage-index))))
+;;; This is correct only with identical time steps.	;This is from Hines eq.9
+;;;	    (setq x (* 0.5 (+ a b)))
+;;;	    (setf (core-node-voltage-n+1 (core-particle-node-point core-prt))
+;;;		  (/ (+ a (* (- 1-over-dt x)
+;;;			     (core-node-voltage-n (core-particle-node-point core-prt)))) 		   
+;;;		     (+ 1-over-dt x)))
+
+;;; This is just a Taylor expansion around t0= (t - delta-back), assuming rate constants evaluated at t0. It does
+;;; not work well at all.
+;;; 	  (setf (core-node-voltage-n+1 (core-particle-node-point core-prt))	;This is adapted from Hines eq.9
+;;;		    (+ (* (core-node-voltage-n (core-particle-node-point core-prt))
+;;;			  (- 1 (* (+ delta-forward delta-back)
+;;;				  (+ a b))))
+;;;		       (* a (+ delta-forward delta-back))))
+		       
+	  (setf (core-node-voltage-n+1 (core-particle-node-point core-prt))	
+;;; This is adapted from Hines eq.9, solving implicitly for particle state at time  halfway between midpoints of
+;;; last step and current step (t~), and using variable step size. Alpha and beta rate constants are computed at t~,
+;;; where V(t~) is described above. 
+		(if *use-new-part-formula
+		    (/ (+ (* a (+ delta-back delta-forward))
+			  (* (core-node-voltage-n (core-particle-node-point core-prt))
+			     (- 1.0 (* 0.5 (+ a b) (+ delta-forward delta-back)))))
+		       (+ 1.0 (* 0.5 (+ a b) (+ delta-back delta-forward))))
+;This is adapted from Hines eq.9, modified for variable step size.
+		    (/ (+ (* a (+ delta-back delta-forward))
+			  (* (core-node-voltage-n (core-particle-node-point core-prt))
+			     (- 1.0 (* (+ a b) delta-back))))
+		       (+ 1.0 (* (+ a b) delta-forward))))))
+	(let ((particle-state (get-particle-voltage core-prt)))	;Get the "voltage"
+	  (declare (single-float particle-state))
+	  ;;Tau and inf values as function of voltage may be precomputed or generated on the fly.
+	  (if *use-particle-look-up-tables			
+		;;Limit voltage to avoid overrunning arrays.
+	      (let ((voltage-index
+		     (if  *interpolate-particle-arrays
+			  (min 149 (max 0 (+ 100 (floor (get-particle-vnode-value core-prt)))))
+			  (min 149 (max 0 (+ 100 (round (get-particle-vnode-value core-prt)))))))
+		    (voltage (get-particle-vnode-value core-prt)))
+		(if  *interpolate-particle-arrays
+		     (setf taux (+ (* (- 1.0 (rem voltage 1.0))
+				      (aref (core-particle-tau-array core-prt) voltage-index))
+				   (* (rem voltage 1.0)
+				      (aref (core-particle-tau-array core-prt) (1+ voltage-index))))
+			   xinf (+ (* (- 1.0 (rem voltage 1.0))
+				      (aref (core-particle-inf-array core-prt) voltage-index))
+				   (* (rem voltage 1.0)
+				      (aref (core-particle-inf-array core-prt) (1+ voltage-index)))))
+		     (setf taux (aref (core-particle-tau-array core-prt) voltage-index)
+			   xinf (aref (core-particle-inf-array core-prt) voltage-index))))
+	      (progn				
+		(setf voltage (get-particle-vnode-value core-prt))
+		(setf arg1 (/ (* FoverR
+				 (#.core-particle-z core-prt)
+				 (- voltage (#.core-particle-v-half core-prt)))
+			      *Temperature*))
+
+		(setf arg2 (* arg1 (- (#.core-particle-gamma core-prt) 1)))
+		(setf arg1 (* arg1 (#.core-particle-gamma core-prt)))
+
+		(setf arg1 (min arg1 upper-arg))
+		(setf arg1 (max arg1 lower-arg))
+
+		(setf arg2 (min arg2 upper-arg))
+		(setf arg2 (max arg2 lower-arg))
+
+		(setf a (* (#.core-particle-alpha-0 core-prt)
+			   (exp arg1)))
+		(setf b (* (#.core-particle-alpha-0 core-prt)
+			   (exp arg2)))
+
+		(setf taux (/ (+ a b)))
+		(setf xinf (* a taux))
+    
+		(setf taux (max taux (#.core-particle-tau-0 core-prt)))
+		(setf taux (* taux (#.core-particle-Q10 core-prt)))))
+	  (setf current (/ (- particle-state xinf) taux))
+	  (setf conductance (+ alpha (/ taux)))
+	  (setf charge particle-state)
+	  (if (#.core-particle-node-pointp core-prt)	; send the values back where they go
+	      (if (not (core-node-is-source (#.core-particle-node-point core-prt)))
+		  (setf
+		    (core-node-current (#.core-particle-node-point core-prt))
+		    (+ (core-node-current (#.core-particle-node-point core-prt))
+		       current)
+		    (core-node-charge (#.core-particle-node-point core-prt))
+		    (+ (core-node-charge (#.core-particle-node-point core-prt))
+		       charge)
+		    (core-node-jacobian (#.core-particle-node-point core-prt))
+		    (+ (core-node-jacobian (#.core-particle-node-point core-prt))
+		       conductance))))))))
+
+;;; EVAL-PARTICLE-SS
+;;; This will need to be changed to get values from core-particles (analagous to eval-particle), in order to
+;;; work in the parallel version.
+#-parallel
+(defun eval-particle-ss (prt)
+  (let (voltage arg1 arg2 a b xinf taux)
+						; get the voltages
+    (setf voltage (node-initial-voltage 
+		    (if (typep (particle-cell-element prt) 'soma)
+			(soma-node (particle-cell-element prt))
+			(segment-node-2 (particle-cell-element prt)))))
+    (setf arg1 (/ (* FoverR
+		     (particle-z prt)
+		     (- voltage (particle-v-half prt)))
+		  *Temperature*))
+    (setf arg2 (* arg1 (- (particle-gamma prt) 1)))
+    (setf arg1 (* arg1 (particle-gamma prt)))
+
+    (setf arg1 (min arg1 upper-arg))
+    (setf arg1 (max arg1 lower-arg))
+
+    (setf arg2 (min arg2 upper-arg))
+    (setf arg2 (max arg2 lower-arg))
+
+    (setf a (* (particle-alpha-0 prt)
+	       (exp arg1)))
+    (setf b (* (particle-alpha-0 prt)
+	       (exp arg2)))
+    (setf taux (/ (+ a b)))
+    (setf xinf (* a taux))
+    (setf (node-initial-voltage (particle-node prt)) xinf)
+    ))
+
+#+parallel
+(*defun get-particle-voltage (v1)
+  (cond!!
+    (#.core-particle-node-pointp v1)
+    (t!! #.core-particle-node-const)))
+
+#+parallel
+(*defun get-particle-vnode-value (v1)
+  (cond!!
+    (#.core-particle-vnode-pointp v1)
+    (t!! #.core-particle-vnode-const)))
+
+
+#+parallel
+(defun eval-particle ()
+  (*select-type (core-particle)
+    (*let
+      ((voltage (!! 0))
+       (conductance (!! 0))
+       (x (!! 0))
+       (current (!! 0))
+       (arg (!! 0))
+       (exp1 (!! 0))
+       (exp2 (!! 0))
+       (xinf (!! 0))
+       (taux (!! 0)))
+      (declare (type (pvar big-float) voltage))
+      (declare (type (pvar big-float) conductance))
+      (declare (type (pvar big-float) x))
+      (declare (type (pvar big-float) current))
+      (declare (type (pvar big-float) arg))
+      (declare (type (pvar big-float) exp1))
+      (declare (type (pvar big-float) exp2))
+      (declare (type (pvar big-float) xinf))
+      (declare (type (pvar big-float) taux))
+
+      (*set x (get-particle-voltage #.core-particle-node-voltage))
+      (*set voltage (get-particle-vnode-value #.core-particle-vnode-value))
+
+      (*set arg (/!! (*!! (!! FoverR)
+			  #.core-particle-z
+			  (-!! #.core-particle-v-half voltage))
+		     (!! *Temperature*)))
+      (*set arg (min!! arg (!! upper-arg)))
+      (*set arg (max!! arg (!! lower-arg)))
+      (*set exp1 (exp!! arg))
+      
+      
+      (*set xinf (/!! (+!! (!! 1) Exp1)))
+      (*set exp2 (exp!! (*!! arg #.core-particle-gamma)))
+      
+      (*set taux (/!! exp2 (*!! #.core-particle-alpha-0
+			    (+!! (!! 1) exp1))))
+      (*set taux (max!! taux #.core-particle-tau-0))
+      (*set taux (*!! taux #.core-particle-Q10))
+
+      (*set current (/!! (-!! x xinf) taux))
+      (*set conductance (+!! (!! alpha) (/!! taux)))
+
+      (*set #.core-particle-current current)
+      (*set #.core-particle-charge x)
+      (*set #.core-particle-conductance conductance)
+
+;      (format t "voltage ~a  x ~a  xinf ~a  taux ~a~%"
+;	      (pref voltage 7) (pref x 7) (pref xinf 7) (pref taux 7))
+      )))

@@ -1,0 +1,27 @@
+;; tests a match against a single numeric constant
+(sp p2
+  (goal <g> ^size 0)
+-->)
+
+run 1
+add-wme g1 ^size 0
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^size 0
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^size 1
+ms
+add-wme g1 ^size 0
+ms
+run 1
+remove-wme 11
+ms
+remove-wme 12
+ms

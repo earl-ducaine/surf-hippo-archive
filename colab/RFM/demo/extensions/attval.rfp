@@ -1,5 +1,0 @@
-
-attval(Obj, Valfilter) :-& tup(F, Valfilter(F(Obj))).
-numfilter(X) :- numberp(X) & X.
-area(china) :-& 3380.
-pop(china) :-& 825.

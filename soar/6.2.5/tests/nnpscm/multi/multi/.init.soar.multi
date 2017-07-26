@@ -1,0 +1,7 @@
+create-agent missionaries 
+create-agent eight
+
+agent-go missionaries 1 d
+agent-go eight  1 d
+
+schedule

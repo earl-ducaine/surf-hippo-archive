@@ -1,0 +1,27 @@
+# Sample code for bashrc initializations, to be added to your .bashrc
+# file. This example assumes that Surf-Hippo is installed in the
+# directory /home/surf-hippo.
+
+export SURFHOME="/home/surf-hippo/"
+
+export SURFUSERHOME="/home/surf-hippo/"   # Edit this line to a directory that you can write to.
+
+
+# This if for the Lisp.
+
+export CMUCL_EMPTYFILE="/tmp/empty"
+
+# (From the Garnet instructions)
+# Lisp requires very large address spaces.  We have found on many Unix
+# systems, that you need to expand the area that it is willing to give
+# to a process.  The following commands work in many systems (but not
+# under bash?).
+
+# unlimit datasize
+# unlimit stacksize
+
+
+
+
+
+

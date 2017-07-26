@@ -1,0 +1,170 @@
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+	Axons (not completed)
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+			Table of Contents
+
+1. Basics
+2. Axon Graphics and More On Mid-Points
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+			Basics
+
+****************************************************************
+****************************************************************
+
+
+Although detailed axon models may be constructed with segments and the appropriate channels (see
+thre Rallpack-3 functions for example), there is also a AXON element which is included to model
+axonal communication much more efficiently. The waveform of the AXON's spike is predefined (as part
+of the AXON-TYPE), and the final output voltage of the AXON is a superposition of this canonical
+waveform, shifted according to the starting (oints (trigger times) for individual spikes.
+
+The basic function for adding an axon is
+
+	create-axon PROXIMAL-CELL-ELEMENT AXON-TYPE-SYMBOL 
+		    &key (LENGTH 0.0) TARGET-SYNAPSE (DELAY 0.0)
+		    (DISTANCE-COEFF 1.0)
+		    (CONSIDER-MID-POINTS-FOR-LENGTH NIL)
+	            MID-POINTS
+
+An AXON is controlled by the voltage of the proximal cell element (i.e. soma or segment). If
+the length argument evaluates to 0, then the length of the AXON is derived as follows. If there
+are no :MID-POINTS, or if :CONSIDER-MID-POINTS-FOR-LENGTH is NIL, then the length is taken from
+the straight line distance between the PROXIMAL-CELL-ELEMENT and the TARGET-SYNAPSE, multiplied
+by :DISTANCE-COEFF. Otherwise, the length is taken from the line between the
+PROXIMAL-CELL-ELEMENT and the TARGET-SYNAPSE via the mid-points.  The form of the mid-points is
+a list of XYZ location point lists, e.g.:
+
+	'((102.0 0.0 -34.0) (421.4 92.0 1.0))
+
+There can be any number of mid-points.
+
+Axons do have nodes, so that accessing their voltage is the same as for segments and somas, but
+these nodes are not considered part of the core circuit (the :IS-PHYSICAL-CELL-NODE slot is NIL
+for these nodes) since they are not part of the circuit equations. Both the
+PROXIMAL-CELL-ELEMENT and TARGET-SYNAPSE arguments may be either structures of the appropriate
+type (SOMA, SEGMENT or AXON in the former case, SYNAPSE for the latter) or the name of one.
+
+The main use of AXONs is to provide input to synapse types which either are controlled by the
+voltage of some pre-synaptic element, or a channel (which in turn is controlled by the voltage of
+some pre-synpatic element). In either case, the pre-synaptic node can point to an AXON, as well as
+to a SEGMENT or a SOMA. An AXON can be created before a target synapse, in which case the subsequent
+CREATE-SYNAPSE call will include a reference to the AXON (see synapse.doc).
+
+The AXON-TYPE-SYMBOL argument references a type description stored with the macro AXON-TYPE-DEF -
+see axon-params.lisp. The format for each entry in the axon type parameters association list, as
+shown in this file, is:
+
+ (type (parameter-1 . value)(parameter-2 . value)(parameter-3 . value) ... )
+
+where the TYPE symbol is that used in the call to CREATE-AXON. 
+
+
+The initiation of a spike occurs when the voltage of the AXON's proximal node is above the
+AXON-TYPE-INPUT-THRESHOLD, for a time greater than AXON-TYPE-SUPRA-THRESHOLD-DURATION-MIN. If there
+was an earlier spike, then the conditions for the inititation of a subsequent spike are not checked
+until after AXON-TYPE-REFRACTORY-PERIOD milliseconds after the last spike.
+
+The output waveform for a given spike, i, contributes to the AXON voltage starting at:
+  
+  t_0_i = t_init_i + propagation-delay + delay
+
+where
+
+   propagation-delay = (axon_length / adjusted-propagation-velocity)
+
+and t_init_i is the time of the initiation of the spike. The adjusted-propagation-velocity is
+derived from the propagation-velocity and temperature dependencies of the AXON-TYPE. The (absolute)
+delay is also taken from the AXON-TYPE.
+
+
+Spikes along an axon may be summed at the output (if they are fast enough so that the output
+waveforms overlap in time). Thus, the axon voltage V at time t is given by:
+
+   V(t) = sum_over_i (output_waveform[t-t_0_i])
+  
+At the end of a simulation, the axon has a list of spike times, whichis a list of axonal spike
+initiation times at the proximal node of the axon. Also, if the axon is to be plotted, the final
+voltage waveform is saved.
+
+
+An axon type is characterized by the following:
+
+	(delay 0.0 :type single-float)        ; milliseconds
+
+	(propagation-velocity 1.0 :type single-float) ; meter/second. 
+	
+	qten	
+
+	reference-temperature for the velocity
+
+
+
+
+
+****************************************************************
+****************************************************************
+
+		Axon Graphics and More On Mid-Points
+
+****************************************************************
+****************************************************************
+
+Axons that are assigned to a post-synaptic element (target-synapse) are by default drawn as a
+straight line between the proximal-cell-element and the synapse. However, if mid-points are
+assigned to the axon, then the axon is drawn from the proximal-cell-element to the synapse via
+the mid-points.
+
+As discussed above, mid-points may be included in the call to CREATE-AXON, or may be explicitly
+pushed onto the the axon's :PARAMETERS slot -
+
+	(push '(mid-points ((0.0 0.0 0.0)(179.0 -348.0 0.0)))
+	 	(axon-parameters (element "Axon-Hippo-1-soma-SIMPLE")))
+
+Either with :CONSIDER-MID-POINTS-FOR-LENGTH argument in create-axon, or if the following flag is
+pushed onto the the axon's :PARAMETERS slot (e.g.) -
+
+	(push '(CONSIDER-MID-POINTS-FOR-LENGTH t)
+		(axon-parameters (element "Axon-Hippo-1-soma-SIMPLE")))
+
+then the length of the axon used for determining its propagation delay considers the path over
+the mid-points. Otherwise, the mid-points are used *just* for the graphics. This option is
+useful mainly for clarity (merci N.G.).
+
+
+The color of an axon may be taken from the color assigned to the target synapse; otherwise the
+default color is chosen from the histology axon menu.
+
+
+****************************************************************
+****************************************************************
+
+	 Graphics Diameter of Axons
+
+****************************************************************
+****************************************************************
+
+The global variable *AXON-GRAPHICS-DIAMETER* (default 1.0 micron) sets
+the diameter of the drawn axons. This diameter has *no* effect on the
+electrical properties of the axons.

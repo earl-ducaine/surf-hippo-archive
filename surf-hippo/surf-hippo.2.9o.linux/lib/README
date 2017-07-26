@@ -1,0 +1,12 @@
+
+The following directories:
+
+  bitmaps
+  c32
+  data
+  gesture
+  gilt
+  pixmaps
+
+are copied from the Garnet 3.0 distribution, in case it is not installed
+on this system.

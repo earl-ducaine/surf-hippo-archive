@@ -1,0 +1,10 @@
+# $Id: make.header.sgi,v 1.4 1994/06/08 21:44:55 portelli Exp $
+#
+# SGI Indigo XS24/R4000, IRIX 4.0.5F System V, ANSI C compiler (3.10):
+
+CC         = cc
+CFLAGS     = -O -DUNIX
+EXTRA_LIBS = -lsun -lmalloc
+RANLIB     = @echo No need to ranlib
+
+MACHINE_DEP_DIR = IRIX

@@ -1,0 +1,2 @@
+(load "../../../../../default/non-nnpscm/default.soar")
+(load "../../../../../examples/non-nnpscm/eight-puzzle/eight-puzzle.soar")

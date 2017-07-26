@@ -1,0 +1,12 @@
+#!/bin/csh -f
+#  This file creates the gold standard for all tests
+#  Created Wednesday, Sept 23, 1992 by JT Traub
+
+# I make assumptions like we are in the correct directory and that everything
+# else exists
+
+foreach i (*)
+  if ( -e $i/make-gold-$i-test ) then
+    (cd $i; make-gold-$i-test)
+  endif
+end

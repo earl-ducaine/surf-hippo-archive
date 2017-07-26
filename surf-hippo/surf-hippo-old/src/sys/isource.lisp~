@@ -1,0 +1,336 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10;  -*-
+;;; (c) Copyright 1985, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 6/09/85 18:58:23
+;
+; the isource model
+;
+
+(in-package #+parallel '*surf #-parallel 'surf)
+
+(defstruct isource
+  "Model for a isource"
+  (name ""		:type string)   ; not really needed
+  (plot-current nil)
+  (current-data '() :type list)
+  (type 0		:type bit)	; zero if DC, one if PWL
+  node-1
+  node-2
+  model
+  core-isrc
+  (current zero	:type single-float)
+  (value-list '()	:type list)		; for PWL sources
+  (period zero	:type single-float)
+  (delay zero	:type single-float)
+)
+
+#-parallel
+(defstruct core-isource
+  "Core model for a isource"
+  (node-1-pointp nil	:type boolean)	; zero if constant, one if node
+  node-1-point
+  (node-2-pointp nil	:type boolean)	; zero if constant, one if node
+  node-2-point
+  (current zero		:type single-float)
+)
+
+
+(defconstant ipwl-default-params '((values . ()) (delay . 0.0) (period . 0.0)))
+
+(defun create-isource-model ()
+  "Creates a template for all isources."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "isource")
+      (model-template-default-params template) '()
+      (model-template-eval-routine template) #'eval-isource
+      (model-template-print-routine template) #'print-isource
+      (model-template-create-routine template) #'create-pwl-isource
+      (model-template-create-core-routine template) #'create-core-isource
+      (model-template-add-off-diag-routine template) #'add-off-diag-isource
+      (model-template-find-coupling-routine template) #'find-coupling-isource
+      (model-template-fix-dc-nodes-routine template) #'isource-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "isource") *model-hash-table*) template
+      isource-hash-table (make-hash-table :test #'equal))
+    (create-model-instance (string "idc") (model-template-name template) '() )
+    (create-model-instance (string "ipwl") (model-template-name template)
+			   ipwl-default-params)))
+	; only need two isrc model instances, so create them now.
+
+(defun print-isource (isrc)
+  "Prints out the data associated with a isource."
+  (if (= 0 (isource-type isrc))
+      (format *output-stream "DC Isource ~a from ~a to ~a : value ~a~%"
+		 (isource-name isrc)
+		 (node-name (isource-node-1 isrc))
+		 (node-name (isource-node-2 isrc))
+		 (isource-current isrc))
+      (format *output-stream "PWL Isource ~a from ~a to ~a : waveform ~a~%"
+		 (isource-name isrc)
+		 (node-name (isource-node-1 isrc))
+		 (node-name (isource-node-2 isrc))
+		 (isource-value-list isrc))))
+
+
+
+(defun create-pwl-isource (cell-element &key (plot-pane 1))
+  "Creates a element of type pwl isource."
+  (let* ((element-name (if (typep cell-element 'soma)(soma-name cell-element)(segment-name cell-element)))
+	 (source-name (format nil "~a-istim" element-name))
+	 (node2-name (node-name (if (typep cell-element 'soma)
+				    (soma-node cell-element)(segment-node-2 cell-element))))
+	 (cell-name (cell-name (if (typep cell-element 'soma)
+				   (soma-cell cell-element)(segment-cell cell-element)))))
+    (if (gethash source-name isource-hash-table)
+	(sim-warning (format nil "create-pwl-isource: isource ~a  already defined, ignoring" source-name))
+	(let ((isrc (make-isource :name source-name :plot-current t))
+	      (model (gethash "ipwl" *model-instance-hash-table*))
+	      (n2 (create-node node2-name :cell-name cell-name :plot-pane plot-pane))
+	      (n1 (create-node "Ground" :cell-name cell-name :plot-pane plot-pane))
+	      )
+	  (setf
+	    (isource-node-1 isrc) n1  (isource-node-2 isrc) n2
+	    (isource-model isrc) model
+	    (node-elements n1) (cons isrc (node-elements n1))
+	    (node-elements n2) (cons isrc (node-elements n2))
+	    (isource-type isrc) 1 (isource-current isrc) 0.0
+	    (gethash source-name isource-hash-table) isrc
+	    (model-instance-elements model) (cons isrc (model-instance-elements model)))
+	  ))))
+
+; This function creates a core isource data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignores this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+(defun create-core-isource (isrc nd)
+  "Creates the core struct for a isource."
+  (let (core-isrc
+	(proc #-parallel nil #+parallel (allocate-processor)))
+    #-parallel (declare (ignore proc))
+    #+parallel (*setf (pref fanout-valid proc) t)
+    #+parallel (*setf (pref fanout-seg-forward proc) nil)
+    (if (isource-core-isrc isrc)
+	(setf core-isrc (isource-core-isrc isrc)); core isource has already been allocated
+	(progn					; else allocate one
+	  #-parallel (setf core-isrc (make-core-isource))
+	  #+parallel (setf core-isrc proc)
+	  #+parallel (*setf (pref *lisp-struct-type core-isrc) core-isource)
+	  (#+parallel *setf #-parallel setf	
+	    (#+parallel pref #.core-isource-current core-isrc) (isource-current isrc))
+	  (setf (isource-core-isrc isrc) core-isrc)))
+    
+    (let ((node1 (isource-node-1 isrc))
+	  (node2 (isource-node-2 isrc)))
+      (cond
+	((eq nd node1)
+	 #-parallel
+	 (setf
+	   (#.core-isource-node-1-pointp core-isrc) t
+	   (#.core-isource-node-1-point core-isrc) (node-core-nd node1))
+	 #+parallel
+	 (*setf
+	   (pref #.core-isource-node-1-pointp core-isrc) t
+	   (pref #.core-isource-node-1-point core-isrc) proc))
+	((eq nd node2)
+	 #-parallel
+	 (setf
+	   (#.core-isource-node-2-pointp core-isrc) t
+	   (#.core-isource-node-2-point core-isrc) (node-core-nd node2))
+	 #+parallel
+	 (*setf
+	   (pref #.core-isource-node-2-pointp core-isrc) t
+	   (pref #.core-isource-node-2-point core-isrc) proc))
+	(t
+	 (sim-error "Internal error: called create-core on a device with a invalid node"))
+	))))
+
+(defun add-off-diag-isource (isrc diag off-diag off-diag-entry)
+  "Adds off diagonal entries for this isource."
+  (declare (ignore isrc diag off-diag off-diag-entry)))
+
+(defun find-coupling-isource (nd isrc)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  ;; for isource, nodes are completely decoupled, so don't bother sending anything back.
+  (declare (ignore nd isrc ))
+  nil)
+
+(defun isource-fix-dc-nodes (isrc)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (isource-core-isrc isrc)
+      (progn
+	(if (node-is-dc-source (isource-node-1 isrc))
+	  (#+parallel *setf #-parallel setf	
+	      (#+parallel pref #.core-isource-node-1-pointp (isource-core-isrc isrc)) nil
+;	(#+parallel pref #.core-isource-node-1-const (isource-core-isrc isrc))
+;	  (node-voltage (isource-node-1 isrc))
+	      ))
+	(if (node-is-dc-source (isource-node-2 isrc))
+	    (#+parallel *setf #-parallel setf	
+	      (#+parallel pref #.core-isource-node-2-pointp (isource-core-isrc isrc)) nil
+;	(#+parallel pref #.core-isource-node-2-const (isource-core-isrc isrc))
+;	  (node-voltage (isource-node-2 isrc))
+	      )))))
+
+#-parallel
+(defun eval-isource (isrc)
+						; calculate the current
+  (let ((core-isrc (isource-core-isrc isrc)))
+    (if (null core-isrc)
+	(return-from eval-isource (values)))
+; send the values back where they go
+    (if (#.core-isource-node-1-pointp core-isrc)
+;	(format t " isr = ~a ~%"
+	(setf
+	  (core-node-current (#.core-isource-node-1-point core-isrc))
+	  (+ (core-node-current (#.core-isource-node-1-point core-isrc))
+	     (#.core-isource-current core-isrc))))
+    (if (#.core-isource-node-2-pointp core-isrc)
+;	(format t " isr = ~a ~%"
+	(setf
+	  (core-node-current (#.core-isource-node-2-point core-isrc))
+	  (- (core-node-current (#.core-isource-node-2-point core-isrc))
+	     (#.core-isource-current core-isrc))))))
+
+#+parallel
+(defun eval-isource ()
+  (*select-type (core-isource)
+    ;;; calculate the current
+    (*set core-device-node2-current (-!! #.core-isource-current)))
+  )
+
+(defun eval-pwl-isource (pwl-src)
+  "Calculates the new current in time for a pwl current source."
+  (let*
+    ((value-list (isource-value-list pwl-src))
+     (value-pair (car value-list))
+     (prev-pair nil)
+     (pwl-time (mod (- *real-time
+		       (isource-delay pwl-src))
+		    (isource-period pwl-src))))
+    (do						; repeat until prev-pair is before the 
+      ()					;  current time and value-pair is after
+      ((or (null value-pair)
+	   (> (car value-pair) pwl-time)))
+      (setf
+	prev-pair value-pair
+	value-list (cdr value-list)
+	value-pair (car value-list)))
+    (if (null prev-pair)
+	(sim-error (format
+		     nil
+		     "Error, malformed pwl waveform for source ~a,~a~%"
+		     (isource-name pwl-src)
+		     "the waveform must start at the beginning of time.")))
+    (if (null value-pair)
+	(progn
+	  (setf				; use the last value in the list
+	    (isource-current pwl-src) (cdr (car (last (isource-value-list pwl-src)))))
+;	  (format t "~%>>> Value for pwl from end of list is ~a " (isource-current pwl-src))
+	  )
+	
+	(let ((t0 (car prev-pair))
+	      (v0 (cdr prev-pair))
+	      (t1 (car value-pair))
+	      (v1 (cdr value-pair)))
+	  (if (not
+		(and (numberp t0)
+		     (numberp v0)
+		     (numberp t1)
+		     (numberp v1)))
+	      (sim-error (format
+			   nil
+			   "Error, malformed pwl waveform for source ~a,~a~%"
+			   (isource-name pwl-src)
+			   "one of the entries was not a number.")))
+	  (setf
+	    (isource-current pwl-src) (+ v0
+					 (* (- pwl-time t0)
+					    (/ (- v1 v0)
+						(- t1 t0)))))
+;	  (format t "~%>>> Value for pwl is ~a " (isource-current pwl-src))
+	  )))
+
+  (isource-current pwl-src))
+
+(defun set-pwl-isources ()
+  "Deals with pwl current sources."
+  (let ((pwl-model (gethash (string "ipwl") *model-instance-hash-table*)))
+    (if (null pwl-model)
+	(sim-error "Internal error, ipwl sources are not defined.~%"))
+    (dolist (pwl-src (model-instance-elements pwl-model))
+      (#+parallel *setf #-parallel setf	
+	(#+parallel pref #.core-isource-current (isource-core-isrc pwl-src))
+	(eval-pwl-isource pwl-src))))
+)
+
+(defun fix-pwl-isources ()
+  "To be called after stop-time is known so the pwl break points can be placed."
+  (let ((pwl-model (gethash (string "ipwl") *model-instance-hash-table*)))
+    (if (null pwl-model)
+	(sim-error "Internal error, ipwl sources are not defined.~%"))
+    (dolist (pwl-src (model-instance-elements pwl-model))
+      (progn
+	(if (= (isource-period pwl-src) 0)
+	    (setf (isource-period pwl-src) (* 2 user-stop-time)))	; Anything over stop-time
+						; will do. Otherwise 
+						; (mod stop-time period)
+						; is zero.
+	(queue-break-points (isource-value-list pwl-src)
+			    (isource-period pwl-src)
+			    (isource-delay pwl-src))))))
+
+
+
+;;; THESE FUNCTIONS NOT SUPPORTED NOW.
+
+;(defun create-isource (source-name node1-name node2-name model-name cell-name parameters &key (plot-pane 1))
+;  "Calls create dc isource or create pwl isource."
+;  (let
+;    ((model (gethash model-name *model-instance-hash-table*)))
+;    (cond
+;      ((equal (model-instance-name model) (string "idc"))
+;       (create-dc-isource source-name node1-name node2-name model-name cell-name parameters :plot-pane plot-pane))
+;      ((equal (model-instance-name model) (string "ipwl"))
+;       (create-pwl-isource source-name node1-name node2-name model-name cell-name parameters :plot-pane plot-pane))
+;      (t (sim-error (format nil
+;			    "Error: don't know about this kind of current source ~a~%"
+;			    (model-instance-name model)))))))
+;
+;(defun create-dc-isource (source-name node1-name node2-name model-name cell-name parameters &key (plot-pane 1))
+;  "Creates a element of type isource. Inputs 'name' 'node1' and 'node2' are strings,
+;   'model-name' is the name of the model-instance, and 'parameters' is an a-list."
+;  (if (gethash source-name isource-hash-table)
+;      (sim-warning (format nil "create-isource: isource ~a  already defined, ignoring"
+;			   source-name))
+;      (let ((isrc (make-isource))
+;	    (model (gethash model-name *model-instance-hash-table*))
+;	    current
+;	    temp-current
+;	    (n1 (create-node node1-name :cell-name cell-name :plot-pane plot-pane))
+;	    (n2 (create-node node2-name :cell-name cell-name :plot-pane plot-pane))
+;	    junk)
+;	  (ignore junk) 
+;	(setf
+;	  (isource-name isrc) source-name
+;	  current (eval (cdr (assoc 'current (model-template-default-params
+;					(model-instance-model model)))))
+;	  temp-current (eval (cdr (assoc 'current (model-instance-changed-params model))))
+;	  junk (if temp-current
+;		   (setf
+;		     current temp-current))
+;	  temp-current (eval (cdr (assoc 'current parameters)))
+;	  junk (if temp-current
+;		   (setf
+;		     current temp-current))
+;	  (isource-current isrc) current
+;	  (isource-node-1 isrc) n1
+;	  (isource-node-2 isrc) n2
+;	  (isource-model isrc) model
+;	  (node-elements n1) (cons isrc (node-elements n1))
+;	  (node-elements n2) (cons isrc (node-elements n2))
+;	  (gethash source-name isource-hash-table) isrc
+;	  (model-instance-elements model) (cons isrc (model-instance-elements model))))))
+

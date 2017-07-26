@@ -1,0 +1,66 @@
+
+                                                            reader syntax #*
+
+
+    READER SYNTAX
+    #*  -  representation of a simple bit vector
+
+    Usage
+    #N*...
+
+    DESCRIPTION
+    Reads as a simple bit vector.
+
+    When the reader reads the  dispatch-macro  character  ``#'',  optionally
+    followed by a sequence of (unsigned) decimal digit characters, then fol-
+    lowed by ``*'', these characters are discarded, and the reader begins to
+    accumulate  succeeding  bits  into  a bit vector.  If a digit string was
+    given, the length of the vector will be the specified number.  Each  bit
+    is  specified  by  either  the digit ``0'' or the digit ``1''.  When the
+    next character to be read is not a binary digit, accumulation stops, and
+    the  resulting  bit  vector  is  returned.   Bits are read into a vector
+    beginning with bit zero.  That is, the leftmost bit specified  with  the
+    ``#*'' syntax is bit zero.
+
+    When the size of the bit vector is specified, it is  an  error  if  more
+    bits are read for the vector than it can accommodate.  If fewer bits are
+    read, the remaining bits of the allocated bit vector will be filled with
+    the  last  bit  read.   Therefore, unless the size is specified as zero,
+    there must be at least one bit given for the vector.  An empty bit  vec-
+    tor is specified by either #* or #0*.  The expression #1* is in error.
+
+    Unlike other arrays, bit vectors are self-evaluating objects,  therefore
+    bit vectors read using this syntax need not be quoted.  Some implementa-
+    tions, however, make all arrays self-evaluating.  Portable  code  should
+    not rely on this property.
+
+    EXAMPLES
+    (make-array '(3) :element-type 'bit
+                :initial-contents '(0 0 1)) => #*001
+    '#5*001 => #*00111
+    #5*101 => #*10111
+    (sbit (svref '#(1 #4*101 0) 1) 3) => 1
+    (cdr (list '#* 10)) => (10)
+    (cdr (list '#*10)) => nil
+
+    SEE ALSO
+    CLtL 22:355, about printing, about reading, make-array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

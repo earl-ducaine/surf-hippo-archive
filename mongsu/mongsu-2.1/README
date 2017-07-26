@@ -1,0 +1,385 @@
+                                 MONGSU 
+                     Mertz-Ong-Nerb-Gary Socket Utility
+                               Release 2.1
+
+                           Gordon D. Baxter
+                      gdb@psychology.nottingham.ac.uk
+                              July 1995
+
+INTRODUCTION
+============
+
+This file describes a Unix socket utility that can be used to connect
+cognitive models written in Soar with simulations written in
+Garnet/Common Lisp.  It describes:
+
+(a) differences from earlier releases
+(b) the contents of this package
+(c) how, and where to obtain the package
+(d) how to install the package
+(e) the changes needed to build the package together with Soar
+(f) where to get help
+
+This utility should make the communication between Soar models and Lisp-based
+simulations a more routine activity.  It provides:
+
+(1) Functions for making direct, routine use of Unix sockets e.g., create
+    sockets, bind sockets, etc. 
+(2) Facilities for passing list structures to Soar that automatically
+    get written into working memory.
+(3) Additional commands for Soar, for setting up communication via sockets.
+(4) Support for both NNPSCM and non-NNPSCM versions of Soar.
+
+It is extensible, so that users can add their own routines e.g. to
+parse incoming/outgoing data which may not be represented as a list
+structure.  It can also be used with simulations not written in Lisp,
+providing that data is communicated across the socket link as
+Lisp-style lists.
+
+
+Differences From Version 2.0
+----------------------------
+
+[1] The size of the output data structure has been increased to allow
+    much longer lists to be passed to the simulation (up to 256
+    characters, compared with 102 in previous releases).
+
+[2] The feedback given by MONGSU has been made much more apparent.
+    Each message starts on a new line, and begins with the marker
+  
+    >>>MONGSU<<<
+
+    This makes it much easier to track what MONGSU is doing whilst
+    your Soar model is running.  In earlier releases it was possible
+    to lose some messages as they appeared to be appended to the end
+    of some of the lines of an active trace when Soar was running.
+
+
+How, and Where to Obtain the Package
+------------------------------------
+
+The Socket Utility code is available via anonymous ftp from host:
+
+    unicorn.ccc.nott.ac.uk
+
+or
+    (128.243.40.7)
+
+It is located in the directory
+
+    /pub/lpzfr
+
+in the file
+
+    Mongsu2.1.tar.Z. 
+
+which is a compressed file, so you should transfer it using binary
+mode. 
+
+If you need help with using anonymous ftp, send me an e-mail and I
+will send you more details.
+
+
+Contents of the Package
+-----------------------
+
+The files included in the package are:
+
+README
+
+  This file.
+
+make.body
+
+  Contains the body of the makefile that will be used when the package
+  is built along with Soar.  You can use the version supplied with the
+  package, or simply modify the file that comes as part of the Soar
+  package. 
+
+hooks.c
+
+  Contains the changes needed to allow Soar and the Socket utility to
+  work together.  You can either use the file supplied with this
+  package, or make the appropriate changes to the version of the file
+  that is supplied with Soar.
+
+std-soar-socket.c
+
+  Contains the c source code for the basic socket manipulation
+  routines (open, listen, bind, etc.).  These routines are used by
+  both the Soar, and the Lisp, ends of the communication link.
+
+soar-socket.c 
+
+  Contains the c source code for the core of the sockets code for
+  Soar.  It provides routines for: supporting Soar acting as a client or a
+  server (in a UNIX client-server model); the input and output
+  functions; the new Soar commands; and parsing the data.  The parsing
+  routines convert the data that is recieved in the form of lists into
+  WMEs; transmitted data is converted from WMEs into list structures.
+
+To communicate with a Lisp process, the following files are provided:
+
+socket.lisp
+
+  Contains the functions that create a socket to support Lisp acting
+  as a server or a client.  It supports Lucid, Allegro, and CMU-Lisp.
+  (Note that some variables in this code are implementation dependent,
+  and hence must be modified as required to reflect the local
+  environment.) 
+
+stdio.lisp
+
+  Contains the utilities that support Lisp socket communication.  It
+  includes read and write functions and other utilities.  User-defined 
+  functions supporting Lisp sockets are placed here.
+
+
+Installing the code:
+-------------------
+
+[0] You need to have Soar (version 6.2.x) already installed on your
+    system.  The generic directory names listed below are used in the
+    following description:
+
+    <soar-directory>      the directory where you installed Soar
+    <MONGSU-directory>    the directory where you installed MONGSU
+    <lisp-directory>      the directory where your Lisp code
+                          (simulation) is located
+
+[1] Copy the socket utility makefile to <soar-directory>
+
+    cp <MONGSU-directory>make.body <soar-directory>.
+
+[2] Copy the Soar socket code to the src subdirectory of
+    <soar-directory>
+
+    cp <MONGSU-directory>*soar*.c <soar-directory>.
+
+[3] Copy the lisp socket code to the directory where your simulation
+    (lisp code) is located
+
+    cp <MONGSU-directory>*.lisp <lisp-directory>.
+
+[4] Run the make file located in <soar-directory>
+
+    make
+
+    This will compile the MONGSU-specific code, and automatically link
+    it with the executable Soar image that gets built.
+
+[5] Edit the file socket.lisp in the directory <lisp-directory> to set
+    up the full path name for the standard soar socket object code
+    file.  This is specified as a defparameter, called *socket-o-file*
+    and should be changed to reflect your local set up.
+
+[6] When you start up your simulation (in lisp) you will now need to
+    load in the following files:
+
+    socket.lisp
+    stdio.lisp
+
+    This will allow you to call the appropriate functions defined in these
+    files so that you can establish communication between your Soar
+    model, and your lisp-based simulation.
+
+
+
+There are also some small programs for doing socket testing.
+------------------------------------------------------------
+
+clienttest.c clienttest.out
+The source and the executable file provides a communication link with
+a Lisp server (hence the name, clienttest) and tests it.  Follow the
+testing procedure below.
+
+servertest.c servertest.out
+The source and the executable file provides a communication link with
+a Lisp client (hence the name, servertest) and tests it.  Follow the
+testing procedure below.
+
+TESTING PROCEDURES
+==================
+
+N.B. The source code was tested using Lucid-4.1.  If you use some
+     other version of Lisp you may need to modify the code.
+
+To test a Lisp server:
+---------------------
+
+[1] Start-up a Lisp program.
+
+[2] Load the files "socket.lisp" and "stdio.lisp".
+
+[3] Create a socket as a server process, by typing in the following at
+    the lisp prompt:
+
+        (set-up-socket-as-server)
+
+    This automatically creates a file called .server.process in your
+    home directory that contains the server-name and port-number, 
+    where:
+
+       server-name is the host name where your Lisp process is running.
+       port-number is the port number returned when you start up the
+                   Lisp server process.
+
+    A sample file contains something like:
+    upsyc
+    3966
+
+[4] From a Unix prompt, type:
+
+        clienttest.out
+
+[5] (accept-client-and-make-socket-stream) accepts a request from a
+    client process (in this case, clienttest.out) and creates a
+    socket-stream.
+
+N.B. Always invoke this function whenever you accept a new client
+     process. That is, you must first close the existing client socket
+     before attempting to connect. 
+     (This is only applicable when you are using the functions for
+     your own purposes and does not apply to the testing procedure.)
+
+[6] (do-stuff) accepts a list structure defined in clienttest.c,
+    evaluates and prints it.  In addition, it shutsdown the
+    socket-stream and deletes the ".socket.process" file.
+
+    An output looks something like:
+    Received message: (+ 1 2)
+    Evaluated message: 3
+    Channel interface is shutdown.
+    Closed socket with id 6
+    Socket 6 closed.
+    #P"/psyc/research/hci/rlo/.socket.process"
+
+To test a Lisp client:
+---------------------
+
+[1] Start-up a Lisp program.
+
+[2] Load the files "socket.lisp" and "stdio.lisp".
+
+[3] From a Unix prompt, type: servertest.out
+    This creates a server process in Unix and returns a port-number.
+    In addition, it also creates a ".socket.process" file containing
+    the <server-name> and <server-port-no> in your home directory.
+
+    where:
+       "server-name" is the name of the host where your Lisp process
+                     is running in quotes.
+       port-number   is the number returned by running servertest.out.
+
+    A sample file contains something like:
+    upsyc
+    3966
+
+[4] Type: (set-up-socket-as-client) on the Lisp prompt.  This opens the
+    socket-process filename and reads in the <server-name> and
+    <server-port-no>.
+
+[5] Type: (test-write)
+    This command writes some strings into the socket while the server
+    process in Unix receives and prints it out.
+
+    A sample output looks something like:
+    -->hello-there
+    -->this-is-a-test
+    Ending connection
+
+To test a Soar client to a Lisp server:
+--------------------------------------
+
+[1] Start-up a Lisp program.
+
+[2] Load the files "socket.lisp" and "stdio.lisp".
+
+[3] Load Soar (which should now include the socket utility).
+
+[4] In Lisp, type: (set-up-socket-as-server)
+    This creates a socket as a server process and would return a 
+    port-number for use within Soar.  It also creates a file
+    ".socket.process" in your home directory that contains the
+    <server-name> and <port-number>.
+
+    where:
+       server-name is the host name where your Lisp process is running.
+       port-number is the port number returned when you set up a
+                   Lisp server process.
+
+    A sample file contains something like:
+    upsyc
+    3966
+
+[5] In Soar, type: init-socket-io
+
+[6] Type (accept-client-and-make-socket-stream) in Lisp to accept the Soar
+    client process and create a socket stream.
+
+[7] Load any program in Soar (e.g., you could load example programs
+    included in the Soar package).
+
+[8] In Lisp, use "write-message" to send a list structure to Soar and
+    instantiate it in the IO attribute of the top-state.
+
+    A sample command looks like:
+    (write-message '(input-link hello))
+    This would create an attribute in the IO attribute of the top-state 
+    (of your loaded Soar program) named ^input-link with value hello.
+
+N.B. REMEMBER to (shutdown-socket-stream) when you finished running
+     the Lisp process and "close-socket-io" with the Soar process.
+
+To test a Soar server to a Lisp client:
+--------------------------------------
+
+[1] Start-up a Lisp program.
+
+[2] Load the files "socket.lisp" and "stdio.lisp".
+
+[3] Load Soar (which should now include the socket utility)
+
+[4] In Soar, type: init-socket-server
+    This will return a port number for used by the Lisp client.
+    It also creates a file ".socket.process" in your home directory
+    that contains the <server-name> and <port-number>.
+
+    where:
+       server-name is the host name where your Lisp process is running.
+       port-number is the port number returned when you set up a
+                   Lisp server process.
+
+    A sample file contains something like:
+    upsyc
+    3966
+
+N.B. This command should only be used iff there is no existing opened
+     socket.
+
+[5] In Lisp, type: (set-up-socket-as-client)
+
+[6] Load any program in Soar (e.g., you could load example programs
+    included in the Soar package).
+
+[7] In Lisp, use "write-message" to send a list structure to Soar and
+    instantiate it on the top-state.
+
+    A sample command looks like:
+    (write-message '(input-link hello))
+    This would create an attribute in the IO attribute of the top-state 
+    (of your loaded Soar program) named ^input-link with value hello.
+
+N.B. REMEMBER to (close-socket-io) when you finished running
+     the Lisp process and "shutdown-socket-io" with the Soar process.
+
+
+HOW TO GET HELP
+===============
+
+If you need any help with this package, send e-mail to
+gdb@psychology.nottingham.ac.uk 
+
+
+Gordon D. Baxter    <gdb@psychology.nottingham.ac.uk>
+July 19, 1995

@@ -1,0 +1,32 @@
+(sp p7
+  (goal <g> ^number >= 11)
+-->)
+
+run 1
+add-wme g1 ^number 11
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^number 11
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^number 3
+ms
+add-wme g1 ^number 11.5
+ms
+run 1
+remove-wme 11
+ms
+remove-wme 12
+ms
+run 1
+add-wme g1 ^number 15
+ms
+run 1
+remove-wme 13
+ms

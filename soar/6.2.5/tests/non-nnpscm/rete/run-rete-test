@@ -1,0 +1,53 @@
+#!/bin/csh -f
+
+# This file tests the rete network and compares it against the gold standard.
+# it assumes it's being run from the correct place for the moment
+# Created: Friday Sept 4, 1992 by JT Traub
+
+# create a place to store the results.
+mkdir /usr/tmp/results
+set results = /usr/tmp/results
+
+# set this to point to where you want to run the soar executable from
+set soar = ../../../bin/non-nnpscm/pmax_mach/soar
+
+# if a results.diff file exists, delete it.. We're only worried about the
+# most recent sets of diffs.
+if ( -e results.diff ) then
+  rm -f results.diff
+endif
+
+# test variable for keeping track of how many tests were run, how many
+# passed and how many failed.
+set total = 0
+set passed = 0
+set failed = 0
+set failed_tests = ()
+
+# run the tests
+foreach i (tests/*.text)
+  set f = `echo $i | sed 's/\.text//' | sed 's/tests\///'`
+  $soar < $i > $results/$f.result
+  @ total++
+  set bogus = `cmp gold-standard/$f.result $results/$f.result`
+  if ( $status ) then
+    echo -n "."
+    @ failed ++
+    set failed_tests = ($failed_tests $f)
+    if ( -e results.diff ) then
+      diff -c gold-standard/$f.result $results/$f.result >> results.diff
+    else
+      diff -c gold-standard/$f.result $results/$f.result > results.diff
+    endif
+  else
+    echo -n "#"
+    @ passed ++
+  endif
+end
+
+echo ""
+echo "Tested $total files:  $passed passed, $failed failed."
+if ( $failed != 0 ) then
+  echo "Tests $failed_tests failed."
+endif
+# rm -rf /usr/tmp/results

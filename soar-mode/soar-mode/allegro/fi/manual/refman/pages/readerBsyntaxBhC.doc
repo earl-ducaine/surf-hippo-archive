@@ -1,0 +1,66 @@
+
+                                                            reader syntax #:
+
+
+    READER SYNTAX
+    #:  -  representation of an uninterned symbol
+
+    Usage
+    #:NAME
+
+    DESCRIPTION
+    Reads as a new uninterned symbol whose print name is NAME.   (Note  that
+    NAME  must  be  an  unqualified  symbol name, without unescaped embedded
+    colons.)
+
+    Each time the reader macro  ``#:''  is  encountered,  a  new  symbol  is
+    created.   The  printer prints uninterned symbols using this syntax.  To
+    denote the same uninterned symbol, the #N# and #N= syntactic forms  must
+    be used.  The printer uses them to print identical uninterned symbols in
+    an expression when *print-circle* is true.
+
+    EXAMPLES
+    (setf *print-circle* nil)
+
+    (let ((y (gensym)))
+      (list y y)) => (#:g101 #:g101)
+    (setf *s* '(#1=#:a #:a #1#))
+      => (#:a #:a #:a)
+    (eq (first *s*) (second *s*)) => nil
+    (eq (first *s*) (third *s*)) => t
+
+    (setf *print-circle* t)
+
+    (let ((x (gensym)))
+      (list x x)) => (#1=#:g101 #1#)
+    (setf *s* '(#1=#:a #:a #1#))
+      => (#1=#:a #:a #1#)
+    (eq (first *s*) (second *s*)) => nil
+    (list '#:a) => (#:a)
+    ;;  This example is implementation-dependent.  Some
+    ;;  implementations may read the uninterned symbol as #:A
+    ;;  or #:| A| or #:||, for example.
+    (list '#: a) => ERROR
+
+    SEE ALSO
+    CLtL 22:355, about printing, about reading, make-symbol, gensym,
+    gentemp, reader syntax ##, reader syntax #=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

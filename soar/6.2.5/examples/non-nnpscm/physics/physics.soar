@@ -1,0 +1,332 @@
+;;; Physics.soar: Simulation of physics schoolkids, written for Soar5
+;; --Tim O'Shea and David Steier , 10 Jul 89 at APU, Cambridge
+; Modified to work at CMU, 17 Jul 89 DMS
+; Modified for Soar5, 19 Jul 89 DMS
+; Modified for Soar 5.1.0, 3 Jan 90 DMS
+; modified for soar6.0 Sept 28, 1992 -- JT
+
+; excise because copying down desired causes this useless
+; rule to fire too often
+(excise opsub*select-operator*subgoaling)
+;;SOLVE-PROBLEM space
+
+;Goal test
+; Detect success when average velocity and distance known
+(sp solve-problem*goal-test
+   (goal <g> ^problem-space <p> ^state <s> ^desired <d>)
+    (<p> ^name solve-problem)
+    (<d> ^name solve-physics-problem)
+    (<s> ^average-velocity <avel>
+      ^distance <distance> ^average-velocity-known t ^distance-known t)
+   -->
+    (write (crlf)  | | |Distance is |  | | <distance>  | | | and average velocity is |  | | <avel>  | | (crlf) | | )
+    (<s> ^success <d>))
+
+;;Problem space proposal
+;Propose solve-problem problem space for top-level goal
+(sp solve-problem*propose-solve-problem-space
+   (goal <g> ^object nil)
+   -->
+    (<g> ^desired <d> ^name solve-physics-problem 
+      ^problem-space <p>)
+     (<d> ^name solve-physics-problem)
+     (<p> ^name solve-problem))
+
+;;State proposal
+;Propose state with inital attributes of problem
+(sp solve-problem*propose-initial-state
+    (goal <g> ^problem-space <p>)
+    (<p> ^name solve-problem)
+    -->
+     (<g> ^state <s> +)
+     (<s> ^init-velocity 4 ^acceleration 1.5 ^time 6
+       ^final-velocity-known f ^distance-known f ^average-velocity-known f
+       ^vtgraph notexists))
+
+
+;;Operator proposal
+
+;Propose find-average-velocity (always acceptable)
+(sp solve-problem*propose-find-average-velocity
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name solve-problem)
+    -->
+    (<g> ^operator <q>)
+    (<q> ^name find-average-velocity))
+
+
+;Propose find-distance (always acceptable)
+(sp solve-problem*propose-find-distance
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name solve-problem)
+     (<s> ^distance-known f)
+    -->
+    (<g> ^operator <q>)
+    (<q> ^name find-distance))
+
+
+;Propose draw-graph (acceptable when not drawn yet)
+(sp solve-problem*propose-draw-graph
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name solve-problem)
+     (<s> ^vtgraph notexists  ^final-velocity <val>
+       ^final-velocity-known t)
+    -->
+    (<g> ^operator <q>)
+    (<q> ^name draw-graph))
+
+;Propose use-equation (acceptable when distance not known)
+(sp solve-problem*propose-use-equation
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name solve-problem)
+    (<s> ^distance-known f)
+    -->
+    (<g> ^operator <q>)
+    (<q> ^name use-equation))
+
+;;Operator application
+; Apply find-average-velocity by reading off midpoint of graph
+(sp solve-problem*apply-find-average-velocity
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+    (<p> ^name solve-problem)
+    (<q> ^name find-average-velocity)
+    (<s> ^vtgraph exists ^midpoint <val>) 
+     -->
+    (<s> ^average-velocity <val> ^average-velocity-known f -
+   ^average-velocity-known t))
+
+(sp solve-problem*reconsider-find-average-velocity
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+    (<p> ^name solve-problem)
+    (<q> ^name find-average-velocity)
+    (<s> ^average-velocity-known t)
+     -->
+    (<g> ^operator <q> @))
+
+; Apply find-distance by using distance from equation
+(sp solve-problem*apply-find-distance
+   (goal <g> ^problem-space <p>  ^operator <q> ^state <s>)
+    (<q> ^name find-distance)
+    (<s> ^distance-value <val>) 
+     -->
+     (<s> ^distance <val> ^distance-known f - 
+      ^distance-known t))
+
+(sp solve-problem*reconsider-find-distance
+   (goal <g> ^problem-space <p>  ^operator <q> ^state <s>)
+    (<q> ^name find-distance)
+    (<s> ^distance-value <val> ^distance-known t)
+   -->
+    (<g> ^operator <q> @))
+
+; Apply draw-graph by adding attributes of x- and y-intercepts,
+;    slope, area and midpoint
+(sp solve-problem*apply-draw-graph
+    (goal <g> ^problem-space <p> ^state <s> ^operator <q>)
+    (<p> ^name solve-problem)
+     (<s> ^final-velocity  <fvel>
+          ^init-velocity <ivel> ^acceleration <acc> ^time <t>)
+     (<q> ^name draw-graph)
+     -->
+     (<s> ^y-intercept <ivel> ^slope <acc>
+    ^area (+ (* <t> <ivel>) (|/| (* <t> (- <fvel> <ivel>)) 2)) ^midpoint (|/| (+ <ivel> <fvel>) 2) ^vtgraph notexists -  ^vtgraph exists))
+
+(sp solve-problem*reconsider-draw-graph
+    (goal <g> ^problem-space <p> ^state <s> ^operator <q>)
+    (<p> ^name solve-problem)
+     (<s> ^vtgraph exists)
+     (<q> ^name draw-graph)
+     -->
+     (<g> ^operator <q> @))
+
+; Apply use-equation (implemented in subspace) using known attributes
+;     to add value for variable on LHS
+(sp solve-problem*apply-use-equation
+    (goal <g> ^state <s> ^problem-space <p> ^object <sg>)
+    (<s> ^final-velocity-known t ^distance-known t
+     ^final-velocity <fvel> ^distance <d>)
+     (goal <sg> ^state <ss> ^operator <sq>)
+    (<sq> ^name use-equation)
+    -->
+     (<ss> ^distance <d> ^distance-known f -
+     ^distance-known t ^final-velocity-known f -
+     ^final-velocity-known t ^final-velocity <fvel>))
+
+(sp solve-problem*reconsider-use-equation
+     (goal <g> ^state <s> ^operator <q>)
+     (<q> ^name use-equation)
+     (<s> ^distance-known t ^final-velocity-known t)
+    -->
+     (<g> ^operator <q> @))
+
+
+;; Operator selection
+; Prefer find-distance and find-average-velocity
+(sp solve-problem*prefer-find-distance
+    (goal <g> ^problem-space <p> ^state <s> ^operator <q> +)
+     (<p> ^name solve-problem)
+     (<q> ^name find-distance)
+     -->
+     (<g> ^operator <q> >))
+
+(sp solve-problem*prefer-find-average-velocity
+    (goal <g> ^problem-space <p> ^state <s> ^operator <q> +)
+     (<p> ^name solve-problem)
+     (<q> ^name find-average-velocity)
+     -->
+     (<g> ^operator <q> >))
+
+(sp solve-problem*compare*operator*find-average-velocity*find-distance
+    (goal <g> ^problem-space <p> ^state <s> ^operator <q> + <r> +)
+     (<p> ^name solve-problem)
+     (<q> ^name find-average-velocity)
+     (<r> ^name find-distance)
+     -->
+     (<g> ^operator <q> = <r>))
+
+
+; Apply use-equation (implemented in subspace) using known attributes
+; to add value for variable on LHS
+
+;; use-equation space
+;;;Problem space proposal
+;Propose use-equation problem space for implementing use-equation 
+(sp use-equation*propose-use-equation-space
+   (goal <g> ^impasse no-change ^attribute operator ^object <sg>)
+    (goal <sg> ^operator <sq>)
+     (<sq> ^name use-equation)
+   -->
+    (<g> ^problem-space <p> ^desired <d> <d> &
+ ^name implement-use-equation)
+     (<p> ^name use-equation))
+
+;;State proposal
+;Propose state using attributes from problem statement:
+ ; initial-velocity, time, acceleration
+
+(sp use-equation*propose-initial-state
+   (goal <g> ^problem-space <p> ^object <sg>)
+    (<p> ^name use-equation)
+   (goal <sg> ^state <ss>)
+    (<ss> ^init-velocity <ivel> ^acceleration <acc> ^time <t>
+      ^final-velocity-known <fvk> ^distance-known <dk>)
+   -->
+    (<g> ^state <s> +)
+    (<s> ^init-velocity <ivel> ^acceleration <acc> ^time <t>
+      ^final-velocity-known <fvk> ^distance-known <dk>))
+
+;;Operator proposal 
+; Propose vuat to compute final velocity ( acceptable when final
+; velocity not known)
+ (sp use-equation*propose-vuat
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name use-equation)
+    (<s> ^final-velocity-known f)
+    -->
+    (<q> ^name vuat)
+    (<g> ^operator <q> + <q> =))
+
+
+ ;Propose suat to compute total distance (always acceptable)
+ (sp use-equation*propose-suat
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name use-equation)
+    (<s> ^distance-known f)
+    -->
+    (<q> ^name suat)
+    (<g> ^operator <q> + <q> =))
+
+;;Operator application
+
+; Apply vuat: v = initial + acceleration * time 
+(sp use-equation*apply-vuat
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+   (<p> ^name use-equation)
+   (<q> ^name vuat)
+   (<s> ^init-velocity <ivel> ^acceleration <acc> ^time <t>
+       ^final-velocity-known f)
+   -->
+   (<s> ^final-velocity (+ <ivel> (* <acc> <t>)) ^final-velocity-known f - ^final-velocity-known t))
+
+(sp use-equation*reconsider-vuat
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+   (<p> ^name use-equation)
+   (<q> ^name vuat)
+   (<s> ^final-velocity-known t)
+   -->
+   (<g> ^operator <q>  @))
+    
+
+; Apply suat: distance = initial * time + .5 * acceleration * time ^ 2
+(sp use-equation*apply-suat
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+   (<p> ^name use-equation)
+   (<q> ^name suat)
+   (<s> ^init-velocity <ivel> ^time <t> ^acceleration <acc>
+     ^distance-known f)
+   -->
+   (<s> ^distance (+ (* <ivel> <t>) (* <t> (* <t> (|/| <acc> 2)))) ^distance-known f - ^distance-known t))
+
+(sp use-equation*reconsider-suat
+   (goal <g> ^problem-space <p> ^operator <q> ^state <s>)
+   (<p> ^name use-equation)
+   (<q> ^name suat)
+   (<s> ^distance-known t)
+   -->
+   (<g> ^operator <q> @))
+
+; New operator subgoaling
+
+; patch from JEL to make op subgoal chunks sticky
+(sp opsub*try-operator-subgoaling 
+  (goal <g> ^impasse no-change ^attribute operator 
+	^object <g2>)
+  (goal <g2> ^problem-space <p2> ^operator <o2>)
+  (<o2> ^name <name>)
+  -->
+  (<g> ^problem-space <p2> +  <p2> < ))
+
+
+; copy down desired so that operators subgoaled from on high
+; will not be selected in subgoal
+(sp opsub*copy-down-desired
+    (goal <g> ^object <sg>)
+     (goal <sg> ^name operator-subgoal ^desired <d>)
+    -->
+    (<g> ^subgoal-of-operator-subgoal t ^desired <d>
+       <d> &))
+(sp opsub*copy-down-desired-in-lower-levels
+    (goal <g> ^object <sg>)
+     (goal <sg> ^subgoal-of-operator-subgoal t ^desired <d>)
+    -->
+     (<g> ^desired <d> <d> &))
+
+;; Reject copies of the operator for initial state
+(sp opsub*reject-opsub*operator-copy
+   (goal <g> ^name operator-subgoal ^problem-space <p>
+     ^state <s> ^desired <o> ^operator <q> +)
+    (<q> ^name <name>)
+    (<o> ^name <name>)
+     -->
+    (<g> ^operator <q> -))
+
+; When operator has applied to create successful state in operator
+; supgoal, then create preference for that state in supergoal, since operator
+; is copy of superperator
+(sp opsub*detect-direct-opsub-success
+   (goal <g0> ^name operator-subgoal ^problem-space <p>
+              ^state <s> ^desired <o>
+      ^operator  <q>  ^object <g1> ^applied <q>)
+    (<q> ^name <name>)
+    (<o> ^name <name>)
+ -->
+    (<s> ^success <o>))
+
+
+; replace default production with one that allows multiple
+; desireds
+(sp opsub*go-for-it*augment-goal-desired
+   (goal <g> ^problem-space <p> ^name operator-subgoal ^object <g2>)
+   (goal <g2> ^operator <o>)
+   -->
+   (<g> ^desired <o> <o> &))

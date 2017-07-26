@@ -1,0 +1,47 @@
+(sp p35a
+   (goal <a> ^a a)
+   (<a> ^b <b>)
+   (<a> ^foo bar)
+   (<a> ^fie fum)
+   (<a> ^c <b>)
+   (<a> ^d e)
+-->)
+
+(sp p35b
+   (goal <a> ^t a)
+   (<a> ^b <b>)
+   (<a> ^foo bar)
+   (<a> ^fie fum)
+   (<a> ^c <b>)
+   (<a> ^d e)
+-->)
+
+run 1
+add-wme g1 ^a a
+ms
+add-wme g1 ^b b
+ms
+add-wme g1 ^foo bar
+ms
+add-wme g1 ^fie fum
+ms
+add-wme g1 ^c b
+ms
+add-wme g1 ^d e
+ms
+run 1
+add-wme g2 ^t a
+ms
+add-wme g2 ^b b
+ms
+add-wme g2 ^foo bar
+ms
+add-wme g2 ^fie fum
+ms
+add-wme g2 ^c b
+ms
+add-wme g2 ^d e
+ms
+run 1
+remove-wme 13
+ms

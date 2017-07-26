@@ -1,0 +1,698 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		CHANNELS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Description of Channel and Particle Models
+2. Creating Channels and Channel Types
+3. ADD-CHANNEL-TO-CELLS Function
+4. Q_10'S for Channels and Particles
+5. Channel Maximum Conductance
+6. Modifying Channel/Particle Parameters
+7. Integration of Particle States
+8. Precision Of Voltage Dependent Kinetics Lookup Tables
+9. Summary of Channel Type Parameter List Format for CHANNEL-TYPE-DEF
+10. Summary of Particle Type Parameter List Format in PARTICLE-TYPE-DEF
+11. Summary of Concentration Particle Type Parameter List Format in CONC-PARTICLE-TYPE-DEF
+12. Related Functions and Files
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+This file describes the channel and particle models.
+
+***************************************************************
+***************************************************************
+
+
+******************************************************
+******************************************************
+
+	Description of Channel and Particle Models
+
+******************************************************
+******************************************************
+
+Channel conductances are governed by the general equation:
+
+$$g_{ch}() = \prod {v_n}^{x_n} \prod {c_m}^{y_m} \bar{g_{ch}}$$
+
+where
+
+$v_n$ are $x_n$ voltage dependent gating particles and $c_m$ are $y_m$ concentration dependent
+gating particles associated with each channel protein. Voltage dependent gating particles
+follow the Hodgkin-Huxley model of first-order kinetics, where the rate constants (and thus the
+time constant and steady-state value) are voltage dependent. The equations for the rate
+constants (or alternatively, the tau and steady-state values) may be supplied explicitly
+(particle type class :HH and others). Otherwise, they may be derived from a single-barrier,
+extended Hodgkin-Huxley model (particle type classes :HH-EXT or :HH-EXT-OLD), modified somewhat
+from the model described in Borg-Graham 1991. In the latter case, the parameters of the
+particle rate equations are Z (effective valence of the gating particle), GAMMA (symmetry),
+BASE-RATE (reference rate constant, called alpha-0 in the above reference, in 1/ms), V-HALF
+(midpoint for voltage dependence, in mV) and TAU-0 (minimum time constant for particle
+transitions, in ms), and voltage independent additive forward and backward rate constants
+(ALPHA_0 and BETA_0, in 1/ms). The precise application of TAU-0 depends on whether the particle
+type class is :HH-EXT-OLD (the version described in Borg-Graham '91) or :HH-EXT:
+
+                                                     1
+   For :HH-EXT particle types -     Tau(V) =   ------------    +    TAU-0
+                                               alpha + beta
+
+
+                                                              1
+   For :HH-EXT-OLD particle types - Tau(V) = Maximum [  ------------  ,  TAU-0 ]
+                                                        alpha + beta
+
+
+In both cases alpha and beta are both functions of z, gamma, base-rate, v-half, alpha_0 and
+beta_0 (respectively) and a temperature term (see below). The newer version of :HH-EXT model
+correctly follows the original hypothetical basis for the TAU-0 parameter, namely that there is
+a voltage-independent rate-limiting step for the gating particle transitions.
+
+For particle types in which either there is no data on the voltage dependence, or there is no
+observed voltage dependence, the :IGNORE-TAU-VOLTAGE-DEPENDENCE slot is T, and the :TAU-0 value
+is the constant time constant for this particle type (see below).
+
+Thus, the definition of a new channel consists of providing parameters for the channel type,
+and the parameters for the particle types that the channel type must refer to. Channel type,
+voltage-dependent particle type, and concentration-dependent particle type parameters are
+stored in a list formats, which are in turn passed to the macros CHANNEL-TYPE-DEF,
+PARTICLE-TYPE-DEF, or CONC-PARTICLE-TYPE-DEF as appropriate.
+
+
+Reversal potential calculation is discussed in membrane_elements.doc.
+
+Channel type parameter lists must have a value for either GBAR-DENSITY or GBAR.
+
+For example, a calcium-dependent potassium channel of the type described in Borg-Graham 1991
+may be defined as follows:
+
+(channel-type-def 
+ '(c
+   (gbar-density . 40.0)
+   (e-rev . -85.0)
+   (ion-permeabilities . ((K 1.0)))
+   (QTEN . 1.5)
+   (reference-temp . 30.0)
+   (v-particles . ((cx 3)(cy 1)))
+   (conc-particles . ((cw 1)))))
+
+This expression supplies parameters for a 'C channel, with the
+following characteristics:
+
+     Conductance density = 40 pS per square micron
+     Reversal potential = -85 mV
+     Permeable to K^+ ions only
+     Q_{10} = 1.5, referenced to 30 degrees C
+     2 types of voltage dependent particles - 3 of the CX type, 
+     and 1 of the CY type
+     1 type of concentration dependent particle - 1 of the CW type
+
+
+For the Hodgkin-Huxley DR channel in the squid:
+
+(channel-type-def
+ '(dr-hh
+   (gbar-density . 360.0)
+   (e-rev . -77.0) 
+   (ion-permeabilities . ((K 1.0)))
+   (v-particles . ((n-hh 4)))))
+
+This implies:
+
+     Conductance density = 360 pS per square micron
+     Reversal potential = -77 mV
+     Permeable to K^+ ions only
+     1 types of voltage dependent particle - 4 of the N-HH type, 
+
+The particle type parameters referenced by the C channel
+type above are defined with the following expressions:
+
+(particle-type-def 
+ '(cx
+   (class . :hh-ext)
+   (VALENCE . 25)
+   (GAMMA . 0.2)
+   (BASE-RATE . 0.007)
+   (V-HALF . -65.0)
+   (TAU-0 . 0.25)
+   (QTEN . 3)
+   (reference-temp . 30.0)))
+
+(particle-type-def
+ '(cy
+   (class . :hh-ext)
+   (VALENCE . -20)
+   (GAMMA . 0.8)
+   (BASE-RATE . 0.01)
+   (V-HALF . -60.0)
+   (TAU-0 . 15.0)
+   (QTEN . 3)
+   (reference-temp . 30.0)))
+
+(conc-particle-type-def
+ '(cw
+   (class . :nth-order)
+   (alpha . 200.0)
+   (beta . 0.125)
+   (power . 3)
+   (QTEN . 3)
+   (conc-int-type . ca-in)
+   (reference-temp . 30.0)
+   (Fixed-boltzmann-reference-temperature . 30.0)
+   (shell . 1)))
+
+
+For the single N particle (here called N-HH) in the Hodgkin-Huxley DR channel:
+
+
+(particle-type-def
+ `(n-hh
+   (class . :hh)
+   (alpha-function . ,#'(lambda (voltage)
+			  (let ((v-55 (- voltage -55.0)))
+			    (/ (* -0.01 v-55)
+			       (1- (exp (/ v-55 -10.0)))))))
+   (beta-function . ,#'(lambda (voltage)
+			 (* 0.125 (exp (/ (- voltage -65.0) -80.0)))))))
+
+
+Thus, descriptions for particles of the 'HH type require a LAMBDA form or function name for
+either both ALPHA-FUNCTION and BETA-FUNCTION or both TAU-FUNCTION and SS-FUNCTION entries,
+in the form above. A LAMBDA form or function name references a single required argument -
+membrane voltage (in mV).
+
+Note that the use of ALPHA-FUNCTION here refers to the voltage dependence of the forward rate
+constant for gating particle transitions, and should not be confused with the alpha function
+form often used as empirical descriptions of synaptic conductance waveforms, etc. Also, the use
+of the *symbol* ALPHA-FUNCTION in the context of gating particles does not interfere with the
+Lisp function ALPHA-FUNCTION (waveforms.lisp) - the usages are independent.
+
+The final voltage dependent steady-state curves for the particles are rectified to avoid a
+negative values from the tails of the defining steady-state or rate contant functions.
+
+
+***************************************************************************
+
+Voltage Independent Components and Fixed Time Constants for :HH-EXT Particle Types
+
+***************************************************************************
+
+Note that there are explicit voltage independent components of the :HH-EXT formulation,
+including ALPHA_0, BETA_0, TAU-0. The first two parameters assume that there is a parallel
+voltage-independent transition between the two states, while the last parameter assumes that
+there is a voltage-independent rate-limiting component to the voltage dependent rates.
+
+If either the BASE-RATE entry in the parameters sublist is missing for a :HH-EXT particle, or
+(IGNORE-Tau-VOLTAGE-DEPENDENCE . T) is in the parameters sublist, then the type's
+:IGNORE-TAU-VOLTAGE-DEPENDENCE slot is set T.
+
+In these cases, the time constant for the particle type is determined by the value of TAU-0.
+
+
+***************************************************************************
+
+Summary of Extended HH Model Conventions
+
+***************************************************************************
+
+In Surf-Hippo, the conventions for the parameters of the HH extended model are as follows:
+
+ ALPHA(V) = The forward rate constant of a particle as a function of voltage, that is the
+            transition of a particle from the closed to the open state.
+
+ BETA(V)  = The backward rate constant of a particle as a function of voltage, that is the
+            transition of a particle from the open to the closed state.
+
+ Z        = valence of the gating particle, where a positive value means that the particle
+            tends to the open position with depolarization - i.e. it is an activation
+            particle. Likewise, a negative value of the valence means that the particle tends
+            to the open position with hyperpolarization - i.e. it is an inactivation
+            particle.
+
+		** ** **  ** ** **  ** ** **  ** ** **  ** ** **  ** ** **  
+		NOTE that this definition of the sign convention is opposite
+		to that found in Borg-Graham 91, for no profound reason.
+		However, the convention used here is the same as that used in
+		Jack, Noble, and Tsien 1983 (eq. 8.33-34, p 242), and depends
+		only on the (arbitrary) polarity of the gating particle with
+		respect to the membrane inner and outer surface.  
+		** ** **  ** ** **  ** ** **  ** ** **  ** ** **  ** ** **  
+
+ GAMMA    = Asymmetry of the gating particle voltage sensor within the membrane - the value
+            of GAMMA is a coefficient of the (shifted) voltage in the argument of the
+            exponental term for ALPHA(V), whereas (1 - GAMMA) is a coefficient of the
+            (shifted) voltage in the argument of the exponental term for BETA(V).
+
+ BASE-RATE = The leading coefficient for the voltage dependent components of both ALPHA(V) and BETA(V).
+
+ ALPHA_0 = Voltage independent additive forward rate constant
+ BETA_0  = Voltage independent additive backward rate constant
+
+The final form of ALPHA(V) and BETA(V) are:
+
+
+				     /  Z GAMMA (V - V-HALF) F \
+	  ALPHA(V) = BASE-RATE * exp|  -----------------------  |  +   ALPHA_0
+				     \      R  Temperature     /
+
+
+
+				    / -Z (1 - GAMMA) (V - V-HALF) F \
+	  BETA(V) = BASE-RATE * exp|  -----------------------------  |  +  BETA_0
+				    \         R  Temperature        /
+
+	  where V is in volts, BASE-RATE is 1/ms, R is the gas constant, F is Faraday's constant, and
+	  temperature is in degress K. 
+     
+Finally, the integration of particle states references the steady state and time constant
+functions derived from ALPHA(V) and BETA(V), with the additional consideration of the TAU-0
+parameter:
+
+
+			ALPHA(V)
+	  SS(V) =  ------------------
+		   ALPHA(V) + BETA(V)
+
+
+			    1
+	  TAU(V) =  ------------------   + TAU-0         (:HH-EXT model)
+		   ALPHA(V) + BETA(V)
+
+		       /                             \
+		       |          1                  |
+	  TAU(V) = Max | ------------------ ,  TAU-0 |    (:HH-EXT-OLD model)
+		       | ALPHA(V) + BETA(V)          |
+		       \                             /
+
+
+****************************************************************
+****************************************************************
+
+Creating Channels and Channel Types
+
+****************************************************************
+****************************************************************
+
+The basic function to create a channel is:
+
+  create-channel CELL-ELEMENT CHANNEL-TYPE-SYMBOL &optional PRE-SYNAPTIC-CELL-ELEMENT CONC-INT-DELTA
+
+The CHANNEL-TYPE-SYMBOL argument references a type description that was defined with a
+CHANNEL-TYPE-DEF entry, as described above.  The format for each entry in the channel type
+parameters association list, is:
+
+ (type (parameter-1 . value)(parameter-2 . value)(parameter-3 . value) ... )
+
+where the TYPE symbol is that used in the call to CREATE-CHANNEL. 
+
+To add another channel type, use the CHANNEL-TYPE-DEF macro, as done below. The ordering of the
+parameters in the type list used by the CHANNEL-TYPE-DEF and related definition macros is not
+important. The "." in each parameter sub-list is important, since these lists are interpreted
+as association lists.
+
+The optional CONC-INT-DELTA is for adding a coefficient (less than or equal to 1) that will adjust
+the channel current integrated by an associated concentration integrator. The delta term is used
+when a channel which is in real life distributed over several (say, N) elements is assigned in the
+circuit model to a fewer (< N) number of elements, possibly only one. In this case delta, which is
+less than or equal to one, compensates for the overestimate of the integrated current in the higher
+density channel distribution. For example, if the total membrane area of the elements for which a
+given channel is postulated to be assigned to is area-true, and the area of the element(s) that the
+channel is actually assigned to is some smaller value area-actual, then
+
+      delta = area-actual/area-true
+
+Other heuristics for adjusting this parameter are possible. The default value for delta is 1.0.  
+		
+
+****************************************************************
+****************************************************************
+
+ADD-CHANNEL-TO-CELLS Function
+
+****************************************************************
+****************************************************************
+
+A convenient method for adding channels to cells is with the ADD-CHANNEL-TO-CELLS function
+(channel.lisp):
+
+  add-channel-to-cells CELL-NAMES TYPE-SYMBOL &optional (SOMA-ONLY t) [Function]
+
+This function adds channels of type given by the TYPE-SYMBOL argument to cells in CELL-NAMES.
+An optional argument (default 100) specifies the percentage of (randomly distributed) nodes
+that should get the channel. If the optional SOMA-ONLY argument is missing or NIL, then the
+channels are added to all the segments and the somas of the cells listed in cell-names.
+
+For example, the following lines could be part of a cell file that is loaded entoto:
+
+	(read-in-circuit (concatenate 'string (cdr (assoc :SURFHOME lisp::*environment-list*))
+			   "anatomy/j43d.sparcf"))
+
+	(add-channel-to-cells  `("j43d" ) 'na1 100)
+
+
+On the other hand, suppose a cell has been loaded, and you are back talking directly to the
+Lisp interpreter. The same function would be used:
+
+	lisp-prompt> (add-channel-to-cells  `("j43d" ) 'na1 100)
+
+
+
+***************************************************************
+***************************************************************
+
+	Channel Maximum Conductance
+
+***************************************************************
+***************************************************************
+
+See membrane_elements.doc
+
+
+******************************************************
+******************************************************
+
+	Q_10'S for Channels and Particles
+
+******************************************************
+******************************************************
+
+The Q_10 (above as QTEN in the list arguments to CHANNEL-TYPE-DEF, PARTICLE-TYPE-DEF and
+CONC-PARTICLE-TYPE-DEF, but can also be referenced by the symbol Q10), refers to the
+temperature dependence of the channel base conductance (gbar), and the temperature dependence
+of the particle kinetics. The REFERENCE-TEMP entries in the parameters lists are the reference
+temperatures for the various Q_10 factors.
+
+  (defvar *ignore-q10* nil)		; When this flag is true then the only temperature dependence in the
+					; (HH-EXT class) particle kinetics (rate constant calculation) occurs via
+					; the 1/T factor in the exponential argument.
+
+  (defvar *Temperature* 300.0 "Temperature of the simulation in degrees Kelvin.")
+  (defvar *Temp-celcius* 27.0 "Temperature of the simulation in degrees Celcius.")
+
+(See biophysics.doc)
+
+For gating particles that use the extended HH model, there is an "intrinsic" temperature
+dependence in the Boltzmann term of the rate constants, which as a default refers to the
+current simulation temperature. Thus, the default temperature dependence for a given particle
+of this class arises from both this term and the explicit Qten coefficient. The Boltzmann term
+may be nullified, however, by including the following in the particle type's parameter list
+used in the PARTICLE-TYPE-DEF:
+
+	(Fixed-boltzmann-reference-temperature . 30.0)  degrees celcius
+
+In this case, the temperature term in the Boltzmann term is taken from this value (which may be
+changed with the menus, or by calling 
+
+	(element-parameter PARTICLE-TYPE 'Fixed-boltzmann-reference-temperature VALUE)
+	(element-parameter PARTICLE-TYPE 'use-Fixed-boltzmann-reference-temperature t)
+
+on particle type PARTICLE-TYPE, using a single-float VALUE (in degress celcius). The second call
+sets a flag which enables the use of this reference temperature.
+
+******************************************************
+******************************************************
+
+	Modifying Channel/Particle Parameters
+
+******************************************************
+******************************************************
+
+A series of menus are available for editing the properties of channel types
+and their associated particle types. These menus also include plots of
+particle rate equations as functions of voltage, and steady-state IV
+curves for the cell.
+
+When trying to fit parameters of channels/particles, it is convenient
+to save updated parameters using the
+
+ "Dump loadable circuit element types (channels, particles, synapses,
+  etc.) file?" 
+
+option from the save data menu. This creates a file for circuit
+element types that can be reloaded back into LISP. This is especially
+handy for simulation sessions in which element type parameters have
+been changed, since it allows for almost automatic restoral of circuit
+state in a new session.
+
+
+
+******************************************************
+******************************************************
+
+	Integration of Particle States
+
+******************************************************
+******************************************************
+
+All the voltage-dependent time constant and steady-state functions for the particles
+are precomputed and stored in arrays for fast reference during the integration.
+These arrays are automatically re-evaluated whenever particle parameters are
+changed.
+
+As suggested by Hines 1984, particle states may be solved with an implicit
+integration at the midpoints between time steps, independent and prior to the
+solution of the circuit equations. In Hines's description the first order estimate
+of the derivative of the particle x state was taken as (eq. 8):
+
+     x(t+dt/2) - x(t-dt/2)
+     ---------------------
+	       dt
+
+Likewise, an estimate of x(t) was given as:
+
+     x(t+dt/2) + x(t-dt/2)
+     ---------------------
+	       2
+
+These formulae apply when the time step (dt) is fixed. When dt varies from step to
+step, interpolations which take the changing step into account must be used.
+
+In addition, Hines expressed the formula for the new particle states as a function
+of the (voltage dependent) rate constants, evaluated at time t (eq. 9). Here, the
+formula is rearranged to be in terms of the steady state and time constant
+expressions (at time t), which now may also be either voltage or concentration
+dependent. The advantage to this form is that additional terms in either the time
+constant (such as a minimum time constant) or the steady state may be more readily
+included in the particle state equation.
+
+First, these globals are set at the beginning of the time step:
+
+  (setq DELTA-BACK (* MRT (* 0.5 LAST-TIME-STEP))
+	DELTA-FORWARD (* MRT (* 0.5 TIME-STEP)))
+  (setq HALF-DELTA-FOR-BACK (* 0.5 (- DELTA-FORWARD DELTA-BACK))
+	SUM-DELTA-FOR-BACK (+ DELTA-FORWARD DELTA-BACK))
+
+Note that the time step related variables are all in units of real time.
+
+
+EVAL-PARTICLE does the direct explicit computation of particle state at (t + dt/2):
+dt is the current time step, and t is t-n. The particle state at t + dt/2 is stored
+as in the particle's slot voltage-n+1. The time constant (tau) and steady-state
+(inf) values are taken at time t.
+
+
+      LET inf*sum-delta-for-back = inf * sum-delta-for-back
+          sum-delta-for-back*1-inf = sum-delta-for-back - inf*sum-delta-for-back
+          previous-state = x(t-dt/2)
+
+
+			    2 * [inf*sum-delta-for-back + (tau * previous-state)]
+			     - (inf*sum-delta-for-back * previous-state)
+       x(t+dt/2)   =	     - (sum-delta-for-back*1-inf * previous-state)
+			--------------------------------------------------------------
+			tau + tau + inf*sum-delta-for-back + sum-delta-for-back*1-inf
+
+
+
+*****************************************************************************
+*****************************************************************************
+
+	Precision Of Voltage Dependent Kinetics Lookup Tables
+
+*****************************************************************************
+*****************************************************************************
+
+The precision of the table lookup for voltage-dependent rate constants (or
+equivalently, time constant and steady-state values) is determined by two global
+variables, both of which may be set in the "Simulator Global Variables" submenu,
+"Miscellaneous Parameters":
+
+	*interpolate-particle-arrays => If true, interpolate between
+				        lookup table entries during
+				        the particle evaluations.
+
+	*particle-look-up-table-precision => [mV, default 0.1] The
+		                             precision of the look-up tables.
+
+
+
+
+
+
+
+***************************************************************
+***************************************************************
+
+Summary of Channel Type Entry Format for CHANNEL-TYPE-DEF
+
+***************************************************************
+***************************************************************
+
+(See also element-type-libraries.doc)
+
+
+Gbar Parameters:
+
+        (gbar-density . 130.0)                <-   ps/um2
+
+	    or
+
+        (gbar . 3.0)                          <-   microsiemens
+
+
+
+Ion Permeabilities and Reversal Potential:
+
+	(e-rev . 50.0)                        <-   mV
+
+	(ion-permeabilities . ((NA 1.0)))     <- ((ion-1 relative-perm) (ion-2 relative-perm) ...)
+	(use-variable-e-rev . t)
+
+	(use-defined-e-rev . t)
+
+Conductance Intrinsic Temperature Dependence:
+
+	(QTEN . 1.5)
+	(reference-temp . 24.0)               <-   degrees C
+
+Concentration Integrator Parameters:
+
+	(conc-int-type-params . ((ca-in1-wdy (1 .7))
+				 (ca-in2-wdy (1 0.024))))
+
+	(conc-int-type-e-rev-params . ((ca-in1-wdy (1 1))))
+
+Gating Particles:
+
+	(v-particles . ((m1 2) (H1 1)))
+	(conc-particles . ((ahpw 1)))
+
+
+***************************************************************
+***************************************************************
+
+Summary of Particle Type Entry Format for PARTICLE-TYPE-DEF
+
+***************************************************************
+***************************************************************
+
+
+	:HH Class -
+
+(particle-type-def
+ `(m-hh
+   (class . :hh)
+   (alpha-function . ,#'(lambda (voltage)
+			  (declare (optimize (speed 3) (space 0)) 
+				   (single-float voltage))
+			  (let ((v-40 (- voltage -40.0)))
+			    (/ (* -0.1 v-40)
+			       (1- (exp (/ v-40 -10.0)))))))
+   (beta-function . ,#'(lambda (voltage)
+			 (declare (optimize (speed 3) (space 0)) 
+				  (single-float voltage))
+			 (* 4.0 (exp (/ (- voltage -65.0) -18.0)))))))
+
+
+
+
+
+	:HH-EXT Class -
+
+(particle-type-def
+ '(m-hh-fit
+   (class . :hh-ext)
+   (VALENCE . 2.7)
+   (GAMMA . 0.4)
+   (BASE-RATE . 1.2)
+   (V-HALF . -40.0)
+   (TAU-0 . 0.07)))
+
+(particle-type-def
+ `(KDX-GEN
+   (class . :HH-EXT)
+   (valence . 3.0)
+   (gamma . 0.0)
+   (base-rate . 1.0)
+   (v-half . -63.0)
+   (tau-0 . 1.0)
+   (IGNORE-TAU-VOLTAGE-DEPENDENCE . T)
+   (reference-temp . 35.0)
+   (FIXED-BOLTZMANN-REFERENCE-TEMPERATURE . 27.0)
+   (qten . 1.0)))
+
+
+
+***************************************************************
+***************************************************************
+
+Summary of Concentration Particle Type Entry Format for CONC-PARTICLE-TYPE-DEF
+
+***************************************************************
+***************************************************************
+
+	:NTH-ORDER Class -
+
+(conc-particle-type-def
+ '(KAHPO-GEN
+   (class . :NTH-ORDER)
+   (alpha . 2.0e+14)
+   (beta . 0.01)
+   (tau-0 . 100.0d0)
+   (power . 4)
+   (qten . 1.0)
+   (reference-temp . 30.0)
+   (shell . 2)
+   (conc-int-type . CA-IN-GEN)))
+
+********************************************************
+********************************************************
+
+	Particle Error Estimation
+
+********************************************************
+********************************************************
+
+TO BE COMPLETED....
+
+*estimate-particle-error-with-full-time-step*
+
+
+
+******************************************************
+******************************************************
+
+	Related Functions and Files
+
+******************************************************
+******************************************************
+
+
+See also: surf-hippo/src/sys/channel.lisp, surf-hippo/src/sys/particle.lisp,
+surf-hippo/src/sys/conc-part.lisp, surf-hippo/src/sys/hippo-channels.lisp,
+surf-hippo/src/sys/hodgkin-huxley.lisp. 
+
+

@@ -1,0 +1,58 @@
+********************************************************************
+********************************************************************
+
+			Printing Windows
+
+********************************************************************
+********************************************************************
+
+See surf-hippo/doc/plotting.doc and  surf-hippo/doc/histology.doc
+
+
+Printing windows can be initiated by the mouse:
+
+ CONTROL-p will prompt for printing the selected window (and the
+ other output windows). 
+
+or by calling the function PRINT-WINDOWS explicitly
+(surf-hippo/src/sys/windows-hack.lisp).
+
+The global variables *PRINT-WINDOWS-INCLUSION-LIST* and
+*PRINT-WINDOWS-EXCLUSION-LIST* contain lists of strings for which the
+titles of windows passed to PRINT-WINDOWS are checked - if a title
+contains one of the strings in these lists, then that window is
+printed / not printed, respectively. This is useful when automatic
+printing is enabled for a run of windows, and you only want certain
+types of windows to be printed.
+
+
+
+
+Windows are converted to PostScript files with the function MAKE-PS-FILE. The printing
+interface in Surf-Hippo calls this function with arguments taken from various global
+variables, as follows (some of which may be changed with the printing menu):
+
+   Argument         Surf-Hippo Global Variable            Possible Values 
+-----------------------------------------------------------------------------------------------------
+   POSITION-X            *ps-position-x*       :LEFT, :CENTER, or :RIGHT. Default :CENTER
+
+   POSITION-Y            *ps-position-y*       :TOP, :CENTER, or :BOTTOM.  Default :CENTER
+
+   LEFT-MARGIN           *ps-left-margin*      Distance in points, default 72
+   RIGHT-MARGIN          *ps-right-margin*
+   TOP-MARGIN            *ps-top-margin*
+   BOTTOM-MARGIN         *ps-bottom-margin*  
+
+   SCALE-X               *ps-scale-x*          Scale factor for image.  Default is NIL, which means
+   SCALE-y               *ps-scale-y*          the image will be automatically scaled to fit on the page.
+
+   LANDSCAPE-P           *ps-landscape-p*      T or NIL, to rotate 90 degrees or portrait.  Default NIL.
+
+   PAPER-SIZE            *lpr-paper-size*      :LETTER, :A4, or (WIDTH HEIGHT) in points specifies page
+                                               size. Default :A4
+
+   BORDERS-P             *ps-borders-p*        T, NIL, :GENERIC, or :MOTIF, frames to print around windows.
+                                                Default T.
+
+   COLOR-P               *ps-color-p*          T or NIL controls use of color.  Default T.
+

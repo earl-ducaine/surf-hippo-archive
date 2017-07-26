@@ -1,0 +1,1145 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/kab/kab.soar
+************************************************************************************
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (keys-and-boxes)
+  desired[loc(object-4,outside)].
+     2:    S: S1 
+  loc(robot,_), holding(object-1).
+  loc(object-1,robot).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,door).
+     3:    ==>G: G2 (state no-change)
+     4:       P: P2 (set-focus)
+     5:       S: D3 
+     6:       O: Q2 (set-focus)
+Building chunk-1
+     7:    O: Q3 (create-focus)
+  A1: transfer(object-4,outside).
+     8:    ==>G: G3 (state no-change)
+     9:       P: P3 (set-focus)
+    10:       S: D5 
+    11:       O: Q4 (set-focus)
+Building chunk-2
+    12:    O: Q5 (change-focus)
+  A2: acquire(object-4).
+Retracting chunk-2
+    13:    ==>G: G4 (state no-change)
+    14:       P: P4 (set-focus)
+    15:       S: D7 
+    16:       O: Q6 (set-focus)
+Building chunk-3
+    17:    O: Q7 (change-focus)
+  A3: transfer(object-1).
+Retracting chunk-3
+    18:    ==>G: G5 (operator tie)
+  O7: goto(table).
+  O8: put-down(object-1,table).
+    19:       P: P5 (selection)
+    20:       S: S2 
+    21:       O: O12 (evaluate-object O7 (goto))
+    22:       ==>G: G6 (operator no-change)
+    23:          P: P1 (keys-and-boxes)
+    24:          S: D10 
+  N25: transfer(object-1).
+  loc(robot,_), holding(object-1).
+  loc(object-1,robot).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,door).
+Firing chunk-1
+    25:          O: C4 (goto)
+  loc(robot,table), holding(object-1).
+  goto(table), while holding(object-1).
+    26:          O: O20 (put-down)
+  loc(object-1,table).
+  put-down(object-1,table).
+  loc(robot,table), holding nothing.
+    27:          O: Q10 (pop)
+  A2: acquire(object-4).
+    28:          ==>G: G7 (operator tie)
+  O23: goto(door).
+  O24: pick-up(object-4,door).
+    29:             P: P6 (selection)
+    30:             S: S3 
+    31:             O: O26 (evaluate-object O23 (goto))
+    32:             ==>G: G8 (operator no-change)
+    33:                P: P1 (keys-and-boxes)
+    34:                S: D12 
+  N39: acquire(object-4).
+  loc(robot,table), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,door).
+Firing chunk-1
+    35:                O: C5 (goto)
+  loc(robot,door), holding nothing.
+  goto(door), while holding nothing.
+    36:                O: O28 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,door).
+  loc(robot,door), holding(object-4).
+    37:                O: Q13 (pop)
+  A1: transfer(object-4,outside).
+    38:                ==>G: G9 (state no-change)
+    39:                   P: P7 (set-focus)
+    40:                   S: D13 
+    41:                   O: Q14 (set-focus)
+Building chunk-4
+Firing chunk-4
+Building chunk-5
+Ignoring chunk-5 because it is a duplicate of chunk-4 
+    42:                O: Q17 (change-focus)
+  A8: transfer(object-3,door).
+Firing chunk-2
+Retracting chunk-4
+Retracting chunk-4
+    43:                O: Q18 (change-focus)
+Firing chunk-3
+
+  A9: acquire(object-3).
+Retracting chunk-2
+    44:                O: Q19 (change-focus)
+  A10: transfer(object-4).
+Retracting chunk-3
+    45:                ==>G: G10 (operator tie)
+  O37: goto(table).
+  O38: put-down(object-4,table).
+    46:                   P: P8 (selection)
+    47:                   S: S4 
+    48:                   O: O42 (evaluate-object O37 (goto))
+    49:                   ==>G: G11 (operator no-change)
+    50:                      P: P1 (keys-and-boxes)
+    51:                      S: D16 
+  N59: transfer(object-4).
+  loc(robot,door), holding(object-4).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,robot).
+Firing chunk-1
+    52:                      O: C6 (goto)
+  loc(robot,table), holding(object-4).
+  goto(table), while holding(object-4).
+    53:                      O: O50 (put-down)
+  loc(object-4,table).
+  put-down(object-4,table).
+  loc(robot,table), holding nothing.
+    54:                      O: Q22 (pop)
+  A9: acquire(object-3).
+    55:                      ==>G: G12 (operator tie)
+  O53: goto(box-2).
+  O54: pick-up(object-3,box-2).
+    56:                         P: P9 (selection)
+    57:                         S: S5 
+    58:                         O: O56 (evaluate-object O53 (goto))
+    59:                         ==>G: G13 (operator no-change)
+    60:                            P: P1 (keys-and-boxes)
+    61:                            S: D18 
+  N73: acquire(object-3).
+  loc(robot,table), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,table).
+Firing chunk-1
+    62:                            O: C7 (goto)
+  loc(robot,box-2), holding nothing.
+  goto(box-2), while holding nothing.
+    63:                            O: O58 (pick-up)
+  loc(object-3,robot).
+  pick-up(object-3,box-2).
+  loc(robot,box-2), holding(object-3).
+    64:                            O: Q25 (pop)
+  A8: transfer(object-3,door).
+    65:                            ==>G: G14 (operator tie)
+  O59: goto(door).
+  O60: put-down(object-3,door).
+    66:                               P: P10 (selection)
+    67:                               S: S6 
+    68:                               O: O62 (evaluate-object O59 (goto))
+    69:                               ==>G: G15 (operator no-change)
+    70:                                  P: P1 (keys-and-boxes)
+    71:                                  S: D20 
+  N87: transfer(object-3,door).
+  loc(robot,box-2), holding(object-3).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,robot).
+  loc(object-4,table).
+Firing chunk-1
+    72:                                  O: C8 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+    73:                                  O: O64 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+    74:                                  O: Q28 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Firing chunk-4
+Retracting chunk-2
+    75:                                  O: Q31 (change-focus)
+  A16: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-2
+Retracting chunk-4
+    76:                                  O: Q32 (change-focus)
+  A17: acquire(object-2).
+Retracting chunk-2
+    77:                                  ==>G: G16 (operator tie)
+  O65: goto(box-1).
+  O66: pick-up(object-2,box-1).
+    78:                                     P: P11 (selection)
+    79:                                     S: S7 
+    80:                                     O: O68 (evaluate-object O65 (goto))
+    81:                                     ==>G: G17 (operator no-change)
+    82:                                        P: P1 (keys-and-boxes)
+    83:                                        S: D22 
+  N101: acquire(object-2).
+  loc(robot,door), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+    84:                                        O: C9 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+    85:                                        O: O70 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+    86:                                        O: Q35 (pop)
+  A16: transfer(object-2,door).
+    87:                                        ==>G: G18 (operator tie)
+  O71: goto(door).
+  O72: put-down(object-2,door).
+    88:                                           P: P12 (selection)
+    89:                                           S: S8 
+    90:                                           O: O74 (evaluate-object O71 (goto))
+    91:                                           ==>G: G19 (operator no-change)
+    92:                                              P: P1 (keys-and-boxes)
+    93:                                              S: D24 
+  N115: transfer(object-2,door).
+  loc(robot,box-1), holding(object-2).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,robot).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+    94:                                              O: C10 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+    95:                                              O: O76 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+    96:                                              O: Q38 (replace)
+  open(door).
+    97:                                              O: Q39 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+    98:                                              O: Q41 (change-focus)
+  A21: acquire(object-4).
+Retracting chunk-2
+    99:                                              ==>G: G20 (operator tie)
+  O77: goto(table).
+  O78: pick-up(object-4,table).
+   100:                                                 P: P13 (selection)
+   101:                                                 S: S9 
+   102:                                                 O: O80 (evaluate-object O77 (goto))
+   103:                                                 ==>G: G21 (operator no-change)
+   104:                                                    P: P1 (keys-and-boxes)
+   105:                                                    S: D26 
+  N129: acquire(object-4).
+  loc(robot,door), holding nothing.
+  loc(object-1,table).
+  open(door).
+  loc(object-2,door).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+   106:                                                    O: C11 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+   107:                                                    O: O82 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   108:                                                    O: Q44 (pop)
+  A1: transfer(object-4,outside).
+   109:                                                    ==>G: G22 (operator tie)
+  O83: goto(outside).
+  O84: put-down(object-4,outside).
+   110:                                                       P: P14 (selection)
+   111:                                                       S: S10 
+   112:                                                       O: O86 (evaluate-object O83 (goto))
+   113:                                                       ==>G: G23 (operator no-change)
+   114:                                                          P: P1 (keys-and-boxes)
+   115:                                                          S: D28 
+  N143: transfer(object-4,outside).
+  loc(robot,table), holding(object-4).
+  loc(object-1,table).
+  open(door).
+  loc(object-2,door).
+  loc(object-3,door).
+  loc(object-4,robot).
+Firing chunk-1
+   116:                                                          O: C12 (goto)
+  loc(robot,outside), holding(object-4).
+  goto(outside), while holding(object-4).
+   117:                                                          O: O88 (put-down)
+  loc(object-4,outside).
+  put-down(object-4,outside).
+  loc(robot,outside), holding nothing.
+Firing chunk-2
+Retracting chunk-1
+   118:                                                          O: Q47 (pop)
+Retracting chunk-2
+   119:                                                          O: Q49 (goal-test)
+  Goal implement-evaluate-object succeeded. 
+Building chunk-6
+Building chunk-7
+Building chunk-8
+Firing chunk-8
+Building chunk-9
+  Evaluation of O83 (goto) is success
+Building chunk-10
+Firing chunk-10
+
+  Evaluation of O77 (goto) is partial-success
+Building chunk-11
+Firing chunk-11
+
+  Evaluation of O23 (goto) is partial-success
+   120:          O: O23 (goto)
+  loc(robot,door), holding nothing.
+  goto(door), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   121:          O: O24 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,door).
+  loc(robot,door), holding(object-4).
+   122:          O: Q50 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-4
+Firing chunk-4
+Firing chunk-7
+Building chunk-12
+Firing chunk-9
+Building chunk-13
+Firing chunk-13
+Firing chunk-13
+Firing chunk-13
+
+  Evaluation of O7 (goto) is partial-success
+   123:    O: O7 (goto)
+  loc(robot,table), holding(object-1).
+Firing chunk-13
+Firing chunk-13
+Firing chunk-13
+
+  goto(table), while holding(object-1).
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+   124:    O: O8 (put-down)
+  loc(object-1,table).
+  put-down(object-1,table).
+  loc(robot,table), holding nothing.
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+   125:    O: Q53 (pop)
+  A2: acquire(object-4).
+Firing chunk-10
+Firing chunk-11
+   126:    O: O91 (goto)
+  loc(robot,door), holding nothing.
+  goto(door), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   127:    O: O92 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,door).
+  loc(robot,door), holding(object-4).
+   128:    O: Q54 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-4
+Firing chunk-4
+Firing chunk-9
+   129:    O: Q56 (change-focus)
+  A28: transfer(object-3,door).
+Firing chunk-2
+Retracting chunk-4
+Retracting chunk-4
+Retracting chunk-9
+   130:    O: Q57 (change-focus)
+Firing chunk-3
+
+  A29: acquire(object-3).
+Retracting chunk-2
+   131:    O: Q58 (change-focus)
+  A30: transfer(object-4).
+Retracting chunk-3
+   132:    ==>G: G24 (operator tie)
+  O101: goto(table).
+  O102: put-down(object-4,table).
+   133:       P: P15 (selection)
+   134:       S: S11 
+   135:       O: O106 (evaluate-object O101 (goto))
+   136:       ==>G: G25 (operator no-change)
+   137:          P: P1 (keys-and-boxes)
+   138:          S: D30 
+  N157: transfer(object-4).
+  loc(robot,door), holding(object-4).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,robot).
+Firing chunk-1
+   139:          O: C13 (goto)
+  loc(robot,table), holding(object-4).
+  goto(table), while holding(object-4).
+   140:          O: O114 (put-down)
+  loc(object-4,table).
+  put-down(object-4,table).
+  loc(robot,table), holding nothing.
+   141:          O: Q61 (pop)
+  A29: acquire(object-3).
+   142:          ==>G: G26 (operator tie)
+  O117: goto(box-2).
+  O118: pick-up(object-3,box-2).
+   143:             P: P16 (selection)
+   144:             S: S12 
+   145:             O: O120 (evaluate-object O117 (goto))
+   146:             ==>G: G27 (operator no-change)
+   147:                P: P1 (keys-and-boxes)
+   148:                S: D32 
+  N171: acquire(object-3).
+  loc(robot,table), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,table).
+Firing chunk-1
+   149:                O: C14 (goto)
+  loc(robot,box-2), holding nothing.
+  goto(box-2), while holding nothing.
+   150:                O: O122 (pick-up)
+  loc(object-3,robot).
+  pick-up(object-3,box-2).
+  loc(robot,box-2), holding(object-3).
+   151:                O: Q64 (pop)
+  A28: transfer(object-3,door).
+   152:                ==>G: G28 (operator tie)
+  O123: goto(door).
+  O124: put-down(object-3,door).
+   153:                   P: P17 (selection)
+   154:                   S: S13 
+   155:                   O: O126 (evaluate-object O123 (goto))
+   156:                   ==>G: G29 (operator no-change)
+   157:                      P: P1 (keys-and-boxes)
+   158:                      S: D34 
+  N185: transfer(object-3,door).
+  loc(robot,box-2), holding(object-3).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,robot).
+  loc(object-4,table).
+Firing chunk-1
+   159:                      O: C15 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+   160:                      O: O128 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   161:                      O: Q67 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Firing chunk-4
+Retracting chunk-2
+   162:                      O: Q70 (change-focus)
+  A36: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-2
+Retracting chunk-4
+   163:                      O: Q71 (change-focus)
+  A37: acquire(object-2).
+Retracting chunk-2
+   164:                      ==>G: G30 (operator tie)
+  O129: goto(box-1).
+  O130: pick-up(object-2,box-1).
+   165:                         P: P18 (selection)
+   166:                         S: S14 
+   167:                         O: O132 (evaluate-object O129 (goto))
+   168:                         ==>G: G31 (operator no-change)
+   169:                            P: P1 (keys-and-boxes)
+   170:                            S: D36 
+  N199: acquire(object-2).
+  loc(robot,door), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+   171:                            O: C16 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+   172:                            O: O134 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+   173:                            O: Q74 (pop)
+  A36: transfer(object-2,door).
+   174:                            ==>G: G32 (operator tie)
+  O135: goto(door).
+  O136: put-down(object-2,door).
+   175:                               P: P19 (selection)
+   176:                               S: S15 
+   177:                               O: O138 (evaluate-object O135 (goto))
+   178:                               ==>G: G33 (operator no-change)
+   179:                                  P: P1 (keys-and-boxes)
+   180:                                  S: D38 
+  N213: transfer(object-2,door).
+  loc(robot,box-1), holding(object-2).
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,robot).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+   181:                                  O: C17 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+   182:                                  O: O140 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   183:                                  O: Q77 (replace)
+  open(door).
+   184:                                  O: Q78 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+   185:                                  O: Q80 (change-focus)
+  A41: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+   186:                                  O: O141 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   187:                                  O: O142 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   188:                                  O: Q81 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-7
+Building chunk-14
+Firing chunk-14
+Firing chunk-9
+Building chunk-15
+Firing chunk-15
+
+  Evaluation of O135 (goto) is partial-success
+Building chunk-16
+Firing chunk-16
+
+  Evaluation of O123 (goto) is partial-success
+   189:                O: O123 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+Retracting chunk-15
+Retracting chunk-16
+   190:                O: O124 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   191:                O: Q82 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Firing chunk-4
+Retracting chunk-2
+   192:                O: Q85 (change-focus)
+  A44: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-2
+Retracting chunk-4
+   193:                O: Q86 (change-focus)
+  A45: acquire(object-2).
+Retracting chunk-2
+   194:                ==>G: G34 (operator tie)
+  O145: goto(box-1).
+  O146: pick-up(object-2,box-1).
+   195:                   P: P20 (selection)
+   196:                   S: S16 
+   197:                   O: O148 (evaluate-object O145 (goto))
+   198:                   ==>G: G35 (operator no-change)
+   199:                      P: P1 (keys-and-boxes)
+   200:                      S: D40 
+  N227: acquire(object-2).
+  loc(robot,door), holding nothing.
+  loc(object-1,table).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,door).
+  loc(object-4,table).
+Firing chunk-1
+   201:                      O: C18 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+   202:                      O: O150 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+   203:                      O: Q89 (pop)
+  A44: transfer(object-2,door).
+Firing chunk-15
+Firing chunk-16
+   204:                      O: O151 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+Retracting chunk-15
+Retracting chunk-16
+   205:                      O: O152 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   206:                      O: Q90 (replace)
+  open(door).
+   207:                      O: Q91 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+   208:                      O: Q93 (change-focus)
+  A48: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+   209:                      O: O153 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   210:                      O: O154 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   211:                      O: Q94 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-7
+Building chunk-17
+Firing chunk-9
+Building chunk-18
+  Evaluation of O145 (goto) is partial-success
+   212:                O: O145 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+Retracting chunk-18
+   213:                O: O146 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+   214:                O: Q95 (pop)
+  A44: transfer(object-2,door).
+Firing chunk-15
+Firing chunk-16
+   215:                O: O157 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+Retracting chunk-15
+Retracting chunk-16
+   216:                O: O158 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   217:                O: Q96 (replace)
+  open(door).
+   218:                O: Q97 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+   219:                O: Q99 (change-focus)
+  A50: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+   220:                O: O159 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   221:                O: O160 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   222:                O: Q100 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-7
+Building chunk-19
+Firing chunk-19
+Firing chunk-9
+Building chunk-20
+Firing chunk-20
+
+  Evaluation of O117 (goto) is partial-success
+   223:          O: O117 (goto)
+  loc(robot,box-2), holding nothing.
+  goto(box-2), while holding nothing.
+Retracting chunk-20
+Retracting chunk-20
+   224:          O: O118 (pick-up)
+  loc(object-3,robot).
+  pick-up(object-3,box-2).
+  loc(robot,box-2), holding(object-3).
+   225:          O: Q101 (pop)
+  A28: transfer(object-3,door).
+Firing chunk-15
+Firing chunk-16
+   226:          O: O163 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+Retracting chunk-15
+Retracting chunk-16
+   227:          O: O164 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   228:          O: Q102 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Firing chunk-4
+Retracting chunk-2
+   229:          O: Q105 (change-focus)
+  A53: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-2
+Retracting chunk-4
+   230:          O: Q106 (change-focus)
+  A54: acquire(object-2).
+Retracting chunk-2
+Firing chunk-18
+   231:          O: O165 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+Retracting chunk-18
+   232:          O: O166 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+   233:          O: Q107 (pop)
+  A53: transfer(object-2,door).
+Firing chunk-15
+Firing chunk-16
+   234:          O: O167 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+Retracting chunk-15
+Retracting chunk-16
+   235:          O: O168 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   236:          O: Q108 (replace)
+  open(door).
+   237:          O: Q109 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+   238:          O: Q111 (change-focus)
+  A56: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+   239:          O: O169 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   240:          O: O170 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   241:          O: Q112 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-7
+Building chunk-21
+Firing chunk-21
+Firing chunk-9
+Building chunk-22
+Firing chunk-22
+Firing chunk-22
+Firing chunk-22
+
+  Evaluation of O101 (goto) is partial-success
+   242:    O: O101 (goto)
+  loc(robot,table), holding(object-4).
+  goto(table), while holding(object-4).
+Retracting chunk-22
+Retracting chunk-22
+Retracting chunk-22
+Retracting chunk-22
+   243:    O: O102 (put-down)
+  loc(object-4,table).
+  put-down(object-4,table).
+  loc(robot,table), holding nothing.
+   244:    O: Q113 (pop)
+  A29: acquire(object-3).
+Firing chunk-20
+Firing chunk-20
+   245:    O: O173 (goto)
+  loc(robot,box-2), holding nothing.
+  goto(box-2), while holding nothing.
+Retracting chunk-20
+Retracting chunk-20
+   246:    O: O174 (pick-up)
+  loc(object-3,robot).
+  pick-up(object-3,box-2).
+  loc(robot,box-2), holding(object-3).
+   247:    O: Q114 (pop)
+  A28: transfer(object-3,door).
+Firing chunk-15
+Firing chunk-16
+   248:    O: O175 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+Retracting chunk-15
+Retracting chunk-16
+   249:    O: O176 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   250:    O: Q115 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Firing chunk-4
+Retracting chunk-2
+   251:    O: Q118 (change-focus)
+  A59: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-2
+Retracting chunk-4
+   252:    O: Q119 (change-focus)
+  A60: acquire(object-2).
+Retracting chunk-2
+Firing chunk-18
+   253:    O: O177 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+Retracting chunk-18
+   254:    O: O178 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+   255:    O: Q120 (pop)
+  A59: transfer(object-2,door).
+Firing chunk-15
+Firing chunk-16
+   256:    O: O179 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+Retracting chunk-15
+Retracting chunk-16
+   257:    O: O180 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+   258:    O: Q121 (replace)
+  open(door).
+   259:    O: Q122 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+   260:    O: Q124 (change-focus)
+  A62: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+   261:    O: O181 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+   262:    O: O182 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+   263:    O: Q125 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-9
+   264:    O: O183 (goto)
+  loc(robot,outside), holding(object-4).
+  goto(outside), while holding(object-4).
+Retracting chunk-9
+   265:    O: O184 (put-down)
+  loc(object-4,outside).
+  put-down(object-4,outside).
+  loc(robot,outside), holding nothing.
+Firing chunk-2
+Retracting chunk-1
+   266:    O: Q126 (pop)
+Retracting chunk-2
+   267:    O: Q128 (goal-test)
+ goal keys-and-boxes achieved 
+  Goal keys-and-boxes succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (keys-and-boxes)
+  desired[loc(object-4,outside)].
+     2:    S: S1 
+  loc(robot,_), holding(object-1).
+  loc(object-1,robot).
+  locked(door).
+  loc(object-2,box-1).
+  loc(object-3,box-2).
+  loc(object-4,door).
+Firing chunk-1
+     3:    O: Q2 (create-focus)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+     4:    O: Q3 (change-focus)
+Firing chunk-3
+
+  A2: acquire(object-4).
+Retracting chunk-2
+     5:    O: Q4 (change-focus)
+  A3: transfer(object-1).
+Retracting chunk-3
+Firing chunk-13
+Firing chunk-13
+Firing chunk-13
+Firing chunk-13
+     6:    O: O7 (goto)
+  loc(robot,table), holding(object-1).
+Firing chunk-13
+Firing chunk-13
+Firing chunk-13
+
+  goto(table), while holding(object-1).
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+     7:    O: O8 (put-down)
+  loc(object-1,table).
+  put-down(object-1,table).
+  loc(robot,table), holding nothing.
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-13
+     8:    O: Q5 (pop)
+  A2: acquire(object-4).
+Firing chunk-10
+Firing chunk-11
+     9:    O: O11 (goto)
+  loc(robot,door), holding nothing.
+  goto(door), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+    10:    O: O12 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,door).
+  loc(robot,door), holding(object-4).
+    11:    O: Q6 (pop)
+Firing chunk-4
+Firing chunk-4
+
+  A1: transfer(object-4,outside).
+Firing chunk-9
+    12:    O: Q8 (change-focus)
+  A5: transfer(object-3,door).
+Firing chunk-2
+Retracting chunk-4
+Retracting chunk-4
+Retracting chunk-9
+    13:    O: Q9 (change-focus)
+Firing chunk-3
+
+  A6: acquire(object-3).
+Retracting chunk-2
+    14:    O: Q10 (change-focus)
+  A7: transfer(object-4).
+Retracting chunk-3
+Firing chunk-22
+Firing chunk-22
+Firing chunk-22
+Firing chunk-22
+    15:    O: O21 (goto)
+  loc(robot,table), holding(object-4).
+  goto(table), while holding(object-4).
+Retracting chunk-22
+Retracting chunk-22
+Retracting chunk-22
+Retracting chunk-22
+    16:    O: O22 (put-down)
+  loc(object-4,table).
+  put-down(object-4,table).
+  loc(robot,table), holding nothing.
+    17:    O: Q11 (pop)
+  A6: acquire(object-3).
+Firing chunk-20
+Firing chunk-20
+    18:    O: O25 (goto)
+  loc(robot,box-2), holding nothing.
+  goto(box-2), while holding nothing.
+Retracting chunk-20
+Retracting chunk-20
+    19:    O: O26 (pick-up)
+  loc(object-3,robot).
+  pick-up(object-3,box-2).
+  loc(robot,box-2), holding(object-3).
+    20:    O: Q12 (pop)
+  A5: transfer(object-3,door).
+Firing chunk-15
+Firing chunk-16
+    21:    O: O27 (goto)
+  loc(robot,door), holding(object-3).
+  goto(door), while holding(object-3).
+Retracting chunk-15
+Retracting chunk-16
+    22:    O: O28 (put-down)
+  loc(object-3,door).
+  put-down(object-3,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+    23:    O: Q13 (pop)
+Firing chunk-4
+
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+    24:    O: Q15 (change-focus)
+  A9: transfer(object-2,door).
+Firing chunk-2
+Retracting chunk-4
+Retracting chunk-2
+    25:    O: Q17 (change-focus)
+  A11: acquire(object-2).
+Retracting chunk-2
+Firing chunk-18
+    26:    O: O29 (goto)
+  loc(robot,box-1), holding nothing.
+  goto(box-1), while holding nothing.
+Retracting chunk-18
+    27:    O: O30 (pick-up)
+  loc(object-2,robot).
+  pick-up(object-2,box-1).
+  loc(robot,box-1), holding(object-2).
+    28:    O: Q18 (pop)
+  A9: transfer(object-2,door).
+Firing chunk-15
+Firing chunk-16
+    29:    O: O31 (goto)
+  loc(robot,door), holding(object-2).
+  goto(door), while holding(object-2).
+Retracting chunk-15
+Retracting chunk-16
+    30:    O: O32 (put-down)
+  loc(object-2,door).
+  put-down(object-2,door).
+  loc(robot,door), holding nothing.
+Firing chunk-2
+    31:    O: Q19 (replace)
+  open(door).
+    32:    O: Q20 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-2
+Retracting chunk-2
+    33:    O: Q22 (change-focus)
+  A13: acquire(object-4).
+Retracting chunk-2
+Firing chunk-10
+Firing chunk-11
+    34:    O: O33 (goto)
+  loc(robot,table), holding nothing.
+  goto(table), while holding nothing.
+Retracting chunk-10
+Retracting chunk-11
+    35:    O: O34 (pick-up)
+  loc(object-4,robot).
+  pick-up(object-4,table).
+  loc(robot,table), holding(object-4).
+    36:    O: Q23 (pop)
+  A1: transfer(object-4,outside).
+Firing chunk-9
+    37:    O: O35 (goto)
+  loc(robot,outside), holding(object-4).
+  goto(outside), while holding(object-4).
+Retracting chunk-9
+    38:    O: O36 (put-down)
+  loc(object-4,outside).
+  put-down(object-4,outside).
+  loc(robot,outside), holding nothing.
+Firing chunk-2
+Retracting chunk-1
+    39:    O: Q24 (pop)
+Retracting chunk-2
+    40:    O: Q26 (goal-test)
+ goal keys-and-boxes achieved 
+  Goal keys-and-boxes succeeded. 
+System halted.
+
+Soar> 

@@ -1,0 +1,10 @@
+# $Id: make.header.pmax_mach,v 1.6 1994/12/06 22:28:45 rempel Exp $
+#
+# Pmax (decstation) running Mach
+
+CC         = gcc
+CFLAGS     = -O -ansi -DUNIX -DMACH
+EXTRA_LIBS = 
+RANLIB     = ranlib
+
+MACHINE_DEP_DIR = pmax_mach

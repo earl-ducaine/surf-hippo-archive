@@ -1,0 +1,25 @@
+;
+; This is testing that variables constrained to match the
+; same value within a condition do match the same value.
+;
+(sp p15
+ (goal <g> ^obj <foo>)
+ (<foo> ^name <foo>)
+-->)
+
+run 1
+add-wme g1 ^obj g1
+add-wme g1 ^name g1
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^name g2
+ms
+remove-wme 11
+ms
+add-wme g2 ^name g1
+ms
+remove-wme 12
+ms

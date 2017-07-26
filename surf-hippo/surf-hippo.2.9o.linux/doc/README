@@ -1,0 +1,63 @@
+
+************************************************************************
+				   
+	Quick Guide to the Surf-Hippo Documentation Directory
+			  and Other Pointers
+
+************************************************************************
+
+This directory contains the Surf-Hippo documentation set. User queries will
+profoundly influence the growth rate of given branches.
+
+Of particular interest are draft versions of the User Manual and
+Reference Manual.
+
+For installing Surf-Hippo, see the surf-hippo/doc/installation directory.
+
+Various related documentation from outside sources are found in
+surf-hippo/doc/outside_docs/.
+
+The source code (in the subdirectories under surf-hippo/src) is fairly well
+commented, which is especially useful in understanding the nature of various
+circuit elements.
+
+Older doc files, most of which have been incorporated into the User
+Manual, may be found in the old-doc-files directory.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+If there is a reference to a Surf-Hippo function whose source code can't be
+found, you can try the DESCRIBE function. For example, if you looked at the
+file surf-hippo/src/hippocampus/hippos.lisp and saw a call to
+
+  (make-soma-segment-chain soma "a" 4 100 1 '(auto-fast) '(43 22 103))
+
+and you wondered what this function did, then from Lisp, you would enter:
+
+     * (describe 'make-soma-segment-chain)
+     MAKE-SOMA-SEGMENT-CHAIN is an internal symbol in the SURF-HIPPO package.
+     Function: #<Function MAKE-SOMA-SEGMENT-CHAIN {23F2DD9}>
+     Function arguments:
+       (soma chain-name total-segs seg-length seg-diam synapse-types synapse-segs &key
+	(proximal-phi 0.0))
+     Its defined argument types are:
+       (T T T T T T T &KEY (:PROXIMAL-PHI T))
+     Its result type is:
+       NULL
+     On Monday, 2/6/95 07:35:20 pm EST it was compiled from:
+     /home/surf-hippo/src/sys/trees.lisp
+       Created: Tuesday, 12/27/94 03:44:32 pm EST
+     * 
+
+
+Depending on the documentation in the function definition, this may be
+sufficient. Otherwise, DESCRIBE tells you which source file to look at
+(in this case surf-hippo/src/sys/trees.lisp).
+
+
+The Staff
+
+
+
+
+

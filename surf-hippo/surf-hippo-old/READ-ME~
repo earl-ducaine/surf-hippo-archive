@@ -1,0 +1,6 @@
+Add the pathname of the top level surf-hippo directory to .cshrc, for example:
+
+	setenv SURFHOME /home/hc/lyle/surf-hippo/
+
+
+

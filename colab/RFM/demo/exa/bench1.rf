@@ -1,7 +1,0 @@
-(hn (app nil _L _L))
-(hn (app (tup _H . _L1) _L2 (tup _H . _L3))
-     (app _L1 _L2 _L3))
-
-(hn (nrev nil nil))
-(hn (nrev (tup _H . _L1) _L3) (nrev _L1 _L2) (app _L2 `(tup _H) _L3))
-

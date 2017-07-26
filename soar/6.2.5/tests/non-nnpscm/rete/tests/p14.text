@@ -1,0 +1,43 @@
+;;
+;; conjunction test
+;;
+
+(sp p14
+ (goal <g> ^conj { 10 <y> < 11 > 9 <> <g> })
+-->)
+
+run 1
+add-wme g1 ^conj 10
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme g1 ^conj 11
+ms
+remove-wme 10
+ms
+add-wme g1 ^conj 8
+ms
+remove-wme 11
+ms
+add-wme g1 ^conj g1
+ms
+remove-wme 12
+ms
+add-wme g1 ^conj foo
+ms
+add-wme g1 ^conj bar
+ms
+add-wme g1 ^conj 11
+ms
+add-wme g1 ^conj 12.4
+ms
+remove-wme 13
+ms
+remove-wme 14
+ms
+remove-wme 15
+ms
+remove-wme 16
+ms

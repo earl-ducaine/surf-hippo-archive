@@ -1,0 +1,1084 @@
+Modifications and Enhancements in Soar 6.2.5 and 6.2.4 beta versions
+------------------------------------------------------------------------
+A. Fixed nnpscm and non-nnpscm default rules.
+
+   Various fixes were made to the default rules in Michigan, mostly nnpscm
+   but also some non-nnpscm.  There are many bug numbers corresponding to
+   needed fixes in the default rules.  Many of these will have been taken
+   care of in these fixes.  Once 6.2.4 is released, we'll need to go through
+   the bug list thoroughly to determine which bugs have been taken care of.
+
+   These include Gary's modifications to one rule, 94.9.20, bug #632.
+   These include the rectification Aladin sent to Allan, 94.9.26.
+
+   However, there are some issues involved in these default rules fixes.
+   One of these fixes, which was made to default*pass-back-success in
+   nnpscm, involved the removal of partial-success from << required-success
+   success partial-success >>.  This removal, while appropriate for some
+   problems, and probably appropriate in general, caused a problem for
+   the missionaries-and-cannibals (mac.soar) problem.  In particular, it
+   made the problem take much longer to complete.  Originally, the output
+   from the test-suite run was 35K, but with this change to this default
+   rule, the output was 100K.  However, Aladin found that mac.soar had a
+   duplicate state detection rule that was excised later in the problem,
+   so the excision was commented out.  This seems to prevent mac.soar from
+   infinite looping under user-select random.
+
+   Another problem is that the waterjug and keys-and-boxes (kab) problems
+   take a very long time to complete if learning is off.  In fact, the
+   time is so long that we didn't wait for it to complete.  On going over
+   this with Gary, it was his opinion that it might eventually complete,
+   but that the state space was just very large.  However, with learning on,
+   it finishes quickly.  Gary had the following comment about that:
+
+     "These problems only work with learning on because they detect loops
+     via duplicate state detection.  The duplicate states have to be on
+     different contexts on the goal stack.  Thus, if you throw away the
+     learned knowledge that an operator leads to a duplicate state,
+     it can loop at the top state."
+
+   According to Aladin, kab.soar does not do duplicate state detection.
+   It simply has a large search space, which is why it takes so long.
+
+   Note that the changes in the default rules, which were verified as
+   being good changes, altered the paths through the state spaces of the
+   test suite problems.  As a result, comparing the test runs to the
+   gold-standard results was impossible, because differences were expected
+   and considered appropriate.  Hence, it was difficult to determine
+   whether the test runs were "successful".  One benchmark I used was the
+   size of the output file.  This benchmark led to Gary's discovery of
+   the effects of the change to default*pass-back-success.  I have updated
+   the gold-standards to reflect the new default rules, and so the tests
+   now pass the new gold standards.  However, this passing should be taken
+   with a grain of salt.  Not a big grain, but a grain nevertheless.
+
+   Modified default rules:
+   ----------------------
+   (A + indicates this rule was modified in both nnpscm and non-nnpscm
+   versions.  Else it was only modified in nnpscm.)
+     default*selection*propose*evaluate-object
+     default*evaluate-object*elaborate*state*desired
+   + default*duplicate-desired*copy-old-value
+     default*selection*compare*equal-evaluation-indifferent 
+     default*selection*compare*higher-evaluation-better
+     default*selection*compare*prefer-lower-evaluation
+     default*selection*compare*same-symbolic-evaluations-are-indifferent
+     default*selection*compare*success-evaluation-better-than-partial-success
+     default*selection*compare*partial-failure-evaluation-better-than-failure
+   + default*pass-back-success 	
+     default*selection*compare*novalue-evaluation-always-worse
+     default*generic*opsub*copy*superstate
+
+   Modified Files:
+   --------------
+   ./default/nnpscm/default.soar
+   ./default/non-nnpscm/default.soar
+
+------------------------------------------------------------------------
+B. Fixed argument list for control_c_handler.
+   Bug number 581.
+
+   Modified Files:
+   --------------
+   ./src/init_soar.c	- only added comments
+   ./src/lexer.c
+
+------------------------------------------------------------------------
+C. Fixed *some* serious problems uncovered by "lint".
+   Bug number 611.
+
+   Not all the problems exposed by lint were dealt with.  There were lots of
+   problems, and fixing them would make for cleaner code, but many of those
+   fixes would not affect functionality.  Later, when we have more time to
+   make clean fixes, we'll go back and do those.
+
+   Modified Files:
+   --------------
+   ./src/interface.c	- fixed #ifdef UNIX problems
+			- added explicit return value: load_errors_interface_routine
+			- fixed fn prototype to match definition
+			- fixed uninitialized variable: matches_at_this_level
+			- dealt with value returned by fclose()
+   ./src/rhsfun.c	- added explicit return value: user_select_rhsfun
+   ./src/rhsfun_math.c	- fixed uninitialized variables: f
+   ./src/tilde.c	- fixed fn prototypes to match definitions
+
+------------------------------------------------------------------------
+D. Applied patches for MS-Windows Soar.
+   Bug number 600.
+
+   These changes consisted mainly of adding some blocks of code that were
+   marked off by #ifdef _WINDOWS declarations.  They won't affect functionality
+   but will allow the code to be ported to Windows more easily next time.
+
+   Modified Files:
+   --------------
+   ./src/backtrace.c
+   ./src/decide.c
+   ./src/global_vars.h
+   ./src/hooks.c
+   ./src/init_soar.c
+   ./src/interface.c
+   ./src/io.c
+   ./src/lexer.c
+   ./src/print.c
+   ./src/rete.c
+   ./src/soar.h
+   ./src/symtab.c
+
+------------------------------------------------------------------------
+E. Applied patches for MacSoar.
+   Bug number 628.
+
+   These changes consisted mainly of adding some blocks of code that were
+   marked off by #ifdef __SC__ declarations.  They won't affect functionality
+   but will allow the code to be ported to MacSoar more easily next time.
+
+   Modified Files:
+   --------------
+   ./src/backtrace.c
+   ./src/chunk.c
+   ./src/decide.c
+   ./src/init_soar.c
+   ./src/interface.c
+   ./src/io.c
+   ./src/lexer.c
+   ./src/main.c
+   ./src/osupport.c
+   ./src/prefmem.c
+   ./src/print.c
+   ./src/recmem.c
+   ./src/rhsfun.c
+   ./src/soar.h
+   ./src/tempmem.c
+   ./src/tilde.c
+   ./src/wmem.c
+
+------------------------------------------------------------------------
+F. Fixed print command.
+   Bug number 652.
+
+   The purpose of these fixes was to alphabetically sort the attributes
+   during the printing of objects.  In beta test releases of 6.2.4,
+   these changes were made by Mark.  However, they were found to be
+   buggy and so were scrapped and re-coded by Allan.  This was done by
+   taking the block of code for the print function from 6.2.3 and replacing
+   the 6.2.4 print function with it.  It was thought at the time that there
+   would not be any other bug fixes that would be undone by doing that,
+   but it was later found that the fix for Bug 646 was in fact undone.
+   So that fix was reinstated.  Allan currently believes there are no other
+   bug fixes undone, although it's possible one may have slipped through
+   the cracks.  Anyway, Bug 652 was reported by Erik when he tried to use
+   Mark's print function and got core dumps.  By re-coding the
+   alphabetization, I fixed Erik's bug on the side.  All the changes are
+   localized to the print_augs_of_id function, with the exception that
+   the compare_attr function was added.
+
+   The only printouts changed are those which pass through the
+   print_interface_routine.  Printouts generated by the list-productions
+   or list-chunks command are not alphabetized.  The print_interface_routine
+   calls 1 of 3 helper function depending on what is to be printed out,
+   and from them, any lists that are printed out are done so from
+   print_augs_of_id, so it was only necessary to change 1 function.
+
+   The attributes are not normally sorted, so the qsort function was used
+   to sort them.  qsort does a Quicksort (O(n log n)) on an array.  So since
+   the elements are normally in linked list format, they needed to be moved
+   to an array format.  So an array of pointers was constructed, and then
+   these pointers were moved around by the qsort function.  In that way,
+   the sorting wouldn't be permanent, but this is necessary anyway since the
+   rete has its own sorting scheme.  The array is dynamically allocated
+   and deallocated in the same function.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+G. Fixed o-support problems.
+
+   Several changes were made here, but they were all made at Michigan by Mark,
+   and Allan doesn't have a good general idea of what was done and why.
+
+   Modified Files:
+   --------------
+   ./src/osupport.c
+
+------------------------------------------------------------------------
+H. Modified and added several example problems.
+   Bug number 653, 651.
+
+   The nnpscm versions of farmer and waterjug were removed in the 6.2.3
+   release.  These have been re-added to the 6.2.4 release because changes
+   in the default rules allow them to run now.  Keys and Boxes (kab.soar)
+   was recently created by Aladin and added to the examples directory.
+   The other examples have been modified to work better with the new
+   default rules.
+
+   Modified Files:
+   --------------
+   ./examples/nnpscm/eight-puzzle/eight-puzzle.soar	- modified by John
+   ./examples/non-nnpscm/eight-puzzle/eight-puzzle.soar	- modified by John
+   ./examples/nnpscm/farmer/farmer.soar		- re-added by Aladin
+   ./examples/non-nnpscm/farmer/farmer.soar	- modified by Aladin
+   ./examples/nnpscm/kab/kab.soar		- added by Aladin
+   ./examples/non-nnpscm/kab/kab.soar		- added by Aladin
+   ./examples/nnpscm/waterjug/waterjug.soar	- re-added by Aladin
+   ./examples/non-nnpscm/waterjug/waterjug.soar	- modified by Aladin
+   ./examples/nnpscm/analogy/analogy.soar	- added
+   ./examples/non-nnpscm/analogy/analogy.soar	- added
+
+------------------------------------------------------------------------
+I. Cleaned up a garbage pointer which was causing core dumps.
+   Bug number 640.
+
+   Modified Files:
+   --------------
+   ./src/decide.c
+
+------------------------------------------------------------------------
+J. Fixed another NNPSCM O-support problem.
+   Bug number 639.
+
+   Part of Mark's unknown changes included a fix for O-support.  O-support
+   was being given for operator preferences in the state and superstates.
+   This was partially fixed in Mark's changes, which were largely
+   derived from Bob.  But there were some special cases not considered
+   in those fixes, which Gary's fix takes care of.
+
+   Modified Files:
+   --------------
+   ./src/osupport.c
+
+------------------------------------------------------------------------
+K. Removed superfluous line feeds after "Firing" messages.
+   Bug numbers 617 and 634.
+
+   This same problem happens with "Retracting" messages as well, so that was
+   taken care of too.  The essence of the fix was to not print a \n before
+   Firing or Retracting if the current screen position was at the first
+   column.  This fix worked well for "Build:" lines as well, so the
+   change was made there too.  In addition, "Build:" was changed to
+   "Building" to be like Firing and Retracting, and to make traces easier
+   to follow.  The latter came about because with "Build:" and "Firing"
+   having the same length, it would sometimes be difficult to scan a
+   trace quickly.  Now that "Firing" and "Building" are of different
+   lengths, traces should be easier to follow.
+
+   Modified Files:
+   --------------
+   ./src/chunk.c
+   ./src/recmem.c
+
+------------------------------------------------------------------------
+L. Added print-alias command.
+   Bug number 627.
+
+   This is a command which allows you to decide whether you want to see
+   Soar notify you that an alias has been defined when you define one.
+   It uses a binary switch just like load-errors.
+
+   Modified Files:
+   --------------
+   ./src/init_soar.c
+   ./src/interface.c
+
+------------------------------------------------------------------------
+M. Modified chunk printout routine so chunks are printed out in ascending
+   order.
+   Bug number 641.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+N. Added "last" and 'stop asking' options to user-select command.
+   Bug number 615.
+
+   The "last" option to the user-select command allows the user to
+   force Soar to select the last of a set of indifferent preferences.
+   The other options here are "first", "random", and "ask" where the
+   user is asked each time which preference to select.
+
+   The 'stop asking' option is given to the user each time the user is
+   asked which preference to select.  The list of preferences is given,
+   followed by 3 options which allow the user to switch to "first", "last",
+   or "random" mode for the remainder of the run.
+
+   Modified Files:
+   --------------
+   ./src/decide.c
+   ./src/interface.c
+   ./src/rhsfun.c
+   ./src/soar.h
+
+------------------------------------------------------------------------
+O. Modified destroy_soar_agent() so that if it's called from other code
+   and tries to destroy the current agent, that the system makes the
+   control agent current, rather than hanging.
+   Bug number 601.
+
+   Modified Files:
+   --------------
+   ./src/init_soar.c
+
+------------------------------------------------------------------------
+P. Added "and" feature to "if" and "if-not" commands.
+   Bug number 645.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+Q. Modified "memories" command to make it more useful.
+   Bug number 649.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+R. Fixed core dump problem in load-errors facility.
+
+   Because of the was the response string was handled in load-errors,
+   responding with a string longer than 2 characters would cause a core
+   dump.  This has been fixed.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+S. Added input-period command.
+
+   The input-period command allows you to restrict Soar to only accept input
+   WMEs from input functions every certain number of decision cycles.
+
+   Modified Files:
+   --------------
+   ./src/global_vars.h
+   ./src/init_soar.c
+   ./src/interface.c
+
+------------------------------------------------------------------------
+T. Modified "pf" command to make it more useful.
+
+   A few more command-line options have been added so that you can
+   now find chunks instead of productions, and so that you can apply
+   a command (such as excise) to each production/chunk found.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+U. Added chunky-problem-spaces command.
+
+   This is essentially the opposite of chunk-free-problem-spaces.  It
+   allows you to specify problem spaces in which learning will occur.
+
+   Modified Files:
+   --------------
+   ./src/global_vars.h
+   ./src/soar.h
+   ./src/chunk.c
+   ./src/init_soar.c
+   ./src/interface.c
+
+------------------------------------------------------------------------
+V. Made the numbering of production types consistent.
+   Bug number 655.
+
+   Frank Koss discovered that the ordering of TRACE_FIRING_OF_*_SYSPARAM
+   was inconsistent with the ordering of *_PRODUCTION_TYPE where * was
+   one of USER, DEFAULT, CHUNK, JUSTIFICATION in soar.h.  This problem
+   existed since Soar 6.0.0 but was never detected.  It has been fixed.
+
+   Modified Files:
+   --------------
+   ./src/soar.h
+   ./src/interface.c
+   ./src/recmem.c
+
+------------------------------------------------------------------------
+W. Made it so that Soar will compile with gcc -ansi on pmax_mach.
+   Bug number 656.
+
+   The problem was that the MACH flag wasn't being set on pmax_mach machines,
+   and the MACH flag was what prevented <dirent.h> from being #included.
+   But on Mach machines, <dirent.h> doesn't exist.  So the makefile was
+   changed to set the MACH flag, and now Soar compiles with gcc -ansi.
+
+   Modified Files:
+   --------------
+   ./make.header.pmax_mach
+
+------------------------------------------------------------------------
+X. Added file of aliases to the default directory.
+
+   Sarah Nichols and Frank Ritter made up a set of aliases that they found
+   to be very useful, and these have been included in the Soar release.
+
+   Modified Files:
+   --------------
+   ./default/aliases.soar
+
+------------------------------------------------------------------------
+Y. Made the variable default_print_depth to be a global.
+   Bug number 646.
+
+   By making default_print_depth to be a global and stored in global_vars.h,
+   every agent in multi-agent Soar can have its own default print depth.
+
+   Modified Files:
+   --------------
+   ./src/global_vars.h
+   ./src/init_soar.c
+   ./src/interface.c
+
+------------------------------------------------------------------------
+Z. Fixed problem in init_soar.c where destroy_soar_agent sometimes
+   attempts a queue delete when nothing is in the text_input_queue
+   Bug number 610.
+
+   Modified Files:
+   --------------
+   ./src/init_soar.c
+
+------------------------------------------------------------------------
+AA. Added default limits (20) to memories and firing-counts commands.
+
+   Modified Files:
+   --------------
+   ./src/interface.c
+
+------------------------------------------------------------------------
+AB. Set cond->bt.prohibits to NIL at the right place.
+
+    During the release of 6.2.4, a core dump bug was found which only
+    manifested itself on SGIs while running kab.soar.  The reason for
+    that was that Mach machines seem to clean our your memory for you
+    when you newly allocate it, and SGIs don't.  The actual problem
+    lay in the fact that one pointer wasn't getting initialized to NIL.
+    This problem was fixed with a 1-line change to decide.c.  In looking
+    for this bug, some believed-to-be-buggy code was found in recmem.c
+    in deallocate_instantiation and that code has been fixed as well.
+
+   Modified Files:
+   --------------
+   ./src/decide.c
+   ./src/recmem.c
+
+------------------------------------------------------------------------
+AC. Removed one of the changes implemented in bug number 628.
+
+    Two of the changes made for bug 628 were found to cause problems
+    with the main release.  Upon consultation with Vernon, these changes
+    were found to be superfluous for the Mac, so they were removed.
+
+   Modified Files:
+   --------------
+   ./src/lexer.c
+   ./src/interface.c
+
+------------------------------------------------------------------------
+AD. Moved the DEBUG_INSTANTIATIONS compiler flag from rete.c to recmem.c.
+
+    rete.c and recmem.c apparently used to be the same file.  However,
+    when they were split up, it seems that the DEBUG_INSTANTIATIONS
+    definition remained in rete.c while its only use moved to recmem.c.
+    This has been corrected.
+
+   Modified Files:
+   --------------
+   ./src/rete.c
+   ./src/recmem.c
+
+------------------------------------------------------------------------
+
+
+
+
+Modifications and Enhancements in Soar 6.2.3
+------------------------------------------------------------------------
+A. Modified NNPSCM Default Rules.
+
+   Modified Files:
+   --------------
+   default.soar
+
+------------------------------------------------------------------------
+B. Fixed trace-format problem in NNPSCM
+
+   Modified Files:
+   --------------
+   trace.c
+   symtab.c
+
+------------------------------------------------------------------------
+C. Removal and addition of several examples and gold-standard tests for 
+   NNPSCM. 
+
+   Modified Files (NNPSCM version only):
+   ------------------------------------
+   Removal of:  waterjug.soar, physics.soar, and farmer.soar
+   Addition of: mac.soar, safe-stack.soar, and towers-of-hanoi.soar
+
+------------------------------------------------------------------------
+
+
+
+
+Modifications and Enhancements in Soar 6.2.2
+------------------------------------------------------------------------
+A. Updated "conversion.el" file in pscm-convert directory.
+
+   Modified Files:
+   --------------
+   conversion.el
+
+------------------------------------------------------------------------
+   Added "convert-prods.soar" to pscm-convert directory.
+ 
+   Modified Files:
+   --------------
+   convert-prods.soar
+
+------------------------------------------------------------------------
+B. Modified "memories" command.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+   Fixed uninitialized variable "max_chunks_reached".
+ 
+   Modified Files:
+   --------------
+   init_soar.c
+
+------------------------------------------------------------------------
+   Fixed uninitialized queue element.
+
+   Modified Files:
+   --------------
+   queue.c
+
+------------------------------------------------------------------------
+   Fix for NNPSCM in reorderer.
+ 
+   Modified Files:
+   --------------
+   reorder.c
+
+------------------------------------------------------------------------
+   Fix for NNPSCM in trace-format code.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+   Fix for NNPSCM in o-support calculations.
+
+   Modified Files:
+   --------------
+   osupport.c
+
+------------------------------------------------------------------------
+   Temporarily set "print" command behavior to circa 6.1.1 print behavior.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+   Modified interrupt RHS function.  Interrupt now allows for proper behavior
+   under multi-agent operation.
+
+   Modified Files:
+   --------------
+   rhsfun.c
+
+------------------------------------------------------------------------
+   Modified "dispatch_command" to correctly typecast for compilation
+   with SGI IRIX.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+ 
+C. Modified make.body to correctly process "make clobber" command.
+
+   Modified Files:
+   --------------
+   make.body
+
+------------------------------------------------------------------------
+
+D. Added new "pf" (production finding) user command.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+
+
+
+
+Modifications and Enhancements in Soar 6.2.1
+
+------------------------------------------------------------------------
+A. Default Rules have been modified.
+   Bug number 537.
+
+   Some of the default rules did not have the :default keyword
+   in them, causing them to be excised when the user did a "excise-task".
+   This has been corrected.
+
+   Modified Files:
+   --------------
+   default.soar6
+
+------------------------------------------------------------------------
+B. New RHS functions
+   Bug number 520.
+
+Gary suggested 2 new RHS functions, and provided code for them.
+These functions have been added to 6.2.  Here is Gary's description of
+these functions.
+
+I have 2 general purpose rhs functions that could be added.
+They are probably too late for this release, so just add them as
+enhancements. Since you added all the rest of my rhs functions
+I thought I would send you these also :-).
+
+They are invoked in the following manner, and I use them
+to produce nice traces.
+
+   (ifeq <a> <b> abc def)
+and 
+   (strlen <a>)
+
+ifeq -- checks if the first argument is "eq" to the second argument
+        if it is then it returns the third argument else the fourth.
+        It is useful in similar situations to the "?" notation in
+        C. Only the first 3 arguments are required.
+
+        examples:
+           (sp trace-juggling
+            (goal <g> ^state.ball.position <pos>)
+           -->
+            (write (ifeq <pos> at-top        |    o|)       (crlf)
+                   (ifeq <pos> left-middle   | o|)
+                   (ifeq <pos> right-middle  |       o|)    (crlf)
+                   (ifeq <pos> left-hand     |o|)
+                   (ifeq <pos> right-hand    |        o|)   (crlf)
+                                             |V_______V|    (crlf))
+            )
+
+            This outputs with a single production one of the following
+            pictures depending on the ball's position (providing the ball is
+            not dropped of course. Then it outputs empty hands. :-) 
+
+                                         o                    
+                         o                              o         
+           o                                                           o
+           V-------V    V-------V    V-------V    V-------V    V-------V
+                     or           or           or           or
+
+
+           for a ball that takes this path.
+
+               o    
+            o     o 
+           o       o
+           V-------V
+
+           Basically this is useful when you don't want the trace to match the
+           internal working memory structure.
+
+strlen <val> - returns the string length of the output string so that 
+               one can get the output to line up nicely. This is useful
+               along with ifeq when the output string varies in length.
+
+           example:
+
+              (strlen |abc|) returns 3
+
+              (write (ifeq (strlen <foo>) 3 | |)
+                     (ifeq (strlen <foo>) 2 |  |)
+                     (ifeq (strlen <foo>) 1 |   |) <foo>)
+
+                  writes foo padding on the left with enough blanks so that the
+                  length of the output is always at least 4 characters.
+
+
+   Modified Files:
+   --------------
+   rhsfun.c:
+    - added the code for the functions and linked them in
+
+
+------------------------------------------------------------------------
+B. Fixed load-errors facility.
+   Bug number 527.
+
+The load-errors facility has been changed in the following ways:
+
+1. The prompt, which used to be several lines, has been condensed into
+   1 line.
+
+2. Before, the prompt would print out both before and after the offending
+   line was printed out.  This has been changed so that the prompt only
+   prints out after the offending line.
+
+3. Before, when the choice was given between continuing or not, continuing
+   meant continuing to load the file, whereas not continuing meant
+   exiting Soar.  This has been changed so that not continuing means
+   aborting the particular load of the file without exiting Soar.
+
+   Modified Files:
+   --------------
+   global_vars.h:
+    - added a global boolean variable, load_errors_quit, used to store
+      the users choice (to continue or abort loading)
+
+   interface.c:
+    - set the load_errors_quit flag
+
+   lexer.c:
+    - handled the load_errors_quit flag
+    - moved the call to respond_to_load_errors
+
+   parser.c:
+    - modified parse_head_of_conds_for_one_id to return NIL when
+      there's a constant in the id field test
+    - removed spurious calls to respond_to_load_errors
+
+------------------------------------------------------------------------
+C. Fixed select-agent command.
+   Bug number 529.
+
+Before, typing "select-agent control" would cause an error since control
+is not a regular schedulable agent.  The select-agent command has been
+changed to properly handle "select-agent control".
+
+
+   Modified Files:
+   --------------
+   ma_interface.c:
+    - moved the test for "control" to its proper place
+
+------------------------------------------------------------------------
+D. Modified destroy-agent command.
+   Bug number 532.
+
+Before, a destroy-agent command would simply return a prompt
+without stating that it had successfully destroyed an agent.  This has
+been changed so that a "Destroying agent ..." line is printed out
+when an agent is destroyed.
+
+
+   Modified Files:
+   --------------
+   init_soar.c:
+    - added the necessary print statement
+
+------------------------------------------------------------------------
+E. Fixed where Soar prompts were not printed out.
+   Bug number 533.
+
+There were several places where Soar prompts were not printed
+out and they should have been.  These have been fixed.
+
+
+   Modified Files:
+   --------------
+   ma_interface.c:
+    - all these were fixed by setting current_agent(current_char) = '\n'
+      at the right time
+
+------------------------------------------------------------------------
+F. Fixed where Soar printed out prompts during the entering of an sp.
+   Bug number 534.
+
+When entering a Soar production from the keyboard, prompts
+were printed after each line of the production was entered.  This has
+been fixed so that no prompts are printed until the production is finished.
+
+
+   Modified Files:
+   --------------
+   lexer.c
+
+------------------------------------------------------------------------
+G. Fixed filename string lengths in Soar.
+   Bug number 536.
+
+Filenames and pathnames in Soar had string lengths of 1000,
+which was inadequate for some purposes.  This has been changed so that
+these string lengths are of length MAXPATHLEN, which is defined in
+sys/param.h.
+
+
+   Modified Files:
+   --------------
+   global_vars.h:
+    - #define MAXPATHLEN 1024
+   init_soar.c, interface.c, ma_interface.c:
+    - changed all appropriate references to 1000 to MAXPATHLEN
+
+------------------------------------------------------------------------
+H. Made the preferences command more verbose.
+   Bug number 546.
+
+Before, if the "preferences" command was unable to find the
+specified slot in the specified object, it simply returned the message
+"There is no such slot."  The message has been changed to return the
+object id and attribute name, so as to be more informative.
+
+
+   Modified Files:
+   --------------
+   interface.c:
+    - modified preferences_interface_routine to give more information
+
+------------------------------------------------------------------------
+I. Fixed 2 places where '=' was used when '==' was intended.
+   Bug number 558.
+
+Karl found 2 places where '=' was used when '==' was intended.
+I have made these changes to the main code.
+
+
+   Modified Files:
+   --------------
+   ma_interface.c
+
+------------------------------------------------------------------------
+J. Modified the cd command to understand the ~.
+   Also added a shell escape.
+   Bug number 562.
+
+The cd command used to not understand the ~ in a filename.
+Now it does.  Also, a general shell escape has been added.
+
+To execute a shell command, simply preface the command with a "$".
+For instance, to get a directory listing, type "$ls".  To get a long
+directory listing, type "$ls -al".  Other commands can be executed
+from the shell as well.  You can use pipes in the shell, and call up
+other programs such as emacs, either in the foreground or background.
+
+The shell that is used is sh, which is a substantially more austere shell
+than csh.  For instance, commands such as pushd and popd are not
+implemented in sh.  There are a few other "features" about the shell
+escape.  For one thing, the shell is terminated as soon as the command
+is executed.  This means that doing a directory change by itself is
+meaningless, since the only directory that would change is the working
+directory of this ephemeral shell.  Also, the shell does not read the
+.cshrc file, so no aliases will be available.
+
+
+   Modified Files:
+   --------------
+   interface.c:
+    - added a call to tilde_expand in chdir_interface_routine
+    - process the DOLLAR_STRING_LEXEME
+   lexer.c:
+    - modified get_lexeme to process the '$'
+      - added a new type, DOLLAR_STRING_LEXEME
+   x_interface.c:
+    - look for DOLLAR_STRING_LEXEME as well as SYM_CONSTANT_LEXEME
+
+------------------------------------------------------------------------
+K. Fixed the explain command to make it multi-agent compatible.
+   Bug number 564.
+
+The "explain" command was not multi-agent compatible, so
+Frank Koss, Mark Portelli, and Doug Pearson made the necessary
+changes and sent them over in a tar file.  I incorporated these
+changes into the main version of Soar.
+
+
+   Modified Files:
+   --------------
+   explain.h
+   global_vars.h
+   soar.h
+   explain.c
+   hooks.c
+   init_soar.c
+   interface.c
+
+------------------------------------------------------------------------
+L. Added new features: alias, unalias, pushd, popd, dirs.
+   Bug number 568.
+
+This bug was initially only addressing the alias, but I
+expanded it to include the pushd, popd, and dirs commands as well.
+
+Because of the nature of the shell escape, commands that change the
+current directory have no effect.  Hence, the pushd and popd commands
+had to be implemented in Soar.  These commands are fairly simple.
+pushd takes a string argument which is the name of the directory
+that is to be made current.  popd takes no arguments.  There is also
+a dirs command that lists the directory stack.  In multi-agent Soar,
+each agent has its own directory stack.
+
+The alias command works similarly to the alias feature in csh.  Simply
+type "alias ca create-agent" to create an alias so that you can type
+ca as a short form of create-alias.  For instance, with this alias,
+you can type "ca foo" to create an agent called foo.  You can remove
+this alias by typing "unalias ca".  You can get a list of all currently
+defined aliases by typing "alias" with no arguments.
+
+The expansion of an alias can contain as many lexemes as you want to
+put in it.  For instance, you can create an alias to enter in an
+entire Soar production, an example of which appears below.  Extraneous
+outer parentheses will be ignored.
+
+Under multi-agent Soar, each agent has its own list of aliases, so that
+aliases defined under one agent will not automatically be available
+under another.
+
+Here are some examples of using the alias command:
+
+Soar agent control> alias ca (create-agent)
+Alias ca successfully added.
+
+Soar agent control> alias
+alias   ca   create-agent
+
+Soar agent control> alias ca create-agent
+New ca alias successfully replaced old.
+
+Soar agent control> alias
+alias   ca   create-agent
+
+Soar agent control> ca foo
+
+Creating agent foo.
+
+Soar agent control> alias prod sp foo (goal <g> ^name foo) --> (<g> ^foo bar)
+Alias prod successfully added.
+
+Soar agent control> alias
+alias   ca   create-agent
+alias   prod   sp foo ( goal <g> ^ name foo ) --> ( <g> ^ foo bar )
+
+Soar agent control> prod
+*
+Soar agent control> list-productions
+(sp foo
+  (goal <g> ^name foo)
+-->
+  (<g> ^foo bar +))
+
+
+Soar agent control>
+
+
+   Modified Files:
+   --------------
+   global_vars.h:
+    - added global variables for list of aliases, top of dir stack,
+      and alias substitution
+   soar.h:
+    - added structs for nodes in the lists
+   init_soar.h:
+    - initialized the lists
+   interface.c:
+    - modified dispatch_command to check if the current command is
+      an alias, so that it can be expanded before the list of commands
+      is checked.
+    - added interface routines and help strings for pushd, popd, dirs,
+      alias, and unalias
+   lexer.c:
+    - modified get_lexeme to return parts of the alias expansion if
+      an alias is currently being expanded
+   print.c:
+    - changed start_log_file to correctly reflect the current directory,
+      now that the way in which the current directory is stored has
+      changed
+
+------------------------------------------------------------------------
+M. Made user-select into an RHS function.
+   Bug number 392.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+N. Learn full-trace has :justifications on, :chunks on,
+   :justification-names on, :chunk-names on.
+   Backtracing should show why justifications are built.
+   Bug number 451.
+
+   Modified Files:
+   --------------
+   interface.c
+   init-soar.c
+
+------------------------------------------------------------------------
+O. Backtracing through prohibit preferences.
+   Bug number 487, 547.
+
+   Modified Files:
+   --------------
+   chunk.c
+   recmem.c
+
+------------------------------------------------------------------------
+P. Fixed memory leak in firing-counts.
+   Bug number 545.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+Q. Better interface for browsing the contents of working memory.
+   Bug number 551.
+
+   Modified Files:
+   --------------
+   interface.c
+
+------------------------------------------------------------------------
+R. Link with -lmalloc rather than default on SGIs for performance gain.
+   Bug number 553.
+
+   Modified Files:
+   --------------
+   make.header.sgi
+
+------------------------------------------------------------------------
+S. Added Tower of Hanoi example.
+   Bug number 555.
+
+   Modified Files:
+   --------------
+   examples/non-nnpscm/towers-of-hanoi/towers-of-hanoi.soar
+   examples/non-nnpscm/towers-of-hanoi/README
+   examples/non-nnpscm/towers-of-hanoi/probs/prob.3d.1, prob.3d.2, prob.4d.1,  
+                                             prob.5d.1, prob.5d.2
+
+------------------------------------------------------------------------
+T. Added Safe-stack example.
+   Bug number 574.
+
+   Modified Files:
+   --------------
+   examples/non-nnpscm/safe-stack/safe-stack.soar
+   examples/non-nnpscm/safe-stack/README
+   examples/non-nnpscm/safe-stack/probs/prob.1, prob.2, prob.3, prob.4, 
+                                        prob.5, prob.6
+

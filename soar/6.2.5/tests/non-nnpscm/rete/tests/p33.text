@@ -1,0 +1,80 @@
+(sp create-identifiers
+  (goal <g> ^object nil)
+-->
+  (<g> ^a-ident <a>
+       ^b-ident <b>
+       ^c-ident <c>)
+)
+
+(sp p33
+    (goal <g1> ^0 <a>)
+    (goal <g1> ^1 <a>)
+   -(<a> ^2)
+   -(<a> ^3)
+    (goal <g1> ^4 <b>)
+    (<b>  ^a <c>)
+   -(goal <g1> ^5 <a>)
+    (goal <g1> ^6 <a>)
+-->)
+
+run 1
+add-wme g1 ^0 a1
+ms
+add-wme g1 ^1 a1
+ms
+add-wme g1 ^4 b1
+ms
+add-wme b1 ^a c1
+ms
+add-wme g1 ^6 a1
+ms
+run 1
+remove-wme 6
+ms
+run 1
+add-wme g1 ^0 a1
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme g1 ^6 a1
+ms
+run 1
+add-wme a1 ^2 b1
+ms
+run 1
+remove-wme 13
+ms
+run 1
+add-wme a1 ^3 a1
+ms
+run 1
+remove-wme 14
+ms
+run 1
+add-wme g1 ^5 a1
+ms
+run 1
+remove-wme 15
+ms
+run 1
+add-wme a1 ^2 a1
+ms
+run 1
+add-wme a1 ^3 a1
+ms
+remove-wme 16
+ms
+remove-wme 17
+ms
+run 1
+add-wme a1 ^2 a1
+ms
+run 1
+add-wme a1 ^3 a1
+ms
+remove-wme 19
+ms
+remove-wme 18
+ms

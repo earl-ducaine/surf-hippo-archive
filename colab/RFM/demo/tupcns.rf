@@ -1,2 +1,0 @@
-(ft (tup) `(tup))
-(ft (tup _first | _rest) `(tup _first | _rest))

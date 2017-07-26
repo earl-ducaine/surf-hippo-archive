@@ -1,0 +1,127 @@
+**************************************
+**************************************
+Biophysical Details
+**************************************
+**************************************
+
+This file contains information on some biophysical details that may be
+relevant to but not mentioned fully in other doc files.
+
+
+
+**************************************
+Temperature Dependence
+**************************************
+
+See also channel.doc and synapse.doc. Q10s (and associated reference
+temperatures) may be defined for channels, particles and synapses,
+which in turn define the temperature dependence for channel maximum
+conductances, particle kinetics, and synaptic maximum conductances,
+respectively, when the global variable *IGNORE-Q10* is NIL (default).
+The simulation temperature is set by either the global variable
+*TEMPERATURE* (in degrees Kelvin, 300.0 default) or *Temp-celcius* (in
+degrees Celcius, 27.0 default). If an element does not have a explicit
+Q10 factor, then the default is 1.0 (i.e. no temperature dependence).
+
+Q10 coefficients are calculated by the particular Q10 constant raised
+to (T-Tbase)/10, where T is the temperature of the simulation, and
+Tbase is the reference temperature of the measured Q10.
+
+It is important to remember the provision above for CONDUCTANCE
+temperature dependence, in addition to the more common dependence of
+particle/gating kinetics on temperature. 
+
+Relevant functions (in biophysics.lisp) include:
+
+
+	QTEN-TAU-FACTOR This calculates the qten factor for time constants (as
+	temperature goes up, tau goes down).
+
+		qten-tau-factor REFERENCE-TEMP TEMP QTEN &optional (IGNORE-Q10 *IGNORE-Q10*)
+
+
+	QTEN-RATE-FACTOR This calculates the qten factor for rate constants
+	(as temperature goes up, so does rate).
+
+		qten-rate-factor REFERENCE-TEMP TEMP QTEN &optional (IGNORE-Q10 *IGNORE-Q10*)
+
+**************************************
+Changing Temperature in Scripts
+**************************************
+
+If the temperature is changed between simulations by explicit setting
+either the global variable *TEMPERATURE* or *TEMP-CELCIUS* then
+UPDATE-TEMPERATURE-DEPENDENT-PARAMETERS is called automatically at the
+beginning of the simulation.
+
+
+**************************************
+     Somatic I-V Characteristic
+**************************************
+
+In analysis.lisp,
+
+	plot-iv &optional CELL
+
+	plot-ivs &optional CELLS
+
+The functions PLOT-IV and PLOT-IVS (analysis.lisp) plots simple
+steady-state somatic current-voltage relationships for the loaded
+cells. If the optional arguments are not supplied then PLOT-IV plots
+the characteristic for the last created cell, and PLOT-IVS presents a
+menu to choose a cell or cells. IV relations are calulated using the
+following assumptions:
+
+ 1. Passive dendritic tree (any channels in the tree are disabled).
+
+ 2. Steady-state calcium concentrations, assuming the somatic
+    potential is at resting potential 
+
+ 3. Measurement made under ideal (somatic) voltage clamp
+
+These functions can be invoked from the menus.
+
+If there are any non-somatic non-linearities, more realistic I-V
+curves require an explicit set of (somatic) voltage clamp simulations,
+and collection of the corresponding clamp voltages and currents.
+
+
+**************************************
+	Spines
+**************************************
+
+
+The function GROW-SPINES (trees.lisp) adjusts membrane resistivities
+and capacitances to fold-in "virtual" spines, under the assumption
+that the voltage drop or other compartmentalization of the spine neck
+is negligible:
+
+	grow-spines NECK-LENGTH NECK-DIAMETER HEAD-DIAMETER DENSITY
+				&key CELL-TYPE-NAME SEGMENTS
+				(UPDATE-LINEAR-PARAMETERS T)
+
+The spine model here is of a cylindrical neck capped by a spherical
+head. Spine area is given by the area of the neck (not including ends)
+plus the area of the head minus the area of the neck end (to partially
+compensate for the junction between the head and neck).
+
+If SEGMENTS is a list of segments, then a 'MEMBRANE-AREA-COEFFICIENT entry
+is added to the :SEGMENT-PARAMETERS a-list of each segment, otherwise
+if CELL-TYPE-NAME is supplied, the :DENDRITE-SPECIFIC-CAPACITANCE and
+:MEMBRANE-RESISTIVITY slots of the referred cell type are adjusted,
+otherwise (if both keyword args are NIL) the
+:DENDRITE-SPECIFIC-CAPACITANCE and :MEMBRANE-RESISTIVITY slots of all
+the cell types are adjusted. NECK-LENGTH, NECK-DIAMETER, HEAD-DIAMETER
+are in microns. DENSITY is number of spines per square micron of
+dendrite (non-spine) membrane. The update-linear-parameters argument
+controls whether or not the membrane parameters for the individual
+segment structures and the linear input parameters for the cells are
+updated to reflect the addition of the virtual spines.
+
+Using the SEGMENTS argument allows a variable spine density for a
+given cell, while reference to the CELL-TYPE-NAME (or all cell types)
+implies that the spine density is constant throughout the dendritic
+tree. This function *does not* add virtual spines to the soma. 
+
+More elaborate spines may be modeled by appropriate anatomical
+construction using calls to CREATE-SEGMENT.

@@ -1,0 +1,85 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> *
+Soar> 
+Soar> *
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    ==>G: G2 (goal no-change)
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+  p35a 
+Retractions:
+
+Soar> 
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+Retractions:
+
+Soar> 
+Soar> Assertions:
+  p35b 
+Retractions:
+
+Soar> 
+
+Soar> 
+Soar> Assertions:
+Retractions:
+  p35a 
+
+Soar> 

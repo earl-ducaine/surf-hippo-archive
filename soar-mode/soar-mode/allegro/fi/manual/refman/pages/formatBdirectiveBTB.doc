@@ -1,0 +1,66 @@
+
+                                                         format directive ~B
+
+
+    FORMAT DIRECTIVE
+    ~B  -  print integer in binary radix
+
+    USAGE
+    ~mincol,padchar,commachar[:][@]B
+
+    DESCRIPTION
+    Prints the next format argument in binary (base 2) if it is an  integer,
+    and  in  ``~A''  format with binary base (if applicable) otherwise.  The
+    sign is not printed unless the number is negative or the ``@''  modifier
+    is given.
+
+    The prefix parameter MINCOL (default 0) specifies that enough copies  of
+    the  padding  character  PADCHAR  (default the space character the space
+    character `` '') be printed at the beginning of the output  to  make  it
+    consume  at  least  MINCOL columns.  If the ``:'' modifier is given, the
+    character, COMMACHAR (default ``,'') between every three digits.
+
+    EXAMPLES
+    (format nil "Enter ~B now." 6) => "Enter 110 now."
+    (format nil "Enter ~B now." '(a b)) => "Enter (a b) now."
+    (format nil "Enter ~6B now." -5) => "Enter   -101 now."
+    (format nil "Enter ~,,' :B now." 4095)
+      => "Enter 111 111 111 111 now."
+
+    SEE ALSO
+    CLtL 22:388, format, format directive ~A, format directive ~R
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

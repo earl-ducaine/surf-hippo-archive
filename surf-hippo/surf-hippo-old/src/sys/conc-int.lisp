@@ -1,0 +1,490 @@
+;;;-*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10 ; -*-
+;;; (c) Copyright 1988, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 2/4/88 10:46:00
+;
+; The model to integrate the changes in calcium concentration.
+;
+
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+
+(defstruct conc-int
+  "Model for a conc-int"
+  (name ""		:type string)   
+  (plot-concentration nil)
+  (concentration-1-data '() :type list)
+  (concentration-2-data '() :type list)
+  node-1
+  node-2
+  core-cint
+  model
+  (f-ss zero		:type single-float)
+  (f-sc zero		:type single-float)
+  (d-shell zero		:type single-float)
+  (alpha-s zero		:type single-float)
+  (D-11 zero		:type single-float)
+  (D-12 zero		:type single-float)
+  (D-21 zero		:type single-float)
+  (D-22 zero		:type single-float)
+  (conc-core zero	:type single-float)
+;  (b zero		:type single-float)
+  (k zero		:type single-float)
+  (ca-channel1 nil)
+  (ca-channel2 nil)
+  (cell-element nil)				;Type soma or segment
+)
+
+#-parallel
+(defstruct core-conc-int
+  "Core model for a conc-int."
+  (node-1-pointp nil	:type boolean)	; zero if constant, one if node
+  node-1-point
+  (node-1-const zero	:type single-float)
+  (node-2-pointp nil	:type boolean)	; zero if constant, one if node
+  node-2-point
+  (node-2-const zero	:type single-float)
+
+  (mat-12-valid nil	:type boolean)
+  mat-12-point
+  (mat-21-valid nil	:type boolean)
+  mat-21-point
+
+  (D-11 zero		:type single-float)
+  (D-12 zero		:type single-float)
+  (D-21 zero		:type single-float)
+  (D-22 zero		:type single-float)
+  (conc-core 5.0e-5	:type single-float)
+;  (conc-core zero	:type single-float)
+;  (b zero		:type single-float)
+  (k zero		:type single-float)
+  (ca-channel1-valid nil)
+  (ca-channel1 nil)
+  (ca-channel2-valid nil)
+  (ca-channel2 nil)
+)
+
+(defun create-conc-int-model ()
+  "Creates a template for all conc-ints."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "conc-int")
+      (model-template-default-params template) '()
+      (model-template-eval-routine template) #'eval-conc-int
+      (model-template-print-routine template) #'print-conc-int
+      (model-template-create-routine template) #'create-conc-int
+      (model-template-create-core-routine template) #'create-core-conc-int
+      (model-template-add-off-diag-routine template) #'add-off-diag-conc-int
+      (model-template-find-coupling-routine template) #'find-coupling-conc-int
+      (model-template-fix-dc-nodes-routine template) #'conc-int-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "conc-int") *model-hash-table*) template
+      conc-int-hash-table (make-hash-table :test #'equal))
+    (create-model-instance (string "cint") (model-template-name template) '() )))
+	; only need one cint model instance, so create it now.
+
+(defun print-conc-int (cint)
+  "Prints out this data associated with a conc-int."
+  (format *output-stream "Conc-Int ~a from ~a to ~a : D-11 ~8f D-12 ~8f D-21 ~8f D-22 ~8f CONC-CORE ~8f k ~8f~%"
+	  (conc-int-name cint)
+	  (node-name (conc-int-node-1 cint))
+	  (node-name (conc-int-node-2 cint))
+	  (conc-int-D-11 cint)
+	  (conc-int-D-12 cint)
+	  (conc-int-D-21 cint)
+	  (conc-int-D-22 cint)
+	  (conc-int-CONC-CORE cint)
+	  (conc-int-K cint)))
+
+
+;;; CREATE-CONC-INT Creates a element of type conc-int, for the three compartment calcium system. The "voltages"
+;;; of nodes n1 and n2 correspond to the calcium concentrations in the small and large sub-membrane
+;;; compartments, respectively.  Input 'name' is a string, 'model-name' is the name of the model-instance,
+;;; and 'parameters' is an d-list. Concentration integrators are created when a segment or membrane is created;
+;;; the calcium channel(s) that may be associated with an integrator are created after the membrane or
+;;; segment is created.
+;;; 'D-11' is constant of proportionality between Ca++ concentration difference between shell 1 and shell 2, and
+;;; the rate of change of [Ca++] in shell 1.
+;;; 'D-12' is constant of proportionality between Ca++ concentration difference between shell 1 and core,
+;;; the rate of change of [Ca++] in shell 1.
+;;; 'D-21' is constant of proportionality between Ca++ concentration difference between shell 1 and shell 2, and
+;;; the rate of change of [Ca++] in shell 2.
+;;; 'D-22' is constant of proportionality between Ca++ concentration difference between shell 2 and core,
+;;; the rate of change of [Ca++] in shell 2.
+;;; 'K' is constant of proportionality between Ca++ current into shell 1 and the rate of change of [Ca++] in
+;;; shell 1.
+
+(defvar *d-shell 5.0e-4)
+(defvar *alpha-s 0.01)
+(defvar *f-ss 4e-11)
+
+
+;old parameters (area 1.28e-5)(d-shell 0.25e-4) (f-ss 2e-11) (f-sc 4e-7) (alpha-s 0.001)
+; D-11 = 62.5
+; D-21 = 0.06256256
+; D-12 = 0.016
+; D-22 = 0.016
+; K = -16.195066
+
+(defun create-conc-int (conc-int-name cell-element  
+			&key (d-shell *d-shell) (f-ss *f-ss) (f-sc 4e-7) (alpha-s *alpha-s )
+			(conc-core 50e-6)
+			(save-particle t)(plot-pane 3))
+  (let ((name  conc-int-name) (node1-name (format nil "~d-1" conc-int-name))
+	(node2-name (format nil "~d-2" conc-int-name))
+	(cell-name (cell-name (if (typep cell-element 'soma)
+				  (soma-cell cell-element)(segment-cell cell-element)))))	;
+    (if (gethash name conc-int-hash-table)
+	(sim-warning (format nil "create-conc-int: conc-int ~a  already defined, ignoring" name))
+	(let ((n1 (create-node node1-name :cell-name cell-name :plot-pane plot-pane :initial-voltage conc-core))
+	      (n2 (create-node node2-name :cell-name cell-name :plot-pane plot-pane :initial-voltage conc-core))	
+	      (model (gethash "cint" *model-instance-hash-table*)))
+	  (if (not (or (eq n1 n2)
+		       (and (or (node-is-dc-source n1)(node-is-pwl-source n1))
+			    (or (node-is-dc-source n2)(node-is-pwl-source n2)))))
+	      (let ((cint
+		      (make-conc-int :name name 
+				     :f-ss f-ss :f-sc f-sc :d-shell d-shell :alpha-s alpha-s
+				     :conc-core conc-core
+				     :cell-element cell-element :node-1 n1 :node-2 n2
+				     :model model :plot-concentration save-particle)))
+		(setf
+		  (node-elements n1) (cons cint (node-elements n1))
+		  (node-elements n2) (cons cint (node-elements n2))
+		  (gethash name conc-int-hash-table) cint
+		  (model-instance-elements model) (cons cint (model-instance-elements model)))
+		(setf (node-voltage n1) conc-core)
+		(setf (node-voltage n2) conc-core)
+		cint))))))
+
+
+
+;;; SET-CONC-INTEGRATORS-PARAMETERS This must be called after the cell element dimensions are known (especially
+;;; for the segments).
+(defun set-conc-integrators-parameters ()
+  (maphash 'set-conc-integrator-parameters conc-int-hash-table))
+
+(defun set-conc-integrator-parameters (name conc-int)
+  (declare (ignore name))
+  (let* ((cell-element (conc-int-cell-element conc-int))
+	(area (if (typep cell-element 'soma)
+		  (* pi-single (soma-diameter cell-element) 1e-4 (soma-diameter cell-element) 1e-4)
+		  (* pi-single (segment-length cell-element) 1e-4 (segment-diameter cell-element) 1e-4))))
+    (setf (conc-int-d-11 conc-int) (/ (conc-int-f-ss conc-int)
+				      (* (conc-int-d-shell conc-int)(conc-int-alpha-s conc-int) area)))
+    (setf (conc-int-d-21 conc-int) (/ (conc-int-f-ss conc-int)
+				      (* (conc-int-d-shell conc-int)(- 1 (conc-int-alpha-s conc-int)) area)))
+    (setf (conc-int-d-12 conc-int) (/ (conc-int-f-sc conc-int)
+				      (conc-int-d-shell conc-int)))
+    (setf (conc-int-d-22 conc-int) (/ (conc-int-f-sc conc-int)
+				      (conc-int-d-shell conc-int)))
+    (setf (conc-int-k conc-int)    (/ -1e-6
+				      (* 2 Faraday (conc-int-d-shell conc-int)  (conc-int-alpha-s conc-int)
+					 area)))))  
+
+; This function creates a core conc-int data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignocint this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+(defun create-core-conc-int (cint nd)
+  (if (not (eq nd 
+	       (if (typep (conc-int-cell-element cint) 'soma)	;Conc-ints are on the list of node
+		   (soma-node (conc-int-cell-element cint))	;elements for their cell-elements so we need
+		   (segment-node-2 (conc-int-cell-element cint)))))	;to avoid create-core based on this
+						;reference.	
+      (let (core-cint
+	    (proc #-parallel nil #+parallel (allocate-processor)))
+	#-parallel (declare (ignore proc))
+	#+parallel (*setf (pref fanout-valid proc) t)
+	#+parallel (*setf (pref fanout-seg-forward proc) nil)
+	(if (conc-int-core-cint cint)		; 
+	    (setf core-cint (conc-int-core-cint cint))	; core conc-int has already been allocated
+	    (progn				; else allocate one
+	      #-parallel (setf core-cint (make-core-conc-int))
+	      #+parallel (setf core-cint proc)
+	      #+parallel (*setf (pref *lisp-struct-type core-cint) core-conc-int)
+	      (#+parallel *setf #-parallel setf	
+	       (#+parallel pref #.core-conc-int-D-11 core-cint) (conc-int-D-11 cint)
+	       (#+parallel pref #.core-conc-int-D-12 core-cint) (conc-int-D-12 cint)
+	       (#+parallel pref #.core-conc-int-D-21 core-cint) (conc-int-D-21 cint)
+	       (#+parallel pref #.core-conc-int-D-22 core-cint) (conc-int-D-22 cint)
+	       (#+parallel pref #.core-conc-int-conc-core core-cint) (conc-int-conc-core cint)
+;	       (#+parallel pref #.core-conc-int-b core-cint) (conc-int-b cint)
+	       (#+parallel pref #.core-conc-int-k core-cint) (conc-int-k cint))
+	      (setf (conc-int-core-cint cint) core-cint)
+	      (if (conc-int-ca-channel1 cint)
+		  (progn
+		    (#+parallel *setf #-parallel setf	
+		     (#+parallel pref core-conc-int-ca-channel1 core-cint)
+		     (channel-core-ch (conc-int-ca-channel1 cint)))
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel1-valid core-cint) t))
+		  (progn
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel1 core-cint) 0)
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel1-valid core-cint) nil)))
+	      (if (conc-int-ca-channel2 cint)
+		  (progn
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel2 core-cint)
+		     (channel-core-ch (conc-int-ca-channel2 cint)))
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel2-valid core-cint) t))
+		  (progn
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel2 core-cint) 0)
+		    (#+parallel *setf #-parallel setf
+		     (#+parallel pref core-conc-int-ca-channel2-valid core-cint) nil)))
+	      ))
+
+	(let ((node1 (conc-int-node-1 cint))
+	      (node2 (conc-int-node-2 cint)))
+	  (cond
+	    ((eq nd node1)
+	     #-parallel
+	     (setf
+	       (#.core-conc-int-node-1-pointp core-cint) t
+	       (#.core-conc-int-node-1-point core-cint) (node-core-nd node1))
+	     #+parallel
+	     (*setf
+	       (pref #.core-conc-int-node-1-pointp core-cint) t
+	       (pref #.core-conc-int-node-1-point core-cint) proc))
+	    ((eq nd node2)
+	     #-parallel
+	     (setf
+	       (#.core-conc-int-node-2-pointp core-cint) t
+	       (#.core-conc-int-node-2-point core-cint) (node-core-nd node2))
+	     #+parallel
+	     (*setf
+	       (pref #.core-conc-int-node-2-pointp core-cint) t
+	       (pref #.core-conc-int-node-2-point core-cint) proc))
+	    (t
+	     (sim-error "Internal error: called create-core on a device with a invalid node"))
+	    )))))
+
+(defun add-off-diag-conc-int (cint diag off-diag off-diag-entry)
+  "Adds off diagonal entries for this conc-int."
+  #-parallel (declare (ignore diag))
+  #+off-diag
+  (let ((node1 (conc-int-node-1 cint))
+	(node2 (conc-int-node-2 cint))
+#+parallel	(proc nil)
+	(core-cint (conc-int-core-cint cint)))
+    (cond
+      ((eq off-diag node1)
+       #-parallel
+       (setf
+	 (#.core-conc-int-mat-21-valid core-cint) t
+	 (#.core-conc-int-mat-21-point core-cint) off-diag-entry)
+       #+parallel
+       (setf proc (allocate-processor))
+       #+parallel
+       (*setf
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-conc-int-mat-21-valid core-cint) t
+	 (pref #.core-conc-int-mat-21-point core-cint) proc))
+      ((eq off-diag node2)
+       #-parallel
+       (setf
+	 (#.core-conc-int-mat-12-valid core-cint) t
+	 (#.core-conc-int-mat-12-point core-cint) off-diag-entry)
+       #+parallel
+       (*setf proc (allocate-processor))
+       #+parallel
+       (*setf
+	 (pref fanout-valid proc) t
+	 (pref fanout-seg-forward proc) nil
+	 (pref #.core-conc-int-mat-12-valid core-cint) t
+	 (pref #.core-conc-int-mat-12-point core-cint) proc))
+      )))
+
+(defun find-coupling-conc-int (nd cint)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  (cond
+    ((eq nd (conc-int-node-1 cint))
+      (if (or (node-is-dc-source (conc-int-node-2 cint))
+	      (node-is-pwl-source (conc-int-node-2 cint)))
+	nil
+	(cons (conc-int-node-2 cint) (conc-int-D-12 cint))))
+    (t
+      (if (or (node-is-dc-source (conc-int-node-1 cint))
+	      (node-is-pwl-source (conc-int-node-1 cint)))
+	nil
+	(cons (conc-int-node-2 cint) (conc-int-D-21 cint))))))
+
+(defun conc-int-fix-dc-nodes (cint)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (conc-int-core-cint cint)
+      (progn
+	(if (node-is-dc-source (conc-int-node-1 cint))
+	    (#+parallel *setf #-parallel setf
+	      (#+parallel pref #.core-conc-int-node-1-pointp (conc-int-core-cint cint)) nil
+	      (#+parallel pref #.core-conc-int-node-1-const (conc-int-core-cint cint))
+	      (node-voltage (conc-int-node-1 cint))))
+	(if (node-is-dc-source (conc-int-node-2 cint))
+	    (#+parallel *setf #-parallel setf
+	      (#+parallel pref #.core-conc-int-node-2-pointp (conc-int-core-cint cint)) nil
+	      (#+parallel pref #.core-conc-int-node-2-const (conc-int-core-cint cint))
+	      (node-voltage (conc-int-node-2 cint)))))))
+
+#-parallel
+(defun get-conc-int-voltage-1 (cint)
+  (if (#.core-conc-int-node-1-pointp cint)
+      (core-node-voltage-n+1 (#.core-conc-int-node-1-point cint))
+      (#.core-conc-int-node-1-const cint)))
+
+#-parallel
+(defun get-conc-int-voltage-2 (cint)
+  (if (#.core-conc-int-node-2-pointp cint)
+      (core-node-voltage-n+1 (#.core-conc-int-node-2-point cint))
+      (#.core-conc-int-node-2-const cint)))
+
+#-parallel
+(defun eval-conc-int (cint)
+  (let ((core-cint (conc-int-core-cint cint))
+	v1
+	v2
+	i1
+	i2)
+    (if (null core-cint)
+	(return-from eval-conc-int (values)))
+
+    ; get the voltages
+    (setf v1 (get-conc-int-voltage-1 core-cint))
+     (setf v2 (get-conc-int-voltage-2 core-cint))
+
+    (setf i1 (+ (* (- v2 v1) (#.core-conc-int-D-11 core-cint))
+		(* (- (#.core-conc-int-conc-core core-cint)  v1) (#.core-conc-int-D-12 core-cint))))
+
+ 
+   (if (core-conc-int-ca-channel1-valid core-cint)
+	
+	(setf i1 (+ i1 (* (core-channel-current (core-conc-int-ca-channel1 core-cint))
+			  (#.core-conc-int-k core-cint)))))
+
+
+
+    (if (core-conc-int-ca-channel2-valid core-cint)
+	(setf i1 (+ i1 (* (core-channel-current (core-conc-int-ca-channel2 core-cint))
+			  (#.core-conc-int-k core-cint)))))
+
+    (setf i2 (+ (* (- v1 v2) (#.core-conc-int-D-21 core-cint))
+		(* (- (#.core-conc-int-conc-core core-cint) v2) (#.core-conc-int-D-22 core-cint))))
+
+;    (if (> v2 v1)(format t "v1= ~a i1= ~a v2= ~a i2= ~a~%" v1 (- i1) v2 (- i2)))
+
+    ; send the values back where they go
+    (if (#.core-conc-int-node-1-pointp core-cint)
+	(if (not (core-node-is-source (#.core-conc-int-node-1-point core-cint)))
+	    (setf
+	      (core-node-current (#.core-conc-int-node-1-point core-cint))
+	      (- (core-node-current (#.core-conc-int-node-1-point core-cint))
+		 i1)
+	      (core-node-charge (#.core-conc-int-node-1-point core-cint))
+	      (+ (core-node-charge (#.core-conc-int-node-1-point core-cint))
+		 v1)
+	      (core-node-jacobian (#.core-conc-int-node-1-point core-cint))
+	      (+ (core-node-jacobian (#.core-conc-int-node-1-point core-cint))
+		 (+ alpha (#.core-conc-int-D-11 core-cint) (#.core-conc-int-D-12 core-cint))))))
+    
+    (if (#.core-conc-int-node-2-pointp core-cint)
+	(if (not (core-node-is-source (#.core-conc-int-node-2-point core-cint)))
+	    (setf
+	      (core-node-current (#.core-conc-int-node-2-point core-cint))
+	      (- (core-node-current (#.core-conc-int-node-2-point core-cint))
+		 i2)
+	      (core-node-charge (#.core-conc-int-node-2-point core-cint))
+	      (+ (core-node-charge (#.core-conc-int-node-2-point core-cint))
+		 v2)
+	      (core-node-jacobian (#.core-conc-int-node-2-point core-cint))
+	      (+ (core-node-jacobian (#.core-conc-int-node-2-point core-cint))
+		 (+ alpha (#.core-conc-int-D-22 core-cint) (#.core-conc-int-D-21 core-cint))))))
+#|
+    #+off-diag
+    (if *use-tridiagonal*
+	(progn
+	  (if (#.core-conc-int-mat-21-valid core-cint)
+	      (let ((off-diag-entry (#.core-conc-int-mat-21-point core-cint))
+		    (node2 (conc-int-node-2 cint)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node2))
+			  (- (aref *lower-diag* (node-index node2))
+			     (core-conc-int-conductance core-cint)))
+		  (setf (aref *upper-diag* (node-index node2))
+			(- (aref *upper-diag* (node-index node2))
+			   (core-conc-int-conductance core-cint))))))
+	  
+	  (if (#.core-conc-int-mat-12-valid core-cint)
+	      (let ((off-diag-entry (#.core-conc-int-mat-12-point core-cint))
+		    (node1 (conc-int-node-1 cint)))
+		(if (core-off-diag-lower off-diag-entry)
+		    (setf (aref *lower-diag* (node-index node1))
+			  (- (aref *lower-diag* (node-index node1))
+			     (core-conc-int-conductance core-cint)))
+		  (setf (aref *upper-diag* (node-index node1))
+			(- (aref *upper-diag* (node-index node1))
+			   (core-conc-int-conductance core-cint))))))
+	  ))
+|#
+    ))
+
+#+parallel
+(*defun get-conc-int-voltage-1 (v1)
+  (cond!!
+    (#.core-conc-int-node-1-pointp v1)
+    (t!! #.core-conc-int-node-1-const)))
+
+#+parallel
+(*defun get-conc-int-voltage-2 (v2)
+  (cond!!
+    (#.core-conc-int-node-2-pointp v2)
+    (t!! #.core-conc-int-node-2-const)))
+
+#+parallel
+(defun eval-conc-int ()
+  (*select-type (core-conc-int)
+    (*let
+      ((v1 nil!!)
+       (v2 nil!!))
+      (declare (type (pvar big-float) v1))
+      (declare (type (pvar big-float) v2))
+
+      ; get the voltages
+      (*set v1 (get-conc-int-voltage-1 #.core-conc-int-node-1-voltage))
+      (*set v2 (get-conc-int-voltage-2 #.core-conc-int-node-2-voltage))
+    
+      ; calculate the current
+      (*set #.core-conc-int-current-1 (+!! (*!! (-!! v2 v1) #.core-conc-int-D-11)
+					   (*!! (-!! #.core-conc-int-conc-core v1) #.core-conc-int-D-12)))
+      (*if core-conc-int-ca-channel1-valid
+	   (*set #.core-conc-int-current-1
+		 (+!! #.core-conc-int-current-1
+		      (*!! (pref!! #.core-channel-current core-conc-int-ca-channel1)
+			   #.core-conc-int-k))))
+      (*if core-conc-int-ca-channel2-valid
+	   (*set #.core-conc-int-current-1
+		 (+!! #.core-conc-int-current-1
+		      (*!! (pref!! #.core-channel-current core-conc-int-ca-channel2)
+			   #.core-conc-int-k))))
+
+      (*set #.core-conc-int-current-2 (+!! (*!! (-!! v1 v2) #.core-conc-int-D-21)
+					   (*!! (-!! #.core-conc-int-conc-core v2) #.core-conc-int-D-22)))
+
+      (*set #.core-conc-int-current-1 (-!! #.core-conc-int-current-1))
+      (*set #.core-conc-int-current-2 (-!! #.core-conc-int-current-2))
+
+      (*set core-device-node1-charge v1)
+      (*set core-device-node2-charge v2)
+      (*set core-device-node1-conductance (+!! (!! alpha) #.core-conc-int-D-11))
+      (*set core-device-node2-conductance (+!! (!! alpha) #.core-conc-int-D-22))
+      )))

@@ -1,0 +1,232 @@
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+
+;;; output functions to call xgraph etc.
+;;;   created 6/91 - DLS
+
+;; LBG - 1/11/92 add "/" in front of "data/" - may want to check on file/dir conventions
+; in this modified system
+(defparameter *default-data-file-prefix* (concatenate 'string *Surfdir* "/data/"))
+(defparameter *plot-filter*  (concatenate 'string *Surfdir* "/plot/surfplot"))
+(defparameter *var-sort-filter*  (concatenate 'string *Surfdir* "/turf/sortvars"))
+(defparameter *default-data-name* "latest")
+(defparameter *default-data-file* (concatenate 'string *default-data-name* ".data"))
+(defparameter *default-full-data-file* (concatenate 'string *default-data-file-prefix* *default-data-file*))
+
+(defvar *current-data-file* "latest.data")
+(defvar *current-full-data-file* (concatenate 'string *default-data-file-prefix* *current-data-file*))
+
+(defun savedata (&optional (filename nil) &key (overwrite nil))
+  (let* ((filename (if (null filename) (string-downcase *circuit-name*) filename))
+		 (savefile (concatenate 'string *default-data-file-prefix* filename))
+		 (datafile (concatenate 'string savefile ".data"))
+		 (infofile (concatenate 'string savefile ".info")))
+	(cond ((and (not overwrite) (probe-file datafile))
+		   (setq filename (get-new-filename filename))
+		   (if filename (savedata filename :overwrite t)))
+		  (t (rename-file *default-full-data-file*
+						  datafile)
+			 (rename-file (concatenate 'string *default-data-file-prefix* *default-data-name* ".info")
+						  infofile)
+			 (format t "Data files save as \"~a.[data/info]\".~%" filename)))))
+
+			 
+(defun get-new-filename (filename)
+  (let ((overwrite	(y-or-n-p (format nil "File \"~A\" exists. Overwrite? " filename))))
+	(cond (overwrite filename))))
+
+(defun usedata (&optional (file *default-data-name*))
+  (let ((filename (concatenate 'string file ".data")))
+	(setq *current-data-file* filename)
+	(setq *current-full-data-file*
+		  (concatenate 'string *default-data-file-prefix* *current-data-file*))))
+
+#+turf
+(defun xplot (&optional (l '()) &key (options "")
+						(datafile (concatenate 'string *current-full-data-file*)))
+  (cond ((null l) (show-available-variables))
+		(t  (let ((plotcom *plot-filter*))
+			  (format t "Plotting ")
+			  (dolist (elem l)
+				(setq plotcom (concatenate 'string plotcom " " (string-upcase elem) " " datafile " "))
+				(format t "~a " (string-upcase elem)))
+			  (system (format nil "~a | xgraph ~a \&" plotcom options)))
+			(format t "...~%"))))
+
+#+turf
+(defun plot-all ()
+  (if (not (null *plot-nodes*)) (plot-nodes))
+  (if (not (null *plot-channel-currents*)) (plot-channel-currents))
+  (if (not (null *plot-synapse-conductances*)) (plot-synapse-conductances)))
+
+#+turf
+(defun plot-nodes (&optional (filename *current-full-data-file*))
+  (xplot *plot-nodes* :datafile filename
+		 :options "=700x250+300+0 -t \"Node Voltages\" -x \"time (msec)\" -y \"voltage (mV)\""))
+
+#+turf
+(defun plot-particles (&optional (filename *current-full-data-file*))
+  (xplot *plot-particles* :datafile filename))
+
+#+turf
+(defun plot-conc-ints (&optional (filename *current-full-data-file*))
+  (xplot *plot-conc-ints* :datafile filename))
+
+#+turf
+(defun plot-channel-currents (&optional (filename *current-full-data-file*))
+  (xplot *plot-channel-currents* :datafile filename
+		 :options "=700x250+300+560 -t \"Channel Currents\" -x \"time (msec)\" -y \"current (mA)\""))
+
+#+turf
+(defun plot-channel-conductances (&optional (filename *current-full-data-file*))
+  (xplot *plot-channel-conductances* :datafile filename))
+
+#+turf
+(defun plot-synapse-currents (&optional (filename *current-full-data-file*))
+  (xplot *plot-synapse-currents* :datafile filename))
+
+#+turf
+(defun plot-synapse-conductances (&optional (filename *current-full-data-file*))
+  (let ((synapse-g-list '()))
+    (dolist (elem *plot-synapse-conductances*)
+      (setq synapse-g-list (cons (concatenate 'string elem "-G") synapse-g-list)))
+    (xplot (reverse synapse-g-list) :datafile filename
+           :options "=700x250+300+280 -t \"Synapse Conductances\" -x \"time (msec)\" -y \"g (S)\"")))
+
+#+turf
+(defun show-available-variables ()
+  (format t "Available plot variables include:~%~%")
+  (dolist (elem *file-output-variable-list*)
+	(if (not (null elem))
+		(format t "  ~a~%" elem))))
+
+#+turf
+(defun dump-sun-file (&optional time-stamp filename)
+  (declare (ignore time-stamp filename))
+  (let* ((filename *default-full-data-file*)
+	 (stream (open filename :direction :output
+		       :if-exists :supersede)))
+
+	;; write out *plot-xxxx* lists for later use
+
+	(format stream "# Variable Groups~%")
+	(output-plotlists stream)
+
+	;; write out variable names
+	
+	(format stream "# Variable Names~%")
+	(do ((i 0 (+ i 1)))
+		((= i (- (list-length *file-output-variable-list*) 1))
+		 (format stream "~A~%" (nth i *file-output-variable-list*)))
+	  (format stream "~A," (nth i *file-output-variable-list*)))
+
+	;; write out data points
+	
+	(do ((i 0 (+ i 1)))
+		((= i (list-length (eval (caddar *file-output-data-list*)))) t)
+	  (do ((j 0 (+ j 1)))
+		  ((= j (- (list-length *file-output-variable-list*) 1))
+		   (format stream "~12,5,,,,,'EG~%" (nth i (eval (caddr (nth j *file-output-data-list*))))))
+		(format stream "~12,5,,,,,'EG," (nth i (eval (caddr (nth j *file-output-data-list*)))))))
+    (close stream)
+    (format t "File ~a written~%" filename))
+
+  ;; write information file
+  
+  (let* ((filename (string-downcase
+		     (concatenate 'string sun-dir-name "/" "latest.info")))
+	 (stream (open filename :direction :output
+		       :if-exists :supersede)))
+    (print-circuit stream t)
+    (print-simulation-stats stream)
+    (close stream)
+    (format t "File ~a written~%" filename)))
+
+
+;; show which variables appear for each plot type
+
+(defun output-plotlists (&optional (stream t))
+  (dolist (plotlist '(*plot-nodes* *plot-particles* *plot-conc-ints* *plot-channel-currents*
+		      *plot-channel-conductances* *plot-synapse-currents* *plot-synapse-conductances*))
+    (let ((l (eval plotlist))
+	  (name (string-trim '(#\*) (string-upcase plotlist))))
+      (cond ((eql plotlist '*plot-nodes*)
+	     (output-plotlist-nodes stream))
+	    (t (format stream "~a: " name)
+	       (dolist (elem l)
+		 (if (eql plotlist '*plot-synapse-conductances*)
+		     (format stream "~a-G " elem)
+		     (format stream "~a " elem)))
+	       (format stream "~%" name))))))
+		  
+
+;; need a special formatter for nodes to account for soma
+
+;;; Removed bogus name argument in format calls which akcl ignores but
+;;; lucid chokes on.  4/92 lbg
+(defun output-plotlist-nodes (stream)
+  (format stream "PLOT-SOMA-NODES:")
+  (dolist (elem *plot-nodes*)
+    (format stream "~a " (string-upcase elem)))
+  (format stream "~%")
+  (format stream "PLOT-SOMA: ")
+  (dolist (elem *plot-nodes*)
+    (if (search "SOMA" (string-upcase elem))
+	(format stream "~a " (string-upcase elem))))
+  (format stream "~%")
+  (format stream "PLOT-NODES: ")
+  (dolist (elem *plot-nodes*)
+    (if (not (search "SOMA" (string-upcase elem)))
+	(format stream "~a " (string-upcase elem))))
+  (format stream "~%"))
+
+(defun create-output-symbol (name1 name2)
+  (declare (ignore name1))
+  (intern (string-upcase (format nil "~a" name2)) *package*))
+
+
+;;; dump table information to gather variable info
+
+(defvar *variable-output-file* nil)
+
+#+turf
+(defun dump-variable-file (&optional (filename "STDOUT"))
+  (if (equal filename "STDOUT")
+	  (setq *variable-output-file* t)
+	  (setq *variable-output-file*
+			(open filename :direction :output
+				  :if-exists :supersede)))
+  (format *variable-output-file* ";;;; Watch Variable File~%")
+  (dump-table-keys "*plot-nodes*" node-hash-table)
+  (dump-table-keys "*plot-channel-conductances*" channel-hash-table)
+  (dump-table-keys "*plot-channel-currents*" channel-hash-table)
+  (dump-table-keys "*plot-synapse-conductances*" synapse-hash-table)
+  (dump-table-keys "*plot-synapse-currents*" synapse-hash-table)
+  (dump-table-keys "*plot-particles*" particle-hash-table)
+  (dump-table-keys "*plot-conc-ints*" conc-int-hash-table)
+  (dump-table-keys "*plot-conc-particles*" conc-part-hash-table)
+  (dump-table-keys "*plot-isource-currents*" isource-hash-table)
+  (dump-table-keys "*plot-vsource-currents*" vsource-hash-table)
+  (dump-table-keys "*synapse-names-to-do-first" synapse-hash-table)
+  (cond ((not (equal filename "STDOUT"))
+		 (close *variable-output-file*)
+		 (system (concatenate 'string *var-sort-filter* " " filename)))))
+  
+
+#+turf
+(defun dump-table-keys (name table)
+  (format *variable-output-file* "~a " name)
+  (maphash 'print-keys table)
+  (format *variable-output-file* "~%"))
+
+#+turf
+(defun print-keys (name nd)
+  (declare (ignore nd))
+  (format *variable-output-file* "~a " name))
+

@@ -1,4 +1,0 @@
-
-revise(F, N, []) :-& tup().
-revise(F, 1, [H | T]) :-& tup(F(H) | T).
-revise(F, N, [H | T]) :-& tup(H | revise(F, 1-(N), T)).

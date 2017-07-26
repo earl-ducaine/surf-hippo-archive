@@ -1,0 +1,178 @@
+Soar 6.2.5  NNPSCM
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/nnpscm/default.soar
+****************************************************************************************************
+
+Soar> 
+Loading ../../../examples/nnpscm/waterjug/waterjug.soar
+****************************
+
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  3:0 5:0
+     1:    ==>S: S2 (operator tie)
+  O1: fill(5:0)
+  O2: fill(3:0)
+     2:       O: O4 (evaluate-object O2 (fill))
+     3:       ==>S: S3 (operator no-change)
+  3:0 5:0
+     4:          O: C1 (fill)
+  FILL(3:0)
+  3:3 5:0
+     5:          ==>S: S4 (operator tie)
+  O8: pour(3:3,5:0)
+  O6: fill(5:0)
+     6:             O: O9 (evaluate-object O8 (pour))
+     7:             ==>S: S5 (operator no-change)
+  3:3 5:0
+     8:                O: C2 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+     9:                O: O14 (fill)
+  FILL(3:0)
+  3:3 5:3
+    10:                O: O18 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building justification-1
+Building justification-2
+Building justification-3
+Building justification-4
+  Evaluation of O8 (pour) is success
+Building justification-5
+  Evaluation of O2 (fill) is partial-success
+    11:    O: O2 (fill)
+  FILL(3:0)
+  3:3 5:0
+    12:    ==>S: S6 (operator tie)
+  O23: pour(3:3,5:0)
+  O1: fill(5:0)
+    13:       O: O24 (evaluate-object O23 (pour))
+    14:       ==>S: S7 (operator no-change)
+  3:3 5:0
+    15:          O: C3 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    16:          O: O29 (fill)
+  FILL(3:0)
+  3:3 5:3
+    17:          O: O33 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building justification-6
+Building justification-7
+  Evaluation of O23 (pour) is success
+    18:    O: O23 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    19:    O: O37 (fill)
+  FILL(3:0)
+  3:3 5:3
+    20:    O: O41 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal waterjug succeeded. 
+waterjug achieved 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  3:0 5:0
+     1:    ==>S: S2 (operator tie)
+  O1: fill(5:0)
+  O2: fill(3:0)
+     2:       O: O4 (evaluate-object O2 (fill))
+     3:       ==>S: S3 (operator no-change)
+  3:0 5:0
+     4:          O: C1 (fill)
+  FILL(3:0)
+  3:3 5:0
+     5:          ==>S: S4 (operator tie)
+  O8: pour(3:3,5:0)
+  O6: fill(5:0)
+     6:             O: O9 (evaluate-object O8 (pour))
+     7:             ==>S: S5 (operator no-change)
+  3:3 5:0
+     8:                O: C2 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+     9:                O: O14 (fill)
+  FILL(3:0)
+  3:3 5:3
+    10:                O: O18 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building chunk-1
+Building chunk-2
+Building chunk-3
+Building chunk-4
+  Evaluation of O8 (pour) is success
+Building chunk-5
+  Evaluation of O2 (fill) is partial-success
+    11:    O: O2 (fill)
+  FILL(3:0)
+  3:3 5:0
+Retracting chunk-5
+Firing chunk-4
+    12:    O: O23 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+Retracting chunk-4
+    13:    O: O24 (fill)
+  FILL(3:0)
+  3:3 5:3
+    14:    O: O28 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal waterjug succeeded. 
+waterjug achieved 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>S: S1 
+  3:0 5:0
+Firing chunk-5
+     1:    O: O2 (fill)
+  FILL(3:0)
+  3:3 5:0
+Retracting chunk-5
+Firing chunk-4
+     2:    O: O4 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+Retracting chunk-4
+     3:    O: O5 (fill)
+  FILL(3:0)
+  3:3 5:3
+     4:    O: O9 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal waterjug succeeded. 
+waterjug achieved 
+System halted.
+
+Soar> 

@@ -1,0 +1,205 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+	MARKOV PARTICLES
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Introduction
+2. Defining Global Variables Used in the Markov Particle Type Definition
+3. Editing Markov Transition Function Parameters
+4. The Format of the PARTICLE-TYPE-DEF Form  
+5. Saving Markov Particle Type Parameters
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+****************************************************************
+****************************************************************
+
+Introduction
+
+****************************************************************
+****************************************************************
+
+Particle kinetics may be defined in terms of a Markov model, as
+described in Destexhe et. al., Journal of Computational Neuroscience, 1994.
+
+The definition for a Markov state particle type is a bit more
+complicated than that for HH or HH-EXT particle types. The description
+follows the following format.
+
+****************************************************************
+****************************************************************
+
+Defining Global Variables Used in the Markov Particle Type Definition
+
+****************************************************************
+****************************************************************
+
+For this example, various components of the particle type definition
+will be assigned to global variables (e.g. *4STATE-DEMO-STATES*,
+etc.). On the other hand, note that all components can be incorporated
+directly in the PARTICLE-TYPE-DEF form, described later.
+ 
+First, define two lists which hold all the state names and the open
+state names, respectively:
+
+	(setq *4state-demo-states* '(C1 C2 O I))
+
+	(setq *4state-demo-open-states* '(O))
+
+
+State transition rates can be either dependent on the voltage
+controlling the particle, in which case the rates are precomputed and
+stored in look up arrays, and/or the rates can be arbitrary functions of
+the particles during the simulation. In the latter case, the functions
+are referenced by the particle type and called when the particle is
+evaluated. 
+
+To setup the transition rates, define one or two variables which
+reference the states and assigns transition functions dependent on
+voltage or on the particle in general to the available transitions.
+This is done with the help of the macro:
+
+	PARSE-MARKOV-STATE-TRANSITION-FUNCTIONS from-to-rate-coeff-list states
+
+which allows you to maintain all references to the state names. The
+two arguments to this macro are a list of lists, each of the which refer
+to a specific state transition, and the list of states defined as
+above:
+
+	  (PARSE-MARKOV-STATE-TRANSITION-FUNCTIONS
+	   '((from-state to-state funspec-or-expression-or-constant particle-arg-p)	
+			  .
+			  .
+			  .
+	     (from-state to-state funspec-or-expression-or-constant particle-arg-p))
+	    list-of-states)
+
+The FUNSPEC-OR-EXPRESSION-OR-CONSTANT may be either a funspec (for
+functions that will be called during the particle evaluations), a
+function expression or a single-float number (for voltage-independent
+transitions).
+
+If a voltage-dependent function is to be used, then the function
+expression should be a form referencing a function that has a single
+required argument (corresponding to voltage in mV). As described
+below, using a function expression is advantageous if you want to
+easily edit function parameters and store the changes in an .elts
+file.
+
+If a funspec is used, this function is called during the particle
+evalation with the particle as the single argument. The result of the
+function is passed on by using the macro RETURN-MARKOV-RATE. Thus, the
+function must include RETURN-MARKOV-RATE, whose argument is an
+expression that returns a double float rate value. For example:
+
+     (defun kco-markov-ca-activation-backward (prt)
+       (declare (optimize (safety 0) (speed 3) (space 0) (compilation-speed 0)))
+       (return-markov-rate
+	(let ((type (conc-particle-type (particle-conc-particle prt))))
+	  (* 1.0d0				; so that a double float value is returned.
+	     (conc-particle-type-beta type)	; sf
+	     (conc-particle-type-q10-rate-factor type) ; sf
+	     ))))
+
+
+The PARTICLE-ARG-P entry flags whether or not the expression is
+dependent on voltage alone (PARTICLE-ARG-P = NIL, or is absent), in
+which case a look up array is precomputed, or whether the expression
+is a function with the particle as its argument (PARTICLE-ARG-P = T).
+
+
+****************************************************************
+****************************************************************
+
+Editing Markov Transition Function Parameters
+
+****************************************************************
+****************************************************************
+
+Functions that define voltage-dependent transition rates may also have
+keyword arguments, with values specified in the expression.  These
+expressions may be edited (in particular the values supplied to the
+keywords) from the menus later, while editing parameters of the
+particle type. Thus, it is advantageous to use functions with keyword
+parameters if you want to (easily) dynamically modify the transition
+rates during a Surf-Hippo session.
+
+Note that the a function expression should have a dummy required
+argument - in the example below we use "VOLTAGE" just to emphasize
+that the expression will be evaluated with voltage arguments. The
+function in a function expression also must take a single-float
+voltage argument (mV), and return a single-float value (1/ms).
+
+Following from the example above:
+
+     (setq *4state-demo-STATE-VOLTAGE-TRANSITION-FUNCTIONS*
+	   (PARSE-MARKOV-STATE-TRANSITION-FUNCTIONS
+	    `((C1 O (scaled-sigmoid-rate voltage :scale 2.0 :slope 1.0 :v-half -50.0))
+	      (I C1 (scaled-sigmoid-rate voltage :scale 1.0 :slope -1.0 :v-half -60.0))
+	      (C2 O (scaled-sigmoid-rate voltage :scale 2.0 :slope 1.0 :v-half -55.0))
+	      (C1 C2 (scaled-sigmoid-rate voltage :scale 1.0 :slope -1.0 :v-half -65.0))
+	      (O I 8.0))
+	    *4state-demo-states*))
+
+In this example of a particle with four states, five of the possible
+twelve state transitions are allowed. Four of these transistions are
+defined in terms of a voltage dependent function, with keyword
+parameters adjusted for each specific transition (SCALED-SIGMOID-RATE
+is defined in biophysics.lisp). The fifth transition (state O to state
+I) is voltage independent and set to a constant value of 8.0/ms.
+
+****************************************************************
+****************************************************************
+
+The Format of the PARTICLE-TYPE-DEF Form  
+
+****************************************************************
+****************************************************************
+
+
+Finally, the PARTICLE-TYPE-DEF form for a Markov state particle type
+references the variables defined above:
+
+(particle-type-def
+ `(4state-demo-x
+   (class . :markov)
+   (states . ,*4state-demo-states*)
+   (open-states . ,*4state-demo-open-states*)
+   (STATE-TRANSITIONS . ,*4state-demo-STATE-VOLTAGE-TRANSITION-FUNCTIONS*)))
+
+Note that we use the backquote syntax here so that symbols for global
+variables, with leading commas, will be evaluated when the list is
+processed. As mentioned earlier, this form could be written with the
+explicit values of the "dummy" global variables. This format is used,
+for example, if a PARTICLE-TYPE-DEF form is saved to file by the
+program, as below.
+
+****************************************************************
+****************************************************************
+
+Saving Markov Particle Type Parameters
+
+****************************************************************
+****************************************************************
+
+As described in element-type-libraries.doc, loadable TYPE-DEF forms
+with the currently loaded element type parameters may be written to
+file using the DUMP-ELEMENTS-FILE function. For Markov particle types,
+this form will only be loadable if the state transistion rates are
+defined in terms of function expressions, as described above. In this
+case, the saved TYPE-DEF form will include the original function
+expressions, along with the current values for the keyword parameters,
+if they exist. On the other hand, if a state transitsion rate is
+defined in terms of a lambda expression, then the stored function will
+refer only to a lexical (local) definition, which is only valid during
+the Lisp session in which it was created.

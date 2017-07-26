@@ -1,0 +1,12 @@
+;;; Conversion productions associated with NNPSCM conversion.
+;;;    -- for io link.
+
+(sp nnpscm-conversion-hack*copy-up-input-link
+   (state <s> ^io.input-link <il>)
+   -->
+   (<s> ^input-link <il> + &))
+
+(sp nnpscm-conversion-hack*copy-down-output-link
+   (state <s> ^output-link <ol> ^io <io>)
+   -->
+   (<io> ^output-link <ol> + &))

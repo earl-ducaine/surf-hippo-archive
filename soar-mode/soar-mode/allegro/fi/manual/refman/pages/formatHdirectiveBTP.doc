@@ -1,0 +1,66 @@
+
+                                                         format directive ~P
+
+
+    FORMAT DIRECTIVE
+    ~P  -  print plural or singular English suffix
+
+    USAGE
+    ~[:][@]P
+
+    DESCRIPTION
+    Prints a plural or singular English suffix based on  the  value  of  the
+    format  argument,  or  optionally,  the  previous  format argument.  The
+    choice of argument and suffix style  depends  on  the  ``:''  and  ``@''
+    modifiers.
+
+    ~P   Prints s if the argument is not eql to 1, and nothing otherwise.
+
+    ~:P  Prints s if the PREVIOUS argument is not eql to 1, and nothing oth-
+         erwise.
+
+    ~@P  Prints ies if the argument is not eql to 1, and y otherwise.
+
+    ~:@P Prints ies if the PREVIOUS argument is not eql to 1, and  y  other-
+         wise.
+
+    EXAMPLES
+    (defun foo (x y)
+      (format nil "Time ~D fl~:@P like ~R arrow~:P." x y))
+      => foo
+    (foo 3 1) => "Time 3 flies like one arrow."
+    (foo 1 3) => "Time 1 fly like three arrows."
+    (foo 0.3 0) => "Time 0.3 flies like zero arrows."
+
+    SEE ALSO
+    CLtL 22:389, eql, format, format directive ~D, format directive ~R,
+    format directive ~*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

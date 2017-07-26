@@ -1,0 +1,743 @@
+;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10 ; -*-
+;;; (c) Copyright 1985, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 6/09/85 11:55:36
+;
+;;; Things relating to a circuit node
+;;;
+
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+
+(defstruct node				; not parallel
+  "The data contained at a node"
+  (name "" :type string)
+  (is-physical-cell-node nil :type boolean) ; If this node is a physical cell node, ie segment or soma. If
+					; nil, then relative-location is irrelevant.
+  (relative-location '() :type list)	;(x y z) relative to the cell origin.
+  (absolute-location '() :type list)	;(x y z) in brain coordinates, equal to sum of cell-origin and
+					;relative-location.
+  (cell-origin '() :type list)		;(x y z) in brain coordinates.
+  cell
+  (analyze-voltage nil :type boolean)
+  (plot-voltage nil :type boolean)		
+  (plot-pane 1 :type fixnum)	;Where this node will be plotted on the window system.
+  (has-synapse nil :type boolean)		
+  (is-dc-source nil :type boolean)
+  (is-pwl-source nil :type boolean)
+  (voltage ZERO :type single-float)	; if this node is a constant
+  (elements '()	:type list)	; a list of elements connected to this node
+  (index -1 :type fixnum)
+  coupling
+  ; The next two slots are set by (order-nodes-from-hines-branch-list)
+  (hines-circuit-node nil :type boolean) ;If using Hines method, is this node an electrical circuit node.
+  ordered
+  core-nd
+  (initial-voltage -70.0 :type single-float) ; what was in *init-value-list*
+  (voltage-data '() :type list)
+)
+
+#-parallel
+(defstruct core-node
+  (is-source nil :type boolean)
+  ;;For particles' core nodes when using the Hines method, "voltage-n" -> V(t - dt/2),
+  ;;and "voltage-n+1" -> V(t + dt/2).
+  (voltage-n+1 zero	:type single-float)	; voltage at t(n+1)
+  (voltage-n   zero	:type single-float)	; voltage at t(n)
+  (voltage-n-1 zero	:type single-float)	; voltage at t(n-1)
+  (voltage-n-2 zero	:type single-float)	; voltage at t(n-2)
+  (predictor   zero	:type single-float)	; the predicted voltage at t(n+1)
+;  (capacitance zero	:type single-float)
+;  (conductance zero	:type single-float)
+  (jacobian zero	:type single-float)
+  (charge zero		:type single-float)
+  (alpha-charge zero	:type single-float) ;Speed things up with Hines by mulitplying by alpha only once.
+  (current zero		:type single-float)
+  (rhs zero		:type single-float)
+  (prev-charge zero	:type single-float)	; the charge from the previous time point
+  (prev-current zero	:type single-float)	; the current from the previous time point
+  (old-rhs zero		:type single-float)
+;;Note that for the Hines method, "delta-v" is actually V(t + dt/2).
+  (delta-v zero		:type single-float)
+  (prev-delta-v zero	:type single-float)
+  (index -1 :type fixnum)
+  (hines-circuit-node nil :type boolean) ;If using Hines method, is this node an electrical circuit node.
+)
+
+
+
+(defun list-cell-segment-nodes ()
+  (maphash 'get-segment-nodes segment-hash-table))
+
+
+(defun get-segment-nodes (name seg)
+  (format t "Segment ~a: " name)
+  (format t "node ~a, location ~A" (node-name (segment-node-1 seg))
+	  (node-relative-location (segment-node-1 seg)))
+  (format t "node ~a, location ~A~%" (node-name (segment-node-2 seg))
+	  (node-relative-location (segment-node-2 seg))))
+
+(defun get-node-segments (name nd)
+  (format t "Node ~a: " name)
+  (dolist (element (node-elements nd))
+    (let ((symbol (named-structure-symbol element)))
+      (if (eq symbol 'segment)
+	  (progn (format t " ~a " (segment-name element)))))))
+
+
+(defun node-info ()
+  (maphash 'print-node-position node-hash-table)
+  (maphash 'print-node-initial-voltage node-hash-table)
+  (maphash 'print-node-voltage node-hash-table)
+  (maphash 'print-node-elements node-hash-table)
+  )
+
+(defun print-node-position (name nd)
+  (format t "Node ~a position = ~d ~%" name (node-relative-location nd))
+  (format t "Node ~a absolute position = ~d ~%" name (node-absolute-location nd)))
+
+(defun print-node-initial-voltage (name nd)
+  (format t "Node ~a initial voltage = ~d ~%" name (node-initial-voltage nd)))
+
+(defun print-node-voltage (name nd)
+  (if (node-core-nd  nd)
+  (format t "Node ~a voltage = ~d ~%" name (core-node-voltage-n (node-core-nd  nd)))))
+
+
+(defun print-node-elements (name nd)
+  (format t "Node ~a elements are: ~%" name)
+  (dolist (element (node-elements nd))
+    (format t " ~a ~%"  (named-structure-symbol element))))
+
+
+#-parallel
+(defstruct core-off-diag
+  (point-diag nil)
+  (lower nil))
+
+
+#-parallel
+(defun set-rhs (nd)
+  "Does the actual equation solving for each node."
+;;Fills both *rhs* and *diag* from the core-node locations. For Hines, rhs is only the charge and current term.
+  (if (and (not (core-node-is-source nd))
+	   (or  (not *use-hines*)
+		(and *use-hines* (core-node-hines-circuit-node nd))))
+      (progn
+;	(format t "alpha-charge for nd ~a  = ~a, current = ~a ~%"
+;		(core-node-index nd) (core-node-alpha-charge nd) (core-node-current nd))
+	(setf
+	  (core-node-rhs nd) (if (not *use-hines*)
+				 (+ (core-node-old-rhs nd)
+				    (* alpha (core-node-charge nd))
+				    (core-node-current nd))
+				 (- (core-node-alpha-charge nd)	(core-node-current nd))))
+;	(if *use-hines*
+;	    (format t "Set rhs node ~a: = ~a ~%" (core-node-index nd) (core-node-rhs nd)  ))
+
+; the next summation is done by the model evaluations
+;	(setf (core-node-jacobian nd) (+ (* alpha (core-node-capacitance nd))
+;			      (core-node-conductance nd)))
+	(if (or *use-hines* *use-tridiagonal*)
+	    (setf
+	      (aref *diag* (core-node-index nd)) (core-node-jacobian nd)
+	      (aref *rhs* (core-node-index nd)) (core-node-rhs nd)))
+	(if (and (not *use-hines*) *use-tridiagonal*)
+	    (core-node-prev-delta-v nd) (core-node-delta-v nd)))))
+
+#-parallel
+(defun solve-matrix ()
+  (if *use-hines*
+      (hines-solve)
+      (if *use-tridiagonal*
+	  (tri-ge *lower-diag* *diag* *upper-diag* *delta-v* *rhs* *num-unknowns*))))
+
+(proclaim '(single-float max-voltage-step *under-relax-factor* *over-relax-factor*))
+
+#-parallel
+(defun eval-node (nd iter-count)
+  (declare (optimize (safety 0) (speed 3) (space 1)))
+  (declare (fixnum iter-count))
+  ;; For Hines, transfers *delta-v*->core-node-delta-v, and does
+  ;; explicit half step.
+  (if (and (not (core-node-is-source nd))
+	   (or (not *use-hines*)
+	       (and *use-hines* (core-node-hines-circuit-node nd))))
+      (progn
+	(if (or *use-hines* *use-tridiagonal*)
+	    (setf (core-node-delta-v nd) (aref *delta-v* (core-node-index nd)))
+	    (setf (core-node-delta-v nd) (/ (core-node-rhs nd)
+					    (core-node-jacobian nd))))
+	(if (and (not *use-hines*) *use-tridiagonal*)
+	    (setf
+	     ;;         do voltage limiting
+	     (core-node-delta-v nd) (min (core-node-delta-v nd) max-voltage-step)
+	     (core-node-delta-v nd) (max (core-node-delta-v nd) (- max-voltage-step))
+	     ))
+	(if (not *use-hines*)
+	    (if (< iter-count *iters-before-sor*)
+		(setf (core-node-voltage-n+1 nd) (- (core-node-voltage-n+1 nd)
+						    (core-node-delta-v nd)))
+		(if (my-xor (plusp (core-node-prev-delta-v nd)) (plusp (core-node-delta-v nd)))
+		    (setf (core-node-voltage-n+1 nd) (- (core-node-voltage-n+1 nd)
+							(* *under-relax-factor*
+							   (core-node-delta-v nd))))
+		    (setf (core-node-voltage-n+1 nd) (- (core-node-voltage-n+1 nd)
+							(* *over-relax-factor*
+							   (core-node-delta-v nd))))))
+	    (setf (core-node-voltage-n+1 nd) ;Hines explicit step from V(t+dt/2) -> V(t+dt)
+		  (+ (core-node-delta-v nd) (core-node-delta-v nd) (- (core-node-voltage-n nd))))))))
+
+#+parallel
+(defun eval-node (iter-count)
+    "Does the actual equation solving for all nodes."
+    (*when (not!! core-node-is-source)
+	   (*set core-node-rhs (+!! core-node-old-rhs
+				    (*!! (!! alpha)
+					 core-node-charge)
+				    core-node-current))
+					; the next summation is done by the model evaluations
+					;    (*set core-node-jacobian (+!! (*!! (!! alpha)
+					;					    core-node-capacitance)
+					;				     core-node-conductance))
+	   (*set core-node-prev-delta-v core-node-delta-v)
+	   (*set core-node-delta-v (/!! core-node-rhs
+					core-node-jacobian))
+					;   do voltage limiting ?
+	   (*set core-node-delta-v (min!! core-node-delta-v (!! max-voltage-step)))
+	   (*set core-node-delta-v (max!! core-node-delta-v (!! (- max-voltage-step))))
+	   (if (< iter-count *iters-before-sor*)
+					;    (if t 
+	       (*set core-node-voltage-n+1 (-!! core-node-voltage-n+1
+						core-node-delta-v))
+	       (*if (xor!! (plusp!! core-node-prev-delta-v) (plusp!! core-node-delta-v))
+		    (*set core-node-voltage-n+1 (-!! core-node-voltage-n+1
+						     (*!! (!! *under-relax-factor*)
+							  core-node-delta-v)))
+		    (*set core-node-voltage-n+1 (-!! core-node-voltage-n+1
+						     (*!! (!! *over-relax-factor*)
+							  core-node-delta-v)))))
+					;   update the voltage
+					;    (*set core-node-voltage-n+1 (-!! core-node-voltage-n+1
+					;				     (*!! (!! sor) core-node-delta-v))))
+	   ))
+
+#+parallel
+(defun node-latch-current ()
+    "Reads the current from the mail box and stores it away."
+    (*set core-node-current fanout-value))
+
+#+parallel
+(defun node-latch-charge ()
+    "Reads the current from the mail box and stores it away."
+    (*set core-node-charge fanout-value))
+
+#+parallel
+(defun node-latch-conductance ()
+    "Reads the current from the mail box and stores it away."
+    (*set core-node-jacobian fanout-value))
+
+#-parallel
+(defun node-check-convergence (nd)
+    "To see if the voltages have converged at this node yet. This check is at the
+   relaxation iteration level."
+    (if (> (abs (core-node-delta-v nd))
+	   (+ vabs (* vrel (abs (core-node-voltage-n+1 nd)))))
+	nil
+	(if (> (abs (core-node-rhs nd))
+	       (+ iabs
+		  (* irel
+		     (+ (abs (core-node-old-rhs nd))
+			(abs (* alpha (core-node-charge nd)))
+			(abs (core-node-current nd))))))
+	    nil
+	    t)))
+
+#|
+(defun node-check-convergence (nd)
+  "To see if the voltages have converged at this node yet. This check is at the
+   relaxation iteration level."
+  (< (abs (core-node-rhs nd))
+     (+ iabs
+	(* irel
+	   (+ (abs (core-node-old-rhs nd))
+	      (abs (* alpha (core-node-charge nd)))
+	      (abs (core-node-current nd)))))))
+
+(defun node-check-convergence (nd)
+  "To see if the voltages have converged at this node yet. This check is at the
+   relaxation iteration level."
+  (< (abs (core-node-delta-v nd))
+	 (+ vabs (* vrel (abs (core-node-voltage-n+1 nd))))))
+|#
+
+#+parallel
+(defun node-check-convergence ()
+  "To see if the voltages have converged at this node yet. This check is at the
+   relaxation iteration level."
+  (*if (or!!
+	 (>!! (float-abs!! core-node-delta-v)
+	      (+!! (!! vabs)
+		   (*!! (!! vrel)
+			(float-abs!! core-node-voltage-n+1))))
+	 (>!! (float-abs!! core-node-rhs)
+	      (+!! (!! iabs)
+		   (*!! (!! irel)
+			(+!! (float-abs!! core-node-old-rhs)
+			     (float-abs!! (*!! (!! alpha) core-node-charge))
+			     (float-abs!! core-node-current))))))
+       (*set core-node-converged nil!!)
+       (*set core-node-converged t!!)))
+
+#-parallel
+(defun node-check-steady-state (nd)	;
+  "To see if the voltages have reached dc steady state at this node yet."
+  (if (> (/ (abs (- (core-node-voltage-n+1 nd) (core-node-voltage-n nd))) (* time-step mrt))
+	 (+ vabs (* vrel (abs (core-node-voltage-n+1 nd)))))
+      nil
+      t))
+
+#+parallel
+(defun node-check-steady-state ()
+  "To see if the voltages have reached dc steady state at this node yet."
+  (*if (>!! (/!! (float-abs!! (-!! core-node-voltage-n+1 core-node-voltage-n))
+		 (!! time-step))
+	    (+!! (!! vabs)
+		 (*!! (!! vrel)
+		      (float-abs!! core-node-voltage-n+1))))
+    (*set core-node-converged nil!!)
+    (*set core-node-converged t!!)))
+
+#-parallel
+(defun node-advance-time (nd)
+  "To be called for each node when the time step is advanced."
+  (setf
+    (core-node-prev-charge nd) (core-node-charge nd)
+    (core-node-prev-current nd) (core-node-current nd)
+    (core-node-voltage-n-2 nd) (core-node-voltage-n-1 nd)
+    (core-node-voltage-n-1 nd) (core-node-voltage-n   nd)
+    (core-node-voltage-n nd)   (core-node-voltage-n+1 nd))
+  )
+
+#+parallel
+(defun node-advance-time ()
+  "To be called when the time step is advanced."
+  (*set core-node-prev-charge core-node-charge)
+  (*set core-node-prev-current core-node-current)
+  (*set core-node-voltage-n-2 core-node-voltage-n-1)
+  (*set core-node-voltage-n-1 core-node-voltage-n)
+  (*set core-node-voltage-n core-node-voltage-n+1))
+
+#-parallel
+(defun node-initialize-relax (nd)
+  "Does the stuff to a node that has to be done before a relaxation 
+   iteration can start."
+  (let (a0 a1 a2)
+    (setf
+      (core-node-old-rhs nd) (- (core-node-prev-current nd)
+				(* alpha (core-node-prev-charge nd)))
+					;      now predict the next voltage
+      a0 (core-node-voltage-n nd)
+      a1 (/ (- a0 (core-node-voltage-n-1 nd))
+	     (- sim-time-n sim-time-n-1))
+      a2 (/ (- a1
+		(/ (- a0 (core-node-voltage-n-2 nd))
+		    (- sim-time-n sim-time-n-2)))
+	     (- sim-time-n-1 sim-time-n-2))
+      (core-node-predictor nd) (+ a0
+				  (* (+ a1
+					(* a2
+					   (- sim-time-n+1 sim-time-n-1)))
+				     (- sim-time-n+1 sim-time-n)))
+					; quadratic predictor
+      (core-node-voltage-n+1 nd) (core-node-predictor nd)
+					; something else
+					;      (core-node-voltage-n+1 nd) (+ a0
+					;				  (* (+ a1
+					;					(* a2 0.5
+					;					   (- sim-time-n+1 sim-time-n)))
+					;				     (- sim-time-n+1 sim-time-n)))
+					; linear predictor
+					;      (core-node-voltage-n+1 nd) (+ a0
+					;				  (* a1
+					;				     (- sim-time-n+1 sim-time-n)))
+					; constant predictor
+					;      (core-node-voltage-n+1 nd) a0
+      )
+					;    (format t "~a ~a ~a ~%" (core-node-voltage-n nd) (core-node-voltage-n-1 nd) (core-node-voltage-n-2 nd) )
+    ))
+
+#+parallel
+(defun node-initialize-relax ()
+  "Does the stuff to a node that has to be done before a relaxation 
+
+   iteration can start."
+  (*let
+    ((a0 (!! zero))
+     (a1 (!! zero))
+     (a2 (!! zero)))
+    (declare (type (pvar big-float) a0))
+    (declare (type (pvar big-float) a1))
+    (declare (type (pvar big-float) a2))
+    (*set core-node-converged nil!!)
+    (*set core-node-old-rhs (-!! core-node-prev-current
+				 (*!! (!! alpha)
+				      core-node-prev-charge)))
+					;   now predict the next voltage
+    (*set a0 core-node-voltage-n)
+    (*set a1 (/!! (-!! a0 core-node-voltage-n-1)
+		   (!! (- sim-time-n sim-time-n-1))))
+    (*set a2 (/!! (-!! a1 (/!! (-!! a0 core-node-voltage-n-2)
+				 (!!
+				   (- sim-time-n sim-time-n-2))))
+		   (!! (- sim-time-n-1 sim-time-n-2))))
+    (*set core-node-predictor (+!! a0
+				   (*!! (+!! a1
+					     (*!! a2
+						  (!!
+						    (- sim-time-n+1 sim-time-n-1))))
+					(!! (- sim-time-n+1 sim-time-n)))))
+					; quadratic predictor
+    (*set core-node-voltage-n+1 core-node-predictor)
+					; something else
+					;    (*set core-node-voltage-n+1 (+!! a0
+					;				      (*!! (+!! a1
+					;						(*!! a2
+					;						     (!! 0.5)
+					;						     (!! (- sim-time-n+1 sim-time-n))))
+					;					   (!!
+					;					     (- sim-time-n+1 sim-time-n)
+					;					     ))))
+					; linear predictor
+					;    (*set core-node-voltage-n+1 (+!! a0
+					;				      (*!! a1
+					;				           (!!
+					;					     (- sim-time-n+1 sim-time-n)
+					;					     ))))
+					; constant predictor
+					;    (*set core-node-voltage-n+1 a0)
+    ))
+
+#-parallel
+(defun init-node (nd)
+  "Initializes all the accumulator fields for this node. Intended to be
+   called once for each node inside the innermost loop."
+  (setf
+					;    (core-node-capacitance nd) ZERO
+					;    (core-node-conductance nd) ZERO
+    (core-node-jacobian nd) ZERO
+    (core-node-charge nd) ZERO
+    (core-node-alpha-charge nd) ZERO
+    (core-node-current nd) ZERO))
+
+#+parallel
+(defun init-node ()
+  "Initializes all the accumulator fields for this node. Intended to be
+   called once for each node inside the innermost loop."
+					;    (core-node-capacitance nd) ZERO
+					;    (core-node-conductance nd) ZERO
+  (*set core-node-jacobian (!! ZERO))
+  (*set core-node-charge (!! ZERO))
+  (*set core-node-current (!! ZERO))
+  )
+
+
+
+(defun declare-ground (gnd-name)
+  "Creates the ground node."
+  (if *ground-node*
+      (progn
+	(sim-warning "The ground node is already defined.")
+	*ground-node*)
+      (let ((nd (gethash gnd-name node-hash-table)))
+	(if nd				; this node has already been created
+	    (setf			;  just change things to make it a ground node
+	      *ground-node* nd
+	      *num-nodes* (1- *num-nodes*) ; don't count ground in the 
+					;  number of nodes
+	      (node-is-dc-source nd) t)
+	    (setf			; make a new node to be the ground
+	      nd (make-node)
+	      *ground-node* nd
+	      (node-name nd) gnd-name
+	      (node-initial-voltage nd) ZERO ;The initial voltage for ground is zero of course.
+	      (node-cell nd) nil	;Ground is outside of the cell.
+	      (node-is-dc-source nd) t
+	      (gethash gnd-name node-hash-table) nd))
+	nd)))
+
+
+
+;;CREATE-NODE 'Node-name' is assumed to be a concantenation of a node label and the cell-name.
+(defun create-node (node-name &key (cell-name "Unknown") (plot-pane 1)(plot-me nil)
+		    (analyze-me nil)(initial-voltage *e-holding) (hines-circuit-node nil)
+		    (relative-location (list 0.0 0.0 0.0)))
+  "Creates a new node, if not already defined. Returns the pointer to the node."
+  (let ((nd (gethash node-name node-hash-table))
+	(cell (gethash cell-name cell-hash-table)))
+    (if nd
+	nd
+	(setf *num-nodes* (1+ *num-nodes*)
+	      nd (make-node :hines-circuit-node hines-circuit-node)
+	      (node-name nd) node-name
+	      (node-initial-voltage nd) initial-voltage
+	      (node-relative-location nd) relative-location
+	      (node-plot-pane nd) plot-pane
+	      (node-plot-voltage nd) plot-me
+	      (node-analyze-voltage nd) analyze-me
+	      (node-ordered nd) nil
+	      (gethash node-name node-hash-table) nd
+	      (node-cell nd) (if cell cell (create-cell cell-name))))
+    nd))
+
+
+(defun reorder-circuit ()
+  "Figures out a reasonable ordering to put most of the off diagonal entries in the
+   tri-diagonal."
+  (setf *node-array* (make-array (list *num-nodes*))) ; This is larger then it has to be
+  (if *node-order*
+      (manually-set-order)
+      ;; (maphash 'assign-index node-hash-table)
+      )
+  ;; automatically order the circuit
+  (setf alpha (/ 2.0 (/ user-max-step 10)))
+  (if *use-hines*
+      (maphash 'order-nodes-from-hines-branch-list cell-hash-table)
+      (find-best-order))
+#-parallel
+  (setf *diag* (make-array (list *num-unknowns*)  :element-type 'single-float)
+	*lower-diag* (make-array (list *num-unknowns*)  :element-type 'single-float)
+	*upper-diag* (make-array (list *num-unknowns*)  :element-type 'single-float)
+	*delta-v* (make-array (list *num-unknowns*)  :element-type 'single-float)
+	*rhs* (make-array (list *num-unknowns*)  :element-type 'single-float)))
+
+(defun manually-set-order ()
+  "Sets the order of the nodes according to the list *node-order*."
+  (dolist (name *node-order*)
+    (let ((node (gethash name node-hash-table)))
+      (if node
+	  (assign-index name node)
+	  (sim-warning (format nil "Node ~s given in *node-order* is not known, ignoring~%"
+			       name)))))
+  (maphash 'assign-the-rest node-hash-table))
+
+(defun assign-the-rest (name nd)
+  "Check that all nodes are assigned an index, in case the user forgot some."
+  (if (= (node-index nd) -1)
+      (assign-index name nd)))
+
+(defun assign-index (name nd)
+  "Trivial ordering."
+					;  (dbg:dbg)
+  (if (or (node-is-dc-source nd)
+	  (node-is-pwl-source nd))
+      (setf (node-index nd) -1)
+      (progn
+	(setf (node-index nd) *num-unknowns*)
+	(setf (node-ordered nd) t)
+	(setf (aref *node-array* *num-unknowns*) nd)
+	(if *debug-partition*
+	    (format t "Node ~a has index ~a~%" name *num-unknowns*))
+	(incf *num-unknowns*))))
+
+(defun find-coupling (name nd)
+  (declare (ignore name))
+  "Finds the coupling for this node."
+					;  (format t "~%~%findcoupling for ~a " name)
+  (let (temp)
+    (dolist (elt (node-elements nd))
+					;      (print (node-name elt))
+					;      (print (type-of elt))
+					;      (print (cdr (find-element-coupling nd elt)))
+      (push (find-element-coupling nd elt) temp))
+    (setf (node-coupling nd) temp)))
+
+(defun find-best-order ()
+  (maphash 'find-coupling node-hash-table)
+  "Given the coupling graph, as calculated by find-coupling above, choose the actual order."
+  (maphash 'clean-and-sort-coupling-info node-hash-table)
+  (maphash 'choose-order node-hash-table)
+  )
+
+(defun choose-order (name nd)
+  (declare (ignore name))
+  "Starting from this node, order other nodes following it."
+  (if (not (or (node-ordered nd)
+	       (node-is-dc-source nd)
+	       (node-is-pwl-source nd)))
+      (do ((this-node nd)
+	   (nd2)
+	   (next-node))
+	  (nil)
+	  (assign-index (node-name this-node) this-node)
+	  (setf next-node
+	      (dolist (pair (node-coupling this-node))
+		 (setf nd2 (car pair))
+		 (if (not (or (node-ordered nd2)
+			      (node-is-dc-source nd2)
+			      (node-is-pwl-source nd2)))
+		     (return nd2))
+		 nil))
+	  (if next-node
+	    (setf this-node next-node)
+	    (return nil))		; returns from the 'do', and immediatly exits the function
+	  )))
+
+(defun clean-and-sort-coupling-info (name nd)
+  (declare (ignore name))
+  "Make the info more manageable."
+  (let ((temp nil))
+					;    (format t " clean-and-sort-coupling-info node = ~a~%" name)
+    (setf temp (clean-coupling-list (node-coupling nd) temp))
+    (setf temp (sort temp #'> :key #'cdr))
+    (setf (node-coupling nd) temp)))
+
+(defun clean-coupling-list (l temp) 
+  "Recursively work on the list l."
+  (if (null l)
+      (return-from clean-coupling-list temp))
+  (let ((temp2 temp))
+    (dolist (elem l)
+      (cond
+        ((null elem)
+	  )
+	((atom elem)
+	  (sim-warning (format nil "Internal error in clean-coupling-list: Expected dotted pair, got atom ~a~%" elem)))
+	((atom (car elem))
+	  ;; a sanity check:
+	  (if (listp (cdr elem))
+	      (sim-warning (format nil "Internal error in clean-coupling-list: Expected dotted pair, got ~a~%" elem)))
+	  (push elem temp2))
+	(t
+	  (setf temp2 (clean-coupling-list elem temp2)))))
+    temp2))
+
+(defun fix-nodes ()
+  "Maps the node-num's to a pointer or a constant as appropriate."
+					; make the core nodes
+  (maphash 'make-core-nodes node-hash-table)
+					; correct the elements that are connected to DC sources
+  (dolist (mod *models*)
+    (dolist (inst (model-template-instances mod))
+      (dolist (elt (model-instance-elements inst))
+	(funcall (model-template-fix-dc-nodes-routine mod) elt))))
+					; set the :backward segment flag
+#+parallel (*setf (pref fanout-seg-forward *processor-allocation-counter*) t)
+#+parallel
+  (*when (/=!! (self-address!!) (!! 0))
+    (*setf (pref!! fanout-seg-backward (1-!! (self-address!!))) fanout-seg-forward))
+  )
+
+(defun make-core-nodes (name nd)
+  "Takes a node 'nd' and allocates memory ( processor ) for it."
+  ;; DC source node, don't need anything
+  (declare (ignore name))
+  (if (not (node-is-dc-source nd))
+      (let ((core-nd (make-core-node)))
+	(setf (node-core-nd nd) core-nd)
+	#-parallel
+	(if *use-tridiagonal* (setf (core-node-index core-nd) (node-index nd)))
+	#+parallel (*setf (pref fanout-valid core-nd) t)
+	#+parallel (*setf (pref fanout-seg-forward core-nd) t)
+	(if (node-is-pwl-source nd)
+	    (#+parallel *setf #-parallel setf ; PWL source node
+			(#+parallel pref core-node-is-source core-nd) t)
+	    (progn
+	      (#+parallel *setf #-parallel setf ; non source node
+			  (#+parallel pref core-node-is-source core-nd) nil)
+	      (setf *core-node-list* (cons core-nd *core-node-list*))))
+	(if *use-hines* (setf (core-node-hines-circuit-node core-nd) (node-hines-circuit-node nd)))
+	;; Put this elt on this processor if it does not already have a processor
+	(dolist (elt (node-elements nd))
+	  (create-core-element elt nd))
+	(if (and *use-hines* (core-node-hines-circuit-node core-nd))
+	    (progn
+	      #+off-diag
+	      (if (and *use-tridiagonal*
+		       (not (node-is-pwl-source nd))
+		       (> *num-unknowns* 1))
+		  (let ((index (node-index nd)))
+		    (declare (fixnum index))
+		    (if (/= index 0)	; not first node, create lower off-diag
+			(let ((off-diag (make-core-off-diag)))
+			  (#+parallel *setf #-parallel setf
+				      (#+parallel pref core-off-diag-lower off-diag) t)
+			  (#+parallel *setf #-parallel setf
+				      (#+parallel pref core-off-diag-point-diag off-diag) core-nd)
+			  #+parallel (*setf (pref fanout-valid off-diag) t)
+			  #+parallel (*setf (pref fanout-seg-forward off-diag) t)
+			  (dolist (elt (node-elements nd))
+			    (add-off-diag elt nd (aref *node-array* (1- index)) off-diag))))
+		    (if (/= index (1- *num-unknowns*)) ; not first node, create upper off-diag
+			(let ((off-diag (make-core-off-diag)))
+			  (#+parallel *setf #-parallel setf	(#+parallel pref core-off-diag-lower off-diag) nil)
+			  (#+parallel *setf #-parallel setf (#+parallel pref core-off-diag-point-diag off-diag) core-nd)
+			  #+parallel (*setf (pref fanout-valid off-diag) t)
+			  #+parallel (*setf (pref fanout-seg-forward off-diag) t)
+			  (dolist (elt (node-elements nd))
+			    (add-off-diag elt nd (aref *node-array* (1+ index)) off-diag))))
+		    )))))))
+
+;;(let ((proc #-parallel nil #+parallel (allocate-processor)))
+;;#+parallel (setf (pref fanout-valid proc) t)
+;;#+parallel (setf (pref fanout-seg-forward proc) nil)
+
+(defun does-node-exist (node-name)
+  "Predicate to see if a node has already been defined. Returns the node 
+   if the node has already been defined, nil if not."
+  (gethash node-name node-hash-table))
+
+(defun pointer-to-node (node-name)
+  "Returns the pointer to the node named by 'node-name'."
+  (let ((nd (gethash node-name node-hash-table)))
+    (if nd
+	nd
+	(progn
+	  (sim-error "pointer-to-node: Attempt to refrence an undefined non-source node.")
+	  'nil))))
+
+#-parallel
+(defun start-node (nd)
+  "Copies the value of the voltage at n+1 to the other nodes."
+  (setf
+    (core-node-voltage-n   nd) (core-node-voltage-n+1 nd)
+    (core-node-voltage-n-1 nd) (core-node-voltage-n+1 nd)
+    (core-node-voltage-n-2 nd) (core-node-voltage-n+1 nd)))
+
+#+parallel
+(defun start-node ()
+  "Copies the value of the voltage at n+1 to the other nodes."
+  (*set core-node-voltage-n   core-node-voltage-n+1)
+  (*set core-node-voltage-n-1 core-node-voltage-n+1)
+  (*set core-node-voltage-n-2 core-node-voltage-n+1))
+
+#-parallel
+(defun zero-v-n+1 (nd)
+  "Sets the voltage at n+1 to zero."
+  (if (not (core-node-is-source nd))
+      (setf (core-node-voltage-n+1 nd) ZERO)))
+
+#+parallel
+(defun zero-v-n+1 ()
+  "Sets the voltage at n+1 to zero."
+  (*when (not!! core-node-is-source)
+    (*set core-node-voltage-n+1 (!! ZERO))))
+
+(defun set-node-voltage (nd value)
+  "Sets the voltage at n+1 to value."
+  (if nd
+      (if (not (#+parallel pref core-node-is-source (node-core-nd nd)))
+	  (progn
+	    (#+parallel *setf #-parallel setf (#+parallel pref core-node-voltage-n+1 (node-core-nd nd)) value)
+	    (if *use-hines*
+		(setf (core-node-voltage-n (node-core-nd nd)) value
+		       (core-node-voltage-n-1 (node-core-nd nd)) value))))))
+
+
+

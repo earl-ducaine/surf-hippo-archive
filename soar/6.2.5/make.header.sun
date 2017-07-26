@@ -1,0 +1,11 @@
+# $Id: make.header.sun,v 1.5 1994/06/08 21:45:15 portelli Exp $
+#
+# SUN Sparc 1, SunOS 4.1.1 Unix,  w/ gcc:
+
+CC         = gcc
+CFLAGS     = -O -ansi -fpcc-struct-return -DUNIX
+EXTRA_LIBS =
+RANLIB     = ranlib
+
+MACHINE_DEP_DIR = sun4
+

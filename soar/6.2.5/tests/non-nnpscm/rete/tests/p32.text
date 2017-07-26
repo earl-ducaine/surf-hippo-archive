@@ -1,0 +1,68 @@
+(sp create-identifiers
+  (goal <g> ^object nil)
+-->
+  (<g> ^f-ident <f>)
+)
+
+(sp p32
+  (goal <g> ^attr <foo>)
+  (<foo> ^attr1 << a b c >>)
+  (<foo> ^attr2 << c d >>)
+  (<foo> ^attr3 << d e >>)
+ -->)
+
+run 1
+add-wme g1 ^attr f1
+ms
+remove-wme 4
+ms
+add-wme g1 ^attr f1
+ms
+add-wme f1 ^attr1 a
+ms
+add-wme f1 ^attr2 c
+ms
+add-wme f1 ^attr3 d
+ms
+run 1
+remove-wme 6
+ms
+run 1
+add-wme f1 ^attr1 a
+ms
+run 1
+remove-wme 9
+ms
+run 1
+add-wme f1 ^attr1 b
+ms
+run 1
+remove-wme 10
+ms
+run 1
+add-wme f1 ^attr1 c
+ms
+run 1
+remove-wme 7
+ms
+run 1
+add-wme f1 ^attr2 c
+ms
+run 1
+remove-wme 12
+ms
+run 1
+add-wme f1 ^attr2 d
+ms
+run 1
+remove-wme 8
+ms
+run 1
+add-wme f1 ^attr3 d
+ms
+run 1
+remove-wme 14
+ms
+run 1
+add-wme f1 ^attr3 e
+ms

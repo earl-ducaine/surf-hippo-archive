@@ -1,0 +1,318 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		 Element Data
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+This file describes the formatting and manipulation of data generated
+by Surf-Hippo simulations.
+
+See also analysis.doc, plotting.doc, data-folder.doc
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+Format of Element Data and Time Lists 
+1. Basic Handling of Plot Data
+
+3. On-Line Analysis - Creation Of Analysis Results File For Simulations
+   And Simulation Sessions
+4. Raster Plots 
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+****************************************************************
+****************************************************************
+
+	Format of Element Data and Time Lists 
+
+****************************************************************
+****************************************************************
+
+
+Data (voltages, currents, conductances, particle states, concentrations, etc.)
+describing various aspects of the circuit components may be saved during the
+simulation for later plotting or analysis, but only if the plotting is enabled for
+a given element (and its appropriate data type).
+
+The basic format for the data of a specific element is a list of single-float
+numbers. The associated times for these numbers is given in the list *TIME*, a
+global variable which holds the time values from the last simulation, in correct
+order.
+
+Note that the data lists that are actually stored in the circuit element structures
+are in reverse time order (for efficiency). However, normally functions based on
+the ELEMENT-DATA function (see below) are used for accessing element data, and this
+function returns the stored plot data in the correct time order.
+
+Simulation data is saved onto the appropriate lists (including the *TIME* list)
+every *SAVE-DATA-AT-STEP time steps during the run. The default value for this
+global variable is 2, ie. data is saved every other time step).
+
+For variable time step simulations, referencing the current value of *TIME* is
+obviously essential for interpreting the element data lists properly. For fixed
+time step simulations, where the time step is given by *USER-STEP* (in
+milliseconds), the element data time base can be reconstructed using both the value
+of *USER-STEP* and *SAVE-DATA-AT-STEP. 
+
+It is often important to analyze simulation data on a specific fixed sampling grid.
+The basic function for resampling element data (especially if a variable time step
+was used) is ELEMENT-DATA-DTED (see below).
+
+
+
+****************************************************************
+****************************************************************
+
+	Basic Handling of Plot Data
+
+****************************************************************
+****************************************************************
+
+
+The basic functions for controlling and accessing the collection of simulation data
+are:
+
+
+	enable-element-plot  &optional ELEMENT DATA-TYPE TYPE
+
+	disable-element-plot &optional ELEMENT DATA-TYPE TYPE
+
+	element-data ELEMENT &optional DATA-TYPE TYPE
+
+
+The first two functions add (or remove) the appropriate element name or names to
+the appropriate plotting list. ELEMENT-DATA returns the plot data list (in correct
+time order from the last simulation, according to the list of times in *TIME* - see
+below). These functions operate on elements in ELEMENT, which can be a list of
+element names or elements, a single instance of either or NIL, which generates a
+selection menu. TYPE applies to the element type. DATA-TYPE is used when there is
+more than one type of plot data for a given sort of element (e.g. current and
+conductance for a channel or synapse). If DATA-TYPE is not supplied, then the
+default type of plotted data for a given element type is used. Options include:
+
+ Element Type            Default Data Type               Other Data Type(s)
+
+ SOMA                     'VOLTAGE             'VOLTAGE-DERIVATIVE, 'DENDRITE-CURRENT
+
+ SEGMENT                  'VOLTAGE             'VOLTAGE-DERIVATIVE
+
+ AXON                     'VOLTAGE
+
+ CHANNEL, SYNAPSE         'CURRENT             'REVERSAL-POTENTIAL, 'CONDUCTANCE
+
+ ISOURCE, VSOURCE         'CURRENT
+
+ PARTICLE, CONC-PARTICLE  'STATE               'MARKOV-STATES
+
+ CONC-INT                 'CONCENTRATION-1     'CONCENTRATION-2, 'CONCENTRATION-3, 
+					       'TOTAL-CONCENTRATION
+
+ EXTRACELLULAR-ELECTRODE  'FIELD-POTENTIAL
+ 
+ BUFFER                   'CONCENTRATION
+
+ PUMP                     'CURRENT
+
+
+For markov state data, the optional STATE-INDEX integer argument must be supplied.
+If the DATA-TYPE or TYPE arguments are included, then they are used for all members
+of the ELEMENT arg.
+
+If either ELEMENT does not refer to a circuit element, or if the DATA-TYPE is
+inconsistent with the referenced element, or if the data was not stored in the last
+simulation (i.e. was not earmarked for plotting), then ELEMENT-DATA returns NIL.
+
+For example,
+
+	* (setq *PLOT-SOMA-NODES* nil)
+	NIL
+	* (ENABLE-ELEMENT-PLOT *soma*)
+	NIL
+	* *plot-soma-nodes*
+	("j43d-soma")
+	* 
+
+or 
+
+	* (element-data "Hippo-soma")
+	'(-70.0 -70.0 -70.0 -69.8123 -69.123 ...)
+
+
+ENABLE-ELEMENT-PLOT also sets the enable plot flag for the appropriate class of
+plotted data (e.g. above, *PLOT-SOMA-VOLTAGE-P would be made T). For node voltages,
+this function will *not* add the node to *PLOT-PATH-NODES*.
+
+
+	element-data-dted dt ELEMENT &optional DATA-TYPE TYPE (REFERENCE-TIME-LIST *TIME*)
+
+Given an element or elements in ELEMENT or element type TYPE, returns a plot data list (or lists
+for more than one element) of type DATA-TYPE [defaults as is ELEMENT-DATA] sampled on an even time
+base as given by DT [milliseconds]. The time base for the original data is taken from
+REFERENCE-TIME-LIST [default is the simulation time base list given by *TIME*].
+
+
+See also doc/files.doc
+
+
+
+****************************************************************
+****************************************************************
+
+On-Line Analysis - Creation Of Analysis Results File For Simulations
+And Simulation Sessions
+
+****************************************************************
+****************************************************************
+
+At the end of a simulation Surf-Hippo can run an analysis of any data
+that was saved during the simulation, which in turn is determined by
+the variables referenced in the names stored in the various plot and
+analysis lists (e.g. *PLOT-NODES*, *PLOT-CHANNEL-CONDUCTANCES*,
+*ANALYSIS-NODES*) (see basics.doc, circuits.doc, scripts.doc).
+
+This automatic analysis is performed from the function PRINT-ANALYSIS
+(in src/sys/analysis.lisp), which is called at the end of the simulation
+by the function SIMULATION-OUTPUT. The following discussion of
+PRINT-ANALYSIS follows the version of this function as supplied with
+Surf-Hippo. For other types of analysis, it is straightforward to
+modify the function PRINT-ANALYSIS, and load your own (defun
+PRINT-ANALYSIS ()...) after Surf-Hippo is loaded (it is probably a
+better idea to *not* edit the original analysis.lisp file, and rather
+just load your own file that contains the new definition after
+Surf-Hippo is loaded). 
+
+For the supplied definition of PRINT-ANALYSIS, the analyzed data is
+taken from those (voltage) nodes specified in the global variables:
+
+	*PLOT-SOMA-NODES*  The nodes listed in these two variables will
+	*PLOT-NODES*	   be plotted.
+
+	*COLORIZE-NODES*   (to be used in a later release) 
+
+	*ANALYSIS-NODES*   The nodes listed in this variable will not
+	                   be plotted.
+
+Again, these variables are lists of element names (strings), e.g. the
+names of segments or somas.
+
+Note that any nodes references in *PLOT-PATH-NODES* will not be
+analyzed (these are only plotted).
+
+
+The variable *PRINT-ANALYSIS* determines whether the plotted data is
+analyzed by the simulator when the simulation is complete, that is,
+whether or not PRINT-ANALYSIS is called. The results of the data
+analysis at this level can be either printed out to the Lisp window
+(when *PRINT-OUT-TO-LISP* is T), added to the information file (when
+*SAVE-SIMULATION-INFO is T), printed out to the Information Window
+(when *PRINT-OUT-TO-INFO-WINDOW* is T), and/or saved to a
+RESULTS_FILENAME.results file (when *DUMP-ANALYSIS-TO-FILE* and
+*PRINT-OUT-TO-LISP* are T). The RESULTS_FILENAME is made up of the
+data directory and the value of the string variable *SESSION-NAME*, if
+*SESSION-NAME* is not the NULL string, or *SIMULATION-NAME*, if
+*SESSION-NAME* the NULL string.
+
+An example of the results form that is written (appended) to the results file is:
+
+  (push 
+   '(j43dsbranch2-848441
+     (DISTAL-PROXIMAL BRANCH-11-5 0.25)
+     (((NODE-11-30-54 (MAX . -57.37003) (MIN .-74.23389))
+			   (NODE-11-30-1 (MAX . -61.630474) (MIN . -73.27865))
+			   (NODE-11-30-43 (MAX . -58.613735) (MIN . -73.43869))
+			   (NODE-11-30-29 (MAX . -59.092335) (MIN . -74.4653))
+			   (NODE-11-30-15 (MAX . -59.089767) (MIN . -73.78816))
+			   )
+			  ((NODE-J43D-SOMA (MAX . -67.22821) (MIN . -71.92825)))
+			  ((NODE-11-30-54 (AVERAGE . 1.9533609) (BASE . -70.0))
+			   (NODE-11-30-1 (AVERAGE . 0.5855975) (BASE . -70.0))
+			   (NODE-11-30-43 (AVERAGE . 1.9147855) (BASE . -70.0))
+			   (NODE-11-30-29 (AVERAGE . 1.7084956) (BASE . -70.0))
+			   (NODE-11-30-15 (AVERAGE . 1.0426667) (BASE . -70.0)))
+			  ((NODE-J43D-SOMA (AVERAGE . 0.17151265) (BASE . -70.0))))
+     )
+   *archive-session-results*)
+
+
+The results file will thus contain a form like the above for each
+simulation that comprises the current session. When this file is later
+loaded into the Lisp, then the variable *ARCHIVE-SESSION-RESULTS* can
+be processed as necessary.
+
+As determined by PRINT-ANALYSIS, the basic structure of the list
+PUSHed onto the variable *ARCHIVE-SESSION-RESULTS* is:
+
+	(LIST *SIMULATION-NAME* *SIMULATION-RESULTS-ADDENDUM* RESULTS)
+
+where the results form is built by consecutive PUSHES of the data
+returned by functions called by PRINT-ANALYSIS, for example (see
+INTEGRATE-PLOT-DATA in src/sys/misc.lisp to see the format of
+what this function returns):
+
+
+	(push (INTEGRATE-plot-DATA (retrieve-plot-data (list (list *plot-soma-nodes* `node-voltage)))
+			   *plot-soma-nodes* *output-stream *x-integrate-min* *x-integrate-max*)
+	      results)
+
+The variable *SIMULATION-RESULTS-ADDENDUM* should be set to something
+which can facilitate later parsing of the entries in
+*ARCHIVE-SESSION-RESULTS*, e.g. some parameters which distinguish the
+individual simulation.
+
+In the supplied version, PRINT-ANALYSIS follows the value of various
+global flags, including *PRINT-LINEAR-ANALYSIS* (which enables the
+evaluation of INTEGRATE-PLOT-DATA (in src/sys/misc.lisp)) and
+*PRINT-NONLINEAR-ANALYSIS* (which enables the evaluation of
+MAX-MIN-PLOT-DATA (also in src/sys/misc.lisp)). The result lists
+returned by INTEGRATE-PLOT-DATA and MAX-MIN-PLOT-DATA are collected in
+PRINT-ANALYSIS and then written to the results file when
+*DUMP-ANALYSIS-TO-FILE* is T.
+
+Again, these formats are determined by the definition of the
+PRINT-ANALYSIS function, and can be changed as desired.
+
+
+	                
+
+**************************************************************
+**************************************************************
+
+	Raster Plots 
+
+**************************************************************
+**************************************************************
+
+
+RASTER-PLOTS Plots of event times of each of the EVENT-ELEMENTS (when
+ONLY-EVENT-GENERATORS is nil) or the original times of the event generators
+for the EVENT-ELEMENTS (ONLY-EVENT-GENERATORS T, the default). If not
+supplied, EVENT-ELEMENTS is taken as all the axons, voltage-controlled and
+autonomous synapses in the circuit. EVENT-WIDTH is the width of the mark
+for each event on the plot, in pixels. START-TIME and STP-TIME are in
+milliseconds. RASTER-SPACING is the vertical spacing between rasters in
+pixels. When ONLY-ELEMENTS-WITH-ACTIVITY is non-NIL (the default set to the
+value of *PLOT-ONLY-ELEMENTS-WITH-ACTIVITY*, whose default is NIL), then
+only elements that have events are plotted.
+
+	raster-plots &key (START USER-START-TIME) (STOP USER-STOP-TIME) (EVENT-WIDTH 2)
+			  TITLE-POSTFIX WIN TITLE (RASTER-SPACING 30) (ONLY-EVENT-GENERATORS T)
+			  (MAX-TRACES-PER-PLOT 20)
+			  (ONLY-ELEMENTS-WITH-ACTIVITY *PLOT-ONLY-ELEMENTS-WITH-ACTIVITY*)
+			  EVENT-ELEMENTS
+			  EVENT-ELEMENT-LABELS
+			  EVENT-DATA-LISTS
+
+
+
+
+

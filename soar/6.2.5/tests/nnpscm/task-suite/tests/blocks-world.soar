@@ -1,0 +1,10 @@
+;; $Id: blocks-world.soar,v 1.3 1994/07/12 18:49:59 portelli Exp $
+(load "../../../default/nnpscm/default.soar")
+(load "../../../examples/nnpscm/blocks-world/blocks-world.soar")
+(learn off)
+(run)
+(learn on)
+(init-soar)
+(run)
+(init-soar)
+(run)

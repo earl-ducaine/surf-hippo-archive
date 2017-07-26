@@ -1,0 +1,785 @@
+Soar 6.2.5  NNPSCM
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Multiple agent mode selected.
+
+Loading .init.soar.multi
+
+Creating agent missionaries.
+
+Changing to directory missionaries/.
+Loading .init.soar
+
+Loading mac.soar
+
+Loading ../../../../../default/nnpscm/default.soar
+****************************************************************************************************
+
+Loading ../../../../../examples/nnpscm/missionaries/mac.soar
+************************
+
+Returning from directory missionaries/.
+
+Creating agent eight.
+
+Changing to directory eight/.
+Loading .init.soar
+
+Loading eight.soar
+
+Loading ../../../../../default/nnpscm/default.soar
+****************************************************************************************************
+
+Loading ../../../../../examples/nnpscm/eight-puzzle/eight-puzzle.soar
+***************
+
+Returning from directory eight/.
+
+Selecting agent missionaries
+     0: ==>S: S1 
+     1:    ==>S: S2 (operator tie)
+Selecting agent eight
+     0: ==>S: S1 
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+     1:    ==>S: S2 (operator tie)
+Selecting agent missionaries
+     2:       O: O10 (evaluate-object O5 (move11))
+Selecting agent eight
+     2:       O: O6 (evaluate-object O3 (move-tile))
+Selecting agent missionaries
+     3:       ==>S: S3 (operator no-change)
+Selecting agent eight
+     3:       ==>S: S3 (operator no-change)
+Selecting agent missionaries
+     4:          O: C2 (move11)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+     4:          O: O3 (move-tile)
+Selecting agent missionaries
+  APPLIED C2: move11(missionary,cannibal,left,right)
+     5:          ==>S: S4 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 0 | 7 | 5 | 
+      ------------- 
+ 
+Building chunk-1
+  Evaluation of O3 (move-tile) is -1
+     5:       O: O5 (evaluate-object O2 (move-tile))
+Selecting agent missionaries
+     6:             O: O20 (evaluate-object O18 (move1))
+Selecting agent eight
+Firing chunk-1
+Building chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Building chunk-3
+Ignoring chunk-3 because it is a duplicate of chunk-2 
+  Evaluation of O2 (move-tile) is -1
+     6:       O: O4 (evaluate-object O1 (move-tile))
+Selecting agent missionaries
+     7:             ==>S: S5 (operator no-change)
+Selecting agent eight
+     7:       ==>S: S4 (operator no-change)
+Selecting agent missionaries
+     8:                O: C3 (move1)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+     8:          O: O1 (move-tile)
+Selecting agent missionaries
+  APPLIED C3: move1(cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building chunk-1
+Building chunk-2
+  Evaluation of O18 (move1) is failure
+     9:          O: O16 (move1)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Building chunk-4
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Building chunk-5
+Firing chunk-5
+Building chunk-6
+Ignoring chunk-6 because it is a duplicate of chunk-5 
+  Evaluation of O1 (move-tile) is 1
+     9:    O: O1 (move-tile)
+Selecting agent missionaries
+  APPLIED O16: move1(missionary,right,left)
+    10:          ==>S: S6 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-5
+Retracting chunk-5
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+    10:    ==>S: S5 (operator tie)
+Selecting agent missionaries
+    11:             O: O37 (evaluate-object O33 (move2))
+Selecting agent eight
+    11:       O: O25 (evaluate-object O22 (move-tile))
+Selecting agent missionaries
+    12:             ==>S: S7 (operator no-change)
+Selecting agent eight
+Firing chunk-1
+
+  Evaluation of O22 (move-tile) is -1
+    12:       O: O24 (evaluate-object O20 (move-tile))
+Selecting agent missionaries
+    13:                O: C4 (move2)
+Selecting agent eight
+    13:       ==>S: S6 (operator no-change)
+Selecting agent missionaries
+  APPLIED C4: move2(cannibal,cannibal,left,right)
+    14:                O: O44 (move1)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+    14:          O: O20 (move-tile)
+Selecting agent missionaries
+  APPLIED O44: move1(cannibal,right,left)
+    15:                ==>S: S8 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Building chunk-7
+Firing chunk-2
+Building chunk-8
+Firing chunk-8
+Firing chunk-8
+Firing chunk-8
+
+  Evaluation of O20 (move-tile) is 0
+    15:       O: O23 (evaluate-object O19 (move-tile))
+Selecting agent missionaries
+    16:                   O: O51 (evaluate-object O48 (move2))
+Selecting agent eight
+Firing chunk-7
+Building chunk-9
+Building chunk-10
+Building chunk-11
+Firing chunk-11
+Firing chunk-11
+Firing chunk-11
+
+  Evaluation of O19 (move-tile) is 0
+    16:    O: O20 (move-tile)
+Selecting agent missionaries
+    17:                   ==>S: S9 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-9
+Retracting chunk-10
+Firing chunk-2
+    17:    ==>S: S7 (operator tie)
+Selecting agent missionaries
+    18:                      O: C5 (move2)
+Selecting agent eight
+    18:       O: O37 (evaluate-object O34 (move-tile))
+Selecting agent missionaries
+  APPLIED C5: move2(missionary,missionary,left,right)
+    19:                      ==>S: S10 (operator tie)
+Selecting agent eight
+Firing chunk-1
+
+  Evaluation of O34 (move-tile) is -1
+    19:       O: O36 (evaluate-object O33 (move-tile))
+Selecting agent missionaries
+    20:                         O: O64 (evaluate-object O60 (move2))
+Selecting agent eight
+    20:       ==>S: S8 (operator no-change)
+Selecting agent missionaries
+    21:                         ==>S: S11 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-2
+    21:          O: O33 (move-tile)
+Selecting agent missionaries
+    22:                            O: C6 (move2)
+Selecting agent eight
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Building chunk-12
+Building chunk-13
+Firing chunk-13
+
+  Evaluation of O33 (move-tile) is 0
+    22:    O: O33 (move-tile)
+Selecting agent missionaries
+  APPLIED C6: move2(cannibal,cannibal,right,left)
+  Goal implement-evaluate-object failed. 
+Building chunk-3
+Building chunk-4
+  Evaluation of O60 (move2) is failure
+    23:                         O: O63 (evaluate-object O59 (move1))
+Selecting agent eight
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-13
+Retracting chunk-13
+    23:    O: O44 (move-tile)
+Selecting agent missionaries
+    24:                         ==>S: S12 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-13
+Firing chunk-2
+Firing chunk-13
+    24:    O: O47 (move-tile)
+Selecting agent missionaries
+Firing chunk-4
+    25:                            O: C7 (move1)
+Selecting agent eight
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-13
+Retracting chunk-13
+Firing chunk-9
+Firing chunk-8
+Firing chunk-11
+Firing chunk-13
+Firing chunk-8
+Firing chunk-11
+Firing chunk-13
+Firing chunk-10
+Firing chunk-8
+Firing chunk-11
+Firing chunk-13
+Firing chunk-8
+Firing chunk-11
+Firing chunk-13
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+    25:    O: O49 (move-tile)
+Selecting agent missionaries
+  APPLIED C7: move1(cannibal,right,left)
+Retracting chunk-4
+
+  Goal implement-evaluate-object failed. 
+Building chunk-5
+Building chunk-6
+Building chunk-7
+Building chunk-8
+  Evaluation of O59 (move1) is failure
+    26:                         O: O62 (evaluate-object O58 (move11))
+Selecting agent eight
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-13
+Retracting chunk-8
+Retracting chunk-11
+Retracting chunk-13
+Retracting chunk-9
+Retracting chunk-10
+Retracting chunk-13
+Retracting chunk-13
+Retracting chunk-11
+Retracting chunk-11
+Retracting chunk-8
+Retracting chunk-8
+Firing chunk-5
+Firing chunk-2
+Firing chunk-13
+    26:    O: O52 (move-tile)
+Selecting agent missionaries
+    27:                         ==>S: S13 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-5
+Retracting chunk-13
+Firing chunk-2
+Firing chunk-5
+    27:    O: O56 (move-tile)
+Selecting agent missionaries
+Firing chunk-6
+Firing chunk-8
+Firing chunk-7
+Firing chunk-4
+    28:                            O: C8 (move11)
+Selecting agent eight
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-5
+Firing chunk-2
+Firing chunk-2
+Firing chunk-5
+Firing chunk-2
+Firing chunk-2
+Firing chunk-5
+    28:    O: O59 (move-tile)
+Selecting agent missionaries
+  APPLIED C8: move11(missionary,cannibal,right,left)
+Retracting chunk-4
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-8
+Firing chunk-4
+Firing chunk-7
+Firing chunk-8
+Firing chunk-6
+    29:                            ==>S: S14 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-2
+Retracting chunk-5
+Retracting chunk-5
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+Firing chunk-2
+
+solve-eight-puzzle achieved 
+  Goal solve-eight-puzzle succeeded. 
+System halted.
+Selecting agent missionaries
+    30:                               O: O94 (evaluate-object O89 (move1))
+Selecting agent missionaries
+    31:                               ==>S: S15 (operator no-change)
+Selecting agent missionaries
+Firing chunk-6
+Firing chunk-8
+Firing chunk-7
+Firing chunk-4
+    32:                                  O: C9 (move1)
+Selecting agent missionaries
+  APPLIED C9: move1(missionary,left,right)
+Retracting chunk-4
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-8
+
+  Goal implement-evaluate-object failed. 
+Building chunk-9
+Building chunk-10
+Firing chunk-10
+
+  Evaluation of O89 (move1) is failure
+    33:                      O: O58 (move11)
+Selecting agent missionaries
+  APPLIED O58: move11(missionary,cannibal,right,left)
+Retracting chunk-10
+Firing chunk-10
+Firing chunk-4
+Firing chunk-7
+Firing chunk-8
+Firing chunk-6
+    34:                      O: O104 (move2)
+Selecting agent missionaries
+  APPLIED O104: move2(missionary,missionary,left,right)
+Retracting chunk-4
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-8
+Retracting chunk-10
+    35:                      ==>S: S16 (operator tie)
+Selecting agent missionaries
+    36:                         O: O115 (evaluate-object O112 (move1))
+Selecting agent missionaries
+    37:                         ==>S: S17 (operator no-change)
+Selecting agent missionaries
+    38:                            O: C10 (move1)
+Selecting agent missionaries
+  APPLIED C10: move1(cannibal,right,left)
+    39:                            O: O120 (move2)
+Selecting agent missionaries
+  APPLIED O120: move2(cannibal,cannibal,left,right)
+    40:                            ==>S: S18 (operator tie)
+Selecting agent missionaries
+    41:                               O: O130 (evaluate-object O126 (move2))
+Selecting agent missionaries
+    42:                               ==>S: S19 (operator no-change)
+Selecting agent missionaries
+    43:                                  O: C11 (move2)
+Selecting agent missionaries
+  APPLIED C11: move2(missionary,missionary,right,left)
+  Goal implement-evaluate-object failed. 
+Building chunk-11
+Building chunk-12
+Firing chunk-12
+
+  Evaluation of O126 (move2) is failure
+    44:                               O: O129 (evaluate-object O125 (move1))
+Selecting agent missionaries
+    45:                               ==>S: S20 (operator no-change)
+Selecting agent missionaries
+Firing chunk-12
+    46:                                  O: C12 (move1)
+Selecting agent missionaries
+  APPLIED C12: move1(missionary,right,left)
+Retracting chunk-12
+Firing chunk-2
+    47:                                  O: O146 (move11)
+Selecting agent missionaries
+  APPLIED O146: move11(missionary,cannibal,left,right)
+Retracting chunk-2
+
+  Goal implement-evaluate-object succeeded. 
+Building chunk-13
+Building chunk-14
+Building chunk-15
+Building chunk-16
+  Evaluation of O125 (move1) is success
+Building chunk-17
+  Evaluation of O112 (move1) is partial-success
+    48:                      O: O112 (move1)
+Selecting agent missionaries
+  APPLIED O112: move1(cannibal,right,left)
+Retracting chunk-17
+    49:                      O: O153 (move2)
+Selecting agent missionaries
+  APPLIED O153: move2(cannibal,cannibal,left,right)
+Firing chunk-16
+Firing chunk-12
+    50:                      O: O158 (move1)
+Selecting agent missionaries
+  APPLIED O158: move1(missionary,right,left)
+Retracting chunk-12
+Retracting chunk-16
+Firing chunk-2
+    51:                      O: O161 (move11)
+Selecting agent missionaries
+  APPLIED O161: move11(missionary,cannibal,left,right)
+Retracting chunk-2
+
+  Goal implement-evaluate-object succeeded. 
+Building chunk-18
+Building chunk-19
+Building chunk-20
+Building chunk-21
+  Evaluation of O48 (move2) is success
+Building chunk-22
+  Evaluation of O33 (move2) is partial-success
+    52:          O: O33 (move2)
+Selecting agent missionaries
+  APPLIED O33: move2(cannibal,cannibal,left,right)
+Retracting chunk-12
+Retracting chunk-22
+    53:          O: O169 (move1)
+Selecting agent missionaries
+  APPLIED O169: move1(cannibal,right,left)
+Firing chunk-21
+    54:          O: O173 (move2)
+Selecting agent missionaries
+  APPLIED O173: move2(missionary,missionary,left,right)
+Retracting chunk-21
+Firing chunk-10
+Firing chunk-6
+Firing chunk-8
+Firing chunk-7
+Firing chunk-4
+    55:          O: O176 (move11)
+Selecting agent missionaries
+  APPLIED O176: move11(missionary,cannibal,right,left)
+Retracting chunk-7
+Retracting chunk-4
+Retracting chunk-8
+Retracting chunk-6
+Retracting chunk-10
+Firing chunk-10
+Firing chunk-4
+Firing chunk-7
+Firing chunk-8
+Firing chunk-6
+    56:          O: O179 (move2)
+Selecting agent missionaries
+  APPLIED O179: move2(missionary,missionary,left,right)
+Retracting chunk-8
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-4
+Retracting chunk-10
+Firing chunk-17
+    57:          O: O187 (move1)
+Selecting agent missionaries
+  APPLIED O187: move1(cannibal,right,left)
+Retracting chunk-17
+    58:          O: O188 (move2)
+Selecting agent missionaries
+  APPLIED O188: move2(cannibal,cannibal,left,right)
+Firing chunk-16
+Firing chunk-12
+    59:          O: O193 (move1)
+Selecting agent missionaries
+  APPLIED O193: move1(missionary,right,left)
+Retracting chunk-12
+Retracting chunk-16
+Firing chunk-2
+    60:          O: O196 (move11)
+Selecting agent missionaries
+  APPLIED O196: move11(missionary,cannibal,left,right)
+Retracting chunk-2
+
+  Goal implement-evaluate-object succeeded. 
+Building chunk-23
+Building chunk-24
+  Evaluation of O5 (move11) is success
+    61:    O: O5 (move11)
+Selecting agent missionaries
+  APPLIED O5: move11(missionary,cannibal,left,right)
+Retracting chunk-24
+Firing chunk-2
+    62:    O: O203 (move1)
+Selecting agent missionaries
+  APPLIED O203: move1(missionary,right,left)
+Retracting chunk-2
+Firing chunk-12
+Firing chunk-22
+    63:    O: O210 (move2)
+Selecting agent missionaries
+  APPLIED O210: move2(cannibal,cannibal,left,right)
+Retracting chunk-12
+Retracting chunk-22
+    64:    O: O212 (move1)
+Selecting agent missionaries
+  APPLIED O212: move1(cannibal,right,left)
+Firing chunk-21
+    65:    O: O216 (move2)
+Selecting agent missionaries
+  APPLIED O216: move2(missionary,missionary,left,right)
+Retracting chunk-21
+Firing chunk-10
+Firing chunk-6
+Firing chunk-8
+Firing chunk-7
+Firing chunk-4
+    66:    O: O219 (move11)
+Selecting agent missionaries
+  APPLIED O219: move11(missionary,cannibal,right,left)
+Retracting chunk-7
+Retracting chunk-4
+Retracting chunk-8
+Retracting chunk-6
+Retracting chunk-10
+Firing chunk-10
+Firing chunk-4
+Firing chunk-7
+Firing chunk-8
+Firing chunk-6
+    67:    O: O222 (move2)
+Selecting agent missionaries
+  APPLIED O222: move2(missionary,missionary,left,right)
+Retracting chunk-8
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-4
+Retracting chunk-10
+Firing chunk-17
+    68:    O: O230 (move1)
+Selecting agent missionaries
+  APPLIED O230: move1(cannibal,right,left)
+Retracting chunk-17
+    69:    O: O231 (move2)
+Selecting agent missionaries
+  APPLIED O231: move2(cannibal,cannibal,left,right)
+Firing chunk-16
+Firing chunk-12
+    70:    O: O236 (move1)
+Selecting agent missionaries
+  APPLIED O236: move1(missionary,right,left)
+Retracting chunk-12
+Retracting chunk-16
+Firing chunk-2
+    71:    O: O239 (move11)
+Selecting agent missionaries
+  APPLIED O239: move11(missionary,cannibal,left,right)
+Retracting chunk-2
+
+missionaries-and-cannibals achieved 
+  Goal missionaries-and-cannibals succeeded. 
+System halted.
+Soar agent control> 

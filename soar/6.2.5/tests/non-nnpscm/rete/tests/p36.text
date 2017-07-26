@@ -1,0 +1,36 @@
+(sp create-identifiers
+  (goal <g> ^object nil)
+-->
+  (<g> ^b-ident <b>
+       ^c-ident <c>
+       ^d-ident <d>
+       ^x-ident <x>
+       ^y-ident <y>
+       ^z-ident <z>)
+)
+       
+(sp p36
+   (goal <a> ^a a)
+   (<a> ^b.c.d e)
+   (<a> -^x.y.z e)
+-->)
+
+run 1
+add-wme g1 ^a a
+ms
+add-wme g1 ^b b1
+ms
+add-wme b1 ^c c1
+ms
+add-wme c1 ^d e
+ms
+run 1
+add-wme g1 ^x x1
+ms
+add-wme x1 ^y y1
+ms
+add-wme y1 ^z e
+ms
+run 1
+remove-wme 14
+ms

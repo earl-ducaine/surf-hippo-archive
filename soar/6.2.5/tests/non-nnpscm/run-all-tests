@@ -1,0 +1,18 @@
+#!/bin/csh -f
+
+# This file runs all the tests in the subdirectories.
+# it assumes it's being run from the correct place for the moment
+# Created: Wednesday Sept 23, 1992 by JT Traub
+
+# run the tests
+foreach i (*)
+  if ( -e $i/run-$i-test ) then
+    echo "Running $i tests."
+    (cd $i; run-$i-test)
+    echo "$i tests done."
+    echo ""
+  endif
+end
+
+echo ""
+echo "All tests run."

@@ -1,0 +1,36 @@
+
+************************************************************
+
+    Naming Conventions for Channels and Particles
+
+************************************************************
+
+
+
+The following is a suggested method for naming ion channels and their
+associated gating particles. Most (not all) of the channels and
+particles included with the simulator follow this method.
+
+
+	Channel Name:
+
+	(ion type)(channel type reference)-(literature reference)
+
+
+	Particle Name:
+
+	(ion type)(channel type reference)(particle type reference)-(literature reference)
+
+
+For example, the DR potassium channel used in "Computer simulations of
+a morphologically reconstructed CA3 hippocampal neuron", by Migliore
+et. al., is named 
+
+	KDR-MIG
+
+
+and the two gating particle types associated with it are named
+
+	KDRN-MIG and KDRL-MIG
+
+where the "N" and "L" are taken from the formulation in the paper.

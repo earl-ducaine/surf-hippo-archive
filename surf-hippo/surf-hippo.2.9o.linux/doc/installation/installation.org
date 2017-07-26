@@ -1,0 +1,268 @@
+
+* Surf-Hippo Installation
+
+
+
+** Table of Contents
+   1. File Installation
+   2. Basic System Setup
+   3. Up and Running 
+   4. Using Surf-Hippo
+
+   This document describes the basic installation of the Surf-Hippo
+   package, under Unix (or a variant thereof). In this text, it is
+   assumed that csh is the Unix shell. Thus, the "startup" file
+   referred to below can be your .login file, your .cshrc file, or
+   other file if you use another shell (e.g. .bashrc).
+
+   If you are running Surf-Hippo with the complete Lisp image file,
+   the following instructions are complete. If you will be installing
+   the Lisp and Garnet separately, refer also to the
+   more-installation.doc file in the surf-hippo/doc/installation
+   directory.
+
+** Retrive and install files
+   To install the Surf-Hippo code, create a directory called
+   "surf-hippo" wherever you want the system to be, and go to it (this
+   will be the Surf-Hippo home directory):
+
+       unix-prompt> mkdir surf-hippo
+       unix-prompt> cd surf-hippo
+
+   Now, ftp to either cogni.iaf.cnrs-gif.fr or ftp.ai.mit.edu. When
+   asked to log in, use "anonymous", with your email address as the
+   password:
+
+       unix-prompt>ftp ftp.ai.mit.edu
+       Connected to ftp.ai.mit.edu.
+       220 mini-wheats FTP server (SunOS 4.1) ready.
+       Name (ftp.ai.mit.edu:lyle): anonymous
+       331 Guest login ok, send ident as password.
+       Password:lyle@ai.mit.edu
+
+       230 Guest login ok, access restrictions apply.
+
+   Now, change to the surf-hippo directory at the ftp site and set
+   binary transfer mode:
+
+       ftp> cd /pub/surf-hippo
+       250 CWD command successful.
+       ftp> bin
+       200 Type set to I.
+
+   The files have all been combined into compressed tar format files
+   which will create the appropriate sub-directories automatically.
+   Source code plus complete exeutable image files are in tar files
+   that refer to the Surf-Hippo version, the machine architecture, and
+   the operating system. If you are going to use a CMUCL and Garnet
+   that is already installed at your site, just get the source code
+   tar files, with names like surf-hippo.x.x.tar.Z. Here we will
+   assume that you are installing the entire system, e.g.:
+
+       ftp> get surf-hippo.2.7e.x86.linux.17f.tgz
+
+   Now quit FTP:
+
+       ftp> quit
+
+   And uncompress and untar the files:
+
+       unix-prompt> uncompress surf-hippo.2.7e.x86.linux.17f.tgz
+       unix-prompt> tar -xvf surf-hippo.x.x.linux.17f.tar
+
+   These steps will create subdirectories will all the sources in
+   them. You can now delete the original tar file:
+
+       unix-prompt> rm *.tar
+		  
+** Basic System Setup
+   1. Edit the "surf-hippo" executable shell script in the Surf-Hippo
+      home directory to specify the lisp executable that is
+      appropriate for your platform (see also
+      surf-hippo/cmucl/README). The large image file is referenced by
+      this script - make sure that the name (default "image") is
+      correct in the script. Note that *both* the Lisp executable and
+      the image file are specific to a given architecture and
+      operating system.
+
+   2. Edit your shell setup files (see examples in the .cshrc-stuff or
+      .bashrc-stuff, depending on your shell) to set various
+      environment variables. This includes setting the pathname of the
+      Surf-Hippo home directory, via the SURFHOME environment
+      variable. For example, under csh:
+
+         setenv SURFHOME /usr/local/surf-hippo
+
+      Or under bash:
+
+          export SURFHOME="/usr/local/surf-hippo"
+
+      If needed, you should also add the pathname of where data will
+      be accessed (r/w) [otherwise the value assigned to SURFHOME is
+      used], for example:
+
+         setenv SURFUSERHOME /home/someone-else/surf-hippo-stuff
+
+       If you do not set these environment variables, the defaults for both are:
+
+         ~you/surf-hippo
+
+   3. Edit the emacs initialization file (typically .emacs, but could
+      be .gnu-emacs, or .startemacs, or...) if you want to run
+      Surf-Hippo under ILisp (see the .emacs-stuff file).
+
+      If ILisp is not already installed on your system, then you need
+      to include a pointer to the ILisp files that come with
+      Surf-Hippo:
+
+         (setq load-path (cons (expand-file-name "/usr/local/surf-hippo/misc/ilisp/") load-path))
+         (load "/usr/local/surf-hippo/misc/ilisp/ilisp.el")
+
+      If you have downloaded the Surf-Hippo image, you then need to
+      set up a "surf-hippo" ILisp command in your Emacs initialization
+      file:
+
+         (autoload 'cmulisp "ilisp" "Inferior CMU Common LISP." t)
+         (provide 'ilisp-surf-hippo)
+         (defdialect surf-hippo "CMU Common LISP" cmulisp)
+         (setq surf-hippo-program "/usr/local/surf-hippo/surf-hippo")
+
+      If you are running Xemacs, you may have to alter these
+      initializations.
+
+      It is also possible to install Ilisp manually according to the
+      Ilisp instructions (see /surf-hippo/misc/ilisp/README). You can
+      also update the Ilisp by checking the web site
+      http://ilisp.cons.org.
+   
+** Common Setup Problems
+   1. When you run CMU Common Lisp, if you get an error similar to:
+
+         mapin: mmap: Invalid argument
+         ensure_space: Failed to validate 67108864 bytes at 0x01000000
+
+      then you might have to setenv CMUCL_EMPTYFILE in your shell
+      startup file, e.g:
+
+         setenv CMUCL_EMPTYFILE /tmp/empty
+
+      See the CMUCL installation instructions for more information. 
+
+   2. Another common problem is not setting the DISPLAY environment
+      variable properly, giving something like:
+
+         CMU Common Lisp 17f, running on neuro16
+         Send bug reports and questions to your local CMU CL maintainer, or to
+         cmucl-bugs@cs.cmu.edu.
+         Loaded subsystems:
+             Python 1.0, target SPARCstation/Sun 4
+             CLOS based on PCL version:  September 16 92 PCL (f)
+             CLX X Library MIT R5.02
+             Motif toolkit and graphical debugger 1.0
+         *** Restarting image created with opal:make-image ***
+         *** Image creation date: Aug 18, 1996, 5:58 AM ***
+
+          Error in function XLIB::HOST-ADDRESS:  Unknown host ""
+
+         Debug  (type H for help)
+
+         (XLIB::HOST-ADDRESS "" 0)
+         0]
+
+      Apparently, the CLX is not smart enough to choose an appropriate
+      default if DISPLAY is not bound. Make sure it is set from the
+      shell or startup file, for example:
+
+	lyle@cogni>setenv DISPLAY `/usr/bin/hostname`:0.0
+	lyle@cogni>echo $DISPLAY
+	cogni.iaf.cnrs-gif.fr:0.0
+
+   3. In general, CMUCL GC (garbage collection) requires that the swap
+      space be at least twice as large as the heap. Also, Lisp starts
+      to thrash when the heap size gets significantly bigger than
+      physical memory. For our machine (96MB), Lisp crashes when the
+      heap gets around 41M (assuming that nothing else is
+      running). Edit the following line in
+      surf-hippo/misc/loaders/surf-hippo-loader.lisp according to your
+      setup:
+
+         (defvar surf::*gc-bytes-retained-warning-threshold* 40e6)
+
+      Check the more-installation.doc file in the
+      surf-hippo/doc/installtion directory, and
+      surf-hippo/misc/loaders/surf-hippo-setup.lisp and
+      surf-hippo/misc/loaders/surf-hippo-loader.lisp for additional
+      site initializations. Look for the "$$$$ CUSTOMIZE $$$$" string.
+      CMU Lisp is industrial strength but not bullet-proof. Critical
+      results should be saved at reasonable (roughly hourly)
+      intervals.
+
+** Up and Running
+   In this section, the Unix environment variable SURFHOME and
+   surf-hippo/ will be used interchangeably as a reference to the
+   Surf-Hippo home directory. There are two ways to load Surf-Hippo:
+
+*** Running the Image (Fastest) 
+    If you have downloaded an image version, or made one yourself, run
+    the Surf-Hippo CMUCL image using either the executable command:
+
+       unix-prompt> surf-hippo
+
+    (assuming that SURFHOME is in the Unix PATH), or from ILisp by
+    typing M-x surf-hippo in Emacs. Either method invokes the image
+    file surf-hippo/image. Once Lisp starts, enter:
+
+       lisp-prompt> (surf)
+
+    which starts the menus, or:
+
+       lisp-prompt> (start)
+
+    to set up things properly from the interpreter.
+
+*** Building it explicitly into Lisp
+    Run CMUCL from the Unix shell or from ILisp (to run CMUCL under
+    ILisp, type M-x cmulisp in Emacs). Once Lisp has started, you then
+    have to load Garnet and Surf-Hippo explicitly by loading the file
+    surf-hippo/misc/loaders/main-loader.lisp. For example:
+
+       lisp-prompt> (load "/usr/local/surf-hippo/misc/loaders/main-loader.lisp")
+
+    or from ILisp, use C-z l on this file [No need to compile it
+    first]. If you need to recompile the entire system, then load the
+    file $SURFHOME/misc/loaders/main-compiler.lisp into Lisp (start by
+    running CMUCL, not Surf-Hippo), for example:
+
+       lisp-prompt> (load "/usr/local/surf-hippo/misc/loaders/main-compiler.lisp")
+
+    or from ILisp, use C-z l on this file [No need to compile it
+    first]. Note that both main-loader.lisp or main-compiler.lisp will
+    load Garnet automatically. The main-compiler.lisp file will also
+    transfer the new bin files to the $SURFHOME/bin/
+    directories. While compiling the supplied source, all warnings may
+    be ignored, as far as I know. Note also that the supplied bin
+    files are for a Sparc. If modified files are compiled individually
+    (without using main-compiler.lisp), then you must transfer the
+    .sparcf binary file to the appropriate bin directory so that
+    main-loader.lisp will load in the next session. Note that any
+    modifications to structure definitions or in-line functions
+    require that the entire system be recompiled for safety. Sometimes
+    the compilation bugs out in the middle for no apparent reason; in
+    this case try restarting Lisp and loading
+    surf-hippo/misc/loaders/main-compiler.lisp again. To save a new
+    image, see the more-installation.doc file in the
+    surf-hippo/doc/installation directory. Note that after you have
+    installed your system, using an image thereafter is faster.
+    Further customization: If there is a customs.lisp file in the
+    Surf-Hippo user home directory (defined according to either the
+    SURFUSERHOME environment variable or set to the Surf-Hippo home
+    directory), then this file is loaded on the initial start up. For
+    example, this file may set certain global variables according to a
+    user's preferences, or load other files.
+
+** Using Surf-Hippo
+   Start with the "Running Surf-Hippo" chapter in the User Manual and
+   go from there....
+
+   Note: DO NOT destroy any Surf-Hippo window with the X window
+   manager: instead, type Control "d" over the window.

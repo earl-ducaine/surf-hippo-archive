@@ -1,0 +1,874 @@
+;;; -*- mode: lisp; Syntax: Common-lisp; package: #-parallel surf #+parallel *surf; base: 10;  -*-
+;;; (c) Copyright 1988, Don Webber, Thinking Machines Corporation, Inc.
+;;; alterations (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+;;; File creation date: 1/25/88 17:58:12
+
+;
+; The channel model, part of the neuron model.
+;
+
+(in-package #+parallel '*surf #-parallel 'surf)
+
+(defstruct channel
+  "Model for a channel"
+  (name "")
+  (type "")
+  model
+  (plot-current nil :type boolean)
+  (plot-conductance nil :type boolean)
+  node
+  core-ch
+  (cell-element nil)				;What the channel is a part of (soma or segment)
+  (a-power 0 :type fixnum)
+  (a-params nil)
+  (a-part nil)
+  (a-node nil)
+  (i-power 0  :type fixnum)
+  (i-params nil)
+  (i-part nil)
+  (i-node nil)
+  (c-power 0  :type fixnum)
+  (c-params nil)
+  (c-part nil)
+  (c-node nil)
+  (ca-shell-node nil)
+  (gbar-density 0.0 :type single-float)
+  (gbar 0.0 :type single-float)
+  (v-reversal 0.0 :type single-float)
+  (variable-e-ca nil :type boolean)
+  (ca-conc-extra 0.0 :type single-float)
+  (Eca-Nearst-eqn-const 0.0 :type single-float)
+  (pre-synaptic-node nil :type boolean)
+  (current-data '() :type list)
+  (conductance-data '() :type list)
+)
+
+
+
+#-parallel
+(defstruct core-channel
+  "Core model for a channel."
+  (node-pointp 0)	; zero if constant, one if node
+  node-point
+  (node-const zero	)
+  a-point
+  (a-pointp)
+  (a-const zero		)
+  i-point
+  (i-pointp nil		)		
+  (i-const zero 	 ) 
+  c-point
+  (c-pointp nil		)		
+  (c-const zero 		)
+  ca-shell-point
+  (ca-shell-pointp nil )		
+  (ca-shell-const zero 	)
+
+  (current 0.0 :type single-float)
+  (conductance 0.0 :type single-float)
+  (a-power 0 :type fixnum)
+  (i-power 0 :type fixnum)
+  (c-power 0 :type fixnum)
+  (gbar 0.0 :type single-float)
+  (v-reversal 0.0 :type single-float)
+  (v-reversal-future 0.0 :type single-float)
+
+  (variable-e-ca nil :type boolean)
+  (ca-conc-extra 0.0 :type single-float)
+  (Eca-Nearst-eqn-const 0.0 :type single-float)
+
+  (synapsep nil :type boolean)
+  (pre-synaptic-point nil)
+  (pre-synaptic-pointp nil)
+  (pre-synaptic-const nil)
+)
+
+(defun create-channel-model ()
+  "Creates a template for all channels."
+  (let ((template (make-model-template)))
+    (setf
+      (model-template-name template) (string "channel")
+      (model-template-default-params template) '()
+      (model-template-eval-routine template) #'eval-channel
+      (model-template-print-routine template) #'print-channel
+      (model-template-create-routine template) #'create-channel
+      (model-template-create-core-routine template) #'create-core-channel
+      (model-template-add-off-diag-routine template) #'add-off-diag-channel
+      (model-template-find-coupling-routine template) #'find-coupling-channel
+      (model-template-fix-dc-nodes-routine template) #'channel-fix-dc-nodes
+      *models* (cons template *models*)
+      (gethash (string "channel") *model-hash-table*) template
+      channel-hash-table (make-hash-table :test #'equal))
+    ; only need one channel model instance, so create it now.
+    (create-model-instance (string "ch") (model-template-name template) '() )))
+
+(defun print-channel (ch)
+  "Prints out this data associated with a channel."
+  (format *output-stream
+	  "Channel ~a at ~a, cell ~a: a-power ~a i-power ~a c-power ~a gbar ~,2e uS, gbar-dens ~,2e pS/sq-um e-rev ~a ~%"
+	  (channel-name ch)
+	  (node-name (channel-node ch))
+	  (cell-name (node-cell (channel-node ch)))
+	  (channel-a-power ch)
+	  (channel-i-power ch)
+	  (channel-c-power ch)
+	  (channel-gbar ch)
+	  (channel-gbar-density ch)
+	  (channel-v-reversal ch)))
+
+(defun set-channels-parameters ()
+  (maphash 'set-channel-parameters channel-hash-table)
+  )
+
+(defun set-channel-parameters (name channel)
+  (declare (ignore name))
+  (setf (channel-gbar channel) (g-element (channel-cell-element channel)
+					  (channel-gbar-density channel))))
+
+
+
+
+
+;;; CREATE-CHANNEL A channel label should be added to the name of the cell element to generate the 'channel-name'. The
+;;; node for the channel is the same as the cell element node.
+(defun create-channel (channel-name cell-name cell-element a-power a-params i-power i-params
+				    c-power c-params gbar-density v-reversal
+				    &key (type nil) (ca nil) (cas nil)
+				    (ca-conc-extra 1.8) (Eca-Nearst-eqn-const 0.04299)
+				    (pre-synaptic-node-name nil)
+				    (pre-synaptic-cell-name nil)
+				    (save-current nil) (save-particle nil) (save-conductance nil) (plot-pane 1))
+  "Creates a element of type channel. Inputs 'name' and 'node' are strings,
+   'model-name' is the name of the model-instance, and 'parameters' is an a-list."
+  (let* ((node-name (node-name (if (typep cell-element 'soma)
+				   (soma-node cell-element)(segment-node-2 cell-element))))
+	 (conc-int (if (typep cell-element 'soma)
+		       (soma-conc-int cell-element)(segment-conc-int cell-element))))
+    (if
+     (gethash channel-name channel-hash-table)
+     (sim-warning (format nil "create-channel: channel ~a  already defined, ignoring"
+			  channel-name))
+     (let ((n1 (create-node node-name :cell-name cell-name :plot-pane plot-pane))
+	   (model (gethash "ch" *model-instance-hash-table*)))
+       (if (not (or (node-is-dc-source n1) (node-is-pwl-source n1)))
+	   (let ((ch (make-channel :name channel-name :node n1 :model model :cell-element cell-element
+				   :gbar-density (coerce gbar-density 'single-float)
+				   :v-reversal (coerce v-reversal 'single-float)
+				   :type type
+				   :ca-conc-extra (coerce ca-conc-extra 'single-float)
+				   :Eca-Nearst-eqn-const (coerce Eca-Nearst-eqn-const 'single-float)
+				   :plot-current save-current :plot-conductance  save-conductance)))
+	     (setf (node-elements n1) (cons ch (node-elements n1)))
+	     (if pre-synaptic-node-name
+		 (progn
+		   (setf (channel-pre-synaptic-node ch)
+			 (create-node pre-synaptic-node-name :cell-name  pre-synaptic-cell-name
+				      :plot-pane plot-pane))
+		   (setf (node-elements (channel-pre-synaptic-node ch))
+			 (cons ch (node-elements (channel-pre-synaptic-node ch))))))
+	     (setf (channel-a-power ch) a-power)
+	     (if (> a-power 0)
+		 (setf (channel-a-part ch) (apply #'create-particle ch cell-name a-params
+						  (list :save-particle save-particle :plot-pane plot-pane))
+		       (channel-a-node ch) (particle-node (channel-a-part ch))))
+	     (setf (channel-i-power ch) i-power)
+	     (if (> i-power 0)
+		 (setf (channel-i-part ch) (apply #'create-particle ch cell-name i-params
+						  (list :save-particle save-particle :plot-pane plot-pane))
+		       (channel-i-node ch) (particle-node (channel-i-part ch))))
+	     (setf (channel-c-power ch) c-power)
+	     (if (> c-power 0)
+		 (setf (channel-c-part ch) (apply #'create-concentration-particle ch  cell-name c-params
+						  (list :save-particle save-particle :plot-pane plot-pane))
+		       (channel-c-node ch) (conc-part-node (channel-c-part ch))))
+	     (if (> a-power 0)
+		 (setf (node-elements (channel-a-node ch))
+		       (cons ch (node-elements (channel-a-node ch)))))
+	     (if (> i-power 0)
+		 (setf (node-elements (channel-i-node ch))
+		       (cons ch (node-elements (channel-i-node ch)))))
+	     (if (> c-power 0)
+		 (setf (node-elements (channel-c-node ch))
+		       (cons ch (node-elements (channel-c-node ch)))))
+	     (setf
+	      (gethash channel-name channel-hash-table) ch
+	      (model-instance-elements model) (cons ch (model-instance-elements model)))
+	     (if (or ca cas)
+		 (if (null conc-int)
+		     (sim-error
+		      "To model Ca variation, must specify :model-ca-variation t in create-soma~%")))
+	     (if ca
+		 (if (conc-int-ca-channel1 conc-int)
+		     (sim-error "This membrane ~a already has a ca channel specified: ~a and ~a~%"
+				node-name channel-name
+				(channel-name (conc-int-ca-channel1 conc-int)))
+		     (let (ca-shell-node)
+		       (setf (conc-int-ca-channel1 conc-int) ch)
+		       (setf (channel-variable-e-ca ch) t)
+		       (setf ca-shell-node (conc-int-node-1 conc-int))
+		       (setf (channel-ca-shell-node ch) ca-shell-node)
+		       (setf (node-elements ca-shell-node) (cons ch (node-elements ca-shell-node))))))
+	     (if cas
+		 (if (conc-int-ca-channel2 conc-int)
+		     (sim-error "This membrane ~a already has a cas channel specified: ~a and ~a~%"
+				node-name channel-name
+				(channel-name (conc-int-ca-channel2 conc-int)))
+		     (setf (conc-int-ca-channel2 conc-int) ch)))
+	     ch))))))
+
+
+; This function creates a core channel data structure. In the parallel version, it 
+; puts the device on the same processor as the fanout node, which is passed in as the 
+; variable 'proc. The serial version ignores this and allocates a struct normally.
+; This function only works if the 'nd argument is not a DC source node, because these
+; do not have processors allocated to them.
+
+(defun create-core-channel (ch nd)
+  "Creates the core struct for a channel."
+  (let (core-ch
+	(proc #-parallel nil #+parallel (allocate-processor)))
+    #-parallel (declare (ignore proc))
+    #+parallel (*setf (pref fanout-valid proc) t)
+    #+parallel (*setf (pref fanout-seg-forward proc) nil)
+    (if (channel-core-ch ch)			; 
+	(setf core-ch (channel-core-ch ch))	; core channel has already been allocated
+	(progn					; else allocate one
+	  #-parallel (setf core-ch (make-core-channel))
+	  #+parallel (setf core-ch proc)
+	  #+parallel (*setf (pref *lisp-struct-type core-ch) core-channel)
+	  (#+parallel *setf #-parallel setf
+	   (#+parallel pref core-channel-a-power core-ch) (channel-a-power ch)
+	   (#+parallel pref core-channel-i-power core-ch) (channel-i-power ch)
+	   (#+parallel pref core-channel-c-power core-ch) (channel-c-power ch)
+	   (#+parallel pref #.core-channel-gbar core-ch) (channel-gbar ch)
+	   (#+parallel pref #.core-channel-v-reversal core-ch) (channel-v-reversal ch)
+	   (#+parallel pref #.core-channel-ca-conc-extra core-ch) (channel-ca-conc-extra ch)
+	   (#+parallel pref #.core-channel-Eca-Nearst-eqn-const core-ch) (channel-Eca-Nearst-eqn-const ch)
+	   (#+parallel pref core-channel-variable-e-ca core-ch) (channel-variable-e-ca ch))
+	  (setf (channel-core-ch ch) core-ch)
+	  (if (channel-pre-synaptic-node ch)
+	      (#+parallel *setf #-parallel setf (#+parallel pref core-channel-synapsep core-ch) t))))
+    
+    (let ((node1 (channel-node ch))
+	  (node-a (channel-a-node ch))
+	  (node-i (channel-i-node ch))
+	  (node-c (channel-c-node ch))
+	  (node-c-shell (channel-ca-shell-node ch))
+	  (node-pre-syn (channel-pre-synaptic-node ch)))
+      (cond
+	((eq nd node1)
+	 #-parallel
+	 (setf
+	   (#.core-channel-node-pointp core-ch) t
+	   (#.core-channel-node-point core-ch) (node-core-nd node1))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-node-pointp core-ch) t
+	   (pref #.core-channel-node-point core-ch) proc))
+	((eq nd node-a)
+	 #-parallel
+	 (setf
+	   (#.core-channel-a-pointp core-ch) t
+	   (#.core-channel-a-point core-ch) (node-core-nd node-a))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-a-pointp core-ch) t
+	   (pref #.core-channel-a-point core-ch) proc))
+	((eq nd node-i)
+	 #-parallel
+	 (setf
+	   (#.core-channel-i-pointp core-ch) t
+	   (#.core-channel-i-point core-ch) (node-core-nd node-i))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-i-pointp core-ch) t
+	   (pref #.core-channel-i-point core-ch) proc))
+	((eq nd node-c)
+	 #-parallel
+	 (setf
+	   (#.core-channel-c-pointp core-ch) t
+	   (#.core-channel-c-point core-ch) (node-core-nd node-c))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-c-pointp core-ch) t
+	   (pref #.core-channel-c-point core-ch) proc))
+	((eq nd node-c-shell)
+	 #-parallel
+	 (setf
+	   (#.core-channel-ca-shell-pointp core-ch) t
+	   (#.core-channel-ca-shell-point core-ch) (node-core-nd node-c-shell))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-ca-shell-pointp core-ch) t
+	   (pref #.core-channel-ca-shell-point core-ch) proc))
+	((eq nd node-pre-syn)
+	 #-parallel
+	 (setf
+	   (#.core-channel-pre-synaptic-pointp core-ch) t
+	   (#.core-channel-pre-synaptic-point core-ch) (node-core-nd node-pre-syn))
+	 #+parallel
+	 (*setf
+	   (pref #.core-channel-pre-synaptic-pointp core-ch) t
+	   (pref #.core-channel-pre-synaptic-point core-ch) proc))
+	(t
+	 (sim-error "Internal error: called create-core on a device with a invalid node"))
+	))))
+
+(defun add-off-diag-channel (ch diag off-diag off-diag-entry)
+  (declare (ignore ch diag off-diag off-diag-entry)))
+
+(defun find-coupling-channel (nd ch)
+  "Returns a pair of (node . value) telling how coupled that node is to nd."
+  (declare (ignore nd ch ))
+  nil)
+
+(defun channel-fix-dc-nodes (ch)
+  "Fix up the nodes of this element which are connected to dc nodes."
+  (if (channel-core-ch ch)
+      (progn
+	(if (node-is-dc-source (channel-node ch))
+	  (#+parallel *setf #-parallel setf
+	      (#+parallel pref #.core-channel-node-pointp (channel-core-ch ch)) nil
+	      (#+parallel pref #.core-channel-node-const (channel-core-ch ch))
+	      (node-voltage (channel-node ch))))
+	)))
+
+(proclaim '(function get-channel-voltage (core-channel) single-float))
+#-parallel
+(defun get-channel-voltage (ch)
+  (if (#.core-channel-node-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-node-point ch))
+      (#.core-channel-node-const ch)))
+
+(proclaim '(function get-channel-a-value (core-channel) single-float))
+(proclaim '(function get-channel-i-value (core-channel) single-float))
+(proclaim '(function get-channel-c-value (core-channel) single-float))
+#-parallel
+(defun get-channel-a-value (ch)
+  (if (#.core-channel-a-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-a-point ch))
+      (#.core-channel-a-const ch)))
+
+#-parallel
+(defun get-channel-i-value (ch)
+  (if (#.core-channel-i-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-i-point ch))
+      (#.core-channel-i-const ch)))
+
+#-parallel
+(defun get-channel-c-value (ch)
+  (if (#.core-channel-c-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-c-point ch))
+      (#.core-channel-c-const ch)))
+
+(proclaim '(function get-channel-ca-shell-value (core-channel) single-float))
+#-parallel
+(defun get-channel-ca-shell-value (ch)
+  (if (#.core-channel-ca-shell-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-ca-shell-point ch))
+      (#.core-channel-ca-shell-const ch)))
+
+
+(proclaim '(function get-channel-pre-synaptic-value (core-channel) single-float))
+#-parallel
+(defun get-channel-pre-synaptic-value (ch)
+  (if (#.core-channel-pre-synaptic-pointp ch)
+      (core-node-voltage-n+1 (#.core-channel-pre-synaptic-point ch))
+      (#.core-channel-pre-synaptic-const ch)))
+
+(proclaim '(function ch-power (single-float fixnum) single-float))
+(defun ch-power (a b)
+  (declare (single-float a))
+  (declare (fixnum b))
+  (let ((res 1))
+    (dotimes (i b)
+      (setf res (* res a)))
+    res))
+
+(proclaim '(single-float *temperature*))
+
+#-parallel
+(defun eval-channel (ch)
+  (declare (optimize (safety 0) (speed 3) (space 1)))
+  (let ((voltage 0.0)(conductance 0.0)(v-reversal 0.0)(v-reversal-future 0.0)(ca-shell 0.0)
+	(core-ch (channel-core-ch ch)))
+    (declare (single-float voltage conductance v-reversal v-reversal-future ca-shell))
+    (if (null core-ch) (return-from eval-channel (values)))
+					;    (if (core-channel-synapsep core-ch)		;
+					;	(setf voltage (get-channel-pre-synaptic-value core-ch))
+					;	(setf voltage (get-channel-voltage core-ch)))
+    (setf voltage (get-channel-voltage core-ch)) ;my synapse stuff LBG
+    (setf conductance (#.core-channel-gbar core-ch)) ;
+					;    (if (core-channel-synapsep core-ch)		;
+					;	(setf conductance (* conductance (get-channel-pre-synaptic-value core-ch))))	;
+    (if (> (core-channel-a-power core-ch) 0)
+	(setf conductance (* conductance (ch-power (get-channel-a-value core-ch)
+						   (core-channel-a-power core-ch)))))
+    (if (> (core-channel-i-power core-ch) 0)
+	(setf conductance (* conductance (ch-power (get-channel-i-value core-ch)
+						   (core-channel-i-power core-ch)))))
+    (if (> (core-channel-c-power core-ch) 0)
+	(setf conductance (* conductance (ch-power (get-channel-c-value core-ch)
+						   (core-channel-c-power core-ch)))))
+    (if (core-channel-variable-e-ca core-ch)
+	(progn
+	  (setf ca-shell (max 1e-20 (get-channel-ca-shell-value core-ch)))
+					;	  (format t "~%  ca-shell = ~a " ca-shell)
+	  (setf v-reversal (* (#.core-channel-Eca-Nearst-eqn-const core-ch)
+			      *Temperature*
+			      (the single-float
+				   (log (/ (#.core-channel-ca-conc-extra core-ch)
+					   ca-shell)))))
+					;	  (format t " e-ca = ~a" v-reversal)
+	  )
+	(setf v-reversal (#.core-channel-v-reversal core-ch)))
+    (setf (#.core-channel-current core-ch) (* conductance (- (if *use-hines* 0.0 voltage) v-reversal)))	
+    (setf (#.core-channel-conductance core-ch) conductance)
+    (if (#.core-channel-node-pointp core-ch) ; send the values back where they go
+	(if (not (core-node-is-source (#.core-channel-node-point core-ch)))
+	    (setf (core-channel-v-reversal-future core-ch) v-reversal-future
+		  (core-node-current (#.core-channel-node-point core-ch))
+		  (+ (core-node-current (#.core-channel-node-point core-ch))
+		     (#.core-channel-current core-ch))
+		  (core-node-jacobian (#.core-channel-node-point core-ch))
+		  (+ (core-node-jacobian (#.core-channel-node-point core-ch))
+		     conductance))))
+    (if (and *use-hines* (channel-plot-current ch));; We need the actual current for the saved data.
+	(setf (#.core-channel-current core-ch) (* conductance (- voltage v-reversal))))    ))
+
+#+parallel
+(*defun get-channel-voltage (v1)
+  (cond!!
+    (#.core-channel-node-pointp v1)
+    (t!! #.core-channel-node-const)))
+
+#+parallel
+(*defun get-channel-a-value (v1)
+  (cond!!
+    (#.core-channel-a-pointp v1)
+    (t!! #.core-channel-a-const)))
+
+#+parallel
+(*defun get-channel-i-value (v1)
+  (cond!!
+    (#.core-channel-i-pointp v1)
+    (t!! #.core-channel-i-const)))
+
+#+parallel
+(*defun get-channel-c-value (v1)
+  (cond!!
+    (#.core-channel-c-pointp v1)
+    (t!! #.core-channel-c-const)))
+
+#+parallel
+(*defun get-channel-ca-shell-value (v1)
+  (cond!!
+    (#.core-channel-ca-shell-pointp v1)
+    (t!! #.core-channel-ca-shell-const)))
+
+#+parallel
+(*defun get-channel-pre-synaptic-value (v1)
+  (cond!!
+    (#.core-channel-pre-synaptic-pointp v1)
+    (t!! #.core-channel-pre-synaptic-const)))
+
+#+parallel
+(*defun ch-power!! (a b)
+  (declare (type (pvar big-float) a))
+  (declare (type (pvar (unsigned-byte 8)) b))
+  (*let ((res (!! 1))
+	 (index b))
+    (declare (type (pvar big-float) res))
+    (declare (type (pvar (unsigned-byte 8)) index))
+	(do ()
+	    ((not (*or (>!! index (!! 0)))))
+	    (*when (>!! index (!! 0))
+		   (*set res (*!! res a))
+		   (*set index (-!! index (!! 1)))))
+	res))
+
+#+parallel
+(defun eval-channel ()
+  (*select-type (core-channel)
+    (*let
+      ((voltage (!! 0))
+       (ca-shell (!! 0))
+       (v-reversal (!! 0))
+       (conductance (!! 0)))
+      (declare (type (pvar big-float) voltage))
+      (declare (type (pvar big-float) ca-shell))
+      (declare (type (pvar big-float) v-reversal))
+      (declare (type (pvar big-float) conductance))
+
+      (*if core-channel-synapsep
+	   (*set voltage (get-channel-pre-synaptic-value #.core-channel-pre-synaptic-value))
+	   (*set voltage (get-channel-voltage #.core-channel-node-voltage)))
+
+      (*set conductance #.core-channel-gbar)
+      (*if (>!! core-channel-a-power (!! 0))
+	   (*set conductance (*!! conductance (ch-power!! (get-channel-a-value #.core-channel-a-value)
+							  core-channel-a-power))))
+      (*if (>!! core-channel-i-power (!! 0))
+	   (*set conductance (*!! conductance (ch-power!! (get-channel-i-value #.core-channel-i-value)
+							  core-channel-i-power))))
+      (*if (>!! core-channel-c-power (!! 0))
+	   (*set conductance (*!! conductance (get-channel-c-value #.core-channel-c-value))))
+      
+      (*if core-channel-variable-e-ca
+	   (progn
+	     (*set ca-shell (get-channel-ca-shell-value #.core-channel-ca-shell-value))
+	     (*if (<!! ca-shell (!! 1e-20))
+		  (*set ca-shell (!! 1e-20)))
+	     (*set v-reversal (*!! #.core-channel-Eca-Nearst-eqn-const
+				   (!! *Temperature*)
+				   (log!! (/!! #.core-channel-ca-conc-extra
+					       ca-shell)))))
+	   (*set v-reversal #.core-channel-v-reversal))
+      
+      (*set #.core-channel-current
+	    (*!! conductance (-!! voltage v-reversal)))
+      (*set #.core-channel-conductance conductance)
+
+;;      (format t "voltage ~a  current ~a~%" (pref voltage 6) (pref #.core-channel-current 6))
+      )))
+
+
+
+
+
+
+;(defun channel-plot-list (channel-name particle-type)
+;  (let ((channel (gethash channel-name channel-hash-table)))
+;    (cond ((and (eq particle-type 'a) (> (channel-a-power channel) 0))
+;	   (v-particle-plot-list (particle-name (channel-a-part channel))))
+;	  ((and (eq particle-type 'i) (> (channel-i-power channel) 0))
+;	   (v-particle-plot-list (particle-name (channel-i-part channel)))))))
+
+
+;;; G-ELEMENT g-density is in pS per square micron. Conductance returned is in uS.
+(defun g-element (cell-element g-density)
+  (* (typecase cell-element		;Area is in square microns.
+       (soma (* pi-single (soma-diameter cell-element) (soma-diameter cell-element)))
+       (segment (* pi-single (segment-length cell-element) (segment-diameter cell-element))))
+     1e-6 g-density))
+
+(defun create-channels (channel-list cell-element &key (save-particle nil) (save-current nil) (plot-pane 1)
+				     model-ca-variation)
+  (let ((cell-name (cell-name (if (typep cell-element 'soma)
+				  (soma-cell cell-element)
+				  (segment-cell cell-element)))))
+    (dolist (channel channel-list)
+      (cond ((eq channel 'na1)
+	     (create-na1-channel cell-element cell-name :gbar-density *g-na1-dens
+				 :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'na2)
+	     (create-na2-channel cell-element cell-name :gbar-density *g-na2-dens
+				 :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'na3)
+	     (create-na3-channel cell-element cell-name :gbar-density *g-na3-dens
+				 :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'dr)	
+	     (create-dr-channel cell-element cell-name :gbar-density *g-dr-dens
+				
+				:save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'a)
+	     (create-a-channel cell-element cell-name :gbar-density *g-a-dens
+			       :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'c)
+	     (create-c-channel cell-element cell-name :gbar-density *g-c-dens
+			       :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'ahp)
+	     (create-ahp-channel cell-element cell-name :gbar-density *g-ahp-dens
+				 :save-particle save-particle :save-current save-current :plot-pane plot-pane))
+	    ((eq channel 'ca)
+	     (create-ca-channel cell-element cell-name :gbar-density *g-ca-dens
+				:save-particle save-particle :save-current save-current :plot-pane plot-pane
+				:model-ca-variation model-ca-variation))))))
+
+
+
+(defun create-ahp-channel (cell-element cell-name  
+					&key gbar-density (save-current t)(save-particle nil)
+					(plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-ahp)
+      (let ((channel-name (format nil "~a-ahp"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	 channel-name  cell-name cell-element
+	 1 (list "z" (- *valence-ahpz) *gamma-ahpz *alpha-base-rate-ahpz *v-half-ahpz
+		 *base-tahpz *qten-factor-at-30)
+	 2 (list "y" (- *valence-ahpy) *gamma-ahpy *alpha-base-rate-ahpy *v-half-ahpy
+		 *base-tahpy *qten-factor-at-30)
+	 1 (list "w" *alpha-ahp *beta-ahp 3  *qten-factor-at-30 'shell.2)
+	 (if gbar-density gbar-density  *g-ahp-dens)
+	 *e-k :save-current save-current :save-particle save-particle :plot-pane plot-pane
+	  :type "AHP"))))
+
+(defun create-c-channel (cell-element cell-name  
+			 &key  gbar-density (save-current t)(save-particle nil)
+			 (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-c)
+      (let ((channel-name (format nil "~a-c"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  3 (list "x" *valence-cx *gamma-cx *alpha-base-rate-cx *v-half-cx *base-tcx *qten-factor-at-30)
+	  1 (list "y" (- *valence-cy) (- 1.0 *gamma-cy) *alpha-base-rate-cy *v-half-cy
+		  *base-tcy *qten-factor-at-30)
+	  1 (list "w" *alpha-c *beta-c 3  *qten-factor-at-30 'shell.1)
+	  (if gbar-density gbar-density  *g-c-dens)
+	  *e-k :save-current save-current :save-particle save-particle :plot-pane plot-pane
+	   :type "C"))))
+
+
+(defun create-ca-channel (cell-element cell-name
+			  &key gbar-density (save-current t) (save-particle nil) (plot-pane 1)
+			  (override-global-include nil) model-ca-variation)
+  (if (or override-global-include *include-ca)
+      (let ((channel-name
+	      (format nil "~a-ca" (if (typep cell-element 'soma)
+				      (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  2 (list "s" *valence-s *gamma-s *base-rate-s *v-half-s *base-tsca *qten-factor-at-30)
+	  4 (list "w" (- *valence-w) (- 1.0 *gamma-w) *base-rate-w *v-half-w *base-twca *qten-factor-at-30)
+	  0 '()
+	  (if gbar-density gbar-density  *g-ca-dens)
+	  *e-ca :ca model-ca-variation  :save-current save-current  :save-particle save-particle
+	  :plot-pane plot-pane  :type "Ca"))))
+
+(defun create-a-channel (cell-element cell-name  
+			 &key  gbar-density (save-current t)(save-particle nil)
+			 (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-a)
+      (let ((channel-name (format nil "~a-a"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  1 (list "x" *valence-ax *gamma-ax *base-rate-ax *v-half-ax *base-txa *qten-factor-at-30)
+	  2 (list "y" (- *valence-ay) (- 1.0 *gamma-ay) *base-rate-ay *v-half-ay *base-tya *qten-factor-at-30)
+	  0 '()
+	  (if gbar-density gbar-density  *g-a-dens) 
+	  -70.0 :type "A" :save-current save-current :save-particle save-particle :plot-pane plot-pane))))
+
+
+(defvars *valence-a-ret-y *gamma-a-ret-y *base-rate-a-ret-y *v-half-a-ret-y
+		  *base-ty-a-ret )
+
+(defun create-a-ret-channel (cell-element cell-name &key gbar-density (save-current t)(save-particle nil)
+			     (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-a)
+      (let ((channel-name (format nil "~a-ret-a"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  0 '()
+	  2 (list "y" (- *valence-a-ret-y) (- 1.0 *gamma-a-ret-y) *base-rate-a-ret-y *v-half-a-ret-y
+		  *base-ty-a-ret *qten-factor-at-30)
+	  0 '()
+	  (if gbar-density gbar-density  *g-a-dens)
+	  -70.0 :save-current save-current :save-particle save-particle :plot-pane plot-pane
+	   :type "A-Ret"))))
+
+
+(defun create-dr-channel (cell-element cell-name 
+			  &key gbar-density (save-current t)(save-particle nil)
+			  (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-dr)
+      (let ((channel-name (format nil "~a-dr"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  3 (list "x" *valence-drx *gamma-drx *base-rate-drx *v-half-drx *base-txdr *qten-factor-at-30)
+	  1 (list "y" (- *valence-dry) (- 1.0 *gamma-dry) *base-rate-dry *v-half-dry
+		  *base-tydr *qten-factor-at-30)
+	  0 '()
+	  (if gbar-density gbar-density  *g-dr-dens)
+	  *e-dr :save-current save-current  :save-particle save-particle :plot-pane plot-pane
+	   :type "DR"))))
+
+
+(defun create-na1-channel (cell-element cell-name 
+					&key gbar-density (save-current t)
+					(save-particle nil) (plot-pane 1)
+					(override-global-include nil))   
+  (if (or override-global-include *include-na1)
+      (let ((channel-name (format nil "~a-na1"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	 channel-name  cell-name cell-element
+	 1 (list "m" *valence-m1 *gamma-m1 *base-rate-m1 *v-half-m1 *base-tm1 *qten-factor-at-24)
+	 2 (list "h" (- *valence-h1) (- 1.0 *gamma-h1) *base-rate-h1 *v-half-h1 *base-th1 *qten-factor-at-24)
+	 0 '()
+	 (if gbar-density gbar-density  *g-na1-dens)
+	 50.0 :save-current save-current  :save-particle save-particle :plot-pane plot-pane
+	  :type "Na1"))))
+
+(defun create-na2-channel (cell-element cell-name
+			   &key gbar-density (save-current t)(save-particle nil)
+			   (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-na2)
+      (let ((channel-name (format nil "~a-na2"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  1 (list "m" *valence-m2 *gamma-m2 *base-rate-m2 *v-half-m2 *base-tm2 *qten-factor-at-24)
+	  1 (list "h" (- *valence-h2) (- 1.0 *gamma-h2) *base-rate-h2 *v-half-h2 *base-th2
+		  *qten-factor-at-24)
+	  0 '()
+	  (if gbar-density gbar-density  *g-na2-dens)
+	  50.0 :save-current save-current  :save-particle save-particle :plot-pane plot-pane
+	   :type "Na2"))))
+
+(defun create-na3-channel (cell-element cell-name 
+			   &key gbar-density (save-current t)(save-particle nil)
+			   (plot-pane 1) (override-global-include nil))
+  (if (or override-global-include *include-na3)
+      (let ((channel-name (format nil "~a-na3"  (if (typep cell-element 'soma)
+						    (soma-name cell-element)(segment-name cell-element)))))
+	(create-channel
+	  channel-name  cell-name cell-element
+	  2 (list "m" *valence-m3 *gamma-m3 *base-rate-m3 *v-half-m3 *base-tm3 *qten-factor-at-24)
+	  3 (list "h" (- *valence-h3) (- 1.0 *gamma-h3) *base-rate-h3 *v-half-h3 *base-th3
+		  *qten-factor-at-24)
+	  0 '()
+	  (if gbar-density gbar-density  *g-na3-dens)
+	  50.0 :save-current save-current  :save-particle save-particle :plot-pane plot-pane
+	   :type "Na3"))))
+
+;(defun create-na3-channel-model ()
+;  (let ((template (make-channel-type-template)))
+;    (setf
+;      (channel-type-template-name template) (string 'na-3)
+;      (channel-type-template-g-dens template) *g-na3-dens   
+;      (channel-type-template-e-rev template) 50.0
+;      (channel-type-particle-parameters template)
+;      (list (list 2 (list "m" *valence-m3 *gamma-m3 *base-rate-m3 *v-half-m3 *base-tm3 *qten-factor-at-24))
+;	    (list 3 (list "h" (- *valence-h3) (- 1.0 *gamma-h3) *base-rate-h3 *v-half-h3 *base-th3 *qten-factor-at-24)))
+;      *channel-type-models* (cons template *channel-type-models*)
+;      (gethash (string 'na-3) *channel-type-model-hash-table*) template)
+;    template))
+;
+;
+;(defun create-channel-type (cell-element channel-type
+;			    &key (pre-synaptic-node-name nil) (pre-synaptic-cell-name nil))
+;  (let ((template)
+;	(node (typecase cell-element
+;		(soma  (soma-node cell-element))
+;		(segment   (segment-node-2 cell-element)))))
+;    (if (not (setq template (gethash (string channel-type) *channel-type-model-hash-table*)))
+;	(setq template (create-channel-type-model channel-type)))
+;
+;  (let* ((node-name (node-name (if (typep cell-element 'soma)
+;				   (soma-node cell-element)(segment-node-2 cell-element))))
+;	 (conc-int (if (typep cell-element 'soma)
+;		       (soma-conc-int cell-element)(segment-conc-int cell-element)))
+;	 (channel-name (concatenate 'string   (string (node-name node)) "-" (string channel-type))))
+;    (if  (gethash channel-name channel-hash-table)
+;      (sim-warning (format nil "create-channel: channel ~a  already defined, ignoring"  channel-name))
+;
+;      (channel-type-template-particle-parameters template)
+;      (channel-type-template-ca template)
+;      (channel-type-template-cas template)
+;
+;      (let ((n1 (create-node node-name :cell-name (cell-name (node-cell node)) :plot-pane 2))
+;	    (model (gethash "ch" *model-instance-hash-table*)))
+;	(if (not (or (node-is-dc-source n1) (node-is-pwl-source n1)))
+;	    (let ((ch (make-channel :name channel-name :node n1 :model model :cell-element cell-element
+;				    :gbar-density (channel-type-template-g-dens template)
+;				    :v-reversal (channel-type-template-e-rev template)
+;				    :ca-conc-extra (channel-type-template-ca-conc-extra template)
+;				    :Eca-Nearst-eqn-const (channel-type-template-Eca-Nearst-eqn-const template))))
+;	      (setf (node-elements n1) (cons ch (node-elements n1)))
+;	      (if pre-synaptic-node-name
+;		  (progn
+;		    (setf (channel-pre-synaptic-node ch)
+;			  (create-node pre-synaptic-node-name :cell-name  pre-synaptic-cell-name :plot-pane plot-pane))
+;		    (setf (node-elements (channel-pre-synaptic-node ch))
+;			  (cons ch (node-elements (channel-pre-synaptic-node ch))))))
+;	      (dolist (particle-parameters (channel-type-template-particle-parameters template))
+;		(let ((particle-power (car particle-parameters)))
+;
+;
+;		  (setf (channel-a-part ch) (apply #'create-particle ch cell-name  a-params
+;						   (list :save-particle save-particle :plot-pane plot-pane))
+;			(channel-a-node ch) (particle-node (channel-a-part ch))))
+;	      (setf (channel-i-power ch) i-power)
+;	      (if (> i-power 0)
+;		  (setf (channel-i-part ch) (apply #'create-particle ch cell-name i-params
+;						   (list :save-particle save-particle :plot-pane plot-pane))
+;			(channel-i-node ch) (particle-node (channel-i-part ch))))
+;	      (setf (channel-c-power ch) c-power)
+;	      (if (> c-power 0)
+;		  (setf (channel-c-part ch)
+;			(apply #'create-concentration-particle ch  cell-name c-params
+;			       (list :save-particle save-particle :plot-pane plot-pane))
+;			(channel-c-node ch) (particle-node (channel-c-part ch))))
+;	      (if (> a-power 0)
+;		  (setf (node-elements (channel-a-node ch))
+;			(cons ch (node-elements (channel-a-node ch)))))
+;	      (if (> i-power 0)
+;		  (setf (node-elements (channel-i-node ch))
+;			(cons ch (node-elements (channel-i-node ch)))))
+;	      (if (> c-power 0)
+;		  (setf (node-elements (channel-c-node ch))
+;			(cons ch (node-elements (channel-c-node ch)))))
+;	      (setf
+;		(gethash channel-name channel-hash-table) ch
+;		(model-instance-elements model) (cons ch (model-instance-elements model)))
+;	      (if (or ca cas)
+;		  (if (null conc-int)
+;		      (sim-error
+;			"To model Ca variation, you must specify :model-ca-variation t in the call to create-soma~%")))
+;	      (if ca
+;		  (if (conc-int-ca-channel1 conc-int)
+;		      (sim-error "This membrane ~a already has a ca channel specified: ~a and ~a~%"
+;				 node-name channel-name
+;				 (channel-name (conc-int-ca-channel1 conc-int)))
+;		      (let (ca-shell-node)
+;			(setf (conc-int-ca-channel1 conc-int) ch)
+;			(setf (channel-variable-e-ca ch) t)
+;			(setf ca-shell-node (conc-int-node-1 conc-int))
+;			(setf (channel-ca-shell-node ch) ca-shell-node)
+;			(setf (node-elements ca-shell-node) (cons ch (node-elements ca-shell-node))))))
+;	      (if cas
+;		  (if (conc-int-ca-channel2 conc-int)
+;		      (sim-error "This membrane ~a already has a cas channel specified: ~a and ~a~%"
+;				 node-name channel-name
+;				 (channel-name (conc-int-ca-channel2 conc-int)))
+;		      (setf (conc-int-ca-channel2 conc-int) ch)))
+;	      ch))))))))
+
+
+;(defun create-channel-type (cell-element particle-type)
+;  (let ((template)
+;	(node (typecase cell-element
+;		(soma  (soma-node cell-element))
+;		(segment   (segment-node-2 cell-element)))))
+;    (if (not (setq template (gethash (string channel-type) *channel-type-model-hash-table*)))
+;	(setq template (create-channel-type-model channel-type)))
+;))
+
+;(defun create-channel-type-model (channel-type)
+;  (case channel-type
+;    (cont-ex  (create-controlled-ex-synapse-model))
+;    (cont-ex-ds  (create-controlled-ex-ds-synapse-model))
+;    (cont-in  (create-controlled-in-synapse-model))
+;    (excitatory-1 (create-excitatory-1-synapse-model))
+;    (excitatory-2 (create-excitatory-2-synapse-model))
+;    (ex-3 (create-ex-3-synapse-model))
+;    (in-3 (create-in-3-synapse-model))
+;    (inhibitory-1-offset (create-inhibitory-1-offset-synapse-model))
+;    (excitatory-facilitation (create-excitatory-facilitation-synapse-model))
+;    (excitatory-trans (create-excitatory-trans-synapse-model))))
+
+(defstruct channel-type-template
+  "The template for the channel types"
+  (name "" :type string)
+  (particle-template-list nil :type list)
+  (particle-power-list nil :type list)
+  (gbar-density 0.0 :type single-float)
+  (v-reversal 0.0 :type single-float)
+  (variable-e-ca nil :type boolean)
+  )
+

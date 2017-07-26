@@ -1,0 +1,19 @@
+
+ReadMe
+of the Safe-To-Stack Soar System
+Jan 3, 94
+
+
+This directory contains:
+
+  --  (a) ReadMe.Safe-To-Stack, this file;
+  --  (b) safe-to-stack.soar6, the Soar system; and
+  --  (c) probs, a directory of various problems to solve from the domain of (b).
+
+For the task domain, see the header of the file (b).
+
+When first loaded, (b) attempts to solve prob.1 (see the directory probs).
+
+To try another problem, just load a prob file from the directory probs and
+do init-soar. 
+

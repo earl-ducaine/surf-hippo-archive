@@ -1,0 +1,260 @@
+Version 6.0.0:
+  -- 2 coredumps
+  -- infinite loop in excise-chunks.
+  -- provided tilde expansion in file names.
+  -- Fixed cntrl C on ibm rs/6000 causing unwanted exits.
+  -- WME supported by a justification that got removed was hanging around.
+     No longer.
+  -- Fix for a type of chunk being built that couldn't be reordered.
+  -- Fix to atof to allow it to compile on a NeXT.
+  -- Added warnings for things that look like they might be mistyped variables
+     or mistyped disjunctions while parsing.
+Version 6.0.1:
+  -- added a 'version' command to give full version information from the
+     interface level.
+  -- rearranged the makefile slightly to prevent it recompiling executables
+     whenever no object files had changed.
+  -- removed the beta test notice from the startup routine.  Why this routine
+     duplicates the text in 'soarnews' I'll never understand.
+Version 6.0.2:
+  -- Made some simple changes to make the code compile on HP Apollos.  I don't
+     know if these will work on all HP machines. Time will tell.
+  -- Made a few small fixes to lexer.c and to convert.c so that the program
+     would compile under straight ultrix cc as well as gcc.
+  -- Added a bugfix provided by bob that fixed a problem with a rete
+     optimization.  This fixes two outstanding core dumps.
+Version 6.0.3:
+  -- Made some changes to "recmem.c" to overcome problems with chunk-free
+     problem spaces.  This was in reference to bug report #400.
+Version 6.0.4:
+  -- Missed a use of alloca last time around.  Removed it.
+  -- In interface.c a stray use of "printf" was replaced with "print"
+     so that output would go to soar managed streams rather than
+     standard output.
+  -- HP fixes for ISI:
+    -- Commented out "struct timeval;" and added include of sys/time.h
+       in soar.h
+    -- Added "const" decl to predicate function "compare_firing_counts"
+       formal parameters in file interface.c to match ANSI spec.
+    -- Added "rm = NIL" in function "remove_wme_from_alpha_mem" in
+       rete.c to placate the native HP compiler which thinks rm needs
+       to be initialized.
+    -- Added a cast to (int *) in the call to select in file io.c
+    -- In tilde.c added a switch before the include of pwd.h to
+       correct a struct decl problem.
+  -- Changed makefile so that objects and binaries for multiple machines
+     can be maintained in the soar directory to avoid duplicating sources.
+     The is achieved by selecting the appropriate make.header.* file
+     in the makefile.  Also changed makefile for multi-agent processing.
+  -- Added multi-agent capability.  A number of changes were made:
+    -- Moved globals to a header file (global_vars.h contains the extern 
+       decls and global_vars.c the memory-allocating decls).  This also
+       forced the move of associated typedefs and constants -- so the
+       tail end of soar.h looks rather messy.  Soar.h really needs to
+       be broken into smaller pieces!  If DFLAGS is empty (the default 
+       setting in the makefile).  Then the global vars are decl'ed as in 
+       earlier versions (before 6.0.4).  If MULTI_AGENT_ENABLED is set
+       then the globals are placed into a record (see the end of soar.h)
+       and the record is allocated once per agent.  Note that multi-agent
+       processing is not fully activated unless a .init.soar.multi file
+       is present when soar is run.
+    -- To select the proper agent as well as accomodating backward
+       compatibility, the macro "current_agent" is introduced to define
+       the access path to the proper agent's global data.  This change
+       alone affected ~1900 lines of source.
+    -- Added commands "create-agents", "select-agent", "agent-go",
+       and "schedule" for multi-agent processing.
+    -- Added a new file "scheduler.c" which handles the scheduling of
+       agents in multi-agent mode.
+    -- Added a file "x_interface.c" which defines the X interface to
+       multi-agent soar.  The implementation uses only Xlib calls so
+       no dependence on a widget set (e.g., Motif) is present.
+    -- Added a new file "queue.c" and its header "queue.h".  This is 
+       a generic queue abstract data type.  It is used in the
+       X display processing of text-io.  Since text-io is occuring in
+       separate windows (instead of standard input as in single-agent
+       mode) we must queue up the text-io strings until they can be
+       processed by an agent.
+    -- Stripped all code out of main.c and moved it to init_soar.c
+       EXCEPT for the top-level function "main".  This was done to
+       facilitate integration with systems which want to control
+       Soar (rather than having soar control external systems).  By
+       linking with the other object files and redefining main.c
+       this is easily accomplished with the stripped down version of
+       main.c.
+    -- Added a directory under tests: multi/multi.  This directory
+       uses the same format as the other test directories but is pushed
+       down one level so that it is not processed when "run-all-tests"
+       is invoked.  This is because it only works if MULTI_AGENT_ENABLED
+       is defined and USE_X_DISPLAY is NOT.  This causes all multi-agent
+       I/O to occur in standard I/O.  To run the test, compile soar
+       with the above switch setting for DFLAGS in the make.body file.
+       Then cd to tests/multi/multi and execute "run-multi-test".  
+       This directory also serves as an example of how to setup multi-
+       agent processing.
+Version 6.0.5:
+  -- Added an "obj" directory to hold object files.
+  -- Added machine-dependent directories sun4, IRIX, hp700 to the 
+     bin and obj directories.
+Version 6.0.6:
+  -- Fixed bug in makefile that missed where convert.o should be 
+     located.
+  -- Corrected another bug in makefile that handles machine-dependent
+     processing of convert.
+Version 6.0.7:
+  -- Added missing directories lib/{sun4,IRIX,hp700,pmax_mach}
+  -- Fixed a text-io bug in x_interface.c which caused commands
+     to be ignored after issuing an explicit go/run command.
+  -- Added Gary's better duplicate chunk detection algorithm.
+  -- Fixed a bug generated by the combination of USE_X_DISPLAY
+     and running soar without a .init.soar.multi file.  The
+     command processor would not read commands from the window
+     in this state.
+  -- Fixed a bug generated by use of MULTI_AGENT_ENABLED.  When
+     running with only the global agent, control-c was not
+     stopping the soar process.
+  -- Another HP fix.  Added more switches to the including of the
+     <sys/types.h> file.  Without these, nothing gets included.
+     Fixes use of X windows on HP.
+  -- Moved -lX11 in library loading sequence to the end to allow
+     redirecting of search for X11 library.  This is also proper
+     because X11 doesn't depend on other libs.  See make.body.
+  -- Added comment to make.header.hp to show how include and lib
+     files can be found on HPs.  This is needed for the X11
+     stuff to be compiled correctly.
+  -- Made a fix so that make_blank_growable_string no longer
+     assumes that sizeof(int) == sizeof(int *)
+Version 6.0.8:
+  -- Removed the redundancy between the two files global_vars.c
+     and global_vars.h by using the macro GLOBAL.  In global_vars.h
+     the GLOBAL is set to "extern" so that the global vars are
+     defined as external in header files.  In global_vars.c the
+     GLOBAL macro is set to the empty string so the variables can
+     be declared as fields in a record or as global variables with
+     memory allocation.
+  -- Reordered the include of stddef.h in soar.h to after the include
+     for stdio.h.  The inclusion order was breaking on some Suns.
+     The doc in GNU's stddef.h clearly states that this should be
+     after any includes of sys/types.h for Suns.  But there was also
+     problems with stdio.h.
+  -- When users entered an unterminated string in a command, Soar
+     was hanging in the X interface.  Culprit routine was
+     "command_is_complete" which didn't check for  matching double
+     quotes.
+  -- Improved use of queues by replacing queue_init with queue_create
+     which includes the malloc step.
+  -- Added "help all" in the interface which is equivalent to 
+     list-help-topics per bug enhancement #428.
+  -- Double checked convert.c code against submitted bug report containing
+     compilation changes necessary for compiling convert.c under THINK_C
+     (bug #431)
+  -- Added 2 hqx files in the directory mac_support.  These contain project
+     files and source code needed to compile Soar under ThinkC on a Mac.
+  -- Changed soar from using rand to using random thus giving better selection
+     for user select.
+  -- Fixed memory leak that was caused by impasse id's not being GC'd
+     correctly.
+  -- Renamed symbol construct to Symbol to allow for Mac compilation.
+
+Version 6.1.0:
+  -- Went to version 6.1.
+  -- Added new command multi-attribute.  This command is used similar to the
+     way multi-attributes was in soar5.  However, you cannot specify a list
+     of attribute value pairs.  Only one multi-attribute may be given with
+     each multi-attributes line.  Syntax of the command is 
+     (multi-attribute symbol value).  This removes the slowdown that Gary's
+     reordering change introduced.
+  -- Added RCS headers to all source code files.
+  -- Split some of the larger source code files into more manageable peices.
+     Decide.c -> decide.c, prefmem.c, wmem.c, tempmem.c
+     Production.c -> production.c, reorder.c, osupport.c
+     Recmem.c -> recmem.c, osupport.c, chunk.c, backtrace.c
+  -- Added the examples directory of example tasks as per Aladin's request.
+  -- Reorganized the task suite tests to use the tasks from the examples dir.
+  -- init-soar will now reset the arguments to the 'go' command.
+  -- removeing a stack-trace-format will now no longer cause a blank line
+     to be printed to the display.
+  -- Soar now maintains seperate working directory pointers for each of the
+     agents.
+  -- select-agent can now be used to return control to the global agent in
+     the non-X version of the multi-agent code.
+  -- A bug in agent-go has been fixed so that agent-go commands take effect
+     correctly regardless of which agent they were listed in.
+Version 6.1.1:
+  -- Default Rules added and modified for operator subgoaling.
+  -- X-Window and Multiple Agent code changes for additional compatability
+     between Soar and IFOR/ModSAF.
+  -- User Interface Enhancements.
+  -- New RHS Functions.
+  -- Simple makefile enhancements - use of -ansi switch to allow for ansii check.
+  -- Addition of New "doc" and "pc_support" directories.
+ 
+Version 6.2.1:
+  -- removed pc_support, mac_support, convert, taql_conversion directories
+  -- added NNPSCM as a compile-time option
+     - made nnpscm and non-nnpscm directories under bin, lib, obj
+     - made NNPSCM versions of default rules, example pgms, and tests
+  -- added pscm_convert directory - an SDE (emacs) program to convert
+     between old PSCM and NNPSCM
+  -- added conditional command-line options: setvar, unsetvar, if, if-not
+  -- added commands: alias, unalias, pushd, popd, dirs, memories
+  -- added general shell escape (UNIX only)
+  -- fixed commands: select-agent, destroy-agent, preferences, explain, cd
+  -- fixed load-errors facility
+  -- fixed erroneous printing out of prompts
+  -- fixed pathname string length overflow problem
+  -- modified pathnames so they can be entered w/o quotation marks
+  -- modified the print and p commands
+  -- added RHS functions: ifeq, strlen, user-select
+  -- modified Soar to allow backtracing through prohibit preferences
+  -- added 2 new example problems, safe-stack and tower-of-hanoi
+Version 6.2.2:
+  -- updated "conversion.el" file in pscm-convert directory.
+  -- added "convert-prods.soar" to pscm-convert directory.
+  -- modified "memories" command.
+  -- fixed uninitialized variable "max_chunks_reached".
+  -- fixed uninitialized queue element.
+  -- fix for NNPSCM in reorderer, trace-format code, and o-support calculations.
+  -- fix for "print" command - previous functionality.
+  -- fixed "interrupt" RHS function.
+  -- modified make.body to correctly process "make clobber" command.
+  -- modified "dispatch_command" to correctly compile under SGI IRIX.
+  -- added new "pf" (production finding) user command.
+
+  See "User.Notes" and "Release.Notes" for more detailed information.
+
+Version 6.2.3
+  -- fix for NNPSCM Default Rules.
+  -- fix for NNPSCM trace-format.
+  -- removal and addition of several gold-standard tests and examples for NNPSCM.
+
+Version 6.2.5 (and 6.2.4 beta versions)
+  -- fix for NNPSCM and non-NNPSCM Default Rules.
+  -- fix argument list for control_c_handler.
+  -- de-linting Soar.
+  -- apply patches for MS-Windows Soar.
+  -- apply patches for MacSoar.
+  -- made the "print" command list attributes alphabetically.
+  -- fixes for o-support on nnpscm.
+  -- modified and added several example problems for nnpscm and non-nnpscm.
+  -- cleaned up a garbage pointer in decide.c which was causing core dumps.
+  -- fixed nnpscm o-support problem for operator preferences.
+  -- cleaned up output concerning "Firing", "Retracting", and "Building".
+  -- added print-alias command.
+  -- made it so that chunks get printed out in ascending order.
+  -- added "last" and 'stop asking' options to user-select command.
+  -- modified destroy_soar_agent() to handle destroying current agent.
+  -- added "and" feature to "if" and "if-not" commands.
+  -- modified "memories" command to make it more useful.
+  -- fixed core dump problem in load-errors facility.
+  -- added input-period command.
+  -- modified "pf" command to make it more useful.
+  -- added chunky-problem-spaces command.
+  -- made the numbering of production types consistent.
+  -- Soar will now compile with gcc -ansi on pmax_mach.
+  -- added file of aliases to the default directory.
+  -- each agent now has its own default print depth.
+  -- fixed problem where destroy_soar_agent tries to delete an empty queue.
+  -- added default limits of 20 to memories and firing-counts commands.
+  -- properly initialized cond->bt.prohibits
+  -- moved the DEBUG_INSTANTIATIONS compiler flag from rete.c to recmem.c

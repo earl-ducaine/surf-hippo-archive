@@ -1,0 +1,490 @@
+;;; -*- Mode: Lisp; Syntax: Common-lisp; Package: #-PARALLEL SURF #+PARALLEL *surf; Base: 10; -*-
+
+#-parallel
+(in-package "SURF-HIPPO"
+	    :use '("COMMON-LISP-USER" "COMMON-LISP")
+	    :nicknames '("SURF"))
+#+parallel 
+(in-package "*SURF")
+
+;;; Functions using Cholinergic rabbit retina starburst AMACRINE cell
+;;; described in surf-hippo/rabbit/star-amacrine.lisp.
+
+(defun star-amacrine-event ()
+
+  (star-amacrine "star" :cell-origin '(0.0 0.0 0.0)
+		 :synapse *include-synapses
+		 :extras-list '((synapse EXCITATORY)(synapse INHIBITORY))))
+
+(defun star-amacrine-1 ()
+  (star-amacrine "star-1" :cell-origin '(0 0 0) :include-distal-a-current nil
+		 :synapse *include-synapses
+		 :extras-list '((synapse EXCITATORY-FACILITATION)(synapse INHIBITORY-1))))
+
+;(defun 32211-amacrine-1 ()
+;  (32211-amacrine "AC-cable" :cell-origin '(0 0 0) :include-distal-a-current nil
+;		 :synapse *include-synapses))
+
+(defun star-amacrine-2 ()
+  (setq *include-sources t)
+  (setq user-stop-time 20.0
+	*include-na1 t *include-na2 t *include-na3 t *include-dr t *include-a t *include-ca nil
+	*include-ahp nil     *include-c nil)
+  (setq *plot-nodes* '("star-2-soma" "2212212" "32211")
+	*plot-channel-currents* '("star-2-soma-a" "star-2-soma-na2"
+				  "star-2-soma-na3" "star-2-soma-na1"
+				  "star-2-soma-dr" )
+	*old-pulse-lists* (list (list (cons "star-2-soma-istim"  'ISOURCE) (list 5.0 10.0 2.0))))
+  (star-amacrine "star-2" :cell-origin '(0.0 0.0 0.0)  :synapse nil))
+
+
+(defun star-amacrine-3 ()
+  (setq *scale 1.0 *draw-cells t *print-analysis nil
+        *include-light-synapses t *include-synapses t
+	user-stop-time 300.0
+
+	*fast-rf-bar nil *light-speed 2.0
+        *bar-length 500.0 *bar-width 50.0  *light-stimulus 'moving-bar
+	*light-theta (/ pi-single 2.0)
+	;; T (nil) => movement is 90 degrees ahead (behind) of *light-theta
+	*light-direction T		
+	*motion-start-time 0.0		;Time to start bar moving, milliseconds
+	*light-start-position-x -300.0	;Point of center of stimulus at *motion-start-time in microns
+	*light-start-position-y 0.0
+	)
+  (setq *include-sources t)
+  (setq	*include-na1 nil *include-na2 nil *include-na3 nil *include-dr nil *include-a nil
+	*include-ca nil	*include-ahp nil     *include-c nil)
+  (setq *plot-nodes* '("star-2-soma" "2212212" "32211")
+	*old-pulse-lists* (list (list (cons "star-2-soma-istim"  'ISOURCE) (list 5.0 10.0 2.0))))
+  (star-amacrine "star-2" :cell-origin '(0.0 0.0 0.0)  :synapse nil))
+
+;;; MISC *********************************
+
+
+;; this gets a far left, far right, and top node.
+
+;(defun auto-run ()
+;  (setq  *automatic-run t)
+;  (setq  *g-bar-inhibitory-1 0.0)
+;  (surf 'star-amacrine-1 nil t)
+;  (setq  *g-bar-inhibitory-1 4.0)
+;  (surf 'star-amacrine-1 nil t)
+;    (setq *use-old-synapse-waveforms nil
+;	   *g-bar-inhibitory-1 1.0
+;	   *scale .75  *bar-width 100 *draw-cells t  *update-light-stimulus t
+;	   *current-graphics-pane "Main" *draw-synapse-stimulus t *label-plotted-nodes nil)
+;  (surf 'star-amacrine-1 nil t))
+
+
+
+
+;(list *gbar-a
+;*r-mem-soma
+;*g-bar-excitatory-1
+;*g-bar-inhibitory-1)
+;(0.03 20000 3.0e-4 1.0e-4)
+;;
+;	  ((eq type 'excitatory-facilitation)1 0(double-alpha 70 1 2 3.5))
+;	  ((or (eq type 'inhibitory-1)(eq type 'inhibitory-1-offset)) (alpha-array 300 50 1))
+
+;(setq *bar-a-start-time 10
+; *bar-a-stop-time 50)
+;(setq *bar-b-start-time 80
+; *bar-b-stop-time 120)
+;
+;
+;(setq *bar-b-start-time 10
+; *bar-b-stop-time 50)
+;
+;(setq *bar-a-start-time 80
+; *bar-a-stop-time 120)
+;
+
+
+(defun speed-mem-run ()
+  (dolist (mem-params '((2.0e5 2.0e5)    (5.0e5 1.0e5)))
+    (setq *r-mem (car mem-params)
+	  *r-mem-soma (cadr mem-params))
+    (dolist (light-speed '(0.5 1.0 2.0 4.0 8.0))	;Microns per millisecond
+      (setq *light-speed light-speed) 
+      (setq *light-start-position-x  (* 0.5 *light-speed user-stop-time))
+      (surf 'star-amacrine-1))))
+
+(defvar *do-analysis* t)
+
+;(defun anomolous-run ()
+;  (setq *old-plot-nodes* '("star-1-soma" "32211"))
+;  (setq *scale 1 *draw-cells t *print-analysis nil
+;        *automatic-run t *modify-cell-type nil
+;        *include-light-synapses t *include-synapses t *fast-rf-bar nil
+;        *overlay-simulations nil *hard-copy-screen nil *save-simulation nil user-stop-time 600
+;        *r-mem 2.0e5 *r-a 200 *r-mem-soma 2.0e5 *soma-shunt 1.0e30 *light-theta (/ pi 2.0)
+;        *bar-length 500 *bar-width 50  *light-stimulus 'moving-bar)
+;  (loop for subregion-center in '(0 175) do ;'(-175 0 175) do
+;        (loop for *light-direction in '(nil t) do
+;              (loop for *light-speed in '(0.5 2.0 8.0) ;Microns per millisecond
+;                    for plot-pane in (list 'ds-pane-0 'ds-pane-1 'ds-pane-2) do
+;                    (setq *motion-start-time (- 300 (/ 75 *light-speed))
+;                          *motion-stop-time (+ 300 (/ 75 *light-speed))
+;                          *light-stimulus-start-time (- 300 (/ 75 *light-speed))
+;                          *light-stimulus-stop-time (+ 300 (/ 75 *light-speed))
+;                          *light-start-position-x  (+ subregion-center (* (if *light-direction 1 -1) 75))
+;                          *light-start-position-y 0
+;                          *use-old-synapse-waveforms nil
+;                          *g-excitatory-facilitation-dens  10
+;                          *g-inhibitory-1-dens 10)
+;                    (surf 'star-amacrine-1) 
+;                    (let ((amplitude 0)(nl-integral 0)(integral 0))
+;                      (do ((lt  *ordered-time-list* (cdr lt))
+;                           (lv (reverse (node-voltage-data (gethash "32211" node-hash-table))) (cdr lv)))
+;                          ((not (cdr lt)))
+;                        (setq nl-integral (+ nl-integral 
+;                                             (* (saturating-non-linearity (car lv)) (- (cadr lt) (car lt))))
+;                              integral (+ integral (* (- (car lv) -70) (- (cadr lt) (car lt))))
+;                              amplitude (if (> (- (car lv) -70) amplitude) (- (car lv) -70) amplitude)))
+;                      (send (send *ds-frame* :get-pane plot-pane)
+;                            :plot "Node Values " *pane2-data-list
+;                            (list (format nil "~a:Avg=~,2e,NL-Avg=~,2e,Amp=~,2e"
+;                                          (if *light-direction 'left 'right)
+;                                          (/ integral user-stop-time) (/ nl-integral user-stop-time) amplitude))
+;                            :y-label
+;                            (format nil "Node 32211, Subregion center ~a, Speed ~a uM/ms" subregion-center *light-speed)
+;                            :line-type-skip (if *overlay-simulations 10 0)
+;                            :overlay *light-direction :leave-window *light-direction))))
+;        (send (send *ds-frame* :get-pane 'ds-interaction-pane) :clear-window)
+;        (print-circuit (send *ds-frame* :get-pane 'ds-interaction-pane))
+;        (let ((temp-window tv:selected-window))
+;          (send (send *ds-frame* :get-pane 'ds-interaction-pane) :select)
+;          (HCI::HARDCOPY-SCREEN) (send temp-window :select))))
+;
+;
+;(defun auto-run ()
+;  (setq *old-plot-nodes* '("star-1-soma" "32211"))
+;  (setq *scale 1 *draw-cells t)
+;  (setq  *automatic-run t *modify-cell-type nil *include-light-synapses t *include-synapses t
+;         *overlay-simulations nil
+;         *hard-copy-screen nil *save-simulation nil
+;         user-stop-time 500)
+;  (setq *r-mem 1.0e5 *r-a 200 *r-mem-soma 1.0e5 *soma-shunt 1.0e30)
+;;  (dolist (light-speed '(8.0));'(0.5 2.0 8.0))         ;Microns per millisecond
+;;    (setq *light-speed light-speed) 
+;;    (setq *light-start-position-x  (* -0.5 *light-speed user-stop-time))
+;    (setq *use-old-synapse-waveforms nil)
+;;    (dolist (mem-params '((1.0e5 1.0e5)))
+;;      (setq *r-mem (car mem-params)
+;;           *r-mem-soma (cadr mem-params))
+;;      (dolist (syn-gs '((100 10) (100 1) (10 1) (1 0)))
+;;       (setq *g-excitatory-facilitation-dens (car syn-gs)
+;;             *g-inhibitory-1-dens (cadr syn-gs))
+;    (surf 'star-amacrine-1)
+;    (let ((results-and-angles (tip-tuning)))
+;      (setq *results-and-angles-dump (cons results-and-angles *results-and-angles-dump))))
+;
+;;      (polar-plot-ds results-and-angles :radius-scale (* 50 *light-speed) :overlay t))))
+;;       (setq *use-old-synapse-waveforms t)))))
+;
+;(defvar *results-and-angles-dump nil)
+
+
+;(defun auto-run ()
+;  (setq  *automatic-run t *modify-cell-type nil
+;	 *overlay-simulations nil
+; 	 *hard-copy-screen t *save-simulation nil
+;	 user-stop-time 2000)
+;;  (setq *bar-a-start-time 10
+;;	*bar-a-stop-time 300)
+;;
+;;  (setq *bar-b-start-time 10
+;;	*bar-b-stop-time 300)
+;  (surf 'star-amacrine-1 nil t)
+;;  (setq *overlay-simulations t)
+;;  (let ((b-delay 50))
+;;    (dotimes (i 6)
+;;      (setq *bar-b-start-time (+ *bar-b-start-time  b-delay)
+;;	    *bar-b-stop-time (+ *bar-b-stop-time  b-delay))
+;;      (if (= i 5) (setq 	 *hard-copy-screen t))
+;;
+;;      (surf 'star-amacrine-1 nil t)))
+;
+;  (setq *overlay-simulations nil)
+;  (setq 	 *hard-copy-screen t *save-simulation nil)
+;  (setq *bar-b-start-time 10
+;	*bar-b-stop-time 300)
+;  (setq *bar-a-start-time 10
+;	*bar-a-stop-time 300)
+;  (surf 'star-amacrine-1 nil t)
+;  (setq *overlay-simulations t)
+;  (let ((a-delay 50))
+;    (dotimes (i 6)
+;      (setq *bar-a-start-time (+ *bar-a-start-time  a-delay)
+;	    *bar-a-stop-time (+ *bar-a-stop-time  a-delay))
+;      (if (= i 5) (setq 	 *hard-copy-screen t))
+;      (surf 'star-amacrine-1 nil t)))
+;  
+;
+;
+;
+;
+;  (setq *overlay-simulations nil)
+;  (setq 	 *hard-copy-screen t *save-simulation nil)
+;  (setq user-stop-time 400)
+;
+;  (setq *bar-a-start-time 10
+;	*bar-a-stop-time 100)
+;
+;  (setq *bar-b-start-time 10
+;	*bar-b-stop-time 100)
+;  (surf 'star-amacrine-1 nil t)
+;  (setq *overlay-simulations t)
+;  (let ((b-delay 15))
+;    (dotimes (i 6)
+;      (setq *bar-b-start-time (+ *bar-b-start-time  b-delay)
+;	    *bar-b-stop-time (+ *bar-b-stop-time  b-delay))
+;      (if (= i 5) (setq 	 *hard-copy-screen t))
+;
+;      (surf 'star-amacrine-1 nil t)))
+;
+;  (setq *overlay-simulations nil)
+;  (setq 	 *hard-copy-screen t *save-simulation nil)
+;  (setq *bar-b-start-time 10
+;	*bar-b-stop-time 100)
+;  (setq *bar-a-start-time 10
+;	*bar-a-stop-time 100)
+;  (surf 'star-amacrine-1 nil t)
+;  (setq *overlay-simulations t)
+;  (let ((a-delay 15))
+;    (dotimes (i 6)
+;      (setq *bar-a-start-time (+ *bar-a-start-time  a-delay)
+;	    *bar-a-stop-time (+ *bar-a-stop-time  a-delay))
+;      (if (= i 5) (setq 	 *hard-copy-screen t))
+;      (surf 'star-amacrine-1 nil t)))
+;  )
+
+;
+;(defun auto-run ()
+;  (let ((temp-*channel-currents-to-output* '()))
+;    (setq temp-*channel-currents-to-output* *channel-currents-to-output*)
+;    (setq  *automatic-run t *modify-cell-type nil user-stop-time 200)
+;    (setq 	 *hard-copy-screen t *save-simulation t)
+;
+;    (dolist (temp '(.1 1 10 100))
+;      (setq *light-stimulus-strength temp)
+;      (setq *channel-currents-to-output* temp-*channel-currents-to-output*)
+;      (setq *distal-a-current t)
+;
+;      (apparent-motion-protocol)
+;
+;
+;;now kill a current and repeat experiment
+;      (setq temp-*channel-currents-to-output* *channel-currents-to-output*)
+;      (setq *distal-a-current nil *channel-currents-to-output* '())
+;
+;      (apparent-motion-protocol)
+;
+;      )))
+;
+;(defun apparent-motion-protocol ()
+;  (loop for *bar-a-start-time in '(10 0 10 0 80 80)
+;        for *bar-a-stop-time in '(120 0 120 0 120 120)
+;        for *bar-b-start-time in '(0 80 80 10 0 10)
+;        for *bar-b-stop-time in '(0 120 120 120 0 120)
+;        do
+;    (surf 'star-amacrine-1)))
+;
+;;(defun auto-run ()
+;;
+;;    
+;;
+;;  (setq  *automatic-run t *modify-cell-type nil user-stop-time 1000)
+;;  (setq *bar-width 100 *bar-length 600 *bar-speed 1 *grating-temporal-period user-stop-time)   ;
+;;
+;;  (setq *distal-a-current nil)
+;;;motion from right to left
+;;  (setq *light-stimulus-spot-center-x 300 *light-stimulus-spot-center-y 0 *bar-direction T
+;;       *bar-theta (* 90 2.0 pi (/ 1.0 360)))
+;;  (setq *bar-start-position (list *light-stimulus-spot-center-x *light-stimulus-spot-center-y))
+;;  (setq *overlay-simulations nil        *hard-copy-screen t)
+;;;do it
+;;  (surf 'star-amacrine-1 nil t)
+;;;motion from left to right
+;;  (setq *light-stimulus-spot-center-x -300 *light-stimulus-spot-center-y 0 *bar-direction nil
+;;       *bar-theta (* 90 2.0 pi (/ 1.0 360)))
+;;  (setq *bar-start-position (list *light-stimulus-spot-center-x *light-stimulus-spot-center-y))
+;;  (setq *overlay-simulations t          *hard-copy-screen t)
+;;;do it
+;;  (surf 'star-amacrine-1 nil t)
+;;
+;;
+;;;now kill a current and repeat experiment
+;;  (setq *distal-a-current nil *channel-currents-to-output* '())
+;;;motion from right to left
+;;  (setq *light-stimulus-spot-center-x 300 *light-stimulus-spot-center-y 0 *bar-direction T
+;;       *bar-theta (* 90 2.0 pi (/ 1.0 360)))
+;;  (setq *bar-start-position (list *light-stimulus-spot-center-x *light-stimulus-spot-center-y))
+;;  (setq *overlay-simulations nil        *hard-copy-screen t)
+;;;do it
+;;  (surf 'star-amacrine-1 nil t)
+;;;motion from left to right
+;;  (setq *light-stimulus-spot-center-x -300 *light-stimulus-spot-center-y 0 *bar-direction nil
+;;       *bar-theta (* 90 2.0 pi (/ 1.0 360)))
+;;  (setq *bar-start-position (list *light-stimulus-spot-center-x *light-stimulus-spot-center-y))
+;;  (setq *overlay-simulations t          *hard-copy-screen t)
+;;;do it
+;;  (surf 'star-amacrine-1 nil t)
+;;)
+;
+;(defun 32211-amacrine (cell-name &key (cell-origin '(0 0 0)) (synapse nil)(segment-diameter 0.20)(include-distal-a-current)
+;                       )
+;  (setq *soma-radius 8.0)
+;  (create-cell-type "star-amacrine")
+;  (create-cell cell-name :cell-type-name "star-amacrine" :cell-origin cell-origin)
+;  (let ((soma (create-soma (format nil "~a-soma" cell-name) cell-name (* 2.0 *soma-radius))))
+;;    (create-channels '(na1 na2 na3 dr a) 3 soma :save-particle nil)
+;    (if *include-sources (create-source *clamp-type soma))
+;    (setf (cell-type-notes (gethash "star-amacrine" cell-type-hash-table))
+;          "Rabbit cholinergic starburst cell (cell 7) (about 1.25 mm from streak) of Tauchi and Masland (1984).~%")
+;    (create-tree soma
+;1;; The segment-list format is as follows: (mother-segment-name segment-name x y0 z1 diameter extras-list)
+;0              `(
+;                   (soma                3               0               2  -5       1.2)
+;                   (3           32              6               3  -10         0.9
+;                                ((synapse EX-1)))
+;                   (32          322a            12              2  -10   0.6
+;                                ((synapse EX-1)))
+;                   (322a        322b            18              2  -10   0.6
+;                                ((synapse EX-1)))
+;                   (322b        3221                    23              3  -10 nil
+;                                ((synapse EX-1)))
+;                   (3221                32211a          27              4  -10 nil
+;                                        ((synapse EX-1)))
+;                   (32211a              32211b          31              5  -10 nil 
+;                                        ((synapse EX-1); (synapse IN-1)
+;))
+;                   (32211b              32211c          35              5  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;))
+;                   (3221                32212           33              0  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;                                         ))
+;                   (322b                3222            26              -1  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;                                         ))
+;
+;
+;                   (soma                L3              0               2  -5       1.2)
+;                   (L3          L32             -6              3  -10         0.9
+;                                ((synapse EX-1)))
+;                   (L32         L322a           -12             2  -10   0.6
+;                                ((synapse EX-1)))
+;                   (L322a       L322b           -18             2  -10   0.6
+;                                ((synapse EX-1)))
+;                   (L322b       L3221                   -23             3  -10 nil
+;                                ((synapse EX-1)))
+;                   (L3221               L32211a         -27             4  -10 nil
+;                                        ((synapse EX-1)))
+;                   (L32211a             L32211b         -31             5  -10 nil 
+;                                        ((synapse EX-1);(synapse IN-1)
+;                                         ))
+;                   (L32211b             L32211c         -35             5  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;                                         ))
+;                   (L3221               L32212          -33             0  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;                                         ))
+;                   (L322b               L3222           -26             -1  -10 nil
+;                                        ((synapse EX-1)(synapse IN-1)
+;                                         ))
+;                   )
+;                 :default-diameter segment-diameter :synapse synapse :xy-factor 6.06)
+;    (if include-distal-a-current
+;        (progn
+;;         (create-a-channel soma-memb cell-name .01 :save-current nil )
+;          (dolist (segment-name *distal-nodes*)
+;            (create-a-channel
+;              (gethash segment-name segment-hash-table) cell-name *gbar-a  :save-current t :override-global-include t)))))
+;  )
+;
+;
+;
+;
+;
+;
+;(defun 32211-amacrine-b (cell-name &key (cell-origin '(0 0 0)) (synapse nil)(segment-diameter 0.20)(include-distal-a-current)
+;                       )
+;  (setq *soma-radius 8.0)
+;  (create-cell-type "star-amacrine")
+;  (create-cell cell-name :cell-type-name "star-amacrine" :cell-origin cell-origin)
+;  (let ((soma (create-soma (format nil "~a-soma" cell-name) cell-name (* 2.0 *soma-radius))))
+;;    (create-channels '(na1 na2 na3 dr a) 3 soma :save-particle nil)
+;    (if *include-sources (create-source *clamp-type soma))
+;    (setf (cell-type-notes (gethash "star-amacrine" cell-type-hash-table))
+;          "Rabbit cholinergic starburst cell (cell 7) (about 1.25 mm from streak) of Tauchi and Masland (1984).~%")
+;    (create-tree soma
+;1;; The segment-list format is as follows: (mother-segment-name segment-name x y0 z1 diameter extras-list)
+;0              `(
+;                   (soma                3               0               2  -5       1.2)
+;                   (3           32              6               3  -10         0.9
+;                                ((synapse EX-3)))
+;                   (32          322a            12              2  -10   0.6
+;                                ((synapse EX-3)))
+;                   (322a        322b            18              2  -10   0.6
+;                                ((synapse EX-3)))
+;                   (322b        3221                    23              3  -10 nil
+;                                ((synapse EX-3) (synapse IN-3)))
+;                   (3221                32211a          27              4  -10 nil
+;                                        ((synapse EX-3) (synapse IN-3)))
+;                   (32211a              32211b          31              5  -10 nil 
+;                                        ((synapse EX-3) (synapse IN-3)
+;))
+;                   (32211b              32211c          35              5  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;))
+;                   (3221                32212           33              0  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;                                         ))
+;                   (322b                3222            26              -1  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;                                         ))
+;
+;
+;                   (soma                L3              0               2  -5       1.2)
+;                   (L3          L32             -6              3  -10         0.9
+;                                ((synapse EX-3)))
+;                   (L32         L322a           -12             2  -10   0.6
+;                                ((synapse EX-3)))
+;                   (L322a       L322b           -18             2  -10   0.6
+;                                ((synapse EX-3)))
+;                   (L322b       L3221                   -23             3  -10 nil
+;                                ((synapse EX-3) (synapse IN-3)))
+;                   (L3221               L32211a         -27             4  -10 nil
+;                                        ((synapse EX-3) (synapse IN-3)))
+;                   (L32211a             L32211b         -31             5  -10 nil 
+;                                        ((synapse EX-3) (synapse IN-3)
+;                                         ))
+;                   (L32211b             L32211c         -35             5  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;                                         ))
+;                   (L3221               L32212          -33             0  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;                                         ))
+;                   (L322b               L3222           -26             -1  -10 nil
+;                                        ((synapse EX-3)(synapse IN-3)
+;                                         ))
+;                   )
+;                 :default-diameter segment-diameter :synapse synapse :xy-factor 6.06)
+;    (if include-distal-a-current
+;        (progn
+;;         (create-a-channel soma-memb cell-name .01 :save-current nil )
+;          (dolist (segment-name *distal-nodes*)
+;            (create-a-channel
+;              (gethash segment-name segment-hash-table) cell-name *gbar-a  :save-current t :override-global-include t)))))
+;  )
+
+
+
+
+
+
+
+

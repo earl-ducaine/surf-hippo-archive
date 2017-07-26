@@ -1,0 +1,671 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Multiple agent mode selected.
+
+Loading .init.soar.multi
+
+Creating agent farmer.
+
+Changing to directory farmer/.
+Loading .init.soar
+
+Loading farmer.soar
+
+Loading ../../../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Loading ../../../../../examples/non-nnpscm/farmer/farmer.soar
+**********************
+
+Returning from directory farmer/.
+
+Creating agent eight.
+
+Changing to directory eight/.
+Loading .init.soar
+
+Loading eight.soar
+
+Loading ../../../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Loading ../../../../../examples/non-nnpscm/eight-puzzle/eight-puzzle.soar
+***************
+
+Returning from directory eight/.
+
+Selecting agent farmer
+     0: ==>G: G1 
+     1:    P: P1 (farmer)
+Selecting agent eight
+     0: ==>G: G1 
+     1:    P: P1 (eight-puzzle)
+Selecting agent farmer
+     2:    S: S1 
+Selecting agent eight
+     2:    S: S1 
+Selecting agent farmer
+  HOLDS H1: at(farmer,left-bank)
+  HOLDS H2: at(wolf,left-bank)
+  HOLDS H3: at(goat,left-bank)
+  HOLDS H4: at(cabbage,left-bank)
+     3:    ==>G: G3 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+     3:    ==>G: G2 (operator tie)
+Selecting agent farmer
+  O1: move-alone(self,left-bank,right-bank)
+  O2: move-with(wolf,left-bank,right-bank)
+  O3: move-with(goat,left-bank,right-bank)
+  O4: move-with(cabbage,left-bank,right-bank)
+     4:       P: P2 (selection)
+Selecting agent eight
+     4:       P: P2 (selection)
+Selecting agent farmer
+     5:       S: S2 
+Selecting agent eight
+     5:       S: S2 
+Selecting agent farmer
+     6:       O: O8 (evaluate-object O1 (move-alone))
+Selecting agent eight
+     6:       O: O6 (evaluate-object O1 (move-tile))
+Selecting agent farmer
+     7:       ==>G: G4 (operator no-change)
+Selecting agent eight
+     7:       ==>G: G3 (operator no-change)
+Selecting agent farmer
+     8:          P: P1 (farmer)
+Selecting agent eight
+     8:          P: P1 (eight-puzzle)
+Selecting agent farmer
+     9:          S: D3 
+Selecting agent eight
+     9:          S: D12 
+Selecting agent farmer
+  HOLDS N1: at(farmer,left-bank)
+  HOLDS N2: at(wolf,left-bank)
+  HOLDS N3: at(goat,left-bank)
+  HOLDS N4: at(cabbage,left-bank)
+    10:          O: C2 (move-alone)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    10:          O: O1 (move-tile)
+Selecting agent farmer
+  APPLIED C2: move-alone(self,left-bank,right-bank)
+  HOLDS N1: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-1
+Building chunk-2
+  Evaluation of O1 (move-alone) is failure
+    11:       O: O7 (evaluate-object O2 (move-with))
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building chunk-1
+  Evaluation of O1 (move-tile) is 1
+    11:       O: O5 (evaluate-object O2 (move-tile))
+Selecting agent farmer
+    12:       ==>G: G5 (operator no-change)
+Selecting agent eight
+    12:       ==>G: G4 (operator no-change)
+Selecting agent farmer
+    13:          P: P1 (farmer)
+Selecting agent eight
+    13:          P: P1 (eight-puzzle)
+Selecting agent farmer
+    14:          S: D5 
+Selecting agent eight
+    14:          S: D14 
+Selecting agent farmer
+  HOLDS N5: at(farmer,left-bank)
+  HOLDS N6: at(wolf,left-bank)
+  HOLDS N7: at(goat,left-bank)
+  HOLDS N8: at(cabbage,left-bank)
+Firing chunk-2
+    15:          O: C3 (move-with)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 0 | 5 | 
+      ------------- 
+ 
+    15:          O: O2 (move-tile)
+Selecting agent farmer
+  APPLIED C3: move-with(wolf,left-bank,right-bank)
+  HOLDS N5: at(farmer,right-bank)
+  HOLDS N6: at(wolf,right-bank)
+Retracting chunk-2
+
+  Goal implement-evaluate-object failed. 
+Building chunk-3
+Building chunk-4
+Building chunk-5
+Building chunk-6
+  Evaluation of O2 (move-with) is failure
+    16:       O: O6 (evaluate-object O3 (move-with))
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 6 | 4 | 
+      |---|---|---| 
+      | 7 | 5 | 0 | 
+      ------------- 
+ 
+Building chunk-2
+Building chunk-3
+Firing chunk-3
+Firing chunk-3
+
+  Evaluation of O2 (move-tile) is -1
+    16:    O: O1 (move-tile)
+Selecting agent farmer
+    17:       ==>G: G6 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+    17:    ==>G: G5 (operator tie)
+Selecting agent farmer
+    18:          P: P1 (farmer)
+Selecting agent eight
+    18:       P: P3 (selection)
+Selecting agent farmer
+    19:          S: D7 
+Selecting agent eight
+    19:       S: S3 
+Selecting agent farmer
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N10: at(wolf,left-bank)
+  HOLDS N11: at(goat,left-bank)
+  HOLDS N12: at(cabbage,left-bank)
+Firing chunk-2
+Firing chunk-5
+Firing chunk-6
+Firing chunk-4
+    20:          O: C4 (move-with)
+Selecting agent eight
+    20:       O: O25 (evaluate-object O19 (move-tile))
+Selecting agent farmer
+  APPLIED C4: move-with(goat,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N11: at(goat,right-bank)
+Retracting chunk-2
+Retracting chunk-4
+Retracting chunk-5
+Retracting chunk-6
+    21:          O: O25 (move-alone)
+Selecting agent eight
+    21:       ==>G: G6 (operator no-change)
+Selecting agent farmer
+  APPLIED O25: move-alone(self,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+    22:          ==>G: G7 (operator tie)
+Selecting agent eight
+    22:          P: P1 (eight-puzzle)
+Selecting agent farmer
+  O26: move-with(cabbage,left-bank,right-bank)
+  O27: move-with(wolf,left-bank,right-bank)
+    23:             P: P3 (selection)
+Selecting agent eight
+    23:          S: D16 
+Selecting agent farmer
+    24:             S: S3 
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 1 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    24:          O: O19 (move-tile)
+Selecting agent farmer
+    25:             O: O30 (evaluate-object O26 (move-with))
+Selecting agent eight
+      ------------- 
+      | 2 | 0 | 3 | 
+      |---|---|---| 
+      | 1 | 8 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-3
+Building chunk-4
+  Evaluation of O19 (move-tile) is 0
+    25:       O: O24 (evaluate-object O20 (move-tile))
+Selecting agent farmer
+    26:             ==>G: G8 (operator no-change)
+Selecting agent eight
+Firing chunk-4
+Building chunk-5
+Building chunk-6
+  Evaluation of O20 (move-tile) is 0
+    26:       O: O23 (evaluate-object O22 (move-tile))
+Selecting agent farmer
+    27:                P: P1 (farmer)
+Selecting agent eight
+Firing chunk-2
+Building chunk-7
+Firing chunk-7
+Firing chunk-7
+Firing chunk-7
+Building chunk-8
+Ignoring chunk-8 because it is a duplicate of chunk-7 
+  Evaluation of O22 (move-tile) is -1
+    27:    O: O20 (move-tile)
+Selecting agent farmer
+    28:                S: D9 
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-7
+Retracting chunk-7
+Retracting chunk-5
+Retracting chunk-6
+Retracting chunk-7
+Retracting chunk-7
+    28:    ==>G: G7 (operator tie)
+Selecting agent farmer
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N14: at(wolf,left-bank)
+  HOLDS N15: at(goat,right-bank)
+  HOLDS N16: at(cabbage,left-bank)
+    29:                O: C5 (move-with)
+Selecting agent eight
+    29:       P: P4 (selection)
+Selecting agent farmer
+  APPLIED C5: move-with(cabbage,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N16: at(cabbage,right-bank)
+    30:                ==>G: G9 (operator tie)
+Selecting agent eight
+    30:       S: S4 
+Selecting agent farmer
+  O34: move-with(goat,right-bank,left-bank)
+  O36: move-alone(self,right-bank,left-bank)
+    31:                   P: P4 (selection)
+Selecting agent eight
+    31:       O: O37 (evaluate-object O33 (move-tile))
+Selecting agent farmer
+    32:                   S: S4 
+Selecting agent eight
+    32:       ==>G: G8 (operator no-change)
+Selecting agent farmer
+    33:                   O: O37 (evaluate-object O36 (move-alone))
+Selecting agent eight
+    33:          P: P1 (eight-puzzle)
+Selecting agent farmer
+    34:                   ==>G: G10 (operator no-change)
+Selecting agent eight
+    34:          S: D18 
+Selecting agent farmer
+    35:                      P: P1 (farmer)
+Selecting agent eight
+      ------------- 
+      | 2 | 8 | 3 | 
+      |---|---|---| 
+      | 0 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+    35:          O: O33 (move-tile)
+Selecting agent farmer
+    36:                      S: D11 
+Selecting agent eight
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Building chunk-9
+  Evaluation of O33 (move-tile) is 0
+    36:       O: O36 (evaluate-object O34 (move-tile))
+Selecting agent farmer
+  HOLDS N17: at(farmer,right-bank)
+  HOLDS N18: at(wolf,left-bank)
+  HOLDS N19: at(goat,right-bank)
+  HOLDS N20: at(cabbage,right-bank)
+    37:                      O: C6 (move-alone)
+Selecting agent eight
+Firing chunk-2
+Building chunk-10
+Firing chunk-10
+
+  Evaluation of O34 (move-tile) is -1
+    37:    O: O33 (move-tile)
+Selecting agent farmer
+  APPLIED C6: move-alone(self,right-bank,left-bank)
+  HOLDS N17: at(farmer,left-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-7
+Building chunk-8
+  Evaluation of O36 (move-alone) is failure
+    38:                O: O34 (move-with)
+Selecting agent eight
+      ------------- 
+      | 0 | 8 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+    38:    O: O44 (move-tile)
+Selecting agent farmer
+  APPLIED O34: move-with(goat,right-bank,left-bank)
+  HOLDS N13: at(farmer,left-bank)
+  HOLDS N15: at(goat,left-bank)
+Retracting chunk-8
+    39:                ==>G: G11 (operator tie)
+Selecting agent eight
+      ------------- 
+      | 8 | 0 | 3 | 
+      |---|---|---| 
+      | 2 | 1 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Firing chunk-10
+Firing chunk-10
+    39:    O: O47 (move-tile)
+Selecting agent farmer
+  O44: move-with(wolf,left-bank,right-bank)
+  O46: move-alone(self,left-bank,right-bank)
+    40:                   P: P5 (selection)
+Selecting agent eight
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 2 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-10
+Retracting chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+Firing chunk-6
+Firing chunk-5
+Firing chunk-7
+Firing chunk-10
+Firing chunk-7
+Firing chunk-10
+    40:    O: O49 (move-tile)
+Selecting agent farmer
+    41:                   S: S5 
+Selecting agent eight
+      ------------- 
+      | 8 | 1 | 3 | 
+      |---|---|---| 
+      | 0 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-6
+Retracting chunk-5
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-10
+Retracting chunk-7
+Retracting chunk-7
+Firing chunk-3
+Firing chunk-10
+    41:    O: O52 (move-tile)
+Selecting agent farmer
+    42:                   O: O47 (evaluate-object O46 (move-alone))
+Selecting agent eight
+      ------------- 
+      | 0 | 1 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-10
+Firing chunk-3
+    42:    O: O56 (move-tile)
+Selecting agent farmer
+    43:                   ==>G: G12 (operator no-change)
+Selecting agent eight
+      ------------- 
+      | 1 | 0 | 3 | 
+      |---|---|---| 
+      | 8 | 2 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Firing chunk-3
+Firing chunk-3
+    43:    O: O59 (move-tile)
+Selecting agent farmer
+    44:                      P: P1 (farmer)
+Selecting agent eight
+      ------------- 
+      | 1 | 2 | 3 | 
+      |---|---|---| 
+      | 8 | 0 | 4 | 
+      |---|---|---| 
+      | 7 | 6 | 5 | 
+      ------------- 
+ 
+Retracting chunk-3
+Retracting chunk-3
+
+  Goal solve-eight-puzzle succeeded. 
+ goal solve-eight-puzzle achieved 
+System halted.
+Selecting agent farmer
+    45:                      S: D13 
+Selecting agent farmer
+  HOLDS N21: at(farmer,left-bank)
+  HOLDS N22: at(wolf,left-bank)
+  HOLDS N23: at(goat,left-bank)
+  HOLDS N24: at(cabbage,right-bank)
+    46:                      O: C7 (move-alone)
+Selecting agent farmer
+  APPLIED C7: move-alone(self,left-bank,right-bank)
+  HOLDS N21: at(farmer,right-bank)
+  Goal implement-evaluate-object failed. 
+Building chunk-9
+Building chunk-10
+  Evaluation of O46 (move-alone) is failure
+    47:                O: O44 (move-with)
+Selecting agent farmer
+  APPLIED O44: move-with(wolf,left-bank,right-bank)
+  HOLDS N13: at(farmer,right-bank)
+  HOLDS N14: at(wolf,right-bank)
+Retracting chunk-10
+    48:                ==>G: G13 (operator tie)
+Selecting agent farmer
+  O54: move-with(cabbage,right-bank,left-bank)
+  O56: move-alone(self,right-bank,left-bank)
+    49:                   P: P6 (selection)
+Selecting agent farmer
+    50:                   S: S6 
+Selecting agent farmer
+    51:                   O: O57 (evaluate-object O56 (move-alone))
+Selecting agent farmer
+    52:                   ==>G: G14 (operator no-change)
+Selecting agent farmer
+    53:                      P: P1 (farmer)
+Selecting agent farmer
+    54:                      S: D15 
+Selecting agent farmer
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N26: at(wolf,right-bank)
+  HOLDS N27: at(goat,left-bank)
+  HOLDS N28: at(cabbage,right-bank)
+    55:                      O: C8 (move-alone)
+Selecting agent farmer
+  APPLIED C8: move-alone(self,right-bank,left-bank)
+  HOLDS N25: at(farmer,left-bank)
+    56:                      O: O62 (move-with)
+Selecting agent farmer
+  APPLIED O62: move-with(goat,left-bank,right-bank)
+  HOLDS N25: at(farmer,right-bank)
+  HOLDS N27: at(goat,right-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+
+  Goal implement-evaluate-object succeeded. 
+Building chunk-11
+Building chunk-12
+Building chunk-13
+Building chunk-14
+  Evaluation of O56 (move-alone) is success
+Building chunk-15
+  Evaluation of O26 (move-with) is partial-success
+    57:          O: O26 (move-with)
+Selecting agent farmer
+  APPLIED O26: move-with(cabbage,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N12: at(cabbage,right-bank)
+Retracting chunk-15
+Firing chunk-8
+    58:          O: O68 (move-with)
+Selecting agent farmer
+  APPLIED O68: move-with(goat,right-bank,left-bank)
+  HOLDS N9: at(farmer,left-bank)
+  HOLDS N11: at(goat,left-bank)
+Retracting chunk-8
+Firing chunk-10
+    59:          O: O71 (move-with)
+Selecting agent farmer
+  APPLIED O71: move-with(wolf,left-bank,right-bank)
+  HOLDS N9: at(farmer,right-bank)
+  HOLDS N10: at(wolf,right-bank)
+Retracting chunk-10
+Firing chunk-12
+Building chunk-16
+Firing chunk-14
+Building chunk-17
+  Evaluation of O3 (move-with) is partial-success
+    60:    O: O3 (move-with)
+Selecting agent farmer
+  APPLIED O3: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Retracting chunk-2
+Retracting chunk-4
+Retracting chunk-5
+Retracting chunk-6
+Retracting chunk-17
+    61:    O: O78 (move-alone)
+Selecting agent farmer
+  APPLIED O78: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Firing chunk-15
+    62:    O: O79 (move-with)
+Selecting agent farmer
+  APPLIED O79: move-with(cabbage,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H4: at(cabbage,right-bank)
+Retracting chunk-15
+Firing chunk-8
+    63:    O: O82 (move-with)
+Selecting agent farmer
+  APPLIED O82: move-with(goat,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+  HOLDS H3: at(goat,left-bank)
+Retracting chunk-8
+Firing chunk-10
+    64:    O: O85 (move-with)
+Selecting agent farmer
+  APPLIED O85: move-with(wolf,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H2: at(wolf,right-bank)
+Retracting chunk-10
+Firing chunk-14
+    65:    O: O90 (move-alone)
+Selecting agent farmer
+  APPLIED O90: move-alone(self,right-bank,left-bank)
+  HOLDS H1: at(farmer,left-bank)
+Retracting chunk-14
+    66:    O: O91 (move-with)
+Selecting agent farmer
+  APPLIED O91: move-with(goat,left-bank,right-bank)
+  HOLDS H1: at(farmer,right-bank)
+  HOLDS H3: at(goat,right-bank)
+Firing chunk-4
+Firing chunk-6
+Firing chunk-5
+Firing chunk-2
+
+  Goal farmer succeeded. 
+ goal farmer achieved 
+System halted.
+Soar agent control> 

@@ -1,0 +1,408 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		MEMBRANE ELEMENTS
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Some General Notes
+2. Deriving the Maximum Conductance for Channels and Synapses
+3. Changing Individual Element Parameters 
+4. Updating Element Parameters that are Dependent on Temperature and
+   Membrane Area 
+5. Duplicate Elements on Same Node - Naming Membrane Elements
+6. Static Voltage Dependence of Conductances
+7. Miscellaneous
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+This file describes some general properties of membrane elements,
+relevant for the passive membrane of somas and segments, and for
+channels and synapses. The general notes section refers to all types
+membrane elements.
+
+See also element-type-libraries.doc, synapse.doc, channel.doc 
+
+***************************************************************
+***************************************************************
+
+
+***************************************************************
+***************************************************************
+
+	Some General Notes
+
+***************************************************************
+***************************************************************
+
+All functions which refer to a soma or segment, for example as a destination
+for a newly created channel or synapse, allow the CELL-ELEMENT (soma or
+segment) argument to be either the pointer to the actual Lisp data structure
+or, as is often more convenient especially for calling functions from the
+interpreter, by the name of the CELL-ELEMENT. In general, the translation for
+all circuit elements (including CELL-ELEMENTs) is with the ELEMENT function
+(see hacks.doc). Thus, suppose we want to add a type NA1 channel to a
+dendritic segment (compartment) that is called "Hippo-3".  This could be done
+with
+
+	(create-channel "Hippo-3" 'na1)
+
+or
+
+	(create-channel (element "Hippo-3") 'na1)
+
+Obviously the latter case is overspecified - the point is that there will be
+situations where it will be more convenient to pass the structure pointer to
+a function like CREATE-CHANNEL, rather than a structure name.
+
+In fact, in most cases functions with element arguments are written so that
+the element structure pointer or the element name may be used
+interchangeably, typically by using the ELEMENT function at the start to
+access the correct data structure.
+
+***************************************************************
+***************************************************************
+
+  Deriving the Reversal Potential for Channels and Synapses
+
+***************************************************************
+***************************************************************
+
+Reversal potentials are determined by either fixed values or in reference to
+intra- and extracellular concentrations of ions whose relative contributions
+are given in the :ION-PERMEABILITIES slot.
+
+In a CHANNEL-TYPE-DEF or SYNAPSE-TYPE-DEF form, the presence of E-REV and/or
+USE-DEFINED-E-REV entries set up the method for the reversal potential
+calculation:
+
+
+     E-REV	USE-DEFINED-E-REV        Method                    :USE-DEFINED-E-REV slot
+     ------------------------------------------------------------------------------------
+     number       no entry	   Reference fixed value                    T
+     no entry       N/A	           Reference ion permeabilities            nil
+     N/A            nil	           Reference ion permeabilities            nil
+
+
+In the last case, there must be an ION-PERMEABILITIES entry in the TYPE-DEF
+form. The relevant concentrations (as specified by the ion permeabilities)
+are taken from associated concentration integrators or the appropriate cell
+type concentrations, or global values for concentrations.
+
+
+Thus, for a given channel or synapse type, when :USE-DEFINED-E-REV is nil and
+:ION-PERMEABILITIES is set to a ion permeability list, reversal potential is
+set with the function EFFECTIVE-REVERSAL-POTENTIAL.
+
+
+	effective-reversal-potential ION-PERMS &optional CELL-TYPE
+
+Calculate reversal potential based on ion-permeabilities and the associated
+reversal potentials, which in turn reference the appropriate cell type or the
+DEFAULT-ION-REVERAL-POTENTIAL.
+
+
+	default-ion-reversal-potential SPECIES &optional VALUE
+
+Set the default (fixed) reversal potential for ion SPECIES (NA, K, CL, CA,
+MG) if VALUE [mV] supplied. Returns the current value.
+
+
+***************************************************************
+***************************************************************
+
+  Deriving the Maximum Conductance for Channels and Synapses
+
+***************************************************************
+***************************************************************
+
+
+The :GBAR, or maximum (peak) conductance of an individual channel or synapse
+may be determined either by the area of the associated cell element and
+conductance density (:GBAR-DENSITY), or by a fixed constant value (either
+:GBAR-REF or :GBAR). The method used depends on the :GBAR-SOURCE slot, which
+should be either :DENSITY or :ABSOLUTE. In either case, the final value of
+:GBAR is calculated by reference to the relevant type (channel type or
+synapse type) if the :INHERIT-PARAMETERS-FROM-TYPE slot for the channel or
+synapse is T, or from the channel or synapse itself. In summary, given a
+channel or synapse ELT, the calculation of the final :GBAR is given in the
+following table.
+
+------------------------------------------------------------------------------------------
+:INHERIT-PARAMETERS-FROM-TYPE     T	          T           NIL             NIL
+slot of ELT
+------------------------------------------------------------------------------------------
+:GBAR-SOURCE slot              :DENSITY       :ABSOLUTE       n/a             n/a
+of ELT type 						 
+------------------------------------------------------------------------------------------
+:GBAR-SOURCE slot                n/a             n/a        :DENSITY        :ABSOLUTE            
+of ELT    
+------------------------------------------------------------------------------------------
+Gbar calculated		     :GBAR-DENSITY     :GBAR      :GBAR-DENSITY     :GBAR-REF 
+with reference to              of type         of type       of ELT           of ELT				 
+
+						 
+The final value for the ELT :GBAR is then taken from the density or absolute
+reference, taking into account the appropriate conductance :QTEN of the type
+(not that for the gating kinetics), and multiplied by the 'GBAR-MODULATION
+entry in the type's :PARAMETERS slot. If there is no 'GBAR-MODULATION entry,
+then this is taken to be 1.0.
+
+
+For example, with light synapses in which the receptive fields of the
+synapses are mapped retinotopically with respect to their location on the
+cell (e.g. retina), then it may be more appropriate to use synapse types in
+which the peak conductance is defined in terms of cell element area. For
+synapses who are activated independently of each other, then it may be more
+appropriate to use a type for which there is a fixed peak conductance, and
+then define (create) the appropriate number of individual instances of that
+synapse type to achieve the desired synaptic (conductance) density.
+
+The channel or synapse type definition stored with CHANNEL-TYPE-def or
+SYNAPSE-TYPE-DEF can include a GBAR-SOURCE entry (otherwise the default in
+:DENSITY). Also, these parameters may be edited in the edit-channel,
+edit-channel-type, edit-synapse, and edit-synapse-type menus.
+
+
+***************************************************************************
+***************************************************************************
+
+	Changing Individual Element Parameters 
+
+***************************************************************************
+***************************************************************************
+
+In general, parameters of segments, channels and synapses are inherited from
+the appropriate cell type, channel type, and synapse type, respectively.
+However, for some of the element parameters, specific instances of these
+elements may be assigned unique parameter values by SETFing the appropriate
+slot, or by using the function:
+
+	edit-element
+
+If individual parameters of a given element are to be not overwritten by the
+relevant element type parameters, then the :INHERIT-PARAMETERS-FROM-TYPE slot
+of the element must be set to NIL (this is provided for in the menus above).
+The initial value of the :INHERIT-PARAMETERS-FROM-TYPE slot for a given
+element is set to the value of the relevant type
+:INHERIT-PARAMETERS-FROM-TYPE slot when the element is created.
+
+The menus for individual element parameters are also accessible via the
+histology element menu (SHIFT-CONTROL-M for the currently selected soma or
+segment).
+
+
+***************************************************************************
+***************************************************************************
+
+	Setting Element Reference Conductances
+
+***************************************************************************
+***************************************************************************
+
+The following functions specify conductance references for
+channel types or synapse types:
+
+	element-type-param TYPE PARAM &optional VALUE UPDATE
+
+
+     TYPE is a synapse or channel type or name of a type
+
+     PARAM can be -
+
+     'GBAR-MODULATION
+     'GBAR-SOURCE (e.g. :absolute or :density)
+     'GBAR-REF [uS]
+     'GBAR-DENSITY [pS per square micron (0.1mS per square cm)]
+     'E-REV [mV]
+     'BLOCK [T or NIL]
+
+The optional VALUE follows the PARAM - if VALUE is not supplied, then the
+current value of the slot corresponding to PARAM is returned.  Supplying a
+non-nil value for UPDATE will cause the change to propagate to the
+appropriate elements of TYPE.
+
+Note that the channel or synapse type parameters will not be propagated to
+the appropriate elements until PROCESS-CIRCUIT-STRUCTURE [for the first time
+on a new circuit] or SET-CIRCUIT-ELEMENTS-PARAMETERS is run - the optional
+UPDATE flag will cause SET-CIRCUIT-ELEMENTS-PARAMETERS to be called after the
+parameter value is changed.
+
+The following function specifies an individual conductance reference for
+channels or synapses:
+
+	set-element-absolute-gbar-ref ELEMENT GBAR-REF
+
+The ELEMENT argument can be either an instance of a synapse or a channel, or
+the name of a synapse or a channel. In SET-ELEMENT-ABSOLUTE-GBAR-REF,
+GBAR-REF is in uS.
+
+This function also resets the :INHERIT-PARAMETERS-FROM-TYPE slot of ELEMENT
+to NIL, so that the newly assigned values are not overridden by the
+corresponding element type parameters. It returns the numerical second
+argument.
+
+
+***************************************************************************
+***************************************************************************
+
+	Updating Element Parameters that are Dependent on Temperature and
+				Membrane Area
+
+***************************************************************************
+***************************************************************************
+
+
+At various points in the program flow, prior to the actual simulation, the
+function SET-CIRCUIT-ELEMENTS-PARAMETERS (sim.lisp) is called.  This function
+in turn calls functions which update element parameters which may depend on
+membrane area or temperature. To see exactly what is updated for a given type
+of membrane or cell element, see the appropriate function definition as
+indicated in SET-CIRCUIT-ELEMENTS-PARAMETERS (each update function is found
+in the corresponding element type file, e.g. the function
+SET-CHANNELS-PARAMETERS is defined in channel.lisp). Many of these functions
+are written so that element parameters are inherited from the appropriate
+element types, depending on the :INHERIT-PARAMETERS-FROM-TYPE slot as
+described above.
+
+If you want to disable this update for a certain class of elements, SETQ the
+appropriate global enable variable:
+
+     *ENABLE-SEGMENT-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-SOMA-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-CONC-INTEGRATOR-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-CHANNEL-TYPE-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-CHANNEL-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-AXON-MEMBRANE-PARAMETER-UPDATE*
+     *ENABLE-SYNAPSE-MEMBRANE-PARAMETER-UPDATE*
+
+
+The default for these variables is T. It is likely that you will not need to
+change these variables.
+
+***************************************************************************
+***************************************************************************
+
+	Duplicate Elements on Same Node - Naming Membrane Elements
+
+***************************************************************************
+***************************************************************************
+
+Typically, if you try to create a duplicate membrane element on the same soma
+or segment, a message like:
+
+	CREATE-SYNAPSE: synapse Hippo-3-WILD already defined
+
+will be printed and the element creation function will quit. In some cases,
+however, it may be useful to have duplicate instances of the same type of
+membrane element on the same node, for example light synapses (e.g.  with
+different RFs). In these cases, if the global variable
+*PROMPT-FOR-ALTERNATE-ELEMENT-NAMES* is T (the default), then the user is
+prompted before the additional element is created - otherwise, the element is
+automatically created with a new name that is created from the standard name
+with an numeric extension (see the function CHECK-ELEMENT-NAME in cell.lisp).
+
+Specifically, for synapses, duplicate synapses are allowed if the
+POST-SYNAPTIC-ELEMENT already has a synapse of the same type, and the
+PRE-SYNAPTIC-ELEMENT is either different or the synapse type has no
+PRE-SYNAPTIC-ELEMENT.
+
+If *ALLOW-DUPLICATE-SYNAPTIC-CONNECTIONS* is T (default), then more than one
+synapse of the same type may be created with the same pre and post synaptic
+element.
+
+The names created automatically for elements include enough information to
+tell where and what the element is. However, these strings can take a lot of
+room for large simulations - therefore, when the global variable
+*USE-SIMPLE-NAMES* is T, membrane elements and segments are named with just
+integers.
+
+		 
+***************************************************************
+***************************************************************
+
+	Static Voltage Dependence of Conductances
+
+***************************************************************
+***************************************************************
+
+The conductance of a channel or synapse can also have a static dependence on
+the current voltage of the associated node, if the type definition parameters
+stored with CHANNEL-TYPE-DEF or SYNAPSE-TYPE-DEF includes:
+
+	(static-voltage-dependence .  (list-or-array-function args ...))
+
+The form in LIST-OR-ARRAY-FUNCTION should return a sequence whose index runs
+from -150 to 50 mV (this is the range for the particle voltage-dependent
+function arrays as well - check the value of
+*PARTICLE-LOOK-UP-TABLE-VOLTAGE-RANGE [default 200]), with a resolution given
+by *PARTICLE-LOOK-UP-TABLE-PRECISION [default 0.1].  For example, the
+function
+
+	sigmoid-array V-HALF SLOPE VMIN VMAX VRES
+
+could be used, specified with 
+
+	(SIGMOID-ARRAY -50.0 0.5 -150 50 0.1)
+                                   ^  ^   ^
+			  These give the correct voltage range.
+
+
+The function and arguments supplied as a 'STATIC-VOLTAGE-DEPENDENCE entry are
+evaluated only once, when the channel or synapse type is first created.
+
+Alternatively, the following entry may be supplied
+
+	(static-voltage-dependence-function . list-or-array-function)
+
+In this case, the LIST-OR-ARRAY-FUNCTION must take two arguments:
+
+	list-or-array-function VOLTAGE TYPE
+
+where VOLTAGE is in mV, and the function should return a single value. Each
+time a simulation is run, this function is called (over the same voltage
+range as above) to update an array stored with the TYPE, and used during the
+TYPE elements evaluation.
+
+
+***************************************************************
+***************************************************************
+
+	Miscellaneous
+
+***************************************************************
+***************************************************************
+
+	channel-types-of-ion-type ION-TYPE &optional (ONLY-LOADED t) (ONLY-IN-CIRCUIT t) EXCLUDE-CONC-DEPENDENT-TYPES
+
+	synapse-types-of-ion-type ION-TYPE &optional (ONLY-LOADED t) (ONLY-IN-CIRCUIT t) EXCLUDE-CONC-DEPENDENT-TYPES
+
+
+For both of these functions, ION-TYPE is a symbol that is matched to entries
+in the :ION-PERMEABILITIES slot of channel or synapse types. This function
+searchs through all the entries of defined by CHANNEL-TYPE-DEF or
+SYNAPSE-TYPE-DEF as appropriate and returns a list of all the channel types
+referenced there whose 'ION-PERMEABILITIES parameter includes ION-TYPE. This
+function will create instances of channel or synapse types that satisfy this
+criteria if the types don't already exist. For example:
+
+     * (CHANNEL-TYPES-OF-ION-TYPE 'na nil nil)
+     (<Channel type NA-HH-FIT> <Channel type NA-HH> <Channel type NA3>
+      <Channel type NA2> <Channel type NA1> <Channel type NA-TRB>
+      <Channel type NA-FG> <Channel type NA-RHO> <Channel type NA-SGB>
+      <Channel type NA-WDY>)
+     * 
+
+Note that the 'ION-PERMEABILITIES specification is not required for channel or synapse types.
+
+

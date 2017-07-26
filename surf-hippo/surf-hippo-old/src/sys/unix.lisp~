@@ -1,0 +1,5 @@
+;;; -*- Mode: Lisp; Syntax: Common-lisp; Package: #-PARALLEL SURF #+PARALLEL *SURF; Base: 10; -*-
+;;;  (c) Copyright 1990, Lyle Borg-Graham, MIT Center for Biological Information Processing
+
+
+(unix::run-program "ls" nil :output t)

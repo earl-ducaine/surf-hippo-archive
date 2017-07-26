@@ -1,0 +1,18 @@
+#!/bin/csh -f
+#  This file creates the gold standard for task suite tests
+#  Created Wednesday, Jan 6, 1993 by Karl Schwamb
+
+# I make assumptions like we are in the correct directory and that everything
+# else exists
+
+set path = (/afs/cs/project/soar/member/soar6/bin $path)
+
+# set this to point to where you want it to run the soar code from
+set soar = ../../../../bin/nnpscm/pmax_mach/soar
+
+foreach i (tests/*.soar)
+  set f = `echo $i | sed 's/\.soar//' | sed 's/tests\///'`
+  (cd gold-standard; co -l $f.result)
+  $soar < $i > gold-standard/$f.result
+  (cd gold-standard; ci -m"updated" -u $f.result)
+end

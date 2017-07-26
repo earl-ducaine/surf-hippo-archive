@@ -1,0 +1,305 @@
+# $Id: make.body,v 1.6 1994/07/01 15:44:55 portelli Exp $
+#
+
+# Makefile body for Soar 6
+
+#=================================================================
+#
+# This section of switches is now defined by header files.
+# The comments are retained here to clarify their meanings.
+# The example switch settings are for a sun4 w/ gcc compiler.
+
+# Set this to your favorite C Compiler that understands ANSI.
+# CC       = gcc
+
+# Set these to be whatever flags you want to pass to your compiler.
+# If the flags define ANSI C behavior, be sure to set them.
+# CFLAGS   = -g -O
+
+# Library entry randomizer.  Not needed if using certain new 
+# versions of ar.
+# RANLIB   = ranlib 
+
+# Machine-specific libraries needed for linking.
+# EXTRA_LIBS =
+
+# The machine-dependent directory name to use in distinguishing
+# object and binary files.
+# MACHINE_DEP_DIR = sun4
+
+#=================================================================
+
+# Select one of these lines depending on whether you want (1) full 
+# backward compatiblity with Soar 6 versions before 6.0.5 which is
+# a single-agent soar, (2) multi-agent soar using standard I/O,
+# or (3) multi-agent soar w/ an X interface.
+
+DFLAGS   =
+#DFLAGS   = -DMULTI_AGENT_ENABLED 
+#DFLAGS   = -DMULTI_AGENT_ENABLED -DUSE_X_DISPLAY
+
+#===========================================================
+
+# Select one of these lines depending on whether you want
+# (1) non-nnpscm (same PSCM as pre-Soar 6.2 versions)
+# (2) nnpscm (the New New Problem Space Computational Model)
+# AGR 1-Jun-94
+
+# Select NNPSCM or NOT-NNPSCM
+NNPSCMFLAGS =
+#NNPSCMFLAGS = -DNNPSCM
+
+# Select directory
+PSCM_DIR = non-nnpscm
+#PSCM_DIR = nnpscm
+
+#===========================================================
+
+# set this to the AR flags as appropriate for your system
+
+#AR       = ar
+#ARFLAGS  = r
+
+# Point this to the directory where the soar sources exist if you 
+# need to compile them (to remake the library).
+SRC_DIR = src
+
+# Point this to where you want the object files to exist
+OBJ_DIR = obj/${PSCM_DIR}/${MACHINE_DEP_DIR}
+
+# Point this to where you want the soar executable to exist
+BIN_DIR = bin/${PSCM_DIR}/${MACHINE_DEP_DIR}
+
+# Point this at the lib dir where your libsoar.a exists on your system
+# or where you want it to exist if you are initially installing this.
+LIB_DIR = lib/${PSCM_DIR}/${MACHINE_DEP_DIR}
+
+# Point this to the directory where user written files to be linked against
+# the Soar library exist
+USER_DIR = user
+
+# This contains the list of all source files in the soar library
+
+SOAR_SRC = ${SRC_DIR}/backtrace.c    \
+           ${SRC_DIR}/chunk.c        \
+	   ${SRC_DIR}/decide.c       \
+	   ${SRC_DIR}/explain.c      \
+           ${SRC_DIR}/hooks.c        \
+           ${SRC_DIR}/init_soar.c    \
+           ${SRC_DIR}/interface.c    \
+           ${SRC_DIR}/io.c           \
+           ${SRC_DIR}/lexer.c        \
+           ${SRC_DIR}/main.c         \
+	   ${SRC_DIR}/ma_interface.c \
+           ${SRC_DIR}/mem.c          \
+	   ${SRC_DIR}/osupport.c     \
+           ${SRC_DIR}/parser.c       \
+	   ${SRC_DIR}/prefmem.c      \
+           ${SRC_DIR}/print.c        \
+           ${SRC_DIR}/production.c   \
+           ${SRC_DIR}/queue.c        \
+           ${SRC_DIR}/recmem.c       \
+	   ${SRC_DIR}/reorder.c      \
+           ${SRC_DIR}/rete.c         \
+           ${SRC_DIR}/rhsfun.c       \
+           ${SRC_DIR}/rhsfun_math.c  \
+           ${SRC_DIR}/scheduler.c    \
+           ${SRC_DIR}/symtab.c       \
+	   ${SRC_DIR}/tempmem.c      \
+           ${SRC_DIR}/tilde.c        \
+           ${SRC_DIR}/trace.c        \
+	   ${SRC_DIR}/wmem.c         \
+           ${SRC_DIR}/x_interface.c  \
+           ${SRC_DIR}/x_resources.c
+
+# This contains the list of all object files in the soar library
+
+SOAR_OBJ = ${OBJ_DIR}/backtrace.o    \
+	   ${OBJ_DIR}/chunk.o        \
+	   ${OBJ_DIR}/decide.o       \
+	   ${OBJ_DIR}/explain.o      \
+           ${OBJ_DIR}/hooks.o        \
+           ${OBJ_DIR}/init_soar.o    \
+           ${OBJ_DIR}/interface.o    \
+           ${OBJ_DIR}/io.o           \
+           ${OBJ_DIR}/lexer.o        \
+           ${OBJ_DIR}/main.o         \
+	   ${OBJ_DIR}/ma_interface.o \
+           ${OBJ_DIR}/mem.o          \
+	   ${OBJ_DIR}/osupport.o     \
+           ${OBJ_DIR}/parser.o       \
+	   ${OBJ_DIR}/prefmem.o      \
+           ${OBJ_DIR}/print.o        \
+           ${OBJ_DIR}/production.o   \
+           ${OBJ_DIR}/queue.o        \
+           ${OBJ_DIR}/recmem.o       \
+	   ${OBJ_DIR}/reorder.o      \
+           ${OBJ_DIR}/rete.o         \
+           ${OBJ_DIR}/rhsfun.o       \
+           ${OBJ_DIR}/rhsfun_math.o  \
+           ${OBJ_DIR}/scheduler.o    \
+           ${OBJ_DIR}/symtab.o       \
+	   ${OBJ_DIR}/tempmem.o      \
+           ${OBJ_DIR}/tilde.o        \
+           ${OBJ_DIR}/trace.o        \
+	   ${OBJ_DIR}/wmem.o         \
+           ${OBJ_DIR}/x_interface.o  \
+           ${OBJ_DIR}/x_resources.o  
+
+
+HEADERS	 = ${SRC_DIR}/soar.h ${SRC_DIR}/global_vars.h
+
+# All the user defined C files.  Whenever you want to link in a new file, you
+# must add it to this line as ${USER_DIR}/src/<filename.c>
+USER_SRC =
+# All the user defined C files.  Whenever you want to link in a new file, you
+# must add it to this line as ${USER_DIR}/obj/<filename.o>
+USER_OBJ = 
+
+# Describe which files should be used to build the soar library.
+LIB_SRC  = ${SOAR_SRC}
+LIB_OBJ  = ${SOAR_OBJ}
+
+# If you are linking against the soar library instead of compiling everything
+# directly, uncomment this line and comment the one below it.
+#SOAR_LIBS	= -L${LIB_DIR} -lsoar -lm
+SOAR_LIBS	= -lm
+
+# Add any other libraries you need to compile your specific code to the end of
+# this line.  Unless you are adding your own files, you can leave this line
+# alone.  Choose the latter option if you have chosen USE_X_DISPLAY
+# above.
+
+LIBS = ${SOAR_LIBS} ${EXTRA_LIBS}
+#LIBS = ${SOAR_LIBS} ${EXTRA_LIBS} -lX11
+
+# Pick the latter option if you wish to link with soar code via a library.
+
+all: soar_obj
+#all: lib soar_lib
+
+# If you change the DFLAGS option above, you should "make clobber" first.
+
+clean:
+	rm -rf ${USER_OBJ} ${SOAR_OBJ}
+
+clobber: clean
+	rm -rf ${LIB_DIR}/libsoar.a ${BIN_DIR}/soar 
+
+# This doesn't depend on the soarlib so that it can be pre-compiled
+# and exist externally.
+soar_lib: lib ${USER_OBJ} ${BIN_DIR}/soar
+
+soar_obj: ${SOAR_OBJ} ${USER_OBJ} ${BIN_DIR}/soar
+
+# How to build the soar executable:
+${BIN_DIR}/soar: ${SOAR_OBJ} ${USER_OBJ}
+	${CC} -o ${BIN_DIR}/soar ${SOAR_OBJ} ${USER_OBJ} ${LIBS}
+
+# How to build/update the soar library
+lib: ${LIB_OBJ}
+	${AR} ${ARFLAGS} ${LIB_DIR}/libsoar.a ${LIB_OBJ}
+	${RANLIB} ${LIB_DIR}/libsoar.a
+
+# How we compile a file:
+
+COMPILE.c = ${CC} ${CFLAGS} ${DFLAGS} ${NNPSCMFLAGS} -o $@ -c
+
+# The dependencies of objects on sources/headers:
+
+${OBJ_DIR}/backtrace.o: ${SRC_DIR}/backtrace.c
+	${COMPILE.c} ${SRC_DIR}/backtrace.c
+
+${OBJ_DIR}/chunk.o: ${SRC_DIR}/chunk.c
+	${COMPILE.c} ${SRC_DIR}/chunk.c
+
+${OBJ_DIR}/decide.o: ${SRC_DIR}/decide.c
+	${COMPILE.c} ${SRC_DIR}/decide.c
+
+${OBJ_DIR}/explain.o: ${SRC_DIR}/explain.c ${SRC_DIR}/explain.h
+	${COMPILE.c} ${SRC_DIR}/explain.c
+
+${OBJ_DIR}/hooks.o: ${SRC_DIR}/hooks.c
+	${COMPILE.c} ${SRC_DIR}/hooks.c
+
+${OBJ_DIR}/init_soar.o: ${SRC_DIR}/init_soar.c
+	${COMPILE.c} ${SRC_DIR}/init_soar.c
+
+${OBJ_DIR}/interface.o: ${SRC_DIR}/interface.c ${SRC_DIR}/scheduler.h
+	${COMPILE.c} ${SRC_DIR}/interface.c
+
+${OBJ_DIR}/io.o: ${SRC_DIR}/io.c
+	${COMPILE.c} ${SRC_DIR}/io.c
+
+${OBJ_DIR}/lexer.o: ${SRC_DIR}/lexer.c
+	${COMPILE.c} ${SRC_DIR}/lexer.c
+
+${OBJ_DIR}/main.o: ${SRC_DIR}/main.c ${SRC_DIR}/global_vars.c
+	${COMPILE.c} ${SRC_DIR}/main.c
+
+${OBJ_DIR}/ma_interface.o: ${SRC_DIR}/ma_interface.c ${SRC_DIR}/scheduler.h
+	${COMPILE.c} ${SRC_DIR}/ma_interface.c
+
+${OBJ_DIR}/mem.o: ${SRC_DIR}/mem.c
+	${COMPILE.c} ${SRC_DIR}/mem.c
+
+${OBJ_DIR}/osupport.o: ${SRC_DIR}/osupport.c
+	${COMPILE.c} ${SRC_DIR}/osupport.c
+
+${OBJ_DIR}/parser.o: ${SRC_DIR}/parser.c
+	${COMPILE.c} ${SRC_DIR}/parser.c
+
+${OBJ_DIR}/prefmem.o: ${SRC_DIR}/prefmem.c
+	${COMPILE.c} ${SRC_DIR}/prefmem.c
+
+${OBJ_DIR}/print.o: ${SRC_DIR}/print.c
+	${COMPILE.c} ${SRC_DIR}/print.c
+
+${OBJ_DIR}/production.o: ${SRC_DIR}/production.c
+	${COMPILE.c} ${SRC_DIR}/production.c
+
+${OBJ_DIR}/queue.o: ${SRC_DIR}/queue.c ${SRC_DIR}/queue.h
+	${COMPILE.c} ${SRC_DIR}/queue.c
+
+${OBJ_DIR}/recmem.o: ${SRC_DIR}/recmem.c
+	${COMPILE.c} ${SRC_DIR}/recmem.c
+
+${OBJ_DIR}/reorder.o: ${SRC_DIR}/reorder.c
+	${COMPILE.c} ${SRC_DIR}/reorder.c
+
+${OBJ_DIR}/rete.o: ${SRC_DIR}/rete.c
+	${COMPILE.c} ${SRC_DIR}/rete.c
+
+${OBJ_DIR}/rhsfun.o: ${SRC_DIR}/rhsfun.c
+	${COMPILE.c} ${SRC_DIR}/rhsfun.c
+
+${OBJ_DIR}/rhsfun_math.o: ${SRC_DIR}/rhsfun_math.c
+	${COMPILE.c} ${SRC_DIR}/rhsfun_math.c
+
+${OBJ_DIR}/scheduler.o: ${SRC_DIR}/scheduler.c
+	${COMPILE.c} ${SRC_DIR}/scheduler.c
+
+${OBJ_DIR}/symtab.o: ${SRC_DIR}/symtab.c
+	${COMPILE.c} ${SRC_DIR}/symtab.c
+
+${OBJ_DIR}/tempmem.o: ${SRC_DIR}/tempmem.c
+	${COMPILE.c} ${SRC_DIR}/tempmem.c
+
+${OBJ_DIR}/tilde.o: ${SRC_DIR}/tilde.c
+	${COMPILE.c} ${SRC_DIR}/tilde.c
+
+${OBJ_DIR}/trace.o: ${SRC_DIR}/trace.c
+	${COMPILE.c} ${SRC_DIR}/trace.c
+
+${OBJ_DIR}/wmem.o: ${SRC_DIR}/wmem.c
+	${COMPILE.c} ${SRC_DIR}/wmem.c
+
+${OBJ_DIR}/x_interface.o: ${SRC_DIR}/x_interface.c
+	${COMPILE.c} ${SRC_DIR}/x_interface.c
+
+${OBJ_DIR}/x_resources.o: ${SRC_DIR}/x_resources.c
+	${COMPILE.c} ${SRC_DIR}/x_resources.c
+
+# All source files (currently) depend on the global soar headers
+${SOAR_OBJ}: ${HEADERS}
+

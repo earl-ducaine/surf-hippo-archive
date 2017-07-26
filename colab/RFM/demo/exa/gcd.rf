@@ -1,8 +1,0 @@
-(FT (GCD _M _M)
-    _M )
-(FT (GCD _M _N)
-    (> _M _N)
-    (GCD (- _M _N) _N) )
-(FT (GCD _M _N)
-    (GCD _M (- _N _M)) )
-

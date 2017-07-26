@@ -1,0 +1,19 @@
+;;  $Id: impasse.soar,v 1.3 1994/07/01 16:46:22 portelli Exp $
+;;; Tests the impasse deletion
+
+(load "../../../default/non-nnpscm/default.soar")
+
+(sp taq*warn-about-attribute-ties
+   (impasse <i> ^impasse tie ^attribute <att> ^object <id>)
+ -->
+   (<i> ^list-items* true +)
+ )
+
+(sp setup-top-context
+  (goal <g> ^object nil)
+ -->
+  (<g> ^foo <p>)
+  (<p> ^world x y))
+
+(d 10)
+(init-soar)

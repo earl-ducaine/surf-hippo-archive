@@ -1,0 +1,480 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+Concentration Integrators, Pumps and Buffers
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+1. Layout for Concentration Integrators
+2. Pore Current and Concentration Integrator Shells
+3. Data Plotting
+4. Compartment Volumes and Pump Areas For Multi-Shell Integrators
+5. Instantaneous Buffers
+6. Other Buffers
+7. Concentration Integrator Channel or Synapse Delta Parameter
+8. Defining Concentration Integrator Types with the CONC-INT-TYPE-DEF Macro
+9. Pumps
+10. Defining Pump Types with the PUMP-TYPE-DEF Macro
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
+This file describes the concentration integrators and associated pumps
+and buffers. See also initializations.doc.
+
+Documentation not complete. Refer also to source code in conc-part.lisp,
+conc-int.lisp, buffer.lisp, and pump.lisp.
+
+IMPORTANT: Although the system is general, only the calcium
+concentration integrator definition supplied with the generic HPC
+model (which includes instantaneous buffering and a membrane pump) has
+been well tested.
+
+
+******************************************************
+******************************************************
+
+	Layout for Concentration Integrators
+
+******************************************************
+******************************************************
+
+
+Concentration integrators are comprised of 1 to 3 variable
+concentration compartments or shells, and possibly a constant
+concentration "core". Integrators may be either intracellular or
+extracellular, and are "fed" from channels or synapses whose ionic
+species include the species specific to the integrator in question.
+
+
+
+Possible structure of the compartments include:
+
+
+				   
+	       ======= membrane ======
+		       shell-1
+	       -----------------------
+
+	       ======= membrane ======
+		       shell-1
+	       -----------------------
+		       shell-2
+	       -----------------------
+
+	       ======= membrane ======
+		       shell-1
+	       -----------------------
+		       shell-2
+	       -----------------------
+		       shell-3
+	       -----------------------
+
+
+				   
+	       ======= membrane ======
+		  shell-1  | shell-2
+	       -----------------------
+		       shell-3
+	       -----------------------
+
+
+				   
+	       ======= membrane ======
+		  shell-1  | shell-2
+	       -----------------------
+		       shell-3
+	       -----------------------
+			 core
+	       -----------------------
+
+
+******************************************************
+******************************************************
+
+Pore Current and Concentration Integrator Shells
+
+******************************************************
+******************************************************
+
+
+A proportion of the ionic current through channels or synapses is assigned to either
+shell-1 and/or shell-2, according to the :SHELL-1-PORES and :SHELL-2-PORES slots of
+the integrator. These slots in turn are set when channels or synapses are created,
+according to the :CONC-INT-TYPE-PARAMS slots of the appropriate channel or synapse
+types. The list in these slots is set for each ion that passes through the channel
+or synapse type, and includes an entry for a concentration integrator type, for the
+shell (1 and/or 2) and the proportion of the current associated with the shell,
+e.g.:
+
+  '((CA-INTRA (1 0.7) (2 0.24)) (K-EXTRA (1 1)))
+
+The diffusion between compartments is calculated according to the shared area between the
+compartments and the diffusion constant for each pair of compartments. 
+
+The (effective) diffusion area between the juxtamembrane shells 1 and 2 is computed by the
+formula:
+
+  (* (conc-int-type-interdigitation-coefficient type) ; 1/microns
+     area			                      ; surface area of the element (segment or soma) square cm
+     (conc-int-type-juxtamembrane-shell-thickness type))) ; microns
+
+The idea is that the shell next to the membrane is divided up into subregions, each of
+which belongs to one of two groups (called shell 1 or 2). A group is distinguished by a
+unique set of channels or synapses which traverse the membrane over a given subregion.
+Thus, the concentration in the set of subregions comprising shell 1 or 2 is evaluated over
+the total volume of the subregions, including the contributions of all the channels or
+synapses assigned to the appropriate shell. Diffusion between shell 1 and 2 depends of an
+effective diffusion area which conceptually depends on the relative interdigitation or
+dispersion of the subregions. This interdigitation, or partitioning, is quantified by the
+concentration integrator type :INTERDIGITATION-COEFFICIENT [1/microns], and transforms the
+surface area of the membrane into an effective length or border between the subregions, as
+expressed in the formula above.
+
+The diffusion area between the juxtamembrane shell 1 and shell 3 is given by the product of
+the :ALPHA-S slot of the concentration integrator type and the surface area of the element
+(segment or soma). The diffusion area between the juxtamembrane shell 2 and shell 3 is
+given by the product of 1 minus the value in the :ALPHA-S slot of the concentration
+integrator type and the surface area of the element (segment or soma).
+
+
+The volume of shell 1 is given by the product of the :ALPHA-S slot of the concentration
+integrator type, the surface area of the element (segment or soma), and the thickness of
+the juxtamembrane shell (the :JUXTAMEMBRANE-SHELL-THICKNESS slot of the concentration
+integrator type).
+
+The volume of shell 2 is given by the product of 1 minus the value in the :ALPHA-S slot of
+the concentration integrator type, the surface area of the element (segment or soma), and
+the thickness of the juxtamembrane shell.
+
+The volume of the inner shell 3 is given by the product of the surface area of the element
+(segment or soma), and the thickness of the inner shell (the :INNER-SHELL-THICKNESS slot of
+the concentration integrator type).
+
+    
+When a concentration integrator is assigned to a node that already has concentration
+particle(s) associated with it, then that integrator is assigned to all the previously
+defined concentration particles. If a concentration particle is at a node without a
+concentration integrator, then the concentration used for evaluating that particle is given
+by the global variable *CA-CONC-INTRA.
+
+
+
+
+******************************************************
+******************************************************
+
+	Data Plotting
+
+******************************************************
+******************************************************
+
+Any of the shell concentrations may be plotted according to the global variables
+
+	*PLOT-CONC-1-INTS*  -> Shell 1
+	*PLOT-CONC-2-INTS*  -> Shell 2
+	*PLOT-CONC-3-INTS*  -> Shell 3
+	*PLOT-CONC-INTS*    -> Average concentration over the entire
+			       volume of the associated cell element
+
+each of which is a list of concentration integrator names. In the last case, the average
+concentration of X is calculated with
+
+	
+  V_1 * [X]_1  +  V_2 * [X]_2  +  V_3 * [X]_3  +  V_core * [X]_core
+  -----------------------------------------------------------------
+                  V_1  +  V_2  +  V_3  +  V_core
+
+  
+Where V_a and [X]_a refer to the volume of shell a and the concentration of [X] in shell a,
+respectively. This "total" concentration may be compared to that measured by flourescent
+probes in which it is assumed that the concentration of some species is integrated over the
+entire volume of a section of neuron.
+
+When the global variable *PLOT-TOTAL-CONCENTRATIONS-SEPARATELY* is T, then a separate
+plotting window is generated for the average (or "total") concentrations. This is useful
+when the magnitude of the juxtamembrane shell concentrations is much larger than that of
+the concentration averaged over the entire cell-element volume.
+
+
+
+******************************************************
+******************************************************
+
+     Compartment Volumes and Pump Areas For Multi-Shell Integrators
+
+******************************************************
+******************************************************
+
+
+ Let D-JUXTA = juxtamembrane shell thickness, D-INNER = inner shell thickness, tot-area = cell element surface area,
+ tot-vol = cell elememt volume, juxta-vol = volume shell 1 + volume shell 2, inner-vol = volume shell 3
+
+
+ -------------------------------------------------------------------------------------------------------
+ -------------------------------------------------------------------------------------------------------
+  Compartment |  D-JUXTA | D-INNER | SHELL1-P | SHELL2-P | SHELL3-P || Compartment Volume               
+ -------------------------------------------------------------------------------------------------------
+  shell 1          >0       n/a         T          T          n/a   || alpha-s * d-juxta * tot-area       
+                   =0       n/a         T          T          n/a   || alpha-s * tot-vol                  
+                   >0       n/a         T          NIL        n/a   || d-juxta * tot-area
+                   =0       n/a         T          NIL        n/a   || tot-vol                  
+ -------------------------------------------------------------------------------------------------------
+  shell 2          >0       n/a         T          T          n/a   || (1 - alpha-s) * d-juxta * tot-area 
+                   =0       n/a         T          T          n/a   || (1 - alpha-s) * tot-vol            
+ -------------------------------------------------------------------------------------------------------
+  shell 3          >0       >0          T          n/a         T    || d-inner * tot-area               
+                   =0       n/a         T          n/a         n/a  || 0                                
+                   >0       =0          T          n/a         T    || tot-vol - juxta-vol              
+ -------------------------------------------------------------------------------------------------------
+  core             =0       n/a         T          n/a         n/a  || 0                                
+                   >0       =0          T          n/a         T    || 0                                
+                   >0       >0          T          n/a         T    || tot-vol - (juxta-vol + inner-vol)
+                   >0       n/a         T          n/a         NIL  || tot-vol - juxta-vol
+ -------------------------------------------------------------------------------------------------------
+ -------------------------------------------------------------------------------------------------------
+
+
+ Note that pumps must be explicited associated with specific compartment.
+ -------------------------------------------------------------------------------------------------------
+  Compartment | SHELL1-P | SHELL2-P || Compartment Pump Area     
+ -------------------------------------------------------------------------------------------------------
+  shell 1          T          T     || alpha-s * tot-area       
+                   T          NIL   || tot-area
+ -------------------------------------------------------------------------------------------------------
+  shell 2          T          T     || (1 - alpha-s) * tot-area        
+ -------------------------------------------------------------------------------------------------------
+
+
+ -------------------------------------------------------------------------------------------------------
+ interdigitation-coeff | d-juxta || Effective diffusion area between 1 and 2
+ -------------------------------------------------------------------------------------------------------
+  >= 0                 |  > 0    || interdigitation-coeff * d-juxta * tot-area       
+  < 0                  |  n/a    || tot-area \___ Note that these two options place 
+  n/a                  |  <= 0   || tot-area /    shell 1 and 2 en-face wrt each other
+
+
+ -------------------------------------------------------------------------------------------------------
+ interdigitation-coeff | d-juxta || Diffusion area between 1 and 3 || Diffusion area between 2 and 3
+ -------------------------------------------------------------------------------------------------------
+  >= 0                 |  > 0    || alpha-s * tot-area             || (1 - alpha-s) * tot-area       
+  < 0                  |  n/a    || 0                              || tot-area
+  n/a                  |  <= 0   || 0                              || tot-area
+
+
+
+
+******************************************************
+******************************************************
+
+	Instantaneous Buffers
+
+******************************************************
+******************************************************
+
+
+The :SHELL-INSTANTANEOUS-BUFFER-RATIOS slot is a list that defines properties of
+instantaneous buffers for each shell:
+
+     `( (SHELL RATIO) (SHELL RATIO) ...), for example -   ((1 100)(2 200)(3 1000))
+
+where RATIO is the dimensionless ratio of bound[X]/[X] in that shell. Shells not included in this list,
+or with a ratio of NIL, are assumed not to have an instantaneous buffer.
+
+The :INSTANTANEOUS-BUFFER-P slot enables the instantaneous shell buffers.
+
+
+******************************************************
+******************************************************
+
+	Other Buffers
+
+******************************************************
+******************************************************
+
+Not tested.
+
+
+******************************************************
+******************************************************
+
+	Concentration Integrator Channel or Synapse Delta Parameter
+
+******************************************************
+******************************************************
+
+
+
+An additional parameter $\delta$, assigned to specific pore elements
+(channels or synapses) which feed concentration integrators, is a
+scaling coefficient (less than 1) for the integrated current.
+As a first approximation, $\delta$ is estimated by the ratio of the
+actual somatic conductance of a channel divided by the total
+conductance of the channel for the entire cell.
+
+For example - 
+
+* (get-element-parameter "HPC-soma-CA-T-GEN"  'conc-int-delta)
+0.34
+
+
+This parameter may be assigned after channels are created, for
+example:
+
+
+	(loop for ch in (channels) when (element-of-ion-type-p ch 'ca)
+	      do (set-element-parameter ch 'conc-int-delta 0.34)
+		 (set-conc-integrators-parameters))
+
+
+The final call to SET-CONC-INTEGRATORS-PARAMETERS makes sure that the
+appropriate concentration integrators are setup properly.
+
+This parameter is also discussed in channel.doc.
+
+
+******************************************************
+******************************************************
+
+Defining Concentration Integrator Types with the CONC-INT-TYPE-DEF Macro
+
+******************************************************
+******************************************************
+
+The CONC-INT-TYPE-DEF macro, discussed in element-type-libraries.doc,
+creates an entry in the parameter library for concentration integrator
+types. For now, the only tested classes of concentration integrator
+types include the :MULTI-SHELL and :FIRST-ORDER-SINGLE-COMPARTMENT. An
+example of the first type is given in the following CONC-INT-TYPE-DEF:
+
+
+(conc-int-type-def
+  '(CA-IN-GEN
+    (class . :MULTI-SHELL)
+    (species . CA)
+    (intra-p . T)
+    (shell2-p . T)
+    (shell3-p . T)
+    (juxtamembrane-shell-thickness . 1.0)
+    (inner-shell-thickness . 0.0)
+    (alpha-s . 10.0e-5)
+    (interdigitation-coefficient . 1.0)
+    (D-12 . 8.0e-6)
+    (D-13 . 0.0)
+    (D-23 . 8.0e-6)
+    (D-12core . 0.0)
+    (D-3core . 0.0)
+    (transmembrane-concentration . 2.0)
+    (core-conc . 0.00105)
+    (PUMP-TYPE-PARAMS . ((CA-JAFFE-94 2)))
+    (resting-free-conc . 5.0e-5)
+    (instantaneous-buffer-enabled . T)
+    (shell-1-instantaneous-buffer-ratio . 20.0)
+    (shell-2-instantaneous-buffer-ratio . 20.0)
+    (shell-3-instantaneous-buffer-ratio . 20.0)
+    (global-instantaneous-buffer-ratio . 20.0)
+))
+
+The RESTING-FREE-CONC entry is in mM, and is the concentration of free
+ion after taking into account any instantaneous buffer. The
+TRANSMEMBRANE-CONCENTRATION and the CORE-CONC are also in mM These
+latter two concentrations are total concentrations of the ion - if
+there is no entry for RESTING-FREE-CONC, then the value for CORE-CONC
+is used, even though this is not intended to be the free
+concentration. The units for the diffusion parameters, D-ij, are in
+cm^2 sec^-1. Shell thicknesses are in microns. Note that in this
+particular model the core has no effect on the concetrations in the
+other compartments, first because the values for D-12CORE and D-3CORE
+are both zero, and by convention when the value for
+INNER-SHELL-THICKNESS is 0.0, then the inner compartment occupies the
+entire remaining cell element volume, as described above, somewhat
+cryptically, in the table for compartment volumes (the volumes for
+shell 3 and the core when D-INNER = 0).
+
+The PUMP-TYPE-PARAMS entry is a list of pump types and the associated
+integrator compartments. In this example, the pump type CA-JAFFE-94 is
+assigned to the shell comparment 2.
+
+For the intantaneous buffer parameters, in the example above the entry
+for GLOBAL-INSTANTANEOUS-BUFFER-RATIO is redundant, since the same
+value is defined for SHELL-1-INSTANTANEOUS-BUFFER-RATIO,
+SHELL-2-INSTANTANEOUS-BUFFER-RATIO, and
+SHELL-3-INSTANTANEOUS-BUFFER-RATIO.
+
+An example of the :FIRST-ORDER-SINGLE-COMPARTMENT concentration
+integrator type is given in the following CONC-INT-TYPE-DEF (from
+src/parameters/traub91-channels.lisp):
+
+(conc-int-type-def
+ `(ca-in-traub91
+   (class . :first-order-single-compartment)
+   (species . ca)
+   (valence . 2)
+   (intra-p . t)
+   (alpha-s . 1.0)
+   (shell2-p . nil)
+   (shell3-p . nil)
+   (tau . 13.33)			; ms 
+   (juxtamembrane-shell-thickness . 1.0) ; microns - this will be adjusted for each compartment
+   (core-conc . 0.0e-5))		; mM
+ )
+
+
+Another example of this :CLASS may be found in src/parameters/warman94-channels.lisp.
+    
+
+******************************************************
+******************************************************
+
+	Pumps
+
+******************************************************
+******************************************************
+
+
+Pumps are initialized according to the resting free concentration in
+the associated concentration integrator compartment. This value is
+used *even* if concentation integrator values are initialized with
+*CONC-INT-INIT-VALUE-LIST* (see initializations.doc).
+
+******************************************************
+******************************************************
+
+Defining Pump Types with the PUMP-TYPE-DEF Macro
+
+******************************************************
+******************************************************
+
+The PUMP-TYPE-DEF macro, discussed in element-type-libraries.doc,
+creates an entry in the parameter library for pump types. For now, the
+only well tested type is a Michaelis-Menton type pump, CA-JAFFE-94,
+defined with the following PUMP-INT-TYPE-DEF:
+
+
+(pump-type-def
+ `(CA-JAFFE-94
+   (class . :MM)
+   (v-max . 6.0e-11)
+   (kd . 0.01)
+   (species . CA)
+   (qten . 1.0)
+   (reference-temp . 27.0)
+   ))
+
+
+Other types are in src/parameters/pumps.lisp.
+
+
+
+Note that pump types and pumps are typically created automatically,
+when a concentration integrator type or associated integrators are
+created whose parameter library definitions reference a particular
+pump type.

@@ -1,0 +1,532 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/safe-stack.soar
+*******************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.1
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (query-space)
+     6:       S: S1 (top-state)
+     7:       O: O3 (weight)
+Building chunk-1
+     8:       O: O4 (less)
+Building chunk-2
+     9:       O: O5 (lighter)
+Building chunk-3
+    10:       O: O6 (safe-to-stack)
+Building chunk-4
+    11:    O: O1 (wait)
+  Type "list-chunks" for the result.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.2
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (query-space)
+     6:       S: S1 (top-state)
+     7:       ==>G: G3 (state no-change)
+  Query goal failed.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.3
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+Firing chunk-4
+Firing chunk-1
+Firing chunk-2
+Firing chunk-3
+     4:    O: O1 (wait)
+  Type "list-chunks" for the result.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.4
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+Firing chunk-4
+Firing chunk-2
+Firing chunk-3
+     4:    O: O1 (wait)
+  Type "list-chunks" for the result.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.5
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (query-space)
+     6:       S: S1 (top-state)
+     7:       O: O3 (weight)
+Building chunk-5
+     8:       O: O4 (less)
+Building chunk-6
+Firing chunk-3
+Firing chunk-4
+     9:    O: O1 (wait)
+  Type "list-chunks" for the result.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.2)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.2 +))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.2)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+
+Soar> 
+Soar> 
+Loading ../../../examples/non-nnpscm/safe-stack/probs/prob.6
+#*
+
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (top-ps)
+     2:    S: S1 (top-state)
+     3:    O: O2 (evaluate-query)
+Firing chunk-5
+Firing chunk-6
+Firing chunk-3
+     4:    ==>G: G2 (operator no-change)
+     5:       P: P2 (query-space)
+     6:       S: S1 (top-state)
+     7:       O: O3 (safe-to-stack)
+Building chunk-7
+Building chunk-8
+     8:    O: O1 (wait)
+  Type "list-chunks" for the result.
+System halted.
+
+Soar> (sp chunk-1
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.1)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.1 +))
+
+(sp chunk-2
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.1)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-3
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w2>)
+  (<b1> ^weight <w1>)
+  (<w1> ^less <w2>)
+-->
+  (<b1> ^lighter <e1> +))
+
+(sp chunk-4
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> -^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+(sp chunk-5
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> -^weight <w*1> ^density <d1> ^volume <v1>)
+  (<d1> ^value 0.2)
+  (<v1> ^value 1)
+  (<s1> ^object <b1>)
+-->
+  (<s1> ^weight <w1> + ^weight <w1> &)
+  (<b1> ^weight <w1> +)
+  (<w1> ^value 0.2 +))
+
+(sp chunk-6
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^object <b1> ^safe-to-stack <e1>)
+  (<b1> ^weight <w2>)
+  (<w2> ^value 0.2)
+  (<s1> ^object <b1> ^object <e1>)
+  (<e1> ^weight <w1>)
+  (<w1> ^value 5)
+-->
+  (<w2> ^less <w1> +))
+
+(sp chunk-7
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> ^fragile no)
+  (<s1> ^object <e1> ^object <b1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+(sp chunk-8
+  :chunk
+  (goal <g1> ^operator <o1> ^state <s1> ^problem-space <p1>)
+  (<o1> ^name evaluate-query ^query <q1>)
+  (<q1> ^safe-to-stack <e1> ^object <b1>)
+  (<e1> ^fragile no)
+  (<b1> ^lighter <e1>)
+  (<s1> ^object <b1> ^object <e1>)
+-->
+  (<b1> ^safe-to-stack <e1> +))
+
+
+Soar> 
+Soar> 
+Soar> 

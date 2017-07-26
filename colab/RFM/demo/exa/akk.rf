@@ -1,7 +1,0 @@
-
-(ft (akk 0 _N) (+ _N 1));
-
-(ft (akk _M 0) (akk (- _M 1) 1));
-
-(ft (akk _N _M) (akk  (- _N 1) (akk _N (- _M 1))));
-

@@ -1,0 +1,204 @@
+Soar 6.2.5
+
+Bugs and questions should be sent to soar-bugs@cs.cmu.edu
+The current bug-list may be obtained by sending mail to
+soarhack@cs.cmu.edu with the Subject: line "bug list".
+
+This software is in the public domain, and is made available AS IS.
+Carnegie Mellon University, The University of Michigan, and
+The University of Southern California/Information Sciences Institute
+make no warranties about the software or its performance, implied
+or otherwise.
+
+Type "help" for information on various topics.
+Type "quit" to exit.  Use ctrl-c to stop a Soar run.
+Type "soarnews" for news.
+Type "version" for complete version information.
+
+Soar> 
+Soar> 
+Loading ../../../default/non-nnpscm/default.soar
+***********************************************************************************************************
+
+Soar> 
+Loading ../../../examples/non-nnpscm/waterjug/waterjug.soar
+*****************************
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (waterjug)
+     2:    S: S1 
+  3:0 5:0
+     3:    ==>G: G2 (operator tie)
+  O1: fill(3:0)
+  O2: fill(5:0)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O4 (evaluate-object O1 (fill))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (waterjug)
+     9:          S: D3 
+  3:0 5:0
+    10:          O: C1 (fill)
+  FILL(3:0)
+  3:3 5:0
+    11:          ==>G: G4 (operator tie)
+  O7: pour(3:3,5:0)
+  O6: fill(5:0)
+    12:             P: P3 (selection)
+    13:             S: S3 
+    14:             O: O10 (evaluate-object O7 (pour))
+    15:             ==>G: G5 (operator no-change)
+    16:                P: P1 (waterjug)
+    17:                S: D5 
+  3:3 5:0
+    18:                O: C2 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    19:                O: O14 (fill)
+  FILL(3:0)
+  3:3 5:3
+    20:                O: O17 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building justification-1
+Building justification-2
+Building justification-3
+Building justification-4
+  Evaluation of O7 (pour) is success
+Building justification-5
+  Evaluation of O1 (fill) is partial-success
+    21:    O: O1 (fill)
+  FILL(3:0)
+  3:3 5:0
+    22:    ==>G: G6 (operator tie)
+  O22: pour(3:3,5:0)
+  O2: fill(5:0)
+    23:       P: P4 (selection)
+    24:       S: S4 
+    25:       O: O25 (evaluate-object O22 (pour))
+    26:       ==>G: G7 (operator no-change)
+    27:          P: P1 (waterjug)
+    28:          S: D7 
+  3:3 5:0
+    29:          O: C3 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    30:          O: O29 (fill)
+  FILL(3:0)
+  3:3 5:3
+    31:          O: O32 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building justification-6
+Building justification-7
+  Evaluation of O22 (pour) is success
+    32:    O: O22 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    33:    O: O37 (fill)
+  FILL(3:0)
+  3:3 5:3
+    34:    O: O40 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+ goal waterjug achieved 
+  Goal waterjug succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (waterjug)
+     2:    S: S1 
+  3:0 5:0
+     3:    ==>G: G2 (operator tie)
+  O1: fill(3:0)
+  O2: fill(5:0)
+     4:       P: P2 (selection)
+     5:       S: S2 
+     6:       O: O4 (evaluate-object O1 (fill))
+     7:       ==>G: G3 (operator no-change)
+     8:          P: P1 (waterjug)
+     9:          S: D3 
+  3:0 5:0
+    10:          O: C1 (fill)
+  FILL(3:0)
+  3:3 5:0
+    11:          ==>G: G4 (operator tie)
+  O7: pour(3:3,5:0)
+  O6: fill(5:0)
+    12:             P: P3 (selection)
+    13:             S: S3 
+    14:             O: O10 (evaluate-object O7 (pour))
+    15:             ==>G: G5 (operator no-change)
+    16:                P: P1 (waterjug)
+    17:                S: D5 
+  3:3 5:0
+    18:                O: C2 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+    19:                O: O14 (fill)
+  FILL(3:0)
+  3:3 5:3
+    20:                O: O17 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+  Goal implement-evaluate-object succeeded. 
+Building chunk-1
+Building chunk-2
+Building chunk-3
+Building chunk-4
+  Evaluation of O7 (pour) is success
+Building chunk-5
+  Evaluation of O1 (fill) is partial-success
+    21:    O: O1 (fill)
+  FILL(3:0)
+  3:3 5:0
+Retracting chunk-5
+Firing chunk-4
+    22:    O: O22 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+Retracting chunk-4
+    23:    O: O24 (fill)
+  FILL(3:0)
+  3:3 5:3
+    24:    O: O27 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+ goal waterjug achieved 
+  Goal waterjug succeeded. 
+System halted.
+
+Soar> 
+Soar> 
+     0: ==>G: G1 
+     1:    P: P1 (waterjug)
+     2:    S: S1 
+  3:0 5:0
+Firing chunk-5
+     3:    O: O1 (fill)
+  FILL(3:0)
+  3:3 5:0
+Retracting chunk-5
+Firing chunk-4
+     4:    O: O3 (pour)
+  POUR(3:3,5:0)
+  3:0 5:3
+Retracting chunk-4
+     5:    O: O5 (fill)
+  FILL(3:0)
+  3:3 5:3
+     6:    O: O8 (pour)
+  POUR(3:3,5:3)
+  3:1 5:5
+ goal waterjug achieved 
+  Goal waterjug succeeded. 
+System halted.
+
+Soar> 

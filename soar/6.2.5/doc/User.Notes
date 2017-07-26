@@ -1,0 +1,849 @@
+Soar 6.2.5 User Notes  (also apply to 6.2.4 beta versions)
+February 6, 1995
+
+-------------------------------------------------------------------------------
+The modifications and enhancements comprising the release of Soar 6.2.5
+which are noticeable to the user can be summarized as follows:
+-------------------------------------------------------------------------------
+
+A) Fixed nnpscm and non-nnpscm default rules.
+B) Fixed print command.
+C) Fixed o-support problems.
+D) Modified and re-added several example problems for nnpscm and non-nnpscm.
+E) Cleaned up output trace format around "Firing", "Retracting", "Building".
+F) Added print-alias command.
+G) Made it so that chunks are printed out in ascending order.
+H) Added "last" and 'stop asking' options to user-select.
+I) Modified the destroy_soar_agent() routine.
+J) Added "and" feature to the "if" and "if-not" commands.
+K) Modified the "memories" command to make it more useful.
+L) Fixed core dump problem in load-errors facility.
+M) Added input-period command.
+N) Modified "pf" command to make it more useful.
+O) Added chunky-problem-spaces command.
+P) Added file of aliases to the default directory.
+Q) Made it so each agent now has its own default print depth.
+R) Default limits of 20 were added to the memories and firing-counts commands.
+
+
+---------------------------------------------------------------------------
+A) Fixed nnpscm and non-nnpscm default rules.
+
+   See the default rules.
+
+
+B) Fixed printing routines.
+
+   Attributes are now sorted alphabetically when objects are printed out.
+
+
+C) Fixed o-support problems.
+
+   Several o-support problems have been fixed.  Some of these problems
+   caused core dumps.  Others gave o-support to operator preferences in
+   the states and superstates.
+
+
+D) Modified and re-added several example problems for nnpscm and non-nnpscm.
+
+   ./examples/nnpscm/eight-puzzle/eight-puzzle.soar	- modified by John
+   ./examples/non-nnpscm/eight-puzzle/eight-puzzle.soar	- modified by John
+   ./examples/nnpscm/farmer/farmer.soar		- re-added by Aladin
+   ./examples/non-nnpscm/farmer/farmer.soar	- modified by Aladin
+   ./examples/nnpscm/kab/kab.soar		- added by Aladin
+   ./examples/non-nnpscm/kab/kab.soar		- added by Aladin
+   ./examples/nnpscm/physics/physics.soar	- re-added
+   ./examples/nnpscm/waterjug/waterjug.soar	- re-added by Aladin
+   ./examples/non-nnpscm/waterjug/waterjug.soar	- modified by Aladin
+
+   See the example problems in the examples directory.
+
+
+E) Cleaned up output trace format around "Firing", "Retracting", "Building".
+
+   Version 6.2.3 introduced some problems in the printing out of these
+   messages, in that spurious line feeds were being printed.  These have
+   been fixed, so that now there are no extra line feeds between successive
+   "Firing", "Retracting", or "Building" lines.
+
+   Notice also that the word "Build:" has been changed to "Building".
+   This was done for conformity with "Firing" and "Retracting", but also
+   to make output easier to read.  The fact that "Build:" and "Firing"
+   have the same number of characters meant that the words that followed
+   them were lined up, possibly causing some confusion.  But now, since
+   "Building", "Firing", and "Retracting" all have different numbers of
+   characters, the words following them will have different offsets,
+   which should make traces easier to read.
+
+
+F) Added print-alias command.
+
+   This is a command which allows you to decide whether you want to see
+   Soar notify you that an alias has been defined when you define one.
+   It uses a binary switch just like load-errors.
+
+   Syntax:  (print-alias [on | off])
+
+   Examples:
+
+	Soar> print-alias
+	Print-alias status:  on
+
+	Soar> alias ls $ls
+	Alias ls successfully added.
+
+	Soar> print-alias off
+
+	Soar> alias cd $cd
+
+	Soar> print-alias on
+
+	Soar> alias df $df
+	Alias df successfully added.
+
+
+G) Made it so that chunks are printed out in ascending order.
+
+   Self-explanatory.
+
+
+H) Added "last" and 'stop asking' options to user-select command.
+
+   The "last" option to the user-select command allows the user to
+   force Soar to select the last of a set of indifferent preferences.
+   The other options here are "first", "random", and "ask" where the
+   user is asked each time which preference to select.
+
+   The 'stop asking' option is given to the user each time the user is
+   asked which preference to select.  The list of preferences is given,
+   followed by 3 options which allow the user to switch to "first", "last",
+   or "random" mode for the remainder of the run.
+
+   Syntax: (user-select [first | last | ask | random | t | nil])
+
+   Examples:
+
+	Soar> user-select ask
+
+	Soar> user-select
+	User-select is currently set to:  ask
+
+	Soar> run
+
+	[...]
+	Please choose one of the following:
+	  1:  O6 (evaluate-object O3 (move-tile))
+	  2:  O5 (evaluate-object O2 (move-tile))
+	  3:  O4 (evaluate-object O1 (move-tile))
+	Or choose one of the following to change the user-select mode
+	to something else:  4 (first), 5 (last), 6 (random)
+	Enter selection (1-6): 5
+	User-select mode changed to:  last
+	[... ran to completion]
+
+
+I) Modified the destroy_soar_agent() routine.
+
+   In regular multi-agent Soar, if you try to destroy the current agent,
+   you are returned to the control agent.  That safeguard processing
+   occurs in the destroy-agent command handler, not the destroy_soar_agent()
+   routine.
+
+   In some Soar systems, the destroy_soar_agent() routine may be called
+   directly from other C code.  In such cases, this safeguarding is not
+   present.  However, this modification makes it present.  So now if
+   destroy_soar_agent() is called from other code and tries to destroy
+   the current agent, the system makes the control agent current, rather
+   than hanging.
+
+
+J) Added "and" feature to the "if" and "if-not" commands.
+
+   The "if" and "if-not" commands now have an "and" feature to make them
+   more powerful.
+
+   Syntax:  (if <var> {and <var>}* action)
+            (if-not <var> {and <var>}* action)
+
+   Note that the action can optionally be enclosed in parentheses.
+
+   Examples:
+
+	Soar> setvar
+	Variables that are Set:
+
+	Soar> if-not foo and bar (version)
+	Soar version: 6.2.4
+
+	Soar> setvar foo
+	Variable foo is Set
+
+	Soar> if foo and bar version
+
+	Soar> if-not foo and bar version
+
+	Soar> setvar bar
+	Variable bar is Set
+
+	Soar> if foo and bar version
+	Soar version: 6.2.4
+
+
+K) Modified the "memories" command to make it more useful.
+
+   The old "memories" command, which simply allowed you to get the
+   memory usage of a particular production, has been made more
+   useful with more options.
+
+   You can still get the memory usage of a particular production by
+   specifying the production name.  However, you can now also get
+   a list of the top n memory-using productions by specifying a count
+   argument.  By omitting the count argument, you get a list of all
+   productions.  You can further restrict the kind of productions
+   listed, by specifying one or more of :chunk, :user, :default,
+   and :justification.  By default, all 4 kinds of productions are
+   listed.  Memory usages are in tokens.
+
+   Syntax: (memories production-name)
+	   (memories arg* [count])
+	   arg  :=  :chunk | :user | :default | :justification
+
+   Examples:
+
+	Soar> memories 8
+
+	Memory use for productions:
+
+	chunk-6: 518
+	eight*elaborate*state*evaluation*neutral*zero: 517
+	chunk-4: 499
+	chunk-3: 429
+	eight*monitor*state: 193
+	eight*detect*state*success: 164
+	default*selection*select*operator*evaluate-object*indifferent: 13
+	eight*operator*move-tile*inverse*reject: 13
+
+
+L) Fixed core dump problem in load-errors facility.
+
+   Because of the was the response string was handled in load-errors,
+   responding with a string longer than 2 characters would cause a core
+   dump.  This has been fixed.
+
+
+M) Added input-period command.
+
+   The input-period command allows you to restrict Soar to only accept input
+   every certain number of decision cycles.  You specify a non-negative
+   integer on the command line, and that becomes the input period.  If you
+   don't specify an argument, the current input period is returned.
+
+   If the input period is 0, Soar behaves as it did in versions prior to
+   6.2.4, accepting input on every elaboration cycle.  If the input period
+   n is positive, then Soar accepts input only on every nth decision cycle.
+
+   Syntax: (input-period [integer])
+
+   Examples:
+
+	Soar> input-period
+	The current input period is 0.
+
+	Soar> input-period 5
+
+	Soar> input-period
+	The current input period is 5.
+
+
+N) Modified "pf" command to make it more useful.
+
+   A few more command-line options have been added so that you can
+   now find chunks instead of productions, and so that you can apply
+   a command (such as excise) to each production/chunk found.
+
+   Syntax: (pf arg lhs-conditions-or-rhs-actions)
+           arg ::= [:rhs] [:chunks|:nochunks] [:command <command>]
+
+   Examples:
+
+	Soar> pf (<s> ^gumby <gv> ^operator.name foo)(<gv> ^alive t)
+	Parsing as a lhs...
+	Valid condition list:
+	 (<s> ^gumby <gv> ^operator <#o*1>)
+	 (<#o*1> ^name foo)
+	 (<gv> ^alive t)
+	Matches:
+	No matches.
+
+	Soar> pf :rhs (<x> ^operator <op> +)(<op> ^name foo)
+	Parsing as a rhs...
+	Valid RHS:
+	(<op> ^name foo +)
+	(<x> ^operator <op> +)
+	Matches:
+	No matches.
+
+	Soar> pf (<x> ^pokey *)
+	Parsing as a lhs...
+	Valid condition list:
+	 (<x> ^pokey *)
+	Matches:
+	No matches.
+
+	Soar> pf :command excise (<s> ^operator.name foo)
+	Parsing as a lhs...
+	Valid condition list:
+	 (<s> ^operator <#o*2>)
+	 (<#o*2> ^name foo)
+	Matches:
+	No matches.
+
+
+O) Added chunky-problem-spaces command.
+
+   This is essentially the opposite of chunk-free-problem-spaces.  It
+   allows you to specify problem spaces in which learning will occur.
+
+   Syntax: (chunky-problem-spaces)
+           (chunky-problem-spaces :add space-name)
+           (chunky-problem-spaces :remove space-name)
+
+   Examples:
+
+	Soar> chunky-problem-spaces :add default
+
+	Soar> chunky-problem-spaces
+	Problem spaces declared chunky:
+	  default
+
+
+P) Added file of aliases to the default directory.
+
+   Sarah Nichols and Frank Ritter have made up a file of aliases that they
+   found to be very useful, and these have been included in the Soar release.
+   They exist in ./default/aliases.soar.  So where one would type
+   load default/[non-]nnpscm/default.soar to load the default rules, one can
+   type load default/aliases.soar to load these aliases.
+
+
+Q) Made it so each agent now has its own default print depth.
+
+
+R) Default limits of 20 were added to the memories and firing-counts commands.
+
+
+-------------------------------------------------------------------------------
+The modifications and enhancements comprising the release of Soar 6.2.3 can
+be summarized as follows:
+-------------------------------------------------------------------------------
+1. Fixed NNPSCM Default Rules.
+
+2. Fixed trace-format bug in NNPSCM.
+
+3. Removal and addition of several examples and gold-standards tests for NNPSCM.
+
+
+-------------------------------------------------------------------------------
+The modifications and enhancements comprising the release of Soar 6.2.2 can
+be summarized as follows:
+-------------------------------------------------------------------------------
+1. Updated "conversion.el" file in pscm-convert directory.
+
+2. Added "convert-prods.soar" to pscm-convert directory.
+
+3. Modified "memories" command.
+
+4. Fixed uninitialized variable "max_chunks_reached".
+
+5. Fixed uninitialized queue element.
+
+6. Fix for NNPSCM in reorderer.
+
+7. Modification of trace-format code for NNPSCM.  Trace-format for NNPSCM
+   is still not entirely correct for operators, but this helps.  An example:
+   (blocks-world) was: 4:          O: O8 (evaluate-object O3 (move-block))
+                  is:  4:          O: O8 (evaluate-object)
+
+8. Fix for NNPSCM in o-support calculations.
+
+9. Fix for "print" command.  Command now is temporarily same as in 6.1.1
+
+10. Modified make.body to correctly process "make clobber" command.
+
+11. Modified interrupt RHS function to allow for proper behavior under multi-agent
+    operation.
+
+12. Added new "pf" (production finding) user command.
+    PF is a production finding facility.  It allows you to
+    find productions that either test a particular LHS pattern
+    or produce particular RHS preferences.
+
+    The syntax of the lhs-conditions or rhs-actions is exactly
+    their syntax within SP's.  In addition, the symbol '*' may
+    be used as a wildcard for an attribute or value.  Note that
+    variable names do not have to match the specific names used
+    in productions.
+    
+    Syntax: pf [:rhs] lhs-conditions-or-rhs-actions
+
+    Examples:
+
+    Find productions that test that some object gumby has attribute
+    ^alive t, and test an operator named foo:
+       pf (<s> ^gumby <gv> ^operator.name foo)(<gv> ^alive t)
+
+   Find productions that propose foo:
+       pf :rhs (<x> ^operator <op> +)(<op> ^name foo)
+
+   Find productions that test the attribute ^pokey:
+       pf (<x> ^pokey *)
+
+
+-------------------------------------------------------------------------------
+The modifications and enhancements comprising the release of Soar 6.2.1 can
+be summarized as follows:
+-------------------------------------------------------------------------------
+
+A) Addition of NNPSCM as a compile-time option, and an SDE (Emacs)
+   Conversion Program.
+B) User Interface Modifications.
+C) New RHS Functions.
+D) Added Soar Functionality.
+E) Modifications to the Default Rules.
+F) Directory Structure and Makefile modifications.
+G) New Problem Examples.
+
+
+---------------------------------------------------------------------------
+
+A) Addition of NNPSCM as a compile-time option, and an accompanying SDE (Emacs)
+   Conversion Program.
+
+   NNPSCM is now included as a compile-time option, by uncommenting a line
+   in the make.body file (-DNNPSCM).  Included in the "convert" directory
+   is a file which contains a brief summary of NNPSCM, "conversion-notes.txt",
+   along with instructions on using a new SDE (Emacs) conversion program,
+   "conversion.el".  Please refer to the conversion document for further
+   information.
+
+
+B) User Interface Modifications.
+
+   New Commands
+
+   1) New Conditional Commands.
+      Four new Conditional command-line options are now available:
+      "setvar", "unsetvar", "if", and "if-not".
+
+     a) "setvar"
+        Syntax: (setvar varname)
+
+        Example:
+          Soar> setvar use-natural-language
+          Variable use-natural-language is Set
+
+     b) "unsetvar"
+        Syntax: (unsetvar {*} || {varname})
+
+        Example:
+          Soar> unsetvar *
+          All variables are now UnSet
+
+     c) "if"
+        Syntax: (if varname (conditional))
+
+        Example:
+
+          Soar> (if use-natural-language (load ../nl.soar))
+          Loading ../nl.soar
+
+     d) "if-not"
+        Syntax: (if-not varname (conditional))
+
+        Examples:
+          Soar> (if-not use-natural-language (version))
+
+          Soar> (if-not abc (version))
+          Soar version: 6.2.1
+
+        What this means is that not only can you conditionally load files,
+        but you can also conditionally do a number of other actions as well.
+        Note that you cannot use more than one variable or specify more than
+        one action to perform with the above commands.
+
+
+   2) "alias"
+      Allows you to specify a short sequence of keystrokes (the alias) to 
+      replace a longer sequence of keystrokes (the expansion) when entering
+      Soar commands.
+  
+      For example, ``alias lht list-help-topics'' will allow you to
+      type lht to get a list of all the help topics.  Similarly, ``alias
+      sa select-agent'' will allow you to type ``sa foo'' in place of
+      ``select-agent foo''.
+
+      With no arguments, ``alias'' will show you a list of the aliases that
+      have been defined.
+
+      Syntax: (alias [alias] [expansion])
+
+      Examples:
+        Soar agent control> alias ca (create-agent)
+        Alias ca successfully added.
+
+        Soar agent control> alias
+        alias   ca   create-agent
+
+        Soar agent control> ca foo
+
+        Creating agent foo.
+
+        Soar agent control> alias prod sp foo (goal <g> ^name foo) --> (<g> ^foo bar)
+        Alias prod successfully added.
+
+        Soar agent control> alias
+        alias   ca   create-agent
+        alias   prod   sp foo ( goal <g> ^ name foo ) --> ( <g> ^ foo bar )
+
+        Soar agent control> prod
+        *
+        Soar agent control> list-productions
+        (sp foo
+        (goal <g> ^name foo)
+        -->
+        (<g> ^foo bar +))
+
+      The alias command works similarly to the alias feature in csh.  Simply
+      type "alias ca create-agent" to create an alias so that you can type
+      ca as a short form of create-alias.  For instance, with this alias,
+      you can type "ca foo" to create an agent called foo.  You can remove
+      this alias by typing "unalias ca".  You can get a list of all currently
+      defined aliases by typing "alias" with no arguments.
+
+      The expansion of an alias can contain as many lexemes as you want to
+      put in it.  For instance, you can create an alias to enter in an
+      entire Soar production, an example of which appears above.
+
+      Under multi-agent Soar, each agent has its own list of aliases, so that
+      aliases defined under one agent will not automatically be available
+      under another.
+
+   3) "unalias"
+      Removes a previously defined alias.
+
+      Syntax: (unalias alias)
+
+      Example:
+        Soar> unalias ls
+        Alias ls successfully removed.
+
+   4) "pushd"
+
+      [Push Directory]  Pushes the specified directory onto the directory
+      stack, such that the new current working directory becomes the
+      specified directory.
+
+      Syntax: (pushd pathname)
+
+      Example:
+        Soar> pushd /usr/rempel/soar/rempel
+        Pushing directory onto the stack: /usr/rempel/soar/rempel
+
+   5) "popd"
+
+      [Pop Directory]  Pops the top entry off of the directory stack, such
+      that the entry immediately underneath it becomes the current working
+      directory.
+
+      Syntax: (popd)
+
+      Example:
+        Soar> popd
+        Popping off directory: /usr0/rempel/soar/rempel
+        Current directory now is: /usr0/rempel/soar/alpha
+
+   6) "dirs"
+
+      [Show Directory Stack]  Lists the entries in the directory stack,
+      starting with the current working directory.
+
+      Syntax: (dirs)
+
+      Example:
+        Soar> dirs
+        /usr0/rempel/soar/rempel
+        /usr0/rempel/soar/alpha
+
+
+      Note on pushd, popd, and dirs commands:
+      ---------------------------------------
+      Pushd takes a string argument which is the name of the directory
+      that is to be made current.  Popd takes no arguments.  There is also
+      a dirs command that lists the directory stack.  In multi-agent Soar,
+      each agent has its own directory stack.
+
+
+   7) Added a general shell escape (UNIX only).
+      To execute a shell command, simply preface the command with a "$".
+      For instance, to get a directory listing, type "$ls".  To get a long
+      directory listing, type "$ls -al".  Other commands can be executed
+      from the shell as well.  You can use pipes in the shell, and call up
+      other programs such as emacs, either in the foreground or background.
+      You can also run shell scripts (if they are simple enough to run
+      in sh) in this shell.
+
+      The shell that is used is sh, which is a substantially more austere
+      shell than csh.  For instance, commands such as pushd and popd are
+      not implemented in sh.  However, the cd, chdir, pushd, popd, and dirs
+      commands have been trapped so that if you call them in the shell,
+      they will execute properly anyway, just like they do if you call them
+      directly from Soar.  However, there are a few features about the
+      shell escape which should be mentioned.
+
+      1.  cd and pushd commands that don't have a filename specified simply
+          do a cd/pushd to the current directory.  For the cd command, that
+          operation is idempotent, but for the pushd command, successive
+          pushd's without specified filenames cause the current directory
+          to be pushed onto the stack repeatedly.
+          Note that this is different from how unix interprets a cd command
+          without an argument.  Unix interprets such a command to mean
+          "go to my home directory".
+
+      2.  If the user types "$cd; pwd" or any combination of commands that are
+          trapped with commands that are not trapped on the same line
+          separated by semicolons, the whole thing will be passed to the shell,
+          and those parts of the line that the user might want to trap
+          will not be trapped.  For instance, if the user types
+          "tar -cf - directory | (pushd ~; pushd /usr; cd /usr/bin; tar -xf -)"
+          or something really complex like that, the command will work,
+          but the 2 pushd commands won't be reflected in Soar's directory
+          stack, since those commands won't have been parsed out of the line.
+
+      3.  The shell is sh, not csh, so the .cshrc file will not be read,
+          so any special definitions in there cannot be used.
+
+
+   8) "memories"
+      This command prints information about memory use of partial matches.
+      Memory use for the given production is printed.
+
+      Syntax: (memories production-name)
+
+
+
+   Enhancements/Bug Fixes to existing Commands:
+
+   1) Modified the load-errors facility.
+      a. The prompt, which used to be several lines, has been condensed into
+         1 line.
+
+      b. Before, the prompt would be printed both before and after the
+         offending line was printed out.  This has been changed so that the
+         prompt only prints out after the offending line.
+
+      c. Before, when the choice was given between continuing or not,
+         continuing meant continuing to load the file, whereas not continuing
+         meant exiting Soar.  This has been changed so that not continuing
+         means aborting the particular load of the file without exiting Soar.
+
+
+   2) Fixed the select-agent command.
+      Before, typing "select-agent control" would cause an error since
+      control is not a regular schedulable agent.  The select-agent
+      command has been changed to properly handle "select-agent control".
+
+
+   3) Modified the destroy-agent command.
+      Before, a destroy-agent command would simply return a prompt without
+      stating that it had successfully destroyed an agent.  This has
+      been changed so that a "Destroying agent ..." line is printed out
+      when an agent is destroyed.
+
+
+   4) Fixed the printing out of prompts.
+      a. There were several places where Soar prompts were not printed
+         out and they should have been.  These have been fixed.
+
+      b. When entering a Soar production from the keyboard, prompts were
+         printed after each line of the production was entered.  This has
+         been fixed so that no prompts are printed until the production is
+         finished.
+
+
+   5) Modified the preferences command.
+      Before, if the "preferences" command was unable to find the specified
+      slot in the specified object, it simply returned the message
+      "There is no such slot."  The message has been changed to return the
+      object id and attribute name, so as to be more informative.
+
+
+   6) Modified the cd command to understand ~ in a filename.
+
+
+   7) Modified the explain command to make it multi-agent compatible.
+
+
+   8) Filenames on some architectures can be longer than the 1000 characters
+      that had been allotted for them.  Hence, all filenames in Soar now
+      have MAXPATHLEN characters allotted for them.
+
+   9) Filenames/Pathnames can now be specified without quotation marks
+      (UNIX only).  All commands which required a filename or a pathname
+      can now be specified with or without quotes.
+
+   10) Modified the print and p commands.
+       Both the p and print commands now perform a lexicographic sort upon
+       IDs first, then upon the wmes associated with those ID secondly.
+       Note that currently there is an upper limit imposed of 20,000 IDs
+       with 20,000 wmes associated with each ID.  If you go over the sort
+       limit, a message will be printed, and the print routine will be exited
+       from.   The next release of Soar will get around this with dynamic
+       memory allocation and deallocation.
+
+       Example:
+
+       Soar> p (* ^type *)
+       (B4 ^name a
+           ^type block)
+       (B5 ^name b
+           ^type block)
+       (B6 ^name c
+           ^type block)
+       (G1 ^desired D1
+           ^name top-goal
+           ^object nil
+           ^operator O1
+           ^operator O1 +
+           ^problem-space P1
+           ^problem-space P1 +
+           ^state S1
+           ^state S1 +
+           ^type goal)
+       (T2 ^name table
+           ^type table)
+
+
+
+C) New RHS Functions.
+
+The following have been added:
+
+ ifeq		Returns the 3rd argument if the first 2 arguments are
+		equal; otherwise returns the 4th argument.
+
+                Syntax: (ifeq <a> <b> abc def)
+
+                Example:
+
+                (sp trace-juggling
+                (goal <g> ^state.ball.position <pos>)
+                -->
+                (write (ifeq <pos> at-top        |    o|)       (crlf)
+                       (ifeq <pos> left-middle   | o|)
+                       (ifeq <pos> right-middle  |       o|)    (crlf)
+                       (ifeq <pos> left-hand     |o|)
+                       (ifeq <pos> right-hand    |        o|)   (crlf)
+                                             |V_______V|    (crlf))
+                )
+
+                This outputs with a single production one of the following
+                pictures depending on the ball's position (providing the ball
+                is not dropped of course. Then it outputs empty hands. :-) 
+
+                                             o                    
+                             o                              o         
+               o                                                           o
+               V-------V    V-------V    V-------V    V-------V    V-------V
+                         or           or           or           or
+
+
+               for a ball that takes this path.
+
+                   o    
+                o     o 
+               o       o
+               V-------V
+
+               Basically this is useful when you don't want the trace to
+               match the internal working memory structure.
+
+
+ strlen		Returns the length of the first argument.
+      
+                Syntax: (strlen <a>)
+
+                Examples:
+
+                (strlen |abc|) returns 3
+
+                (write (ifeq (strlen <foo>) 3 | |)
+                       (ifeq (strlen <foo>) 2 |  |)
+                       (ifeq (strlen <foo>) 1 |   |) <foo>)
+
+                writes foo padding on the left with enough blanks so that the
+                length of the output is always at least 4 characters.
+
+
+ user-select    Identical to current user-select command-line argument.
+
+
+
+D) Added Soar Functionality.
+
+Soar can now backtrace through prohibit preferences when chunks or
+justifications are built.  Modifications have been made to the Chunker
+and Recognitional Memory to accomplish this.
+
+
+
+E) Modifications to the Default Rules.
+
+Some of the default rules which were added in 6.1.1 did not have the :default
+keyword in them, causing them to be excised when the user performed an
+"excise-task".  This has been corrected.
+
+The NNPSCM requires it's own default rules, and they can be found under the
+"default" directory (see part "F" below).
+
+
+
+F) Directory Structure and Makefile modifications.
+
+A good portion of the directory structure has been modified to allow for
+NNPSCM.  All of the bin, default, examples, lib, obj, and test directories
+now have the subdirectories "nnpscm" and "non-nnpscm".
+
+The user directory now has two sub-directories, "src", and "obj".
+
+The Mac and PC versions of Soar are now distributed separately from the
+unix release.  Thus the mac_support and pc_support directories have been
+removed from the unix release tar file.  The make.body files have been
+updated accordingly.
+
+The make.header.sgi file now has the option "-lmalloc" included for
+performance gains.
+
+The make.header.xx files has an additional compile-time flag:
+
+  -DUNIX     which allows specification of filenames and pathnames
+                without quotes, and shell escape routines.
+
+The make.body file has some additional flags:
+
+  NNPSCMFLAGS =            To allow for NON-NNPSCM version of Soar. 
+  NNPSCMFLAGS = -DNNPSCM   To allow for NNPSCM version of Soar.
+
+In addition to the compile-time flags, the directory path must be specified
+for the proper version: 
+
+  PSCM_DIR = non-nnpscm version.
+  PSCM_DIR = nnpscm version.
+
+
+
+G) New Problem Examples.
+
+Two new Soar problem examples have been added, "tower-of-hanoi" and
+"safe-stack".  They can be found under the "examples/non-nnpscm"
+directory.
+

@@ -1,3 +1,0 @@
-(ft (revise _f _n (tup)) (tup))
-(ft (revise _f 1 (tup _h | _t)) (tup (_f _h) | _t))
-(ft (revise _f _n (tup _h | _t)) (tup _h | (revise _f (1- _n) _t)))

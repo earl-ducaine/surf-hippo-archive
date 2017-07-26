@@ -1,0 +1,163 @@
+;;;; University of Nottingham
+;;;; Department of Psychology
+;;;; Cognitive Modeling Unit
+;;;; KM motivated Soar aliases v1.2
+;;;;
+;;;; Sarah Nichols & Frank E. Ritter
+;;;; scn@psyc.nott.ac.uk, ritter@psyc.nott.ac.uk
+;;;;
+;;;; last modified 7/XII/94-FER
+;;;;
+;;;; OVERVIEW
+;;;;
+;;;; Based on a Keystroke model (computed in Dismal), these aliases
+;;;; are maximumly efficient (but not necessarily memorable), saving
+;;;; approximately 50% of the typing time and could reduce errors
+;;;; compared with the full commands across tasks (Nichols & Ritter,
+;;;; to appear in CHI'95).
+;;;;
+;;;; We suspect that the aliases will prove more useful to those people not
+;;;; using the SDE.  We would welcome any feedback about the use of the
+;;;; aliases, particularly any more aliases which might be useful.
+;;;;
+;;;; In order to make the aliases usable, they have been devised with a
+;;;; small set of rules in mind (noted below).  Once the rules have been
+;;;; learned the use of the aliases should be easy.  Exceptions are
+;;;; explained clearly and have been handled with frequency data in mind.
+;;;; You should read the explanation of the rules and look through the list
+;;;; of aliases before using them.  In cases where some ambiguity may
+;;;; occur, more than one alias may have been provided, as long as this is
+;;;; not dangerous.
+;;;;
+;;;;
+;;;;	19/10/94 SCN
+;;;; A new section (VII) has been added so that helpful error messages are
+;;;; echoed to the screen if predictable errors occur in the case of aliases
+;;;; which are exceptions to the rules
+;;;;
+;;;;
+;;;; Table of contents
+;;;;	i.	How to load this file
+;;;; 	I. 	Rule based aliases
+;;;;	II.	Clashes/Exceptions dealt with under the rules
+;;;;	III.	Expected, not dangerous typos or other abbreviations
+;;;; 	IV.	Aliases based on American X convention
+;;;; 	V.	Aliases based on FER's guess about ? convention
+;;;; 	VI.	Aliases based on huge frequency savings
+;;;;	VII.	Warning messages
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;	i.	How to load this file
+;;;;
+;;;;
+;;;; To load the aliases, you can either place them or a load command
+;;;; referencing this alias file in your .init.soar file.  They will
+;;;; then be automatically loaded when starting Soar, and you will see
+;;;; messages saying "Soar aliases successfully added".  You can put
+;;;; any custom aliases (or unaliases) at the end.
+;;;;
+;;;;
+;;;; 	I. 	Rule based aliases
+;;;;
+;;;;	(a) Include the first letter of every word of the command
+;;;;
+;;;;    (b) When the original command consists of only one word, the
+;;;;    alias is the first two letters of the word, (unless length of
+;;;;    the command <= 5, when a one letter abbreviation may be
+;;;;    provided if no clashes result).
+;;;;
+;;;; 	(c) In case of the 3 clashes (see exceptions), use first two
+;;;;    consonants.
+;;;; 	These are all high frequency vs. low frequency clashes, so it
+;;;;   	is fairly clear which gets priority.
+;;;;
+print-alias off
+alias aw add-wme
+alias ag agent-go
+alias cfps chunk-free-problem-spaces
+alias dpd default-print-depth
+alias e echo
+alias ex excise
+alias ea excise-all
+alias ec excise-chunks
+alias et excise-task
+alias fc firing-counts
+alias g go
+alias h help
+alias is init-soar
+alias le learn
+alias lc list-chunks
+alias lht list-help-topics
+alias lj list-justifications
+alias lp list-productions
+alias ma matches
+alias me max-elaborations
+alias otf object-trace-format
+alias pr preferences
+alias p print
+alias pah print-all-help
+alias ps print-stats
+alias pt ptrace
+alias q quit
+alias rw remove-wme
+alias rs rete-stats
+alias sc schedule
+alias sa select-agent
+alias s stats
+alias sn soar-news
+alias stf stack-trace-format
+alias t time
+alias un unptrace
+alias us user-select
+alias ve version
+alias w watch
+;;;;
+;;;;	II.	Clashes/Exceptions dealt with under the rules
+;;;;
+alias ld load
+alias lg log
+alias mstats memory-stats
+alias mems memory-stats
+alias wr warnings
+alias wt watch
+;;;;
+;;;;	III.	Expected, not dangerous typos or other abbreviations
+;;;;
+alias lrn learn
+alias init-saor	init-soar
+alias pref preferences
+alias rwme remove-wme
+alias rstats rete-stats
+alias sched schedule
+alias news soar-news
+alias vers version
+alias unpt unptrace
+alias unp unptrace
+;;;;
+;;;; 	IV.	Aliases based on American X convention
+;;;;
+alias x excise
+alias xa excise-all
+alias xc excise-chunks
+alias xt excise-task
+;;;;
+;;;; 	V.	Aliases based on FER's guess about ? convention
+;;;;
+;;;; alias ? help (supplied by default Soar)
+alias ?? list-help-topics
+alias ??? print-all-help
+;;;;
+;;;; 	VI.	Aliases based on huge frequency savings
+;;;;
+alias = matches
+alias i init-soar
+;;;;
+;;;;	VII.	Warning messages
+;;;;
+alias lo echo "Type 'ld' as alias for 'load' or 'lg' as alias for 'log'."
+alias l echo "Type 'ld' as alias for 'load' or 'lg as alias for 'log'."
+alias wa echo "Type 'wr' as alias for 'warnings' or 'w' or 'wt' as aliases for 'watch'."
+echo "Soar aliases 1.2 successfully added."
+print-alias on

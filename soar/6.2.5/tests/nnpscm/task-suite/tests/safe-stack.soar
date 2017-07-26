@@ -1,0 +1,27 @@
+load ../../../default/nnpscm/default.soar
+load ../../../examples/nnpscm/safe-stack/safe-stack.soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.1
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.2
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.3
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.4
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.5
+run
+list-chunks
+init-soar
+load ../../../examples/nnpscm/safe-stack/probs/prob.6
+run
+list-chunks
+
+

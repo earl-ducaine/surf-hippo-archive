@@ -1,0 +1,13 @@
+# $Id: make.header.generic,v 1.5 1994/06/08 21:43:51 portelli Exp $
+#
+# Generic header file (assumes gcc compiler).  Does not utilize
+# machine-dependent directories.  This is backward compatible w/
+# Soar makefiles before 6.0.4. (Er, except that -ansi is used and
+# -O was removed).
+
+CC         = gcc
+CFLAGS     = -O -ansi -DUNIX
+EXTRA_LIBS = 
+RANLIB     = ranlib
+
+MACHINE_DEP_DIR = 

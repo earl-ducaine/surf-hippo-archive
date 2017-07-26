@@ -1,0 +1,244 @@
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+		DATA AND INFORMATION FILES
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+			Table of Contents
+
+
+
+There are several opportunities to write out either data files
+(simulation plot data or circuit element descriptions) or simulation
+information files. 
+
+Automatic information and data file or window output can be enabled
+for each simulation by the following menu sequence:
+
+ [Main Simulation Menu:<Modify overall simulation parameters> <Specify
+ information output parameters> [Simulation Info]].
+
+If a file from a previous simulation has been written, then the name
+of this file will appear in the menu title.
+
+Surf-Hippo will dump simulation/circuit information to either this
+type of window and/or the Lisp Listener (e.g. in the terminal window
+or the Ilisp window). The advantage of the output to a Lisp Listener
+is efficiency, and if this is Ilisp or other editor-based window, then
+the output can be readily edited. The advantage of the Information
+Window is that this can be hardcopied in the same manner as the
+Plotting or Histology windows.
+
+The options in this menu include the following, with some annotations:
+
+ "Print simulation information to Lisp Window?" 
+
+ "Print mini circuit description to Lisp Window?" -> Just the bare
+bones description of a simulation.
+
+ "Print full circuit description to Lisp Window?" -> Practically
+everything about the circuit.
+
+ "Print simulation information to Information Window?" 
+
+ "Print full circuit description to Information Window?"
+
+ "Create new Information Window?"
+
+ "Save simulation data to file?" -> Creates LISP data files of plot
+data.
+
+ "Save simulation information to file?" 
+
+ "Save all the simulation information to file?" 
+
+ "Include segment details w/full info?" -> Enables detailed
+descriptions of each dendritic segment (compartment) when full
+descrption (above) is enabled.
+
+ "Make subdirectory for circuit's output files" 
+
+ "Edit data directory"
+
+Again, these options control the documentation that is generated with
+each and every simulation run. Alternatively, if you want to document
+the present state of things (including the last simulation):
+
+[Main Simulation Menu:<Specify immediate information ouput> 
+[Print out simulation info *now*]]
+
+Options here include:
+
+ "Output information" -> Whether to generate information/plotdata output
+for this simulation. 
+
+ "File" "Lisp Window" "Information Window" -> Destination of
+simulation information.
+
+ "Short" "Long w/o Segments" "Long" -> Detail level of the
+information.
+
+ "Create new Information Window?" 
+
+ "If information output is to file, save data to file also?" -> For
+plot data.
+
+ "Dump loadable circuit element types (channels, particles, synapses,
+etc.) file?" -> Create a file (extension ".elts") for circuit element
+types that can be reloaded back into LISP. This is especially handy
+for simulation sessions in which element type parameters have been
+changed, since it allows for almost automatic restoral of circuit
+state in a new session.
+
+
+ "Include current simulation annotation string"
+
+This is a useful way to keep some notes along with the current output
+- any string here also is output along with other information in the
+LISP window at the start of each simulation.
+
+****************************************************************
+****************************************************************
+
+                Editing Lisp Files
+
+****************************************************************
+****************************************************************
+
+You may want to edit a Lisp file that was created by Surf-Hippo just
+to add some comments, i.e. without really messing with the Lisp code
+or syntax. There are two ways that comments are delineated. First,
+anytime a semi-colon appears in a line, then the remainder of that
+line is a comment, e.g.
+
+     (some list code)  ; This is the comment 
+
+
+
+A more convenient method for lengthy comments is to bracket the text
+with "#|" and "|#", as follows:
+
+
+     (lisp code)
+
+     (lisp code)
+
+     (lisp code)
+
+     #|
+
+     The sharp sign followed by the vertical bar starts text that will be ignored
+     by Lisp when the file is read. The text ends with a vertical bar followed by a
+     sharp sign, like this:
+
+     |#
+
+     (more lisp code)
+
+     (more lisp code)
+
+     (more lisp code)
+
+
+
+
+****************************************************************
+****************************************************************
+
+ Loading Data / Circuit Description / Element Description Files
+
+****************************************************************
+****************************************************************
+
+Data files are written as ASCII text which can be loaded into LISP as
+is. Surf-Hippo files can also be compiled to save space and loading
+time. Whenever simulation data is written, the data file concludes
+with a LISP statement which updates the global variable
+*ARCHIVE-VARIABLE-LIST* (when the archive file is loaded back into the
+same (or another) Surf-Hippo session). As the name suggests,
+*ARCHIVE-VARIABLE-LIST* keeps track of the loaded archived data.
+
+Data, circuit element, and circuit definition LISP files may all be
+loaded via the file loading menu (follow links from the main menu), or
+by temporarilly quitting Surf-Hippo (don't quit LISP), and
+using the LISP function LOAD, e.g. (assuming that the directory "data"
+is a subdirectory of the current working directory - otherwise
+the full pathname is needed):
+
+ lisp-prompt> (load "data/basic-hippo/1_30_1994/basic-hippo-296895207.dat")
+
+
+
+Note that information files (with file extension .info) are *not* LISP
+files and cannot be loaded into LISP - there are for reading by humans
+only.
+
+Loaded archive data may be plotted out by the following sequence:
+
+ [Main Simulation Menu:<Modify plot parameters - plot loaded archive
+ data><Plot loaded archive data>[Choose Archived Simulation]]
+
+Note that the archive option in the main menu only shows up if
+archived data has been loaded into Surf-Hippo.
+
+
+
+LISP files may also be loaded from the "Overall parameters, load
+circuit or other files" option of the Main menu.
+
+See the discussion on saving loadable type-def files in
+element-type-libraries.doc. 
+
+******************************************
+******************************************
+
+      Random State Reference Files
+
+******************************************
+******************************************
+
+For simulations that use the RANDOM function for generating a
+pseudo-random sequence, the seed may be initialized by calling
+GET-REFERENCE-RANDOM-STATE. This reads in a file that is created by
+calling the function SAVE-REFERENCE-RANDOM-STATE. The seed file
+referenced by both of these functions is /surf-hippo/random-state by
+default, you can supply an alternative filename as an optional
+argument is desired.
+
+Note that for consistency, SAVE-REFERENCE-RANDOM-STATE should only be
+called once at a given site. The Surf-Hippo distribution contains a
+random-state file written under CMUCL 17C, but there is no guarantee
+that this will work for other implementations.
+
+
+******************************************
+******************************************
+
+DUMP-DATA-FILE Function
+
+******************************************
+******************************************
+
+The DUMP-DATA-FILE function can be called from the interpreter, or
+from a script file with arguments that limit which plotted traces are
+saved to file. 
+
+	dump-data-file &optional SELECT-EACH-ELEMENT SELECTED-ELEMENT-NAMES-AND-SLOTS
+
+The second argument is a list of lists, each sublist containing the
+name of an element and a symbol for the type of data saved. For
+example:
+
+	(DUMP-DATA-FILE nil '(("11-5-6" node-voltage)
+			      ("11-5-46" node-voltage)
+			      ("j43d-soma" node-voltage)))
+

@@ -1,0 +1,357 @@
+;;; 
+;;; FILE               : blocks-world.s
+;;;
+
+;;;
+;;; AUTHOR(1)          : John.E.Laird [ Soar 5.2 ]
+;;;
+
+;;;
+;;; CREATED(1)         : Laird, et al. (1990). Soar User's Manual: Version 5.2
+;;;
+
+;;;
+;;; MODIFIED(2)        : Apr 26, 93   [ Soar 6.0.7 ] Aladin.Akyurek
+;;; MODIFIED(1)        : Apr 24, 91   [ Soar 5.2.x ] Aladin.Akyurek
+;;;
+
+;;;
+;;; Apr 26, 93         : Updated to run in Soar 6.0.7, 6.0.8.
+;;; Apr 24, 91         : Modified to run to completion in Soar 5.2.
+;;;
+
+(chunk-free-problem-spaces :add blocks-world)
+
+;;;
+;;; TOP PROBLEM SPACE:
+;;; ELABORATE TOP STATE
+;;;
+
+(sp top-ps*elaborate*initial-state
+    (goal <g> ^name top-goal ^problem-space <p> ^state <s>)
+    (<p> ^name top-ps)	
+    (<s> ^name top-state)
+    -->
+    (<s> ^object-dynamic <table-dyn> + &,
+                         <blockA-dyn> + &,
+                         <blockB-dyn> + &,
+                         <blockC-dyn> + & )
+    (<blockA-dyn> ^object-static <blockA> ^clear yes ^ontop <blockB>)
+    (<blockA> ^name A ^type block)
+    (<blockB-dyn> ^object-static <blockB> ^clear no ^ontop <table>)
+    (<blockB> ^name B ^type block)
+    (<blockC-dyn> ^object-static <blockC> ^clear yes ^ontop <table>)
+    (<blockC> ^name C ^type block)
+    (<table-dyn> ^clear yes ^object-static <table>)
+    (<table> ^name table ^type table)
+    (write (crlf) |Initial state has A on B and B and C on the table.|))
+
+(sp top-ps*elaborate*state*detect-tower
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name top-ps)
+    (<s> ^object-dynamic <blockA-dyn>
+	                 { <> <blockA-dyn> <blockB-dyn> }
+                         { <> <blockA-dyn> <> <blockB-dyn> <blockC-dyn> })
+    (<blockA-dyn> ^object-static <blockA> ^ontop <blockB>)
+    (<blockB-dyn> ^object-static <blockB>
+                  ^ontop <blockC>)
+    (<blockC-dyn> ^object-static <blockC>
+                  ^ontop <table>)
+    (<blockA> ^name A)
+    (<blockB> ^name B)
+    (<blockC> ^name C)
+    (<table> ^name table)
+    -->
+    (<s> ^object-dynamic <tower> + & )  
+    (<tower> ^top-block <blockA>
+             ^middle-block <blockB>
+             ^bottom-block <blockC>))
+
+;;;
+;;; TOP PROBLEM SPACE OPERATOR:
+;;; BUILD-TOWER
+;;;
+
+(sp top-ps*propose*operator*build-tower
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name top-ps)
+    (<s> ^object-dynamic <table-dyn>
+                         <blockA-dyn>
+                         <blockB-dyn>
+                         <blockC-dyn>)
+    (<blockA-dyn> ^object-static <blockA>)
+    (<blockA> ^name A)
+    (<blockB-dyn> ^object-static <blockB>)
+    (<blockB> ^name B)
+    (<blockC-dyn> ^object-static <blockC>)
+    (<blockC> ^name C)
+    (<table-dyn> ^object-static <table>)
+    (<table> ^name table)
+   -{ (<s> ^object-dynamic <tower>)
+      (<tower> ^top-block <blockA>
+               ^middle-block <blockB>
+               ^bottom-block <blockC>) }
+    -->
+    (<g> ^operator <o>)
+    (<o> ^name build-tower ^desired-state <ds>)
+    (<ds> ^object-dynamic <dblockA-dyn> + &,
+                          <dblockB-dyn> + &,
+                          <dblockC-dyn> + &
+          ^ontop-count 3)
+    (<dblockA-dyn> ^object-static <blockA> ^ontop <blockB>)
+    (<dblockB-dyn> ^object-static <blockB> ^ontop <blockC>)
+    (<dblockC-dyn> ^object-static <blockC> ^ontop <table>)
+    (write (crlf) |The goal is to get A on B on C on the table.|))
+
+;;;
+;;; TOP PROBLEM SPACE:
+;;; OPERATOR TERMINATION
+;;;
+
+(sp top-goal*terminate*operator*build-tower
+    (goal <g> ^problem-space <p> ^state <s>
+              ^operator <o>)
+    (<p> ^name top-ps)
+    (<s> ^object-dynamic <tower>)
+    (<tower> ^top-block <blockA>
+	     ^middle-block <blockB>
+	     ^bottom-block <blockC>)
+    (<o> ^name build-tower)
+    (<blockA> ^name A)
+    (<blockB> ^name B)
+    (<blockC> ^name C)
+    -->
+    (<g> ^operator <o> @ ))
+
+;;;
+;;; SUBGOAL BUILD-TOWER:
+;;; DESIRED STATE
+;;;
+
+(sp operator-no-chage*elaborate*goal*build-tower
+    (goal <g> ^object <sg>
+              ^impasse no-change
+              ^attribute operator)  
+    (goal <sg> ^operator <so>)
+    (<so> ^name build-tower ^desired-state <ds>)
+    -->
+    (<g> ^desired <ds> ^name build-tower))
+
+;;;
+;;; SUBGOAL BUILD-TOWER:
+;;; PROBLEM SPACE
+;;;
+ 
+(sp build-tower*propose*space*blocks-world
+    (goal <g> ^name build-tower)
+    -->
+    (<g> ^problem-space <p>)
+    (<p> ^name blocks-world))
+
+(sp build-tower*elaborate*space*blocks-world
+    (goal <g> ^name build-tower ^problem-space <p>)
+    (<p> ^name blocks-world)
+    -->
+    (<p> ^default-state-copy yes
+	 ^default-operator-copy no
+	 ^two-level-attributes object-dynamic + & )) 
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE:
+;;; INITIAL STATE
+;;;
+  
+(sp blocks-world*propose*initial-state
+    (goal <g> ^name build-tower ^problem-space <p>
+              ^object <sg>)
+    (<p> ^name blocks-world)
+    (goal <sg> ^state <ss>)
+    -->
+    (<g> ^state <ss>))
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE OPERATOR:
+;;; MOVE-BLOCK
+;;;
+  
+(sp blocks-world*propose*operator*move-block
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name blocks-world)
+    (<s> ^object-dynamic <blockA-dyn> { <> <blockA-dyn> <blockB-dyn> })
+    ( <blockA-dyn> ^object-static <blocka> ^clear yes -^ontop <blockb>)
+    (<blocka> ^type block)
+    (<blockB-dyn> ^object-static <blockb> ^clear yes)
+    -->
+    (<g> ^operator <o> + )
+    (<o> ^name move-block
+         ^moving-block <blocka>
+         ^destination <blockb>))
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE:
+;;; OPERATOR IMPLEMENTATION
+;;;
+  
+(sp blocks-world*apply*operator*move-block*remove-ontop
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^object-dynamic <mblock-dyn>)
+    (<mblock-dyn> ^object-static <mblock>
+                  ^ontop { <> <tblock> <blockb> }
+                 -^ontop <tblock>)
+    (<o> ^moving-block <mblock> ^destination <tblock>)
+    -->
+    (<mblock-dyn> ^ontop <blockb> - ))
+
+(sp blocks-world*apply*operator*move-block*create-ontop
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^object-dynamic <mblock-dyn>)
+    (<mblock-dyn> ^object-static <mblock>)
+    (<o> ^moving-block <mblock>
+         ^destination <tblock>)
+    -->
+    (<mblock-dyn> ^ontop <tblock> + ))
+
+(sp blocks-world*apply*operator*move-block*remove-clear
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^object-dynamic <tblock-dyn>)
+    (<tblock-dyn> ^object-static <tblock> ^clear yes)
+    (<tblock> ^type block)
+    (<o> ^destination <tblock>)
+    -->
+    (<tblock-dyn> ^clear yes - ^clear no))
+
+(sp blocks-world*apply*operator*move-block*create-clear
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^object-dynamic <mblock-dyn> { <> <mblock-dyn> <ublock-dyn> })
+    (<ublock-dyn> ^object-static <ublock> ^clear no)
+    (<mblock-dyn> ^object-static <mblock> ^ontop { <> <tblock> <ublock> })
+    (<o> ^moving-block <mblock> ^destination <tblock>)
+    (<ublock> ^type block)
+    -->
+    (<ublock-dyn> ^clear no - ^clear yes))
+
+(sp blocks-world*apply*operator*remember*moved-block*a
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> -^last-moved-block)
+    (<o> ^moving-block <mb>)
+    -->
+    (<s> ^last-moved-block <mb> + ))
+
+(sp blocks-world*apply*operator*remember*moved-block*b
+    (goal <g> ^state <s> ^operator <o>)
+    (<o> ^moving-block <mb>)
+    -->
+    (<s> ^last-moved-block <mb> + ))
+
+(sp blocks-world*apply*operator*forget*last-moved-block
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^last-moved-block <lmb>)
+    (<o> ^moving-block <mb> <> <lmb>)
+    -->
+    (<s> ^last-moved-block <lmb> - ))
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE:
+;;; OPERATOR TERMINATION
+;;;
+  
+(sp blocks-world*terminate*operator*move-block
+    (goal <g> ^state <s> ^operator <o>)
+    (<s> ^object-dynamic <mblock-dyn>)
+    (<o> ^moving-block <mblock> ^destination <tblock>)
+    (<mblock-dyn> ^object-static <mblock> ^ontop <tblock>)
+    -->
+    (<g> ^operator <o> @ ))
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE: 
+;;; SEARCH CONTROL
+;;;
+
+(sp blocks-world*reject*move-block*twice
+    (goal <g> ^problem-space <p> ^state <s> 
+              ^operator <o> + )
+    (<p> ^name blocks-world)
+    (<s> ^last-moved-block <mb>)
+    (<o> ^moving-block <mb>)
+    -->
+    (<g> ^operator <o> - ))
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE:
+;;; STATE EVALUATION/GOAL TEST
+;;;
+
+(sp blocks-world*elaborate*goal*achieved
+    (goal <g> ^state <s> ^desired <d>)
+    (<s> ^object-dynamic <block-dyn>)
+    (<block-dyn> ^object-static <blocka> ^ontop <blockb>)
+    (<d> ^object-dynamic <dblock-dyn>)    
+    (<dblock-dyn> ^object-static <blocka> ^ontop <blockb>)
+    -->
+    (<g> ^achieved <dblock-dyn> <dblock-dyn> & ))
+
+(sp blocks-world*elaborate*state*success
+    (goal <g> ^state <s>
+              ^desired <d>
+              ^achieved <dontop1>
+                    	{ <> <dontop1> <dontop2> }
+                    	{ <> <dontop1> <> <dontop2> <dontop3> })
+    (<d> ^ontop-count 3)
+    -->
+    (<s> ^success <d> <d> & ))
+
+(sp top-ps*default-operator*wait*halt
+    (goal <g> ^operator <o>)
+    (<o> ^name wait)
+    -->
+    (halt)) 	        
+
+;;;
+;;; BLOCKS-WORLD PROBLEM SPACE: 
+;;; MONITOR STATE AND OPERATORS
+;;;
+
+(sp blocks-world*monitor*state*relation*ontop
+    (goal <g> ^problem-space <p> ^state <s>)
+    (<p> ^name blocks-world)
+    (<s> ^object-dynamic <ob-dyn>)
+    (<ob-dyn> ^object-static <top-ob> ^ontop <under-ob>)
+    (<top-ob> ^name <top-ob-name>)
+    (<under-ob> ^name <under-ob-name>)
+    -->
+    (write (crlf)
+           |  ontop(| <top-ob-name>
+           |,| <under-ob-name> |)|))
+
+(sp blocks-world*monitor*tied-operators*move-block
+    (goal <g> ^impasse tie 
+              ^attribute operator 
+              ^item <item>)
+    (<item> ^name move-block
+    	    ^moving-block <mob>
+    	    ^destination <dob>)
+    (<mob> ^name <mob-name>)
+    (<dob> ^name <dob-name>)
+    -->
+    (write (crlf) 
+    	   |  | <item> 
+    	   |: move-block(| <mob-name> 
+    	   |,| <dob-name> 
+    	   |)|))
+
+(sp blocks-world*monitor*operator-application*move-block
+    (goal <g> ^operator <o>)
+    (<o> ^name move-block
+    	 ^moving-block <mob>
+    	 ^destination <dob>)
+    (<mob> ^name <mob-name>)
+    (<dob> ^name <dob-name>)
+    -->
+    (write (crlf) 
+           |  APPLIED | <o> 
+    	   |: move-block(| <mob-name> 
+    	   |,| <dob-name> 
+    	   |)|))
+
+;;; eof of blocks-world.s
